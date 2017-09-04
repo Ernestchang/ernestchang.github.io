@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <meta charset="utf-8">
+    
+    <title>H5启动Android App | The Old Man and the Sea</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="首先明晰，微信里屏蔽了schema协议。除非你是微信的合作伙伴之类的，他们专门给你配置进白名单。否则，我们就没办法通过这个协议在微信中直接唤起app。 因此，我们需要先判断页面场景是否在微信中，如果在微信中，则会提示用户在浏览器中打开。  H5中间接判断应用是否安装 这里的逻辑很简单，当没有成功打开app的时候，新页面不会弹出则页面逻辑继续进行；否则如果进入了新页面，则页面逻辑便终止了。所以我们">
+<meta name="keywords" content="android,code">
+<meta property="og:type" content="article">
+<meta property="og:title" content="H5启动Android App">
+<meta property="og:url" content="http://yoursite.com/2017/03/07/android/code/H5启动Android App/index.html">
+<meta property="og:site_name" content="The Old Man and the Sea">
+<meta property="og:description" content="首先明晰，微信里屏蔽了schema协议。除非你是微信的合作伙伴之类的，他们专门给你配置进白名单。否则，我们就没办法通过这个协议在微信中直接唤起app。 因此，我们需要先判断页面场景是否在微信中，如果在微信中，则会提示用户在浏览器中打开。  H5中间接判断应用是否安装 这里的逻辑很简单，当没有成功打开app的时候，新页面不会弹出则页面逻辑继续进行；否则如果进入了新页面，则页面逻辑便终止了。所以我们">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2017-08-09T10:12:31.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="H5启动Android App">
+<meta name="twitter:description" content="首先明晰，微信里屏蔽了schema协议。除非你是微信的合作伙伴之类的，他们专门给你配置进白名单。否则，我们就没办法通过这个协议在微信中直接唤起app。 因此，我们需要先判断页面场景是否在微信中，如果在微信中，则会提示用户在浏览器中打开。  H5中间接判断应用是否安装 这里的逻辑很简单，当没有成功打开app的时候，新页面不会弹出则页面逻辑继续进行；否则如果进入了新页面，则页面逻辑便终止了。所以我们">
+    
+
+    
+        <link rel="alternate" href="/" title="The Old Man and the Sea" type="application/atom+xml" />
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">The Old Man and the Sea</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/uploads/images/avert.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/uploads/images/avert.png" />
+            <h2 id="name">Ernest Chang</h2>
+            <h3 id="title">Developer &amp; Designer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Hangzhou, China</span>
+            <a id="follow" target="_blank" href="https://github.com/Ernestchang/">FOLLOW</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                25
+                <span>posts</span>
+            </div>
+            <div class="article-info-block">
+                14
+                <span>tags</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/Ernestchang/" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="facebook" class=tooltip>
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="dribbble" class=tooltip>
+                            <i class="fa fa-dribbble"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-android/code/H5启动Android App" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            H5启动Android App
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/03/07/android/code/H5启动Android App/">
+            <time datetime="2017-03-07T01:58:25.000Z" itemprop="datePublished">2017-03-07</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/code/">code</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/android/">android</a>, <a class="tag-link" href="/tags/code/">code</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <blockquote>
+<p>首先明晰，<a href="http://lib.csdn.net/base/wechat" target="_blank" rel="external">微信</a>里屏蔽了schema协议。除非你是微信的合作伙伴之类的，他们专门给你配置进白名单。否则，我们就没办法通过这个协议在微信中直接唤起app。</p>
+<p>因此，我们需要先判断页面场景是否在微信中，如果在微信中，则会提示用户在浏览器中打开。</p>
+</blockquote>
+<h3 id="H5中间接判断应用是否安装"><a href="#H5中间接判断应用是否安装" class="headerlink" title="H5中间接判断应用是否安装"></a>H5中间接判断应用是否安装</h3><blockquote>
+<p>这里的逻辑很简单，当没有成功打开app的时候，新页面不会弹出则页面逻辑继续进行；否则如果进入了新页面，则页面逻辑便终止了。所以我们可以另开一个延时的线程来判断这个事情</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">if(...)&#123;</div><div class="line">document.location = &apos;&apos;;</div><div class="line">setTimeout(function()&#123;</div><div class="line">   //此处如果执行则表示没有app</div><div class="line">&#125;,200);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="通过H5唤起APP"><a href="#通过H5唤起APP" class="headerlink" title="通过H5唤起APP"></a>通过H5唤起APP</h3><blockquote>
+<p>编辑AndroidManifest.xml，主要是增加第二个<intent-filter>，launchapp用来标识schema，最好能保证手机系统唯一，那样就可以打开应用，而不是弹出一个选择框。可以附带自己的数据通过string传递到activity，比如完整url为 launchapp://?data=mydata</intent-filter></p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">&lt;activity    </div><div class="line">     android:name=&quot;com.robert.MainActivity&quot;    </div><div class="line">     android:configChanges=&quot;orientation|keyboardHidden|navigation|screenSize&quot;    </div><div class="line">     android:screenOrientation=&quot;landscape&quot;    </div><div class="line">     android:theme=&quot;@android:style/Theme.NoTitleBar.Fullscreen&quot; &gt;    </div><div class="line">     &lt;intent-filter&gt;    </div><div class="line">         &lt;action android:name=&quot;android.intent.action.MAIN&quot; /&gt;    </div><div class="line">         &lt;category android:name=&quot;android.intent.category.LAUNCHER&quot; /&gt;    </div><div class="line">     &lt;/intent-filter&gt;    </div><div class="line">     &lt;intent-filter&gt;    </div><div class="line">         &lt;action android:name=&quot;android.intent.action.VIEW&quot; /&gt;    </div><div class="line">         &lt;category android:name=&quot;android.intent.category.BROWSABLE&quot; /&gt;    </div><div class="line">         &lt;category android:name=&quot;android.intent.category.DEFAULT&quot;/&gt;    </div><div class="line">         &lt;data android:scheme=&quot;launchapp&quot; android:pathPrefix=&quot;/haha&quot; /&gt;    </div><div class="line">     &lt;/intent-filter&gt;    </div><div class="line">   &lt;/activity&gt;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>然后通过activity获得data数据：</p>
+</blockquote>
+   <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">     public void onCreate(Bundle savedInstanceState) &#123;             </div><div class="line">     	Uri uridata = this.getIntent().getData();             </div><div class="line">     	String mydata = uridata.getQueryParameter(&quot;data&quot;);            </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="编写html页面"><a href="#编写html页面" class="headerlink" title="编写html页面"></a>编写html页面</h3><blockquote>
+<p>整个页面也许是某个app的详细介绍，这里只写出关键的js代码：</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">&lt;activity  </div><div class="line">     android:name=&quot;com.robert.MainActivity&quot;    </div><div class="line">     android:configChanges=&quot;orientation|keyboardHidden|navigation|screenSize&quot;    </div><div class="line">     android:screenOrientation=&quot;landscape&quot;    </div><div class="line">     android:theme=&quot;@android:style/Theme.NoTitleBar.Fullscreen&quot; &gt;    </div><div class="line">     &lt;intent-filter&gt;    </div><div class="line">         &lt;action android:name=&quot;android.intent.action.MAIN&quot; /&gt;    </div><div class="line">         &lt;category android:name=&quot;android.intent.category.LAUNCHER&quot; /&gt;    </div><div class="line">     &lt;/intent-filter&gt;    </div><div class="line">     &lt;intent-filter&gt;    </div><div class="line">         &lt;action android:name=&quot;android.intent.action.VIEW&quot; /&gt;    </div><div class="line">         &lt;category android:name=&quot;android.intent.category.BROWSABLE&quot; /&gt;    </div><div class="line">         &lt;category android:name=&quot;android.intent.category.DEFAULT&quot;/&gt;    </div><div class="line">         &lt;data android:scheme=&quot;launchapp&quot; android:pathPrefix=&quot;/haha&quot; /&gt;    </div><div class="line">     &lt;/intent-filter&gt;    </div><div class="line">&lt;/activity&gt;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>下面代码可以达到这样一个目的，先请求 launchapp:// ,如果系统能处理，或者说已经安装了myapp表示的应用，那么就可以打开，另外，如果不能打开，直接刷新一下当前页面，等于是重置location。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">function openApp() &#123;    </div><div class="line">       </div><div class="line">           if (/android/i.test(navigator.userAgent)) &#123;    </div><div class="line">                var isrefresh = getUrlParam(&apos;refresh&apos;); // 获得refresh参数    </div><div class="line">                if(isrefresh == 1) &#123;    </div><div class="line">                    return    </div><div class="line">                &#125;    </div><div class="line">                window.location.href = &apos;launchapp://haha?data=mydata&apos;;    </div><div class="line">                window.setTimeout(function () &#123;    </div><div class="line">                        window.location.href += &apos;&amp;refresh=1&apos; // 附加一个特殊参数，用来标识这次刷新不要再调用myapp:// 了    </div><div class="line">                &#125;, 500);    </div><div class="line">            &#125;    </div><div class="line">       </div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<h3 id="整体代码"><a href="#整体代码" class="headerlink" title="整体代码"></a>整体代码</h3><blockquote>
+<p>代码功能: 判断手机/平板是否安装app 如果安装 则调用app的scheme，传入url当作参数，来做后续操作 如果没有安装 则跳转到app store/google play 下载app</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">(function () &#123;</div><div class="line">    var openUrl = window.location.search;</div><div class="line">    try &#123;</div><div class="line">        openUrl = openUrl.substring(1, openUrl.length);</div><div class="line">    &#125; catch (e) &#123;&#125;</div><div class="line">    var isiOS = navigator.userAgent.match(&apos;iPad&apos;) || navigator.userAgent.match(&apos;iPhone&apos;) || navigator.userAgent.match(</div><div class="line">        &apos;iPod&apos;),</div><div class="line">        isAndroid = navigator.userAgent</div><div class="line">            .match(&apos;Android&apos;),</div><div class="line">        isDesktop = !isiOS &amp;&amp; !isAndroid;</div><div class="line">    if (isiOS) &#123;</div><div class="line">        setTimeout(function () &#123;</div><div class="line">            window.location = &quot;itms-apps://itunes.apple.com/app/[name]/[id]?mt=8&quot;;</div><div class="line">        &#125;, 25);</div><div class="line">        window.location = &quot;[scheme]://[host]?url=&quot; + openUrl;</div><div class="line">    &#125; else if (isAndroid) &#123;</div><div class="line">        window.location = &quot;intent://[host]/&quot; + &quot;url=&quot; + openUrl + &quot;#Intent;scheme=[scheme];package=[package_name];end&quot;;</div><div class="line">    &#125; else &#123;</div><div class="line">        window.location.href = openUrl;</div><div class="line">    &#125;</div><div class="line">&#125;)();</div></pre></td></tr></table></figure>
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/03/07/android/code/H5启动Android App/" data-id="cj75t7iva001e2dpjnozb8b0o" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/03/07/android/code/H5启动Android App/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/03/07/android/books/《Android开发艺术探索》Chap1_Activity生命周期和启动模式/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    《Android开发艺术探索》Chap1_Activity生命周期和启动模式
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2016/06/29/other/markdown转换教程/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">markdown转换教程</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="uyan_frame"></div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">recent</h3>
+        <div class="widget">
+            <ul id="recent-post" class="no-thumbnail">
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/09/04/android/github/github hexo 博客迁移 /" class="title"></a></p>
+                            <p class="item-date"><time datetime="2017-09-04T03:45:36.000Z" itemprop="datePublished">2017-09-04</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/code/">code</a></p>
+                            <p class="item-title"><a href="/2017/08/25/android/code/TextView autoLink小技巧/" class="title">TextView autoLink小技巧</a></p>
+                            <p class="item-date"><time datetime="2017-08-25T06:07:37.000Z" itemprop="datePublished">2017-08-25</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/mysql/">mysql</a></p>
+                            <p class="item-title"><a href="/2017/08/22/mysql/mac导出:导入mysql/" class="title">mac导出/导入mysql</a></p>
+                            <p class="item-date"><time datetime="2017-08-22T11:26:44.000Z" itemprop="datePublished">2017-08-22</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/linux/">linux</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/linux/vim/">vim</a></p>
+                            <p class="item-title"><a href="/2017/08/18/linux/vim的常用命令/" class="title">vim的常用命令</a></p>
+                            <p class="item-date"><time datetime="2017-08-18T06:59:13.000Z" itemprop="datePublished">2017-08-18</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/git/">git</a></p>
+                            <p class="item-title"><a href="/2017/07/19/git/git commit 编写风格模板/" class="title">git commit 编写风格模板</a></p>
+                            <p class="item-date"><time datetime="2017-07-19T12:15:00.000Z" itemprop="datePublished">2017-07-19</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">categories</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">9</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">3</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/linux/vim/">vim</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">archives</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tags</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tag cloud</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 13.33px;">code</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/github/" style="font-size: 10px;">github</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 10px;">markdown</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/node/" style="font-size: 16.67px;">node</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">links</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 Ernest Chang<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2142274"></script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

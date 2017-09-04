@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <meta charset="utf-8">
+    
+    <title>mac导出/导入mysql | The Old Man and the Sea</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="mac 安装mysql 首先 $ brew install mysql 安装 mysql，之后可能需要重启一下终端，然后成功的话输入 $ mysql 再按 Tab 会提示一些和 mysql 相关的命令出来，如果有的话就 OK 了，如下： 12345$ mysqlmysql                       mysql_zapmysql.server                mysq">
+<meta name="keywords" content="mysql">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mac导出&#x2F;导入mysql">
+<meta property="og:url" content="http://yoursite.com/2017/08/22/mysql/mac导出:导入mysql/index.html">
+<meta property="og:site_name" content="The Old Man and the Sea">
+<meta property="og:description" content="mac 安装mysql 首先 $ brew install mysql 安装 mysql，之后可能需要重启一下终端，然后成功的话输入 $ mysql 再按 Tab 会提示一些和 mysql 相关的命令出来，如果有的话就 OK 了，如下： 12345$ mysqlmysql                       mysql_zapmysql.server                mysq">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2017-08-23T14:11:14.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="mac导出&#x2F;导入mysql">
+<meta name="twitter:description" content="mac 安装mysql 首先 $ brew install mysql 安装 mysql，之后可能需要重启一下终端，然后成功的话输入 $ mysql 再按 Tab 会提示一些和 mysql 相关的命令出来，如果有的话就 OK 了，如下： 12345$ mysqlmysql                       mysql_zapmysql.server                mysq">
+    
+
+    
+        <link rel="alternate" href="/" title="The Old Man and the Sea" type="application/atom+xml" />
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">The Old Man and the Sea</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/uploads/images/avert.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/uploads/images/avert.png" />
+            <h2 id="name">Ernest Chang</h2>
+            <h3 id="title">Developer &amp; Designer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Hangzhou, China</span>
+            <a id="follow" target="_blank" href="https://github.com/Ernestchang/">FOLLOW</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                25
+                <span>posts</span>
+            </div>
+            <div class="article-info-block">
+                14
+                <span>tags</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/Ernestchang/" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="facebook" class=tooltip>
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="dribbble" class=tooltip>
+                            <i class="fa fa-dribbble"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-mysql/mac导出:导入mysql" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            mac导出/导入mysql
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/08/22/mysql/mac导出:导入mysql/">
+            <time datetime="2017-08-22T11:26:44.000Z" itemprop="datePublished">2017-08-22</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/mysql/">mysql</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/mysql/">mysql</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h2 id="mac-安装mysql"><a href="#mac-安装mysql" class="headerlink" title="mac 安装mysql"></a>mac 安装mysql</h2><p> 首先 <code>$ brew install mysql</code> 安装 mysql，之后可能需要重启一下终端，然后成功的话输入 <code>$ mysql</code> 再按 Tab 会提示一些和 mysql 相关的命令出来，如果有的话就 OK 了，如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$ mysql</div><div class="line">mysql                       mysql_zap</div><div class="line">mysql.server                mysqladmin</div><div class="line">mysql_client_test           mysqlbinlog</div><div class="line">mysql_client_test_embedded  mysqlbug</div></pre></td></tr></table></figure>
+<h2 id="配置和使用"><a href="#配置和使用" class="headerlink" title="配置和使用"></a>配置和使用</h2><p>MySQL 和直接使用的 SQLite 不同，需要有一个 MySQL server 在，之后通过 socket 去连接上 MySQL，然后再进行对数据库的相关操作。</p>
+<h3 id="启动服务和配置-root-用户"><a href="#启动服务和配置-root-用户" class="headerlink" title="启动服务和配置 root 用户"></a>启动服务和配置 root 用户</h3><ol>
+<li>靠下面的命令来启动服务器。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ mysql.server start</div><div class="line">Starting MySQL</div><div class="line">.. SUCCESS!</div></pre></td></tr></table></figure>
+<ol>
+<li>关闭服务器的命令也很简单：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ mysql.server stop</div><div class="line">Shutting down MySQL</div><div class="line">.. SUCCESS!</div></pre></td></tr></table></figure>
+<p>之后重新开启来进行后面的操作。</p>
+<ol>
+<li>设置初始密码。MySQL 也有自己的用户系统，所以后面提到的用户不要和操作系统的弄混了。默认的用户是 root，没有密码。可以通过下面命令来设置一个密码：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ mysqladmin -u root password</div><div class="line">New password:</div><div class="line">Confirm new password:</div></pre></td></tr></table></figure>
+<ol>
+<li>修改密码。包括 <code>mysqladmin</code> 在内，其他的 mysql 需要指明用户的时候加 <code>-u username</code>，如果该用户设置过密码需要添加 <code>-p</code> 指令，所以如果已经设置过 root 用户的密码了之后再想修改密码，用前面的指令会报错，如下：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ mysqladmin -u root password</div><div class="line">mysqladmin: connect to server at &apos;localhost&apos; failed</div><div class="line">error: &apos;Access denied for user &apos;root&apos;@&apos;localhost&apos; (using password: NO)&apos;</div></pre></td></tr></table></figure>
+<p>这时候只需要加上 <code>-p</code> 选项就好。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ mysqladmin -u root password -p</div><div class="line">Enter password:</div><div class="line">New password:</div><div class="line">Confirm new password:</div></pre></td></tr></table></figure>
+<h3 id="使用-root-用户连接数据库"><a href="#使用-root-用户连接数据库" class="headerlink" title="使用 root 用户连接数据库"></a>使用 root 用户连接数据库</h3><p>上面 root 用户已经 OK 了，赶快连接下数据库吧。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">$ mysql -u root -p</div><div class="line">Enter password:</div><div class="line">Welcome to the MySQL monitor.  Commands end with ; or \g.</div><div class="line">Your MySQL connection id is 15</div><div class="line">Server version: 5.6.26 Homebrew</div><div class="line"></div><div class="line">Copyright (c) 2000, 2015, Oracle and/or its affiliates. All rights reserved.</div><div class="line"></div><div class="line">Oracle is a registered trademark of Oracle Corporation and/or its</div><div class="line">affiliates. Other names may be trademarks of their respective</div><div class="line">owners.</div><div class="line"></div><div class="line">Type &apos;help;&apos; or &apos;\h&apos; for help. Type &apos;\c&apos; to clear the current input statement.</div><div class="line"></div><div class="line">mysql&gt;</div></pre></td></tr></table></figure>
+<p>接着执行一下命令，进行一些简单操作。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">mysql&gt; system pwd</div><div class="line">/usr/local/Cellar/mysql/5.6.26</div><div class="line">mysql&gt; SHOW DATABASES;</div><div class="line">+--------------------+</div><div class="line">| Database           |</div><div class="line">+--------------------+</div><div class="line">| information_schema |</div><div class="line">| mysql              |</div><div class="line">| performance_schema |</div><div class="line">| test               |</div><div class="line">+--------------------+</div><div class="line">mysql&gt; CREATE DATABASE mydb;</div><div class="line">mysql&gt; SHOW DATABASES;</div><div class="line">+--------------------+</div><div class="line">| Database           |</div><div class="line">+--------------------+</div><div class="line">| information_schema |</div><div class="line">| mydb               |</div><div class="line">| mysql              |</div><div class="line">| performance_schema |</div><div class="line">| test               |</div><div class="line">+--------------------+</div><div class="line">mysql&gt; use mydb;</div><div class="line">Database changed</div><div class="line">mysql&gt; SHOW TABLES;</div><div class="line">Empty set (0.00 sec)</div></pre></td></tr></table></figure>
+<h3 id="创建一个新用户"><a href="#创建一个新用户" class="headerlink" title="创建一个新用户"></a>创建一个新用户</h3><p>root 用户的权限一般不会随便拿去使用，所以创建一些用户，并分配对应的权限。下面的命令创建的是一个名字是 <code>user12</code>密码是 <code>34klq*</code> 的本地用户：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mysql&gt; CREATE USER user12@localhost IDENTIFIED BY &apos;34klq*&apos;;</div></pre></td></tr></table></figure>
+<p>之后给他分配 mydb 数据库的权限：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mysql&gt; GRANT ALL ON mydb.* to user12@localhost;</div></pre></td></tr></table></figure>
+<h2 id="简单上手使用"><a href="#简单上手使用" class="headerlink" title="简单上手使用"></a>简单上手使用</h2><ul>
+<li>mysql.server start</li>
+<li>设置 root 密码</li>
+<li>用 root 登陆，创建表</li>
+<li>创建新用户分配权限</li>
+<li>开始简单使用</li>
+</ul>
+<h2 id="导出-导入"><a href="#导出-导入" class="headerlink" title="导出/导入"></a>导出/导入</h2><h4 id="准备："><a href="#准备：" class="headerlink" title="准备："></a>准备：</h4><p>打开Terminal，输入mysqldump，</p>
+<p>发现Terminal提示《mysqldump: command not found》，需配置mysql全局环境变量如以下：</p>
+<p>打开terminal输入<code>vi ~/.bash_profile</code> 或者<code>open .bash_profile</code>添加如下三行代码:</p>
+<p><code>PATH=$PATH:/usr/local/mysql/bin</code> </p>
+<p>保存并退出后在terminal输入source ~/.bash_profile然后就成功了</p>
+<h4 id="导出："><a href="#导出：" class="headerlink" title="导出："></a>导出：</h4><pre><code>&gt; 打开『终端』输入：
+&gt; cd 『打开要将.sql文件生成的文件位置』
+&gt; 输入：mysqldump -u root -p database_name&gt;sql_name.sql
+&gt; 查看导出过程：tail -f /Users/admin/dump.sql
+</code></pre><p>下面是通过MySQL命令行导出数据库或表的方法：</p>
+<p><strong>MySQL命令行导出数据库：</strong></p>
+<p><code>mysqldump -u 用户名 -p 数据库名 &gt; 导出的地址/导出的文件名</code></p>
+<p>如我输入的命令行:</p>
+<p><code>mysqldump -u root -p Library &gt; &#39;/Users/lichen/Desktop/Library.sql&#39;</code></p>
+<p>输入后会让你输入进入MySQL的密码,输入密码即可看到hehe.sql出现在桌面上。</p>
+<p><strong>MySQL命令行导出一个表：</strong></p>
+<p><code>mysqldump -u 用户名 -p 数据库名 表名&gt; 导出的地址/导出的文件名</code></p>
+<p>如我输入的命令行：</p>
+<p><code>mysqldump -u root -p Library reader&gt; &#39;/Users/lichen/Desktop/Library_reader.sql&#39;</code></p>
+<p>输入后会让你输入进入MySQL的密码,输入密码即可看到Library_reader.sql出现在桌面上。</p>
+<h4 id="导入："><a href="#导入：" class="headerlink" title="导入："></a>导入：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; 打开终端输入：（前提是已经配置过MySQL环境变量）</div><div class="line">&gt; mysql -u root -p</div><div class="line">&gt; create database name;</div><div class="line">&gt; use name;</div><div class="line">&gt; source 『将.sql文件直接拖拽至终端，自动补全其文件目录』</div></pre></td></tr></table></figure>
+<h3 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h3><ol>
+<li>报错提示告诉我们，需要重新设置密码。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">**ERROR 1820 (HY000): You must reset your password using ALTER USER statement before executing this statement**</div></pre></td></tr></table></figure>
+<p>那我们就重新设置一下密码，命令如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">set password = password(&apos;123456&apos;);</div></pre></td></tr></table></figure>
+<p>这次，我们在再次执行 <code>show databases</code> 就没有问题了。</p>
+<h3 id="其他设置"><a href="#其他设置" class="headerlink" title="其他设置"></a>其他设置</h3><ol>
+<li><p>退出mysql提示符</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">mysql&gt; quit</div><div class="line"></div><div class="line">or control-D</div></pre></td></tr></table></figure>
+<p>​</p>
+</li>
+</ol>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/08/22/mysql/mac导出:导入mysql/" data-id="cj75t7itg00072dpjhtjfueae" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/08/22/mysql/mac导出:导入mysql/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/08/25/android/code/TextView autoLink小技巧/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    TextView autoLink小技巧
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2017/08/18/linux/vim的常用命令/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">vim的常用命令</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="uyan_frame"></div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">recent</h3>
+        <div class="widget">
+            <ul id="recent-post" class="no-thumbnail">
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/09/04/android/github/github hexo 博客迁移 /" class="title"></a></p>
+                            <p class="item-date"><time datetime="2017-09-04T03:45:36.000Z" itemprop="datePublished">2017-09-04</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/code/">code</a></p>
+                            <p class="item-title"><a href="/2017/08/25/android/code/TextView autoLink小技巧/" class="title">TextView autoLink小技巧</a></p>
+                            <p class="item-date"><time datetime="2017-08-25T06:07:37.000Z" itemprop="datePublished">2017-08-25</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/mysql/">mysql</a></p>
+                            <p class="item-title"><a href="/2017/08/22/mysql/mac导出:导入mysql/" class="title">mac导出/导入mysql</a></p>
+                            <p class="item-date"><time datetime="2017-08-22T11:26:44.000Z" itemprop="datePublished">2017-08-22</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/linux/">linux</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/linux/vim/">vim</a></p>
+                            <p class="item-title"><a href="/2017/08/18/linux/vim的常用命令/" class="title">vim的常用命令</a></p>
+                            <p class="item-date"><time datetime="2017-08-18T06:59:13.000Z" itemprop="datePublished">2017-08-18</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/git/">git</a></p>
+                            <p class="item-title"><a href="/2017/07/19/git/git commit 编写风格模板/" class="title">git commit 编写风格模板</a></p>
+                            <p class="item-date"><time datetime="2017-07-19T12:15:00.000Z" itemprop="datePublished">2017-07-19</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">categories</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">9</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">3</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/linux/vim/">vim</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">archives</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tags</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tag cloud</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 13.33px;">code</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/github/" style="font-size: 10px;">github</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 10px;">markdown</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/node/" style="font-size: 16.67px;">node</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">links</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 Ernest Chang<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2142274"></script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

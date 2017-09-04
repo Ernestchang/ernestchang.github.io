@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <meta charset="utf-8">
+    
+    <title>The Old Man and the Sea</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="使用Github Page + Hexo可以搭建出非常简洁和个性化的博客系统，本博客就是使用的Hexo的Next主题挂载在Github Page上的。现在的问题是，如果我想要在多台设备中进行博文的更新和推送，或者我重新安装系统，我原来的博客配置全部没有了如何进行数据和配置的恢复，今天我们就这介绍这么一种方法，我也刚刚成功的在一个新系统中配置好了博客环境。其核心就是在博客挂载的Github仓库中新建">
+<meta property="og:type" content="article">
+<meta property="og:title" content="The Old Man and the Sea">
+<meta property="og:url" content="http://yoursite.com/2017/09/04/android/github/github hexo 博客迁移 /index.html">
+<meta property="og:site_name" content="The Old Man and the Sea">
+<meta property="og:description" content="使用Github Page + Hexo可以搭建出非常简洁和个性化的博客系统，本博客就是使用的Hexo的Next主题挂载在Github Page上的。现在的问题是，如果我想要在多台设备中进行博文的更新和推送，或者我重新安装系统，我原来的博客配置全部没有了如何进行数据和配置的恢复，今天我们就这介绍这么一种方法，我也刚刚成功的在一个新系统中配置好了博客环境。其核心就是在博客挂载的Github仓库中新建">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2017-09-04T06:21:08.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="The Old Man and the Sea">
+<meta name="twitter:description" content="使用Github Page + Hexo可以搭建出非常简洁和个性化的博客系统，本博客就是使用的Hexo的Next主题挂载在Github Page上的。现在的问题是，如果我想要在多台设备中进行博文的更新和推送，或者我重新安装系统，我原来的博客配置全部没有了如何进行数据和配置的恢复，今天我们就这介绍这么一种方法，我也刚刚成功的在一个新系统中配置好了博客环境。其核心就是在博客挂载的Github仓库中新建">
+    
+
+    
+        <link rel="alternate" href="/" title="The Old Man and the Sea" type="application/atom+xml" />
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">The Old Man and the Sea</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/uploads/images/avert.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/uploads/images/avert.png" />
+            <h2 id="name">Ernest Chang</h2>
+            <h3 id="title">Developer &amp; Designer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Hangzhou, China</span>
+            <a id="follow" target="_blank" href="https://github.com/Ernestchang/">FOLLOW</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                25
+                <span>posts</span>
+            </div>
+            <div class="article-info-block">
+                14
+                <span>tags</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/Ernestchang/" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="facebook" class=tooltip>
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="dribbble" class=tooltip>
+                            <i class="fa fa-dribbble"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-android/github/github hexo 博客迁移 " class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>使用Github Page + Hexo可以搭建出非常简洁和个性化的博客系统，本博客就是使用的Hexo的Next主题挂载在Github Page上的。现在的问题是，如果我想要在多台设备中进行博文的更新和推送，或者我重新安装系统，我原来的博客配置全部没有了如何进行数据和配置的恢复，今天我们就这介绍这么一种方法，我也刚刚成功的在一个新系统中配置好了博客环境。<br><strong>其核心就是在博客挂载的Github仓库中新建一个branch分支hexo，其中默认的master进行博文的deploy工作，hexo保存博客的源文件以及环境配置和主题配置文件（设置hexo为默认主分支），这样我们每次重新配置系统只需要从Github中clone一下，然后再进行几步简单环境安装配置操作就完成了。</strong><br>具体步骤如下：<br>1.建立master和hexo两个分支<br>2.安装Node.js<br>3.安装git<br>4.安装hexo<br>5.git clone<br>6.更新theme主题文件配置<br>7.npm安装配置hexo<br>下面我们一步一步来完成！</p>
+<h3 id="建立master和hexo两个分支"><a href="#建立master和hexo两个分支" class="headerlink" title="建立master和hexo两个分支"></a>建立master和hexo两个分支</h3><p>其中master分支是默认建立好的，我们在<code>./_config.yml</code>文件中配置deploy布置信息，设置布置生成的静态文件的分支为<code>master</code>，使用<code>hexo deploy</code>命令会自动的将这些静态文件push到Github中去；<br>然后新建一个分支hexo，保存我们所有的源文件，这里需要手动<code>git push</code>，另外，由于hexo中<code>.gitignore</code>文件设置了忽略，所以<code>./theme</code>文件中的主题配置信息不会被push到Github中，所以这里新建一个<code>setting</code>文件夹保存<code>./theme</code>中的主题配置文件，进行备份更新。<br>将hexo分支设置为默认主分支，我们之后只需要通过hexo分支进行博文的更新即可，hexo分支保存博文源文件（Markdown文件），通过<code>hexo g -d</code>命令会自动将生成的静态文件push到master分支上去。</p>
+<h3 id="安装Node-js"><a href="#安装Node-js" class="headerlink" title="安装Node.js"></a>安装Node.js</h3><p>对于一台新的电脑进行配置，我们首先需要按如下步骤进行环境的安装配置。</p>
+<p>首先安装Node.js，最佳方法推荐nvm；<br>cURL:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">curl https://raw.github.com/creationix/nvm/master/install.sh | sh</div></pre></td></tr></table></figure>
+<p>Wget:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">wget -qO- https://raw.github.com/creationix/nvm/master/install.sh | sh</div></pre></td></tr></table></figure>
+<p>安装完成后，重启终端并执行下列命令即可安装 Node.js。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">nvm install stable</div></pre></td></tr></table></figure>
+<h3 id="安装git"><a href="#安装git" class="headerlink" title="安装git"></a>安装git</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install git-core</div></pre></td></tr></table></figure>
+<h3 id="安装Hexo"><a href="#安装Hexo" class="headerlink" title="安装Hexo"></a>安装Hexo</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install -g hexo-cli</div></pre></td></tr></table></figure>
+<p>如果这里报错的话可以尝试添加<code>--unsafe</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install -g hexo-cli --unsafe</div></pre></td></tr></table></figure>
+<p>然后安装要用到的一些插件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">npm install hexo-generator-index --save</div><div class="line">npm install hexo-generator-archive --save</div><div class="line">npm install hexo-generator-category --save</div><div class="line">npm install hexo-generator-tag --save</div><div class="line">npm install hexo-server --save</div><div class="line">npm install hexo-deployer-git --save</div><div class="line">npm install hexo-deployer-heroku --save</div><div class="line">npm install hexo-deployer-rsync --save</div><div class="line">npm install hexo-deployer-openshift --save</div><div class="line">npm install hexo-renderer-marked@0.2 --save</div><div class="line">npm install hexo-renderer-stylus@0.2 --save</div><div class="line">npm install hexo-generator-feed@1 --save</div><div class="line">npm install hexo-generator-sitemap@1 --save</div><div class="line">npm install hexo-generator-search --save</div><div class="line">npm install hexo-generator-searchdb --save</div></pre></td></tr></table></figure>
+<h3 id="git-clone"><a href="#git-clone" class="headerlink" title="git clone"></a>git clone</h3><p>git clone复制repo源文件，其中由于<code>.gitignore</code>文件，hexo目录中的theme主题文件不会被push到Github中，所以我采取的方法是新建一个<code>setting</code>文件夹，将theme文件复制到<code>setting</code>文件中进行备份保存。</p>
+<h3 id="更新theme文件配置"><a href="#更新theme文件配置" class="headerlink" title="更新theme文件配置"></a>更新theme文件配置</h3><p>所以这里git clone之后要进行theme主题配置的更新，执行如下命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cp -rf ./setting/next ./themes</div></pre></td></tr></table></figure>
+<p>主题与文件夹的名字大家按自己定义的就好。</p>
+<h3 id="npm安装配置Hexo"><a href="#npm安装配置Hexo" class="headerlink" title="npm安装配置Hexo"></a>npm安装配置Hexo</h3><p>执行如下几条命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">npm install hexo</div><div class="line">npm install</div><div class="line">npm install hexo-deployer-git</div></pre></td></tr></table></figure>
+<p>千万不要执行<code>hexo init</code>，这样会重置hexo的配置文件，配好的文件就丢失啦！</p>
+<h3 id="测试使用"><a href="#测试使用" class="headerlink" title="测试使用"></a>测试使用</h3><p>这时就可以测试一下，使用<code>hexo server</code>、<code>hexo g -d</code>等命令测试一下同步的情况，然后不同的机器可以使用<code>git pull</code>进行数据的同步，每次更新博文就使用<code>git push origin hexo</code>更新到hexo分支上去即可！</p>
+<blockquote>
+<ul>
+<li>PS：今天解决了Next博客主页空白的问题，由于Github Page更新了，所以将<code>/theme/next/source/</code>下的<code>vendor</code>文件夹改名为<code>lib</code>文件夹，并在<code>/theme/next/source/_config.yml</code>文件中进行了对应的替换，最后更新到<code>setting</code>文件夹中。</li>
+</ul>
+</blockquote>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/09/04/android/github/github hexo 博客迁移 /" data-id="cj75t7iv100152dpjsbsc5aru" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/09/04/android/github/github hexo 博客迁移 /#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+    
+        <a href="/2017/08/25/android/code/TextView autoLink小技巧/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">TextView autoLink小技巧</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="uyan_frame"></div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">recent</h3>
+        <div class="widget">
+            <ul id="recent-post" class="no-thumbnail">
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/09/04/android/github/github hexo 博客迁移 /" class="title"></a></p>
+                            <p class="item-date"><time datetime="2017-09-04T03:45:36.000Z" itemprop="datePublished">2017-09-04</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/code/">code</a></p>
+                            <p class="item-title"><a href="/2017/08/25/android/code/TextView autoLink小技巧/" class="title">TextView autoLink小技巧</a></p>
+                            <p class="item-date"><time datetime="2017-08-25T06:07:37.000Z" itemprop="datePublished">2017-08-25</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/mysql/">mysql</a></p>
+                            <p class="item-title"><a href="/2017/08/22/mysql/mac导出:导入mysql/" class="title">mac导出/导入mysql</a></p>
+                            <p class="item-date"><time datetime="2017-08-22T11:26:44.000Z" itemprop="datePublished">2017-08-22</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/linux/">linux</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/linux/vim/">vim</a></p>
+                            <p class="item-title"><a href="/2017/08/18/linux/vim的常用命令/" class="title">vim的常用命令</a></p>
+                            <p class="item-date"><time datetime="2017-08-18T06:59:13.000Z" itemprop="datePublished">2017-08-18</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/git/">git</a></p>
+                            <p class="item-title"><a href="/2017/07/19/git/git commit 编写风格模板/" class="title">git commit 编写风格模板</a></p>
+                            <p class="item-date"><time datetime="2017-07-19T12:15:00.000Z" itemprop="datePublished">2017-07-19</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">categories</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">9</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">3</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/linux/vim/">vim</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">archives</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tags</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tag cloud</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 13.33px;">code</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/github/" style="font-size: 10px;">github</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 10px;">markdown</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/node/" style="font-size: 16.67px;">node</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">links</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 Ernest Chang<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2142274"></script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

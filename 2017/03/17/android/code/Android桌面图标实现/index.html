@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <meta charset="utf-8">
+    
+    <title>Android桌面图标实现 | The Old Man and the Sea</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="基于ShortcutBadger实现 The ShortcutBadger makes your Android App show the count of unread messages as a badge on your App shortcut!    ShortcutBadger使用 主要实现badge生成和消除功能。  一般badge会配合Notifaction使用，故而在生成Noti">
+<meta name="keywords" content="android,code">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android桌面图标实现">
+<meta property="og:url" content="http://yoursite.com/2017/03/17/android/code/Android桌面图标实现/index.html">
+<meta property="og:site_name" content="The Old Man and the Sea">
+<meta property="og:description" content="基于ShortcutBadger实现 The ShortcutBadger makes your Android App show the count of unread messages as a badge on your App shortcut!    ShortcutBadger使用 主要实现badge生成和消除功能。  一般badge会配合Notifaction使用，故而在生成Noti">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/759172-2b36d5b0302a4a12.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2017-08-09T10:11:16.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android桌面图标实现">
+<meta name="twitter:description" content="基于ShortcutBadger实现 The ShortcutBadger makes your Android App show the count of unread messages as a badge on your App shortcut!    ShortcutBadger使用 主要实现badge生成和消除功能。  一般badge会配合Notifaction使用，故而在生成Noti">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/759172-2b36d5b0302a4a12.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+    
+
+    
+        <link rel="alternate" href="/" title="The Old Man and the Sea" type="application/atom+xml" />
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">The Old Man and the Sea</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/uploads/images/avert.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/uploads/images/avert.png" />
+            <h2 id="name">Ernest Chang</h2>
+            <h3 id="title">Developer &amp; Designer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Hangzhou, China</span>
+            <a id="follow" target="_blank" href="https://github.com/Ernestchang/">FOLLOW</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                25
+                <span>posts</span>
+            </div>
+            <div class="article-info-block">
+                14
+                <span>tags</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/Ernestchang/" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="facebook" class=tooltip>
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="dribbble" class=tooltip>
+                            <i class="fa fa-dribbble"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-android/code/Android桌面图标实现" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            Android桌面图标实现
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/03/17/android/code/Android桌面图标实现/">
+            <time datetime="2017-03-17T03:15:43.000Z" itemprop="datePublished">2017-03-17</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/code/">code</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/android/">android</a>, <a class="tag-link" href="/tags/code/">code</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h3 id="基于ShortcutBadger实现"><a href="#基于ShortcutBadger实现" class="headerlink" title="基于ShortcutBadger实现"></a>基于<a href="https://github.com/leolin310148/ShortcutBadger" target="_blank" rel="external">ShortcutBadger</a>实现</h3><blockquote>
+<p>The ShortcutBadger makes your Android App show the count of unread messages as a badge on your App shortcut!</p>
+</blockquote>
+<p> <img src="http://upload-images.jianshu.io/upload_images/759172-2b36d5b0302a4a12.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img"></p>
+<h3 id="ShortcutBadger使用"><a href="#ShortcutBadger使用" class="headerlink" title="ShortcutBadger使用"></a>ShortcutBadger使用</h3><ul>
+<li><p>主要实现badge生成和消除功能。</p>
+</li>
+<li><p>一般badge会配合Notifaction使用，故而在生成Notifaction的地方，调用badge生成方法。</p>
+</li>
+<li><p>而当App从后台返回前台时，调用badge清除方法。</p>
+</li>
+</ul>
+<h3 id="测试运行效果"><a href="#测试运行效果" class="headerlink" title="测试运行效果"></a>测试运行效果</h3><ul>
+<li><p>测试可行厂商</p>
+<ul>
+<li>华为</li>
+<li>三星</li>
+</ul>
+</li>
+<li><p>需调试厂商</p>
+<ul>
+<li><a href="http://dev.xiaomi.com/doc/p=3904/index.html" target="_blank" rel="external">小米</a><ul>
+<li>小米MIUI 6.0开始，发送通知自动生成桌面角标，且默认桌面角标数badge会根据通知ID个数自动累加，点击应用badge自动消失。同时，其提供开放API，可自定义badge个数。</li>
+<li>针对小米，在调用端分开处理。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>未开通桌面图标厂商</p>
+<ul>
+<li><p>魅族</p>
+</li>
+<li><p>中兴</p>
+</li>
+<li><p>酷派</p>
+</li>
+<li><p>OPPO部分应用开通</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="最终代码"><a href="#最终代码" class="headerlink" title="最终代码"></a>最终代码</h3><ul>
+<li><p>生成Notifaction和Badge时：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div></pre></td><td class="code"><pre><div class="line">  /**</div><div class="line">     * 生成通知和桌面角标</div><div class="line">     */</div><div class="line">    private void setFlowNotifaction(Context context, Intent resultIntent, String title, String msg) &#123;</div><div class="line"></div><div class="line">        mBadge++;</div><div class="line"></div><div class="line">        // 小米miui6.0以后根据通知自动生成badge,根据通知次数自动累加。调用ShortcutBadger会自动生成空通知，需调用以下修改badge</div><div class="line">        if (Build.MANUFACTURER.equalsIgnoreCase(&quot;Xiaomi&quot;) &amp;&amp; Build.VERSION.SDK_INT &gt; Build.VERSION_CODES.JELLY_BEAN) &#123;</div><div class="line">            tryNewMiuiBadge(context, resultIntent, mBadge, title, msg, R.drawable.icon_app);</div><div class="line">        &#125; else &#123;</div><div class="line">            showNotifacitonBadge(context, resultIntent, mBadge, title, msg, R.drawable.icon_app);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    private void showNotifacitonBadge(Context context, Intent resultIntent, int badge, String title, String msg, int drawIcon) &#123;</div><div class="line">        PendingIntent pendingIntent = PendingIntent.getActivity(context,</div><div class="line">                0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);</div><div class="line">        NotificationCompat.Builder mBuilder =</div><div class="line">                new NotificationCompat.Builder(context)</div><div class="line">                        .setSmallIcon(drawIcon)</div><div class="line">                        .setContentTitle(title)</div><div class="line">                        .setContentText(msg)</div><div class="line">                        .setTicker(msg);</div><div class="line">//        mBuilder.setFullScreenIntent(pendingIntent, true);</div><div class="line">        mBuilder.setContentIntent(pendingIntent);</div><div class="line">        mBuilder.setAutoCancel(true);</div><div class="line"></div><div class="line"></div><div class="line">        // 设置通知的优先级</div><div class="line">        mBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);</div><div class="line">//        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);</div><div class="line">//        // 设置通知的提示音</div><div class="line">//        mBuilder.setSound(alarmSound);</div><div class="line">        mBuilder.setDefaults(Notification.DEFAULT_ALL);</div><div class="line"></div><div class="line"></div><div class="line">        int mNotificationId = 10086;</div><div class="line">        NotificationManager mNotifyMgr = (NotificationManager) context</div><div class="line">                .getSystemService(Context.NOTIFICATION_SERVICE);</div><div class="line">        mNotifyMgr.notify(mNotificationId, mBuilder.build());</div><div class="line">        // 生成桌面角标</div><div class="line">        ShortcutBadger.applyCount(JApplication.getInstance(), badge);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)</div><div class="line">    private void tryNewMiuiBadge(Context context, Intent resultIntent, int badgeCount, String title, String msg, int drawIcon) &#123;</div><div class="line"></div><div class="line">        PendingIntent pendingIntent = PendingIntent.getActivity(context,</div><div class="line">                0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);</div><div class="line">        NotificationCompat.Builder mBuilder =</div><div class="line">                new NotificationCompat.Builder(context)</div><div class="line">                        .setSmallIcon(drawIcon)</div><div class="line">                        .setContentTitle(title)</div><div class="line">                        .setContentText(msg)</div><div class="line">                        .setTicker(msg);</div><div class="line">//        mBuilder.setFullScreenIntent(pendingIntent, true);</div><div class="line">        mBuilder.setContentIntent(pendingIntent);</div><div class="line">        mBuilder.setAutoCancel(true);</div><div class="line"></div><div class="line"></div><div class="line">        // 设置通知的优先级</div><div class="line">        mBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);</div><div class="line">//        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);</div><div class="line">//        // 设置通知的提示音</div><div class="line">//        mBuilder.setSound(alarmSound);</div><div class="line">        mBuilder.setDefaults(Notification.DEFAULT_ALL);</div><div class="line"></div><div class="line"></div><div class="line">//        int mNotificationId = 10086;</div><div class="line">        NotificationManager mNotifyMgr = (NotificationManager) context</div><div class="line">                .getSystemService(Context.NOTIFICATION_SERVICE);</div><div class="line">        Notification notification = mBuilder.build();</div><div class="line"></div><div class="line">        try &#123;</div><div class="line">            Field field = notification.getClass().getDeclaredField(&quot;extraNotification&quot;);</div><div class="line">            Object extraNotification = field.get(notification);</div><div class="line">            Method method = extraNotification.getClass().getDeclaredMethod(&quot;setMessageCount&quot;, int.class);</div><div class="line">            method.invoke(extraNotification, badgeCount);</div><div class="line"></div><div class="line">        &#125; catch (Exception e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        mNotifyMgr.notify(0, notification);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>​</p>
+</li>
+<li><p>消除Badge时：</p>
+<blockquote>
+<p>App从后台返回前台都需要清除badge，故而现在Activity基类中做统一检测处理</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line"> protected void onResume() &#123;</div><div class="line">     super.onResume();</div><div class="line">     MobclickAgent.onResume(this);</div><div class="line"></div><div class="line">     // 小米miui6.0后，会自动清除badge，调用ShortcutBadger会自动生成空通知</div><div class="line">     if (mBadge &gt; 0) &#123;</div><div class="line">         if (Build.MANUFACTURER.equalsIgnoreCase(&quot;Xiaomi&quot;) &amp;&amp; Build.VERSION.SDK_INT &gt; Build.VERSION_CODES.JELLY_BEAN) &#123;</div><div class="line">             mBadge = 0;</div><div class="line"></div><div class="line">         &#125; else &#123;</div><div class="line">             mBadge = 0;</div><div class="line">             ShortcutBadger.applyCount(this, 0);</div><div class="line">         &#125;</div><div class="line">     &#125;</div><div class="line"> &#125;</div></pre></td></tr></table></figure></li>
+</ul>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/03/17/android/code/Android桌面图标实现/" data-id="cj75t7iv5001a2dpjlzo0zru2" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/03/17/android/code/Android桌面图标实现/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/03/21/android/code/CharSequence/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    类似网页超链接实现
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2017/03/15/android/books/《Android开发艺术探索》Chap3_View的事件体系/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">《Android开发艺术探索》Chap3_View的事件体系</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="uyan_frame"></div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">recent</h3>
+        <div class="widget">
+            <ul id="recent-post" class="no-thumbnail">
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/09/04/android/github/github hexo 博客迁移 /" class="title"></a></p>
+                            <p class="item-date"><time datetime="2017-09-04T03:45:36.000Z" itemprop="datePublished">2017-09-04</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/code/">code</a></p>
+                            <p class="item-title"><a href="/2017/08/25/android/code/TextView autoLink小技巧/" class="title">TextView autoLink小技巧</a></p>
+                            <p class="item-date"><time datetime="2017-08-25T06:07:37.000Z" itemprop="datePublished">2017-08-25</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/mysql/">mysql</a></p>
+                            <p class="item-title"><a href="/2017/08/22/mysql/mac导出:导入mysql/" class="title">mac导出/导入mysql</a></p>
+                            <p class="item-date"><time datetime="2017-08-22T11:26:44.000Z" itemprop="datePublished">2017-08-22</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/linux/">linux</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/linux/vim/">vim</a></p>
+                            <p class="item-title"><a href="/2017/08/18/linux/vim的常用命令/" class="title">vim的常用命令</a></p>
+                            <p class="item-date"><time datetime="2017-08-18T06:59:13.000Z" itemprop="datePublished">2017-08-18</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/git/">git</a></p>
+                            <p class="item-title"><a href="/2017/07/19/git/git commit 编写风格模板/" class="title">git commit 编写风格模板</a></p>
+                            <p class="item-date"><time datetime="2017-07-19T12:15:00.000Z" itemprop="datePublished">2017-07-19</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">categories</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">9</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">3</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/linux/vim/">vim</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">archives</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tags</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tag cloud</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 13.33px;">code</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/github/" style="font-size: 10px;">github</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 10px;">markdown</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/node/" style="font-size: 16.67px;">node</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">links</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 Ernest Chang<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2142274"></script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

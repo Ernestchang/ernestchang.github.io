@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <meta charset="utf-8">
+    
+    <title>七天学会NodeJS - 进程管理 | The Old Man and the Sea</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="NodeJS可以感知和控制自身进程的运行环境和状态，也可以创建子进程并与其协同工作，这使得NodeJS可以把多个程序组合在一起共同完成某项工作，并在其中充当胶水和调度器的作用。本章除了介绍与之相关的NodeJS内置模块外，还会重点介绍典型的使用场景。 开门红我们已经知道了NodeJS自带的fs模块比较基础，把一个目录里的所有文件和子目录都拷贝到另一个目录里需要写不少代码。另外我们也知道，终端下的c">
+<meta name="keywords" content="node">
+<meta property="og:type" content="article">
+<meta property="og:title" content="七天学会NodeJS - 进程管理">
+<meta property="og:url" content="http://yoursite.com/2016/03/23/node/books/7days/05_process/index.html">
+<meta property="og:site_name" content="The Old Man and the Sea">
+<meta property="og:description" content="NodeJS可以感知和控制自身进程的运行环境和状态，也可以创建子进程并与其协同工作，这使得NodeJS可以把多个程序组合在一起共同完成某项工作，并在其中充当胶水和调度器的作用。本章除了介绍与之相关的NodeJS内置模块外，还会重点介绍典型的使用场景。 开门红我们已经知道了NodeJS自带的fs模块比较基础，把一个目录里的所有文件和子目录都拷贝到另一个目录里需要写不少代码。另外我们也知道，终端下的c">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2017-08-23T12:52:04.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="七天学会NodeJS - 进程管理">
+<meta name="twitter:description" content="NodeJS可以感知和控制自身进程的运行环境和状态，也可以创建子进程并与其协同工作，这使得NodeJS可以把多个程序组合在一起共同完成某项工作，并在其中充当胶水和调度器的作用。本章除了介绍与之相关的NodeJS内置模块外，还会重点介绍典型的使用场景。 开门红我们已经知道了NodeJS自带的fs模块比较基础，把一个目录里的所有文件和子目录都拷贝到另一个目录里需要写不少代码。另外我们也知道，终端下的c">
+    
+
+    
+        <link rel="alternate" href="/" title="The Old Man and the Sea" type="application/atom+xml" />
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">The Old Man and the Sea</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/uploads/images/avert.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/uploads/images/avert.png" />
+            <h2 id="name">Ernest Chang</h2>
+            <h3 id="title">Developer &amp; Designer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Hangzhou, China</span>
+            <a id="follow" target="_blank" href="https://github.com/Ernestchang/">FOLLOW</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                25
+                <span>posts</span>
+            </div>
+            <div class="article-info-block">
+                14
+                <span>tags</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/Ernestchang/" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="facebook" class=tooltip>
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="dribbble" class=tooltip>
+                            <i class="fa fa-dribbble"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-node/books/7days/05_process" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            七天学会NodeJS - 进程管理
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2016/03/23/node/books/7days/05_process/">
+            <time datetime="2016-03-22T22:06:34.000Z" itemprop="datePublished">2016-03-23</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/node/">node</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/node/7days/">7days</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/node/">node</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>NodeJS可以感知和控制自身进程的运行环境和状态，也可以创建子进程并与其协同工作，这使得NodeJS可以把多个程序组合在一起共同完成某项工作，并在其中充当胶水和调度器的作用。本章除了介绍与之相关的NodeJS内置模块外，还会重点介绍典型的使用场景。</p>
+<h3 id="开门红"><a href="#开门红" class="headerlink" title="开门红"></a>开门红</h3><p>我们已经知道了NodeJS自带的<code>fs</code>模块比较基础，把一个目录里的所有文件和子目录都拷贝到另一个目录里需要写不少代码。另外我们也知道，终端下的<code>cp</code>命令比较好用，一条<code>cp -r source/* target</code>命令就能搞定目录拷贝。那我们首先看看如何使用NodeJS调用终端命令来简化目录拷贝，示例代码如下：</p>
+<pre><code>var child_process = require(&apos;child_process&apos;);
+var util = require(&apos;util&apos;);
+
+function copy(source, target, callback) {
+    child_process.exec(
+        util.format(&apos;cp -r %s/* %s&apos;, source, target), callback);
+}
+
+copy(&apos;a&apos;, &apos;b&apos;, function (err) {
+    // ...
+});
+</code></pre><p>从以上代码中可以看到，子进程是异步运行的，通过回调函数返回执行结果。</p>
+<h3 id="API走马观花"><a href="#API走马观花" class="headerlink" title="API走马观花"></a>API走马观花</h3><p>我们先大致看看NodeJS提供了哪些和进程管理有关的API。这里并不逐一介绍每个API的使用方法，官方文档已经做得很好了。</p>
+<h4 id="Process"><a href="#Process" class="headerlink" title="Process"></a>Process</h4><blockquote>
+<p>   <strong>官方文档： </strong> <a href="http://nodejs.org/api/process.html" target="_blank" rel="external">http://nodejs.org/api/process.html</a></p>
+</blockquote>
+<p>任何一个进程都有启动进程时使用的命令行参数，有标准输入标准输出，有运行权限，有运行环境和运行状态。在NodeJS中，可以通过<code>process</code>对象感知和控制NodeJS自身进程的方方面面。另外需要注意的是，<code>process</code>不是内置模块，而是一个全局对象，因此在任何地方都可以直接使用。</p>
+<h4 id="Child-Process"><a href="#Child-Process" class="headerlink" title="Child Process"></a>Child Process</h4><blockquote>
+<p>   <strong>官方文档： </strong> <a href="http://nodejs.org/api/child_process.html" target="_blank" rel="external">http://nodejs.org/api/child_process.html</a></p>
+</blockquote>
+<p>使用<code>child_process</code>模块可以创建和控制子进程。该模块提供的API中最核心的是<code>.spawn</code>，其余API都是针对特定使用场景对它的进一步封装，算是一种语法糖。</p>
+<h4 id="Cluster"><a href="#Cluster" class="headerlink" title="Cluster"></a>Cluster</h4><blockquote>
+<p>   <strong>官方文档： </strong> <a href="http://nodejs.org/api/cluster.html" target="_blank" rel="external">http://nodejs.org/api/cluster.html</a></p>
+</blockquote>
+<p><code>cluster</code>模块是对<code>child_process</code>模块的进一步封装，专用于解决单进程NodeJS Web服务器无法充分利用多核CPU的问题。使用该模块可以简化多进程服务器程序的开发，让每个核上运行一个工作进程，并统一通过主进程监听端口和分发请求。</p>
+<h3 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h3><p>和进程管理相关的API单独介绍起来比较枯燥，因此这里从一些典型的应用场景出发，分别介绍一些重要API的使用方法。</p>
+<h4 id="如何获取命令行参数"><a href="#如何获取命令行参数" class="headerlink" title="如何获取命令行参数"></a>如何获取命令行参数</h4><p>在NodeJS中可以通过<code>process.argv</code>获取命令行参数。但是比较意外的是，<code>node</code>执行程序路径和主模块文件路径固定占据了<code>argv[0]</code>和<code>argv[1]</code>两个位置，而第一个命令行参数从<code>argv[2]</code>开始。为了让<code>argv</code>使用起来更加自然，可以按照以下方式处理。</p>
+<pre><code>function main(argv) {
+    // ...
+}
+
+main(process.argv.slice(2));
+</code></pre><h4 id="如何退出程序"><a href="#如何退出程序" class="headerlink" title="如何退出程序"></a>如何退出程序</h4><p>通常一个程序做完所有事情后就正常退出了，这时程序的退出状态码为<code>0</code>。或者一个程序运行时发生了异常后就挂了，这时程序的退出状态码不等于<code>0</code>。如果我们在代码中捕获了某个异常，但是觉得程序不应该继续运行下去，需要立即退出，并且需要把退出状态码设置为指定数字，比如<code>1</code>，就可以按照以下方式：</p>
+<pre><code>try {
+    // ...
+} catch (err) {
+    // ...
+    process.exit(1);
+}
+</code></pre><h4 id="如何控制输入输出"><a href="#如何控制输入输出" class="headerlink" title="如何控制输入输出"></a>如何控制输入输出</h4><p>NodeJS程序的标准输入流（stdin）、一个标准输出流（stdout）、一个标准错误流（stderr）分别对应<code>process.stdin</code>、<code>process.stdout</code>和<code>process.stderr</code>，第一个是只读数据流，后边两个是只写数据流，对它们的操作按照对数据流的操作方式即可。例如，<code>console.log</code>可以按照以下方式实现。</p>
+<pre><code>function log() {
+    process.stdout.write(
+        util.format.apply(util, arguments) + &apos;\n&apos;);
+}
+</code></pre><h4 id="如何降权"><a href="#如何降权" class="headerlink" title="如何降权"></a>如何降权</h4><p>在Linux系统下，我们知道需要使用root权限才能监听1024以下端口。但是一旦完成端口监听后，继续让程序运行在root权限下存在安全隐患，因此最好能把权限降下来。以下是这样一个例子。</p>
+<pre><code>http.createServer(callback).listen(80, function () {
+    var env = process.env,
+        uid = parseInt(env[&apos;SUDO_UID&apos;] || process.getuid(), 10),
+        gid = parseInt(env[&apos;SUDO_GID&apos;] || process.getgid(), 10);
+
+    process.setgid(gid);
+    process.setuid(uid);
+});
+</code></pre><p>上例中有几点需要注意：</p>
+<ol>
+<li><p>如果是通过<code>sudo</code>获取root权限的，运行程序的用户的UID和GID保存在环境变量<code>SUDO_UID</code>和<code>SUDO_GID</code>里边。如果是通过<code>chmod +s</code>方式获取root权限的，运行程序的用户的UID和GID可直接通过<code>process.getuid</code>和<code>process.getgid</code>方法获取。</p>
+</li>
+<li><p><code>process.setuid</code>和<code>process.setgid</code>方法只接受<code>number</code>类型的参数。</p>
+</li>
+<li><p>降权时必须先降GID再降UID，否则顺序反过来的话就没权限更改程序的GID了。</p>
+</li>
+</ol>
+<h4 id="如何创建子进程"><a href="#如何创建子进程" class="headerlink" title="如何创建子进程"></a>如何创建子进程</h4><p>以下是一个创建NodeJS子进程的例子。</p>
+<pre><code>var child = child_process.spawn(&apos;node&apos;, [ &apos;xxx.js&apos; ]);
+
+child.stdout.on(&apos;data&apos;, function (data) {
+    console.log(&apos;stdout: &apos; + data);
+});
+
+child.stderr.on(&apos;data&apos;, function (data) {
+    console.log(&apos;stderr: &apos; + data);
+});
+
+child.on(&apos;close&apos;, function (code) {
+    console.log(&apos;child process exited with code &apos; + code);
+});
+</code></pre><p>上例中使用了<code>.spawn(exec, args, options)</code>方法，该方法支持三个参数。第一个参数是执行文件路径，可以是执行文件的相对或绝对路径，也可以是根据PATH环境变量能找到的执行文件名。第二个参数中，数组中的每个成员都按顺序对应一个命令行参数。第三个参数可选，用于配置子进程的执行环境与行为。</p>
+<p>另外，上例中虽然通过子进程对象的<code>.stdout</code>和<code>.stderr</code>访问子进程的输出，但通过<code>options.stdio</code>字段的不同配置，可以将子进程的输入输出重定向到任何数据流上，或者让子进程共享父进程的标准输入输出流，或者直接忽略子进程的输入输出。</p>
+<h4 id="进程间如何通讯"><a href="#进程间如何通讯" class="headerlink" title="进程间如何通讯"></a>进程间如何通讯</h4><p>在Linux系统下，进程之间可以通过信号互相通信。以下是一个例子。</p>
+<pre><code>/* parent.js */
+var child = child_process.spawn(&apos;node&apos;, [ &apos;child.js&apos; ]);
+
+child.kill(&apos;SIGTERM&apos;);
+
+/* child.js */
+process.on(&apos;SIGTERM&apos;, function () {
+    cleanUp();
+    process.exit(0);
+});
+</code></pre><p>在上例中，父进程通过<code>.kill</code>方法向子进程发送<code>SIGTERM</code>信号，子进程监听<code>process</code>对象的<code>SIGTERM</code>事件响应信号。不要被<code>.kill</code>方法的名称迷惑了，该方法本质上是用来给进程发送信号的，进程收到信号后具体要做啥，完全取决于信号的种类和进程自身的代码。</p>
+<p>另外，如果父子进程都是NodeJS进程，就可以通过IPC（进程间通讯）双向传递数据。以下是一个例子。</p>
+<pre><code>/* parent.js */
+var child = child_process.spawn(&apos;node&apos;, [ &apos;child.js&apos; ], {
+        stdio: [ 0, 1, 2, &apos;ipc&apos; ]
+    });
+
+child.on(&apos;message&apos;, function (msg) {
+    console.log(msg);
+});
+
+child.send({ hello: &apos;hello&apos; });
+
+/* child.js */
+process.on(&apos;message&apos;, function (msg) {
+    msg.hello = msg.hello.toUpperCase();
+    process.send(msg);
+});
+</code></pre><p>可以看到，父进程在创建子进程时，在<code>options.stdio</code>字段中通过<code>ipc</code>开启了一条IPC通道，之后就可以监听子进程对象的<code>message</code>事件接收来自子进程的消息，并通过<code>.send</code>方法给子进程发送消息。在子进程这边，可以在<code>process</code>对象上监听<code>message</code>事件接收来自父进程的消息，并通过<code>.send</code>方法向父进程发送消息。数据在传递过程中，会先在发送端使用<code>JSON.stringify</code>方法序列化，再在接收端使用<code>JSON.parse</code>方法反序列化。</p>
+<h4 id="如何守护子进程"><a href="#如何守护子进程" class="headerlink" title="如何守护子进程"></a>如何守护子进程</h4><p>守护进程一般用于监控工作进程的运行状态，在工作进程不正常退出时重启工作进程，保障工作进程不间断运行。以下是一种实现方式。</p>
+<pre><code>/* daemon.js */
+function spawn(mainModule) {
+    var worker = child_process.spawn(&apos;node&apos;, [ mainModule ]);
+
+    worker.on(&apos;exit&apos;, function (code) {
+        if (code !== 0) {
+            spawn(mainModule);
+        }
+    });
+}
+
+spawn(&apos;worker.js&apos;);
+</code></pre><p>可以看到，工作进程非正常退出时，守护进程立即重启工作进程。</p>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>本章介绍了使用NodeJS管理进程时需要的API以及主要的应用场景，总结起来有以下几点：</p>
+<ul>
+<li><p>使用<code>process</code>对象管理自身。</p>
+</li>
+<li><p>使用<code>child_process</code>模块创建和管理子进程。</p>
+</li>
+</ul>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2016/03/23/node/books/7days/05_process/" data-id="cj75t7iw600332dpjatyqpjte" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2016/03/23/node/books/7days/05_process/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2016/03/23/node/books/7days/04_network/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    七天学会NodeJS - 网络操作
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2016/03/23/node/books/7days/06_async_programming/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">七天学会NodeJS - 异步编程</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="uyan_frame"></div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">recent</h3>
+        <div class="widget">
+            <ul id="recent-post" class="no-thumbnail">
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/09/04/android/github/github hexo 博客迁移 /" class="title"></a></p>
+                            <p class="item-date"><time datetime="2017-09-04T03:45:36.000Z" itemprop="datePublished">2017-09-04</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/code/">code</a></p>
+                            <p class="item-title"><a href="/2017/08/25/android/code/TextView autoLink小技巧/" class="title">TextView autoLink小技巧</a></p>
+                            <p class="item-date"><time datetime="2017-08-25T06:07:37.000Z" itemprop="datePublished">2017-08-25</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/mysql/">mysql</a></p>
+                            <p class="item-title"><a href="/2017/08/22/mysql/mac导出:导入mysql/" class="title">mac导出/导入mysql</a></p>
+                            <p class="item-date"><time datetime="2017-08-22T11:26:44.000Z" itemprop="datePublished">2017-08-22</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/linux/">linux</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/linux/vim/">vim</a></p>
+                            <p class="item-title"><a href="/2017/08/18/linux/vim的常用命令/" class="title">vim的常用命令</a></p>
+                            <p class="item-date"><time datetime="2017-08-18T06:59:13.000Z" itemprop="datePublished">2017-08-18</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/git/">git</a></p>
+                            <p class="item-title"><a href="/2017/07/19/git/git commit 编写风格模板/" class="title">git commit 编写风格模板</a></p>
+                            <p class="item-date"><time datetime="2017-07-19T12:15:00.000Z" itemprop="datePublished">2017-07-19</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">categories</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">9</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">3</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/linux/vim/">vim</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">archives</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tags</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tag cloud</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 13.33px;">code</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/github/" style="font-size: 10px;">github</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 10px;">markdown</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/node/" style="font-size: 16.67px;">node</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">links</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 Ernest Chang<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2142274"></script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

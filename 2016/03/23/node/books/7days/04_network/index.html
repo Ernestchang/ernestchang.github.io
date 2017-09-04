@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <meta charset="utf-8">
+    
+    <title>七天学会NodeJS - 网络操作 | The Old Man and the Sea</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="不了解网络编程的程序员不是好前端，而NodeJS恰好提供了一扇了解网络编程的窗口。通过NodeJS，除了可以编写一些服务端程序来协助前端开发和测试外，还能够学习一些HTTP协议与Socket协议的相关知识，这些知识在优化前端性能和排查前端故障时说不定能派上用场。本章将介绍与之相关的NodeJS内置模块。 开门红NodeJS本来的用途是编写高性能Web服务器。我们首先在这里重复一下官方文档里的例子，">
+<meta name="keywords" content="node">
+<meta property="og:type" content="article">
+<meta property="og:title" content="七天学会NodeJS - 网络操作">
+<meta property="og:url" content="http://yoursite.com/2016/03/23/node/books/7days/04_network/index.html">
+<meta property="og:site_name" content="The Old Man and the Sea">
+<meta property="og:description" content="不了解网络编程的程序员不是好前端，而NodeJS恰好提供了一扇了解网络编程的窗口。通过NodeJS，除了可以编写一些服务端程序来协助前端开发和测试外，还能够学习一些HTTP协议与Socket协议的相关知识，这些知识在优化前端性能和排查前端故障时说不定能派上用场。本章将介绍与之相关的NodeJS内置模块。 开门红NodeJS本来的用途是编写高性能Web服务器。我们首先在这里重复一下官方文档里的例子，">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2017-08-23T12:53:08.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="七天学会NodeJS - 网络操作">
+<meta name="twitter:description" content="不了解网络编程的程序员不是好前端，而NodeJS恰好提供了一扇了解网络编程的窗口。通过NodeJS，除了可以编写一些服务端程序来协助前端开发和测试外，还能够学习一些HTTP协议与Socket协议的相关知识，这些知识在优化前端性能和排查前端故障时说不定能派上用场。本章将介绍与之相关的NodeJS内置模块。 开门红NodeJS本来的用途是编写高性能Web服务器。我们首先在这里重复一下官方文档里的例子，">
+    
+
+    
+        <link rel="alternate" href="/" title="The Old Man and the Sea" type="application/atom+xml" />
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">The Old Man and the Sea</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/uploads/images/avert.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/uploads/images/avert.png" />
+            <h2 id="name">Ernest Chang</h2>
+            <h3 id="title">Developer &amp; Designer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Hangzhou, China</span>
+            <a id="follow" target="_blank" href="https://github.com/Ernestchang/">FOLLOW</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                25
+                <span>posts</span>
+            </div>
+            <div class="article-info-block">
+                14
+                <span>tags</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/Ernestchang/" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="facebook" class=tooltip>
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="dribbble" class=tooltip>
+                            <i class="fa fa-dribbble"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-node/books/7days/04_network" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            七天学会NodeJS - 网络操作
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2016/03/23/node/books/7days/04_network/">
+            <time datetime="2016-03-22T22:06:34.000Z" itemprop="datePublished">2016-03-23</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/node/">node</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/node/7days/">7days</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/node/">node</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>不了解网络编程的程序员不是好前端，而NodeJS恰好提供了一扇了解网络编程的窗口。通过NodeJS，除了可以编写一些服务端程序来协助前端开发和测试外，还能够学习一些HTTP协议与Socket协议的相关知识，这些知识在优化前端性能和排查前端故障时说不定能派上用场。本章将介绍与之相关的NodeJS内置模块。</p>
+<h3 id="开门红"><a href="#开门红" class="headerlink" title="开门红"></a>开门红</h3><p>NodeJS本来的用途是编写高性能Web服务器。我们首先在这里重复一下官方文档里的例子，使用NodeJS内置的<code>http</code>模块简单实现一个HTTP服务器。</p>
+<pre><code>var http = require(&apos;http&apos;);
+
+http.createServer(function (request, response) {
+    response.writeHead(200, { &apos;Content-Type&apos;: &apos;text-plain&apos; });
+    response.end(&apos;Hello World\n&apos;);
+}).listen(8124);
+</code></pre><p>以上程序创建了一个HTTP服务器并监听<code>8124</code>端口，打开浏览器访问该端口<code>http://127.0.0.1:8124/</code>就能够看到效果。</p>
+<blockquote>
+<p>   <strong>豆知识：</strong> 在Linux系统下，监听1024以下端口需要root权限。因此，如果想监听80或443端口的话，需要使用<code>sudo</code>命令启动程序。</p>
+</blockquote>
+<h3 id="API走马观花"><a href="#API走马观花" class="headerlink" title="API走马观花"></a>API走马观花</h3><p>我们先大致看看NodeJS提供了哪些和网络操作有关的API。这里并不逐一介绍每个API的使用方法，官方文档已经做得很好了。</p>
+<h4 id="HTTP"><a href="#HTTP" class="headerlink" title="HTTP"></a>HTTP</h4><blockquote>
+<p>   <strong>官方文档： </strong> <a href="http://nodejs.org/api/http.html" target="_blank" rel="external">http://nodejs.org/api/http.html</a></p>
+</blockquote>
+<p>‘http’模块提供两种使用方式：</p>
+<ul>
+<li><p>作为服务端使用时，创建一个HTTP服务器，监听HTTP客户端请求并返回响应。</p>
+</li>
+<li><p>作为客户端使用时，发起一个HTTP客户端请求，获取服务端响应。</p>
+</li>
+</ul>
+<p>首先我们来看看服务端模式下如何工作。如开门红中的例子所示，首先需要使用<code>.createServer</code>方法创建一个服务器，然后调用<code>.listen</code>方法监听端口。之后，每当来了一个客户端请求，创建服务器时传入的回调函数就被调用一次。可以看出，这是一种事件机制。</p>
+<p>HTTP请求本质上是一个数据流，由请求头（headers）和请求体（body）组成。例如以下是一个完整的HTTP请求数据内容。</p>
+<pre><code>POST / HTTP/1.1
+User-Agent: curl/7.26.0
+Host: localhost
+Accept: */*
+Content-Length: 11
+Content-Type: application/x-www-form-urlencoded
+
+Hello World
+</code></pre><p>可以看到，空行之上是请求头，之下是请求体。HTTP请求在发送给服务器时，可以认为是按照从头到尾的顺序一个字节一个字节地以数据流方式发送的。而<code>http</code>模块创建的HTTP服务器在接收到完整的请求头后，就会调用回调函数。在回调函数中，除了可以使用<code>request</code>对象访问请求头数据外，还能把<code>request</code>对象当作一个只读数据流来访问请求体数据。以下是一个例子。</p>
+<pre><code>http.createServer(function (request, response) {
+    var body = [];
+
+    console.log(request.method);
+    console.log(request.headers);
+
+    request.on(&apos;data&apos;, function (chunk) {
+        body.push(chunk);
+    });
+
+    request.on(&apos;end&apos;, function () {
+        body = Buffer.concat(body);
+        console.log(body.toString());
+    });
+}).listen(80);
+
+------------------------------------
+POST
+{ &apos;user-agent&apos;: &apos;curl/7.26.0&apos;,
+  host: &apos;localhost&apos;,
+  accept: &apos;*/*&apos;,
+  &apos;content-length&apos;: &apos;11&apos;,
+  &apos;content-type&apos;: &apos;application/x-www-form-urlencoded&apos; }
+Hello World
+</code></pre><p>HTTP响应本质上也是一个数据流，同样由响应头（headers）和响应体（body）组成。例如以下是一个完整的HTTP请求数据内容。</p>
+<pre><code>HTTP/1.1 200 OK
+Content-Type: text/plain
+Content-Length: 11
+Date: Tue, 05 Nov 2013 05:31:38 GMT
+Connection: keep-alive
+
+Hello World
+</code></pre><p>在回调函数中，除了可以使用<code>response</code>对象来写入响应头数据外，还能把<code>response</code>对象当作一个只写数据流来写入响应体数据。例如在以下例子中，服务端原样将客户端请求的请求体数据返回给客户端。</p>
+<pre><code>http.createServer(function (request, response) {
+    response.writeHead(200, { &apos;Content-Type&apos;: &apos;text/plain&apos; });
+
+    request.on(&apos;data&apos;, function (chunk) {
+        response.write(chunk);
+    });
+
+    request.on(&apos;end&apos;, function () {
+        response.end();
+    });
+}).listen(80);
+</code></pre><p>接下来我们看看客户端模式下如何工作。为了发起一个客户端HTTP请求，我们需要指定目标服务器的位置并发送请求头和请求体，以下示例演示了具体做法。</p>
+<pre><code>var options = {
+        hostname: &apos;www.example.com&apos;,
+        port: 80,
+        path: &apos;/upload&apos;,
+        method: &apos;POST&apos;,
+        headers: {
+            &apos;Content-Type&apos;: &apos;application/x-www-form-urlencoded&apos;
+        }
+    };
+
+var request = http.request(options, function (response) {});
+
+request.write(&apos;Hello World&apos;);
+request.end();
+</code></pre><p>可以看到，<code>.request</code>方法创建了一个客户端，并指定请求目标和请求头数据。之后，就可以把<code>request</code>对象当作一个只写数据流来写入请求体数据和结束请求。另外，由于HTTP请求中<code>GET</code>请求是最常见的一种，并且不需要请求体，因此<code>http</code>模块也提供了以下便捷API。</p>
+<pre><code>http.get(&apos;http://www.example.com/&apos;, function (response) {});
+</code></pre><p>当客户端发送请求并接收到完整的服务端响应头时，就会调用回调函数。在回调函数中，除了可以使用<code>response</code>对象访问响应头数据外，还能把<code>response</code>对象当作一个只读数据流来访问响应体数据。以下是一个例子。</p>
+<pre><code>http.get(&apos;http://www.example.com/&apos;, function (response) {
+    var body = [];
+
+    console.log(response.statusCode);
+    console.log(response.headers);
+
+    response.on(&apos;data&apos;, function (chunk) {
+        body.push(chunk);
+    });
+
+    response.on(&apos;end&apos;, function () {
+        body = Buffer.concat(body);
+        console.log(body.toString());
+    });
+});
+
+------------------------------------
+200
+{ &apos;content-type&apos;: &apos;text/html&apos;,
+  server: &apos;Apache&apos;,
+  &apos;content-length&apos;: &apos;801&apos;,
+  date: &apos;Tue, 05 Nov 2013 06:08:41 GMT&apos;,
+  connection: &apos;keep-alive&apos; }
+&lt;!DOCTYPE html&gt;
+...
+</code></pre><h4 id="HTTPS"><a href="#HTTPS" class="headerlink" title="HTTPS"></a>HTTPS</h4><blockquote>
+<p>   <strong>官方文档： </strong> <a href="http://nodejs.org/api/https.html" target="_blank" rel="external">http://nodejs.org/api/https.html</a></p>
+</blockquote>
+<p><code>https</code>模块与<code>http</code>模块极为类似，区别在于<code>https</code>模块需要额外处理SSL证书。</p>
+<p>在服务端模式下，创建一个HTTPS服务器的示例如下。</p>
+<pre><code>var options = {
+        key: fs.readFileSync(&apos;./ssl/default.key&apos;),
+        cert: fs.readFileSync(&apos;./ssl/default.cer&apos;)
+    };
+
+var server = https.createServer(options, function (request, response) {
+        // ...
+    });
+</code></pre><p>可以看到，与创建HTTP服务器相比，多了一个<code>options</code>对象，通过<code>key</code>和<code>cert</code>字段指定了HTTPS服务器使用的私钥和公钥。 </p>
+<p>另外，NodeJS支持SNI技术，可以根据HTTPS客户端请求使用的域名动态使用不同的证书，因此同一个HTTPS服务器可以使用多个域名提供服务。接着上例，可以使用以下方法为HTTPS服务器添加多组证书。</p>
+<pre><code>server.addContext(&apos;foo.com&apos;, {
+    key: fs.readFileSync(&apos;./ssl/foo.com.key&apos;),
+    cert: fs.readFileSync(&apos;./ssl/foo.com.cer&apos;)
+});
+
+server.addContext(&apos;bar.com&apos;, {
+    key: fs.readFileSync(&apos;./ssl/bar.com.key&apos;),
+    cert: fs.readFileSync(&apos;./ssl/bar.com.cer&apos;)
+});
+</code></pre><p>在客户端模式下，发起一个HTTPS客户端请求与<code>http</code>模块几乎相同，示例如下。</p>
+<pre><code>var options = {
+        hostname: &apos;www.example.com&apos;,
+        port: 443,
+        path: &apos;/&apos;,
+        method: &apos;GET&apos;
+    };
+
+var request = https.request(options, function (response) {});
+
+request.end();
+</code></pre><p>但如果目标服务器使用的SSL证书是自制的，不是从颁发机构购买的，默认情况下<code>https</code>模块会拒绝连接，提示说有证书安全问题。在<code>options</code>里加入<code>rejectUnauthorized: false</code>字段可以禁用对证书有效性的检查，从而允许<code>https</code>模块请求开发环境下使用自制证书的HTTPS服务器。</p>
+<h4 id="URL"><a href="#URL" class="headerlink" title="URL"></a>URL</h4><blockquote>
+<p>   <strong>官方文档： </strong> <a href="http://nodejs.org/api/url.html" target="_blank" rel="external">http://nodejs.org/api/url.html</a></p>
+</blockquote>
+<p>处理HTTP请求时<code>url</code>模块使用率超高，因为该模块允许解析URL、生成URL，以及拼接URL。首先我们来看看一个完整的URL的各组成部分。</p>
+<pre><code>                           href
+ -----------------------------------------------------------------
+                            host              path
+                      --------------- ----------------------------
+ http: // user:pass @ host.com : 8080 /p/a/t/h ?query=string #hash
+ -----    ---------   --------   ---- -------- ------------- -----
+protocol     auth     hostname   port pathname     search     hash
+                                                ------------
+                                                   query
+</code></pre><p>我们可以使用<code>.parse</code>方法来将一个URL字符串转换为URL对象，示例如下。</p>
+<pre><code>url.parse(&apos;http://user:pass@host.com:8080/p/a/t/h?query=string#hash&apos;);
+/* =&gt;
+{ protocol: &apos;http:&apos;,
+  auth: &apos;user:pass&apos;,
+  host: &apos;host.com:8080&apos;,
+  port: &apos;8080&apos;,
+  hostname: &apos;host.com&apos;,
+  hash: &apos;#hash&apos;,
+  search: &apos;?query=string&apos;,
+  query: &apos;query=string&apos;,
+  pathname: &apos;/p/a/t/h&apos;,
+  path: &apos;/p/a/t/h?query=string&apos;,
+  href: &apos;http://user:pass@host.com:8080/p/a/t/h?query=string#hash&apos; }
+*/
+</code></pre><p>传给<code>.parse</code>方法的不一定要是一个完整的URL，例如在HTTP服务器回调函数中，<code>request.url</code>不包含协议头和域名，但同样可以用<code>.parse</code>方法解析。</p>
+<pre><code>http.createServer(function (request, response) {
+    var tmp = request.url; // =&gt; &quot;/foo/bar?a=b&quot;
+    url.parse(tmp);
+    /* =&gt;
+    { protocol: null,
+      slashes: null,
+      auth: null,
+      host: null,
+      port: null,
+      hostname: null,
+      hash: null,
+      search: &apos;?a=b&apos;,
+      query: &apos;a=b&apos;,
+      pathname: &apos;/foo/bar&apos;,
+      path: &apos;/foo/bar?a=b&apos;,
+      href: &apos;/foo/bar?a=b&apos; }
+    */
+}).listen(80);
+</code></pre><p><code>.parse</code>方法还支持第二个和第三个布尔类型可选参数。第二个参数等于<code>true</code>时，该方法返回的URL对象中，<code>query</code>字段不再是一个字符串，而是一个经过<code>querystring</code>模块转换后的参数对象。第三个参数等于<code>true</code>时，该方法可以正确解析不带协议头的URL，例如<code>//www.example.com/foo/bar</code>。</p>
+<p>反过来，<code>format</code>方法允许将一个URL对象转换为URL字符串，示例如下。</p>
+<pre><code>url.format({
+    protocol: &apos;http:&apos;,
+    host: &apos;www.example.com&apos;,
+    pathname: &apos;/p/a/t/h&apos;,
+    search: &apos;query=string&apos;
+});
+/* =&gt;
+&apos;http://www.example.com/p/a/t/h?query=string&apos;
+*/
+</code></pre><p>另外，<code>.resolve</code>方法可以用于拼接URL，示例如下。</p>
+<pre><code>url.resolve(&apos;http://www.example.com/foo/bar&apos;, &apos;../baz&apos;);
+/* =&gt;
+http://www.example.com/baz
+*/
+</code></pre><h4 id="Query-String"><a href="#Query-String" class="headerlink" title="Query String"></a>Query String</h4><blockquote>
+<p>   <strong>官方文档： </strong> <a href="http://nodejs.org/api/querystring.html" target="_blank" rel="external">http://nodejs.org/api/querystring.html</a></p>
+</blockquote>
+<p><code>querystring</code>模块用于实现URL参数字符串与参数对象的互相转换，示例如下。</p>
+<pre><code>querystring.parse(&apos;foo=bar&amp;baz=qux&amp;baz=quux&amp;corge&apos;);
+/* =&gt;
+{ foo: &apos;bar&apos;, baz: [&apos;qux&apos;, &apos;quux&apos;], corge: &apos;&apos; }
+*/
+
+querystring.stringify({ foo: &apos;bar&apos;, baz: [&apos;qux&apos;, &apos;quux&apos;], corge: &apos;&apos; });
+/* =&gt;
+&apos;foo=bar&amp;baz=qux&amp;baz=quux&amp;corge=&apos;
+*/
+</code></pre><h4 id="Zlib"><a href="#Zlib" class="headerlink" title="Zlib"></a>Zlib</h4><blockquote>
+<p>   <strong>官方文档： </strong> <a href="http://nodejs.org/api/zlib.html" target="_blank" rel="external">http://nodejs.org/api/zlib.html</a></p>
+</blockquote>
+<p><code>zlib</code>模块提供了数据压缩和解压的功能。当我们处理HTTP请求和响应时，可能需要用到这个模块。</p>
+<p>首先我们看一个使用<code>zlib</code>模块压缩HTTP响应体数据的例子。这个例子中，判断了客户端是否支持gzip，并在支持的情况下使用<code>zlib</code>模块返回gzip之后的响应体数据。</p>
+<pre><code>http.createServer(function (request, response) {
+    var i = 1024,
+        data = &apos;&apos;;
+
+    while (i--) {
+        data += &apos;.&apos;;
+    }
+
+    if ((request.headers[&apos;accept-encoding&apos;] || &apos;&apos;).indexOf(&apos;gzip&apos;) !== -1) {
+        zlib.gzip(data, function (err, data) {
+            response.writeHead(200, {
+                &apos;Content-Type&apos;: &apos;text/plain&apos;,
+                &apos;Content-Encoding&apos;: &apos;gzip&apos;
+            });
+            response.end(data);
+        });
+    } else {
+        response.writeHead(200, {
+            &apos;Content-Type&apos;: &apos;text/plain&apos;
+        });
+        response.end(data);
+    }
+}).listen(80);
+</code></pre><p>接着我们看一个使用<code>zlib</code>模块解压HTTP响应体数据的例子。这个例子中，判断了服务端响应是否使用gzip压缩，并在压缩的情况下使用<code>zlib</code>模块解压响应体数据。</p>
+<pre><code>var options = {
+        hostname: &apos;www.example.com&apos;,
+        port: 80,
+        path: &apos;/&apos;,
+        method: &apos;GET&apos;,
+        headers: {
+            &apos;Accept-Encoding&apos;: &apos;gzip, deflate&apos;
+        }
+    };
+
+http.request(options, function (response) {
+    var body = [];
+
+    response.on(&apos;data&apos;, function (chunk) {
+        body.push(chunk);
+    });
+
+    response.on(&apos;end&apos;, function () {
+        body = Buffer.concat(body);
+
+        if (response.headers[&apos;content-encoding&apos;] === &apos;gzip&apos;) {
+            zlib.gunzip(body, function (err, data) {
+                console.log(data.toString());
+            });
+        } else {
+            console.log(data.toString());
+        }
+    });
+}).end();
+</code></pre><h4 id="Net"><a href="#Net" class="headerlink" title="Net"></a>Net</h4><blockquote>
+<p>   <strong>官方文档： </strong> <a href="http://nodejs.org/api/net.html" target="_blank" rel="external">http://nodejs.org/api/net.html</a></p>
+</blockquote>
+<p><code>net</code>模块可用于创建Socket服务器或Socket客户端。由于Socket在前端领域的使用范围还不是很广，这里先不涉及到WebSocket的介绍，仅仅简单演示一下如何从Socket层面来实现HTTP请求和响应。</p>
+<p>首先我们来看一个使用Socket搭建一个很不严谨的HTTP服务器的例子。这个HTTP服务器不管收到啥请求，都固定返回相同的响应。</p>
+<pre><code>net.createServer(function (conn) {
+    conn.on(&apos;data&apos;, function (data) {
+        conn.write([
+            &apos;HTTP/1.1 200 OK&apos;,
+            &apos;Content-Type: text/plain&apos;,
+            &apos;Content-Length: 11&apos;,
+            &apos;&apos;,
+            &apos;Hello World&apos;
+        ].join(&apos;\n&apos;));
+    });
+}).listen(80);
+</code></pre><p>接着我们来看一个使用Socket发起HTTP客户端请求的例子。这个例子中，Socket客户端在建立连接后发送了一个HTTP GET请求，并通过<code>data</code>事件监听函数来获取服务器响应。</p>
+<pre><code>var options = {
+        port: 80,
+        host: &apos;www.example.com&apos;
+    };
+
+var client = net.connect(options, function () {
+        client.write([
+            &apos;GET / HTTP/1.1&apos;,
+            &apos;User-Agent: curl/7.26.0&apos;,
+            &apos;Host: www.baidu.com&apos;,
+            &apos;Accept: */*&apos;,
+            &apos;&apos;,
+            &apos;&apos;
+        ].join(&apos;\n&apos;));
+    });
+
+client.on(&apos;data&apos;, function (data) {
+    console.log(data.toString());
+    client.end();
+});
+</code></pre><h3 id="灵机一点"><a href="#灵机一点" class="headerlink" title="灵机一点"></a>灵机一点</h3><p>使用NodeJS操作网络，特别是操作HTTP请求和响应时会遇到一些惊喜，这里对一些常见问题做解答。</p>
+<ul>
+<li><p>问： 为什么通过<code>headers</code>对象访问到的HTTP请求头或响应头字段不是驼峰的？</p>
+<p>  答： 从规范上讲，HTTP请求头和响应头字段都应该是驼峰的。但现实是残酷的，不是每个HTTP服务端或客户端程序都严格遵循规范，所以NodeJS在处理从别的客户端或服务端收到的头字段时，都统一地转换为了小写字母格式，以便开发者能使用统一的方式来访问头字段，例如<code>headers[&#39;content-length&#39;]</code>。</p>
+</li>
+<li><p>问： 为什么<code>http</code>模块创建的HTTP服务器返回的响应是<code>chunked</code>传输方式的？</p>
+<p>  答： 因为默认情况下，使用<code>.writeHead</code>方法写入响应头后，允许使用<code>.write</code>方法写入任意长度的响应体数据，并使用<code>.end</code>方法结束一个响应。由于响应体数据长度不确定，因此NodeJS自动在响应头里添加了<code>Transfer-Encoding: chunked</code>字段，并采用<code>chunked</code>传输方式。但是当响应体数据长度确定时，可使用<code>.writeHead</code>方法在响应头里加上<code>Content-Length</code>字段，这样做之后NodeJS就不会自动添加<code>Transfer-Encoding</code>字段和使用<code>chunked</code>传输方式。</p>
+</li>
+<li><p>问： 为什么使用<code>http</code>模块发起HTTP客户端请求时，有时候会发生<code>socket hang up</code>错误？</p>
+<p>  答： 发起客户端HTTP请求前需要先创建一个客户端。<code>http</code>模块提供了一个全局客户端<code>http.globalAgent</code>，可以让我们使用<code>.request</code>或<code>.get</code>方法时不用手动创建客户端。但是全局客户端默认只允许5个并发Socket连接，当某一个时刻HTTP客户端请求创建过多，超过这个数字时，就会发生<code>socket hang up</code>错误。解决方法也很简单，通过<code>http.globalAgent.maxSockets</code>属性把这个数字改大些即可。另外，<code>https</code>模块遇到这个问题时也一样通过<code>https.globalAgent.maxSockets</code>属性来处理。</p>
+</li>
+</ul>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>本章介绍了使用NodeJS操作网络时需要的API以及一些坑回避技巧，总结起来有以下几点：</p>
+<ul>
+<li><p><code>http</code>和<code>https</code>模块支持服务端模式和客户端模式两种使用方式。</p>
+</li>
+<li><p><code>request</code>和<code>response</code>对象除了用于读写头数据外，都可以当作数据流来操作。</p>
+</li>
+<li><p><code>url.parse</code>方法加上<code>request.url</code>属性是处理HTTP请求时的固定搭配。</p>
+</li>
+<li><p>使用<code>zlib</code>模块可以减少使用HTTP协议时的数据传输量。</p>
+</li>
+<li><p>通过<code>net</code>模块的Socket服务器与客户端可对HTTP协议做底层操作。</p>
+</li>
+<li><p>小心踩坑。</p>
+</li>
+</ul>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2016/03/23/node/books/7days/04_network/" data-id="cj75t7iw400322dpjesppuj9e" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2016/03/23/node/books/7days/04_network/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2016/03/23/node/books/7days/03_file/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    七天学会NodeJS - 文件操作
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2016/03/23/node/books/7days/05_process/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">七天学会NodeJS - 进程管理</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="uyan_frame"></div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">recent</h3>
+        <div class="widget">
+            <ul id="recent-post" class="no-thumbnail">
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/09/04/android/github/github hexo 博客迁移 /" class="title"></a></p>
+                            <p class="item-date"><time datetime="2017-09-04T03:45:36.000Z" itemprop="datePublished">2017-09-04</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/code/">code</a></p>
+                            <p class="item-title"><a href="/2017/08/25/android/code/TextView autoLink小技巧/" class="title">TextView autoLink小技巧</a></p>
+                            <p class="item-date"><time datetime="2017-08-25T06:07:37.000Z" itemprop="datePublished">2017-08-25</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/mysql/">mysql</a></p>
+                            <p class="item-title"><a href="/2017/08/22/mysql/mac导出:导入mysql/" class="title">mac导出/导入mysql</a></p>
+                            <p class="item-date"><time datetime="2017-08-22T11:26:44.000Z" itemprop="datePublished">2017-08-22</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/linux/">linux</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/linux/vim/">vim</a></p>
+                            <p class="item-title"><a href="/2017/08/18/linux/vim的常用命令/" class="title">vim的常用命令</a></p>
+                            <p class="item-date"><time datetime="2017-08-18T06:59:13.000Z" itemprop="datePublished">2017-08-18</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/git/">git</a></p>
+                            <p class="item-title"><a href="/2017/07/19/git/git commit 编写风格模板/" class="title">git commit 编写风格模板</a></p>
+                            <p class="item-date"><time datetime="2017-07-19T12:15:00.000Z" itemprop="datePublished">2017-07-19</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">categories</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">9</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">3</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/linux/vim/">vim</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">archives</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tags</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tag cloud</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 13.33px;">code</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/github/" style="font-size: 10px;">github</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 10px;">markdown</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/node/" style="font-size: 16.67px;">node</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">links</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 Ernest Chang<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2142274"></script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <meta charset="utf-8">
+    
+    <title>Realm使用笔记 | The Old Man and the Sea</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="1. 12345// Create a RealmConfiguration that saves the Realm file in the app&amp;apos;s &amp;quot;files&amp;quot; directory.RealmConfiguration realmConfig = new RealmConfiguration.Builder(context).build();Realm.se">
+<meta name="keywords" content="android,code">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Realm使用笔记">
+<meta property="og:url" content="http://yoursite.com/2017/04/13/android/code/realm使用/index.html">
+<meta property="og:site_name" content="The Old Man and the Sea">
+<meta property="og:description" content="1. 12345// Create a RealmConfiguration that saves the Realm file in the app&amp;apos;s &amp;quot;files&amp;quot; directory.RealmConfiguration realmConfig = new RealmConfiguration.Builder(context).build();Realm.se">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2017-08-09T10:12:44.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Realm使用笔记">
+<meta name="twitter:description" content="1. 12345// Create a RealmConfiguration that saves the Realm file in the app&amp;apos;s &amp;quot;files&amp;quot; directory.RealmConfiguration realmConfig = new RealmConfiguration.Builder(context).build();Realm.se">
+    
+
+    
+        <link rel="alternate" href="/" title="The Old Man and the Sea" type="application/atom+xml" />
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">The Old Man and the Sea</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/uploads/images/avert.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/uploads/images/avert.png" />
+            <h2 id="name">Ernest Chang</h2>
+            <h3 id="title">Developer &amp; Designer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Hangzhou, China</span>
+            <a id="follow" target="_blank" href="https://github.com/Ernestchang/">FOLLOW</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                25
+                <span>posts</span>
+            </div>
+            <div class="article-info-block">
+                14
+                <span>tags</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/Ernestchang/" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="facebook" class=tooltip>
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="dribbble" class=tooltip>
+                            <i class="fa fa-dribbble"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-android/code/realm使用" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            Realm使用笔记
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/04/13/android/code/realm使用/">
+            <time datetime="2017-04-13T06:22:45.000Z" itemprop="datePublished">2017-04-13</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/code/">code</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/android/">android</a>, <a class="tag-link" href="/tags/code/">code</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>1.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">// Create a RealmConfiguration that saves the Realm file in the app&apos;s &quot;files&quot; directory.</div><div class="line">RealmConfiguration realmConfig = new RealmConfiguration.Builder(context).build();</div><div class="line">Realm.setDefaultConfiguration(realmConfig);</div><div class="line">// Get a Realm instance for this thread</div><div class="line">Realm realm = Realm.getDefaultInstance();</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">// The RealmConfiguration is created using the builder pattern.</div><div class="line">// The Realm file will be located in Context.getFilesDir() with name &quot;myrealm.realm&quot;</div><div class="line">RealmConfiguration config = new RealmConfiguration.Builder(context)</div><div class="line">  .name(&quot;myrealm.realm&quot;)</div><div class="line">  .encryptionKey(getKey())</div><div class="line">  .schemaVersion(42)</div><div class="line">  .modules(new MySchemaModule())</div><div class="line">  .migration(new MyMigration())</div><div class="line">  .build();</div><div class="line">// Use the config</div><div class="line">Realm realm = Realm.getInstance(config);</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">RealmConfiguration myConfig = new RealmConfiguration.Builder(context)</div><div class="line">  .name(&quot;myrealm.realm&quot;)</div><div class="line">  .schemaVersion(2)</div><div class="line">  .modules(new MyCustomSchema())</div><div class="line">  .build();</div><div class="line">RealmConfiguration otherConfig = new RealmConfiguration.Builder(context)</div><div class="line">  .name(&quot;otherrealm.realm&quot;)</div><div class="line">  .schemaVersion(5)</div><div class="line">  .modules(new MyOtherSchema())</div><div class="line">  .build();</div><div class="line">Realm myRealm = Realm.getInstance(myConfig);</div><div class="line">Realm otherRealm = Realm.getInstance(otherConfig);</div><div class="line">public class MyApplication extends Application &#123;</div><div class="line">  @Override</div><div class="line">  public void onCreate() &#123;</div><div class="line">    super.onCreate();</div><div class="line">    // The Realm file will be located in Context.getFilesDir() with name &quot;default.realm&quot;</div><div class="line">    RealmConfiguration config = new RealmConfiguration.Builder(this).build();</div><div class="line">    Realm.setDefaultConfiguration(config);</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">public class MyActivity extends Activity &#123;</div><div class="line">  @Override</div><div class="line">  protected void onCreate(Bundle savedInstanceState) &#123;</div><div class="line">    super.onCreate(savedInstanceState);</div><div class="line">    Realm realm = Realm.getDefaultInstance();</div><div class="line">    // ... Do something ...</div><div class="line">    realm.close();</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">​`</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">@RealmClass</div><div class="line">public class User implements RealmModel &#123;</div><div class="line">&#125;</div><div class="line">// With RealmObject</div><div class="line">user.isValid();</div><div class="line">user.addChangeListener(listener);</div><div class="line">// With RealmModel</div><div class="line">RealmObject.isValid(user);</div><div class="line">RealmObject.addChangeListener(user, listener);</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">final MyObject obj = new MyObject();</div><div class="line">obj.setId(42);</div><div class="line">obj.setName(&quot;Fish&quot;);</div><div class="line">realm.executeTransaction(new Realm.Transaction() &#123;</div><div class="line">    @Override</div><div class="line">    public void execute(Realm realm) &#123;</div><div class="line">        // This will create a new object in Realm or throw an exception if the</div><div class="line">        // object already exists (same primary key)</div><div class="line">        // realm.copyToRealm(obj);</div><div class="line">        // This will update an existing object with the same primary key</div><div class="line">        // or create a new object if an object with no primary key = 42</div><div class="line">        realm.copyToRealmOrUpdate(obj);</div><div class="line">    &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">realm.beginTransaction();</div><div class="line">User user = realm.createObject(User.class); // Create a new object</div><div class="line">user.setName(&quot;John&quot;);</div><div class="line">user.setEmail(&quot;john@corporation.com&quot;);</div><div class="line">realm.commitTransaction();</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">User user = new User(&quot;John&quot;);</div><div class="line">user.setEmail(&quot;john@corporation.com&quot;);</div><div class="line">// Copy the object to Realm. Any further changes must happen on realmUser</div><div class="line">realm.beginTransaction();</div><div class="line">User realmUser = realm.copyToRealm(user);</div><div class="line">realm.commitTransaction();</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">// Query Realm for all dogs younger than 2 years old</div><div class="line">final RealmResults&lt;Dog&gt; puppies = realm.where(Dog.class).lessThan(&quot;age&quot;, 2).findAll();</div><div class="line">puppies.size(); // =&gt; 0 because no dogs have been added to the Realm yet</div><div class="line">// Persist your data in a transaction</div><div class="line">realm.beginTransaction();</div><div class="line">final Dog managedDog = realm.copyToRealm(dog); // Persist unmanaged objects</div><div class="line">Person person = realm.createObject(Person.class); // Create managed objects directly</div><div class="line">person.getDogs().add(managedDog);</div><div class="line">realm.commitTransaction();</div><div class="line">public void onStop () &#123;</div><div class="line">    if (transaction != null &amp;&amp; !transaction.isCancelled()) &#123;</div><div class="line">        transaction.cancel();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>​<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">// Listeners will be notified when data changes</div><div class="line">puppies.addChangeListener(new RealmChangeListener&lt;RealmResults&lt;Dog&gt;&gt;() &#123;</div><div class="line">    @Override</div><div class="line">    public void onChange(RealmResults&lt;Dog&gt; results) &#123;</div><div class="line">        // Query results are updated in real time</div><div class="line">        puppies.size(); // =&gt; 1</div><div class="line">    &#125;</div><div class="line">&#125;);</div><div class="line"></div><div class="line">// Asynchronously update objects on a background thread</div><div class="line">realm.executeTransactionAsync(new Realm.Transaction() &#123;</div><div class="line">    @Override</div><div class="line">    public void execute(Realm bgRealm) &#123;</div><div class="line">        Dog dog = bgRealm.where(Dog.class).equalTo(&quot;age&quot;, 1).findFirst();</div><div class="line">        dog.setAge(3);</div><div class="line">    &#125;</div><div class="line">&#125;, new Realm.Transaction.OnSuccess() &#123;</div><div class="line">    @Override</div><div class="line">    public void onSuccess() &#123;</div><div class="line">    	// Original queries and Realm objects are automatically updated.</div><div class="line">    	puppies.size(); // =&gt; 0 because there are no more puppies younger than 2 years old</div><div class="line">    	managedDog.getAge();   // =&gt; 3 the dogs age is updated</div><div class="line">    &#125;</div><div class="line">&#125;);</div><div class="line"></div><div class="line">realm.executeTransaction(new Realm.Transaction() &#123;</div><div class="line">    @Override</div><div class="line">    public void execute(Realm realm) &#123;</div><div class="line">        Dog myDog = realm.createObject(Dog.class);</div><div class="line">        myDog.setName(&quot;Fido&quot;);</div><div class="line">        myDog.setAge(1);</div><div class="line">    &#125;</div><div class="line">&#125;);</div><div class="line">​</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">Dog myDog = realm.where(Dog.class).equalTo(&quot;age&quot;, 1).findFirst();</div><div class="line">realm.executeTransaction(new Realm.Transaction() &#123;</div><div class="line">    @Override</div><div class="line">    public void execute(Realm realm) &#123;</div><div class="line">        Dog myPuppy = realm.where(Dog.class).equalTo(&quot;age&quot;, 1).findFirst();</div><div class="line">        myPuppy.setAge(2);</div><div class="line">    &#125;</div><div class="line">&#125;);</div><div class="line">myDog.getAge(); // =&gt; 2</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">realm.executeTransactionAsync(new Realm.Transaction() &#123;</div><div class="line">            @Override</div><div class="line">            public void execute(Realm bgRealm) &#123;</div><div class="line">                User user = bgRealm.createObject(User.class);</div><div class="line">                user.setName(&quot;John&quot;);</div><div class="line">                user.setEmail(&quot;john@corporation.com&quot;);</div><div class="line">            &#125;</div><div class="line">        &#125;, new Realm.Transaction.OnSuccess() &#123;</div><div class="line">            @Override</div><div class="line">            public void onSuccess() &#123;</div><div class="line">                // Transaction was a success.</div><div class="line">            &#125;</div><div class="line">        &#125;, new Realm.Transaction.OnError() &#123;</div><div class="line">            @Override</div><div class="line">            public void onError(Throwable error) &#123;</div><div class="line">                // Transaction failed and was automatically canceled.</div><div class="line">            &#125;</div><div class="line">        &#125;);</div><div class="line">public void onStop () &#123;</div><div class="line">    if (transaction != null &amp;&amp; !transaction.isCancelled()) &#123;</div><div class="line">        transaction.cancel();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div></pre></td><td class="code"><pre><div class="line">// r1 =&gt; [U1,U2]</div><div class="line">RealmResults&lt;Person&gt; r1 = realm.where(Person.class)</div><div class="line">                             .equalTo(&quot;dogs.name&quot;, &quot;Fluffy&quot;)</div><div class="line">                             .equalTo(&quot;dogs.color&quot;, &quot;Brown&quot;)</div><div class="line">                             .findAll();</div><div class="line">// r2 =&gt; [U2]</div><div class="line">RealmResults&lt;Person&gt; r2 = realm.where(Person.class)</div><div class="line">                             .equalTo(&quot;dogs.name&quot;, &quot;Fluffy&quot;)</div><div class="line">                             .findAll()</div><div class="line">                             .where()</div><div class="line">                             .equalTo(&quot;dogs.color&quot;, &quot;Brown&quot;)</div><div class="line">                             .findAll();</div><div class="line">                             .where()</div><div class="line">                             .equalTo(&quot;dogs.color&quot;, &quot;Yellow&quot;)</div><div class="line">                             .findAll();</div><div class="line">// Build the query looking at all users:</div><div class="line">RealmQuery&lt;User&gt; query = realm.where(User.class);</div><div class="line">// Add query conditions:</div><div class="line">query.equalTo(&quot;name&quot;, &quot;John&quot;);</div><div class="line">query.or().equalTo(&quot;name&quot;, &quot;Peter&quot;);</div><div class="line">// Execute the query:</div><div class="line">RealmResults&lt;User&gt; result1 = query.findAll();</div><div class="line">// Or alternatively do the same all at once (the &quot;Fluent interface&quot;):</div><div class="line">RealmResults&lt;User&gt; result2 = realm.where(User.class)</div><div class="line">                                  .equalTo(&quot;name&quot;, &quot;John&quot;)</div><div class="line">                                  .or()</div><div class="line">                                  .equalTo(&quot;name&quot;, &quot;Peter&quot;)</div><div class="line">                                  .findAll();</div><div class="line">RealmResults&lt;User&gt; r = realm.where(User.class)</div><div class="line">                            .greaterThan(&quot;age&quot;, 10)  //implicit AND</div><div class="line">                            .beginGroup()</div><div class="line">                                .equalTo(&quot;name&quot;, &quot;Peter&quot;)</div><div class="line">                                .or()</div><div class="line">                                .contains(&quot;name&quot;, &quot;Jo&quot;)</div><div class="line">                            .endGroup()</div><div class="line">                            .findAll();</div><div class="line">// r1 =&gt; [U1,U2]</div><div class="line">RealmResults&lt;Person&gt; r1 = realm.where(Person.class)</div><div class="line">                             .equalTo(&quot;dogs.name&quot;, &quot;Fluffy&quot;)</div><div class="line">                             .equalTo(&quot;dogs.color&quot;, &quot;Brown&quot;)</div><div class="line">                             .findAll();</div><div class="line">// r2 =&gt; [U2]</div><div class="line">RealmResults&lt;Person&gt; r2 = realm.where(Person.class)</div><div class="line">                             .equalTo(&quot;dogs.name&quot;, &quot;Fluffy&quot;)</div><div class="line">                             .findAll()</div><div class="line">                             .where()</div><div class="line">                             .equalTo(&quot;dogs.color&quot;, &quot;Brown&quot;)</div><div class="line">                             .findAll();</div><div class="line">                             .where()</div><div class="line">                             .equalTo(&quot;dogs.color&quot;, &quot;Yellow&quot;)</div><div class="line">                             .findAll();</div><div class="line">6</div><div class="line">final RealmResults&lt;User&gt; users = getUsers();</div><div class="line">realm.executeTransaction(new Realm.Transaction() &#123;</div><div class="line">    @Override</div><div class="line">    public void execute(Realm realm) &#123;</div><div class="line">        users.deleteFromRealm(0); // Delete and remove object directly</div><div class="line">    &#125;</div><div class="line">&#125;);</div><div class="line">for (User user : users) &#123;</div><div class="line">    showUser(user); // Deleted user will not be shown</div><div class="line">&#125;</div><div class="line">// obtain the results of a query</div><div class="line">final RealmResults&lt;Dog&gt; results = realm.where(Dog.class).findAll();</div><div class="line">// All changes to data must happen in a transaction</div><div class="line">realm.executeTransaction(new Realm.Transaction() &#123;</div><div class="line">    @Override</div><div class="line">    public void execute(Realm realm) &#123;</div><div class="line">        // remove single match</div><div class="line">        results.deleteFirstFromRealm();</div><div class="line">        results.deleteLastFromRealm();</div><div class="line">        // remove a single object</div><div class="line">        Dog dog = results.get(5);</div><div class="line">        dog.deleteFromRealm();</div><div class="line">        // Delete all matches</div><div class="line">        results.deleteAllFromRealm();</div><div class="line">    &#125;</div><div class="line">&#125;);</div><div class="line">As</div><div class="line">7.</div><div class="line">/ Setup Realm in your Application</div><div class="line">public class MyApplication extends Application &#123;</div><div class="line">    @Override</div><div class="line">    public void onCreate() &#123;</div><div class="line">        super.onCreate();</div><div class="line">        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder(this).build();</div><div class="line">        Realm.setDefaultConfiguration(realmConfiguration);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">// onCreate()/onDestroy() overlap when switching between activities so onCreate()</div><div class="line">// on Activity 2 will be called before onDestroy() on Activity 1.</div><div class="line">public class MyActivity extends Activity &#123;</div><div class="line">    private Realm realm;</div><div class="line">    @Override</div><div class="line">    protected void onCreate(Bundle savedInstanceState) &#123;</div><div class="line">        super.onCreate(savedInstanceState);</div><div class="line">        realm = Realm.getDefaultInstance();</div><div class="line">    &#125;</div><div class="line">    @Override</div><div class="line">    protected void onDestroy() &#123;</div><div class="line">        super.onDestroy();</div><div class="line">        realm.close();</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">// Use onStart()/onStop() for Fragments as onDestroy() might not be called.</div><div class="line">public class MyFragment extends Fragment &#123;</div><div class="line">    private Realm realm;</div><div class="line">    @Override</div><div class="line">    public void onStart() &#123;</div><div class="line">        super.onStart();</div><div class="line">        realm = Realm.getDefaultInstance();</div><div class="line">    &#125;</div><div class="line">    @Override</div><div class="line">    public void onStop() &#123;</div><div class="line">        super.onStop();</div><div class="line">        realm.close();</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">.</div><div class="line">`</div></pre></td></tr></table></figure>
+<p>````</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/04/13/android/code/realm使用/" data-id="cj75t7ivb001f2dpjx6j96jmy" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/04/13/android/code/realm使用/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/07/19/android/github/android indicator解析/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    android indicator解析
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2017/04/07/node/angular.js4.0 /" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">angular.js4.0学习笔记</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="uyan_frame"></div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">recent</h3>
+        <div class="widget">
+            <ul id="recent-post" class="no-thumbnail">
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/09/04/android/github/github hexo 博客迁移 /" class="title"></a></p>
+                            <p class="item-date"><time datetime="2017-09-04T03:45:36.000Z" itemprop="datePublished">2017-09-04</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/code/">code</a></p>
+                            <p class="item-title"><a href="/2017/08/25/android/code/TextView autoLink小技巧/" class="title">TextView autoLink小技巧</a></p>
+                            <p class="item-date"><time datetime="2017-08-25T06:07:37.000Z" itemprop="datePublished">2017-08-25</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/mysql/">mysql</a></p>
+                            <p class="item-title"><a href="/2017/08/22/mysql/mac导出:导入mysql/" class="title">mac导出/导入mysql</a></p>
+                            <p class="item-date"><time datetime="2017-08-22T11:26:44.000Z" itemprop="datePublished">2017-08-22</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/linux/">linux</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/linux/vim/">vim</a></p>
+                            <p class="item-title"><a href="/2017/08/18/linux/vim的常用命令/" class="title">vim的常用命令</a></p>
+                            <p class="item-date"><time datetime="2017-08-18T06:59:13.000Z" itemprop="datePublished">2017-08-18</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/git/">git</a></p>
+                            <p class="item-title"><a href="/2017/07/19/git/git commit 编写风格模板/" class="title">git commit 编写风格模板</a></p>
+                            <p class="item-date"><time datetime="2017-07-19T12:15:00.000Z" itemprop="datePublished">2017-07-19</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">categories</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">9</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">3</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/linux/vim/">vim</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">archives</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tags</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tag cloud</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 13.33px;">code</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/github/" style="font-size: 10px;">github</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 10px;">markdown</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/node/" style="font-size: 16.67px;">node</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">links</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 Ernest Chang<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2142274"></script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

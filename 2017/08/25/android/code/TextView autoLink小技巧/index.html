@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <meta charset="utf-8">
+    
+    <title>TextView autoLink小技巧 | The Old Man and the Sea</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="本篇主要参照 :http://www.jianshu.com/p/d3bef8449960  去掉TextView中autoLink的下划线所以要解决这个问题，就只有再设置一个没有下划线的Spannable对象。 首先，继承一个CharacterStyle或其已实现的子类，重写updateDrawState方法，代码如下： 123456789101112131415import android.t">
+<meta name="keywords" content="android,textview,analysis,autoLink">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TextView autoLink小技巧">
+<meta property="og:url" content="http://yoursite.com/2017/08/25/android/code/TextView autoLink小技巧/index.html">
+<meta property="og:site_name" content="The Old Man and the Sea">
+<meta property="og:description" content="本篇主要参照 :http://www.jianshu.com/p/d3bef8449960  去掉TextView中autoLink的下划线所以要解决这个问题，就只有再设置一个没有下划线的Spannable对象。 首先，继承一个CharacterStyle或其已实现的子类，重写updateDrawState方法，代码如下： 123456789101112131415import android.t">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2017-08-25T07:22:32.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="TextView autoLink小技巧">
+<meta name="twitter:description" content="本篇主要参照 :http://www.jianshu.com/p/d3bef8449960  去掉TextView中autoLink的下划线所以要解决这个问题，就只有再设置一个没有下划线的Spannable对象。 首先，继承一个CharacterStyle或其已实现的子类，重写updateDrawState方法，代码如下： 123456789101112131415import android.t">
+    
+
+    
+        <link rel="alternate" href="/" title="The Old Man and the Sea" type="application/atom+xml" />
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">The Old Man and the Sea</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/uploads/images/avert.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/uploads/images/avert.png" />
+            <h2 id="name">Ernest Chang</h2>
+            <h3 id="title">Developer &amp; Designer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Hangzhou, China</span>
+            <a id="follow" target="_blank" href="https://github.com/Ernestchang/">FOLLOW</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                25
+                <span>posts</span>
+            </div>
+            <div class="article-info-block">
+                14
+                <span>tags</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/Ernestchang/" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="facebook" class=tooltip>
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="dribbble" class=tooltip>
+                            <i class="fa fa-dribbble"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-android/code/TextView autoLink小技巧" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            TextView autoLink小技巧
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/08/25/android/code/TextView autoLink小技巧/">
+            <time datetime="2017-08-25T06:07:37.000Z" itemprop="datePublished">2017-08-25</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/code/">code</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/analysis/">analysis</a>, <a class="tag-link" href="/tags/android/">android</a>, <a class="tag-link" href="/tags/autoLink/">autoLink</a>, <a class="tag-link" href="/tags/textview/">textview</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>本篇主要参照 :<a href="http://www.jianshu.com/p/d3bef8449960" target="_blank" rel="external">http://www.jianshu.com/p/d3bef8449960</a> </p>
+<h3 id="去掉TextView中autoLink的下划线"><a href="#去掉TextView中autoLink的下划线" class="headerlink" title="去掉TextView中autoLink的下划线"></a>去掉TextView中autoLink的下划线</h3><p>所以要解决这个问题，就只有再设置一个没有下划线的Spannable对象。</p>
+<p>首先，继承一个CharacterStyle或其已实现的子类，重写updateDrawState方法，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">import android.text.TextPaint;</div><div class="line">import android.text.style.UnderlineSpan;</div><div class="line"></div><div class="line">/**</div><div class="line"> * 无下划线的Span</div><div class="line"> */</div><div class="line">public class NoUnderlineSpan extends UnderlineSpan &#123;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void updateDrawState(TextPaint ds) &#123;</div><div class="line">        ds.setColor(ds.linkColor);</div><div class="line">        ds.setUnderlineText(false);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>然后在textview设置了内容之后，调用以下的代码，设置一个span：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">NoUnderlineSpan mNoUnderlineSpan = new NoUnderlineSpan();</div><div class="line">if (textview.getText() instanceof Spannable) &#123;</div><div class="line">    Spannable s = (Spannable) textview.getText();</div><div class="line">    s.setSpan(mNoUnderlineSpan, 0, s.length(), Spanned.SPAN_MARK_MARK);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="TextView-autoLink详细解析设置"><a href="#TextView-autoLink详细解析设置" class="headerlink" title="TextView autoLink详细解析设置"></a>TextView autoLink详细解析设置</h3><p>autoLink属性，在TextView的xml里加一句<code>android:autoLink=&quot;web&quot;</code>，TextView就可以自动的把文字内的网址识别出来并加上了点击跳转到浏览器的效果，简单粗暴有效。</p>
+<p>但会有以下四个问题</p>
+<ol>
+<li>这超链接网址字体颜色和TextView设置的字体颜色根本不一致啊</li>
+<li>这个自带的下划线好烦人，不想要</li>
+<li>我想点击网址跳转到我自己应用内的WebView打开而不是用手机的浏览器</li>
+<li>和TextView长按事件有冲突，每次onLongClick后都会带出一发超链接网址的onClick，在onLongClick里返回什么都没用。</li>
+</ol>
+<p>带着4个问题去看TextView的源码，看能否解决这些问题<br>因为是在xml里写的属性，总要在构造方法里被取出来</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">public TextView(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) &#123;</div><div class="line">        super(context, attrs, defStyleAttr, defStyleRes);</div><div class="line"></div><div class="line">        //跳过一堆没用的...</div><div class="line"></div><div class="line">        a = theme.obtainStyledAttributes(</div><div class="line">                    attrs, com.android.internal.R.styleable.TextView, defStyleAttr, defStyleRes);</div><div class="line"></div><div class="line">        int n = a.getIndexCount();</div><div class="line">        for (int i = 0; i &lt; n; i++) &#123;</div><div class="line">            int attr = a.getIndex(i);</div><div class="line"></div><div class="line">            switch (attr) &#123;</div><div class="line">        //没用的...</div><div class="line">            case com.android.internal.R.styleable.TextView_autoLink:</div><div class="line">                mAutoLinkMask = a.getInt(attr, 0);</div><div class="line">                break;</div><div class="line">        //跳过一堆没用的...</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>不要在意那些跳过的，的确都没啥用，我们找到了一个mAutoLinkMask的成员变量<br>随便搜一下，我们就在setText里发现了他</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"> private void setText(CharSequence text, BufferType type,boolean notifyBefore, int oldlen) &#123;</div><div class="line">            //前略...</div><div class="line">            if (Linkify.addLinks(s2, mAutoLinkMask)) &#123;</div><div class="line">                text = s2;</div><div class="line">                type = (type == BufferType.EDITABLE) ? BufferType.EDITABLE : BufferType.SPANNABLE;</div><div class="line"></div><div class="line">                mText = text;</div><div class="line"></div><div class="line">                if (mLinksClickable &amp;&amp; !textCanBeSelected()) &#123;</div><div class="line">                    setMovementMethod(LinkMovementMethod.getInstance());</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">            //后略...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以很清楚的看到，代码跳到<code>Linkify.addLinks(s2, mAutoLinkMask)</code>这里去了<br>那么<code>Linkify</code>这个类是做什么的呢？API是这么解释的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Linkify take a piece of text and a regular expression and turns all of the </div><div class="line">regex matches in the text into clickable links.</div></pre></td></tr></table></figure>
+<p>大致意思是 Linkify 会使用正则表达式将一篇文本中可以被该正则匹配出的部分变为能点击的链接。<br>有点不明觉厉是不是，请原谅我小学英语水平………<br>从API的字面意思也可以看出，我们已经找到核心了，接着点进去看。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line">public static final boolean addLinks(@NonNull Spannable text, @LinkifyMask int mask) &#123;</div><div class="line">        if (mask == 0) &#123;</div><div class="line">            return false;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        URLSpan[] old = text.getSpans(0, text.length(), URLSpan.class);</div><div class="line"></div><div class="line">        for (int i = old.length - 1; i &gt;= 0; i--) &#123;</div><div class="line">            text.removeSpan(old[i]);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        ArrayList&lt;LinkSpec&gt; links = new ArrayList&lt;LinkSpec&gt;();</div><div class="line"></div><div class="line">        if ((mask &amp; WEB_URLS) != 0) &#123;</div><div class="line">            gatherLinks(links, text, Patterns.AUTOLINK_WEB_URL,</div><div class="line">                new String[] &#123; &quot;http://&quot;, &quot;https://&quot;, &quot;rtsp://&quot; &#125;,</div><div class="line">                sUrlMatchFilter, null);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        if ((mask &amp; EMAIL_ADDRESSES) != 0) &#123;</div><div class="line">            gatherLinks(links, text, Patterns.AUTOLINK_EMAIL_ADDRESS,</div><div class="line">                new String[] &#123; &quot;mailto:&quot; &#125;,</div><div class="line">                null, null);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        if ((mask &amp; PHONE_NUMBERS) != 0) &#123;</div><div class="line">            gatherTelLinks(links, text);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        if ((mask &amp; MAP_ADDRESSES) != 0) &#123;</div><div class="line">            gatherMapLinks(links, text);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        pruneOverlaps(links);</div><div class="line"></div><div class="line">        if (links.size() == 0) &#123;</div><div class="line">            return false;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        for (LinkSpec link: links) &#123;</div><div class="line">            applyLink(link.url, link.start, link.end, text);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        return true;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>方法代码不长，也很容易理解，可以发现，先把传进来的text里所有的URLSpan类型的span拿出来，全部移除掉，其实看到这我们就应该清楚了，下面肯定是按照自己的逻辑作出新的URLSpan加进去。<br>实际上也正是这样，下面的几个if就是在做这项工作，可以看到第一个if就是用来匹配网址的，gatherLinks这个方法从名字上看就能看出是在收集Links，然后统一放到links这个ArrayList中，至于LinkSpec，他是Linkify这个java文件中写的另外一个类，长这样</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">class LinkSpec &#123;</div><div class="line">    String url;</div><div class="line">    int start;</div><div class="line">    int end;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>最后的applyLink就是setSpan操作了，我们点进去印证一下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">private static final void applyLink(String url, int start, int end, Spannable text) &#123;</div><div class="line">    URLSpan span = new URLSpan(url);</div><div class="line"></div><div class="line">    text.setSpan(span, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>果然如此，到此我们其实已经摸清楚了autoLink的工作机制，其实就是利用自己的正则匹配出文本中的网址，然后创建URLSpan  setSpan而已。</p>
+<p>我们回过头来看一下一开始的四个问题，应该能感觉到，解决问题的方式都藏在URLSpan里</p>
+<p>打开URLSpan看一眼</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div></pre></td><td class="code"><pre><div class="line">public class URLSpan extends ClickableSpan implements ParcelableSpan &#123;</div><div class="line"></div><div class="line">    private final String mURL;</div><div class="line"></div><div class="line">    public URLSpan(String url) &#123;</div><div class="line">        mURL = url;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public URLSpan(Parcel src) &#123;</div><div class="line">        mURL = src.readString();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public int getSpanTypeId() &#123;</div><div class="line">        return getSpanTypeIdInternal();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /** @hide */</div><div class="line">    public int getSpanTypeIdInternal() &#123;</div><div class="line">        return TextUtils.URL_SPAN;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public int describeContents() &#123;</div><div class="line">        return 0;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void writeToParcel(Parcel dest, int flags) &#123;</div><div class="line">        writeToParcelInternal(dest, flags);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /** @hide */</div><div class="line">    public void writeToParcelInternal(Parcel dest, int flags) &#123;</div><div class="line">        dest.writeString(mURL);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public String getURL() &#123;</div><div class="line">        return mURL;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void onClick(View widget) &#123;</div><div class="line">        Uri uri = Uri.parse(getURL());</div><div class="line">        Context context = widget.getContext();</div><div class="line">        Intent intent = new Intent(Intent.ACTION_VIEW, uri);</div><div class="line">        intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());</div><div class="line">        try &#123;</div><div class="line">            context.startActivity(intent);</div><div class="line">        &#125; catch (ActivityNotFoundException e) &#123;</div><div class="line">            Log.w(&quot;URLSpan&quot;, &quot;Actvity was not found for intent, &quot; + intent.toString());</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>忽略掉那几个get方法和Parcelable的方法，就只剩个<code>onClick(View widget)</code>，可以看到，onClick里是用Intent打开了外部浏览器，那么问题3的根源找到了，怎么解决呢？我们自己定义一个URLSpan子类重写<code>onClick(View widget)</code>换成我们自己的逻辑不就行了，然后再学着Linkify一样把原本Linkify加好的URLSpan换成我们的。<br>不着急先动手，先接着看下去，看看其他三个问题根源在哪？<br>点进URLSpan的父类ClickableSpan看看</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">public abstract class ClickableSpan extends CharacterStyle implements UpdateAppearance &#123;</div><div class="line"></div><div class="line">    public abstract void onClick(View widget);</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void updateDrawState(TextPaint ds) &#123;</div><div class="line">        ds.setColor(ds.linkColor);</div><div class="line">        ds.setUnderlineText(true);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>好吧，问题1和2的根源也找到了，<code>updateDrawState(TextPaint ds)</code>方法中TextPaint 都提供给我们了，那还不是想怎么搞就怎么搞么，依然靠自定义URLSpan子类重写updateDrawState解决。</p>
+<p>然后？问题4呢？好像没看到和问题4相关的代码</p>
+<p>I select die</p>
+<p>回过来想一下也是啊，长按点击事件最后都是TextView的事，关这什么事呢，既然是事件，那就去TextView的onTouchEvent瞄一眼吧</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div></pre></td><td class="code"><pre><div class="line">public boolean onTouchEvent(MotionEvent event) &#123;</div><div class="line">       final int action = event.getActionMasked();</div><div class="line">       if (mEditor != null) &#123;</div><div class="line">           mEditor.onTouchEvent(event);</div><div class="line"></div><div class="line">           if (mEditor.mSelectionModifierCursorController != null &amp;&amp;</div><div class="line">                   mEditor.mSelectionModifierCursorController.isDragAcceleratorActive()) &#123;</div><div class="line">               return true;</div><div class="line">           &#125;</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       final boolean superResult = super.onTouchEvent(event);</div><div class="line"></div><div class="line">       if (mEditor != null &amp;&amp; mEditor.mDiscardNextActionUp &amp;&amp; action == MotionEvent.ACTION_UP) &#123;</div><div class="line">           mEditor.mDiscardNextActionUp = false;</div><div class="line"></div><div class="line">           if (mEditor.mIsInsertionActionModeStartPending) &#123;</div><div class="line">               mEditor.startInsertionActionMode();</div><div class="line">               mEditor.mIsInsertionActionModeStartPending = false;</div><div class="line">           &#125;</div><div class="line">           return superResult;</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       final boolean touchIsFinished = (action == MotionEvent.ACTION_UP) &amp;&amp;</div><div class="line">               (mEditor == null || !mEditor.mIgnoreActionUpEvent) &amp;&amp; isFocused();</div><div class="line"></div><div class="line">        if ((mMovement != null || onCheckIsTextEditor()) &amp;&amp; isEnabled()</div><div class="line">               &amp;&amp; mText instanceof Spannable &amp;&amp; mLayout != null) &#123;</div><div class="line">           boolean handled = false;</div><div class="line"></div><div class="line">           if (mMovement != null) &#123;</div><div class="line">               handled |= mMovement.onTouchEvent(this, (Spannable) mText, event);</div><div class="line">           &#125;</div><div class="line"></div><div class="line">           final boolean textIsSelectable = isTextSelectable();</div><div class="line">           if (touchIsFinished &amp;&amp; mLinksClickable &amp;&amp; mAutoLinkMask != 0 &amp;&amp; textIsSelectable) &#123;</div><div class="line">               ClickableSpan[] links = ((Spannable) mText).getSpans(getSelectionStart(),</div><div class="line">                       getSelectionEnd(), ClickableSpan.class);</div><div class="line"></div><div class="line">               if (links.length &gt; 0) &#123;</div><div class="line">                   links[0].onClick(this);</div><div class="line">                   handled = true;</div><div class="line">               &#125;</div><div class="line">           &#125;</div><div class="line"></div><div class="line">           if (touchIsFinished &amp;&amp; (isTextEditable() || textIsSelectable)) &#123;</div><div class="line">               final InputMethodManager imm = InputMethodManager.peekInstance();</div><div class="line">               viewClicked(imm);</div><div class="line">               if (!textIsSelectable &amp;&amp; mEditor.mShowSoftInputOnFocus) &#123;</div><div class="line">                   handled |= imm != null &amp;&amp; imm.showSoftInput(this, 0);</div><div class="line">               &#125;</div><div class="line"></div><div class="line">               mEditor.onTouchUpEvent(event);</div><div class="line"></div><div class="line">               handled = true;</div><div class="line">           &#125;</div><div class="line"></div><div class="line">           if (handled) &#123;</div><div class="line">               return true;</div><div class="line">           &#125;</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       return superResult;</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<p>TextView的onTouchEvent代码并不多，也都不难理解，首先如果mEditor != null会将touch事件交给mEditor处理，这个mEditor其实是和EditText有关系的，没有使用EditText这里应该是不会被创建的。<br>我们跳过mEditor有关的代码，接下来发现交给了super.onTouchEvent(event)父类去处理，而LongClick就是在这里被处理的，至于父类怎么处理的LongClick我们先不去研究，先找到UrlSpan的click是什么时候被调用的。<br>继续往下看，可以发现一段比较关键的代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">if ((mMovement != null || onCheckIsTextEditor()) &amp;&amp; isEnabled()</div><div class="line">                &amp;&amp; mText instanceof Spannable &amp;&amp; mLayout != null) &#123;</div><div class="line">            boolean handled = false;</div><div class="line">            if (mMovement != null) &#123;</div><div class="line">                handled |= mMovement.onTouchEvent(this, (Spannable) mText, event);</div><div class="line">            &#125;</div><div class="line">            final boolean textIsSelectable = isTextSelectable();</div><div class="line">            if (touchIsFinished &amp;&amp; mLinksClickable &amp;&amp; mAutoLinkMask != 0 &amp;&amp; textIsSelectable) &#123;</div><div class="line">                ClickableSpan[] links = ((Spannable) mText).getSpans(getSelectionStart(),</div><div class="line">                        getSelectionEnd(), ClickableSpan.class);</div><div class="line"></div><div class="line">                if (links.length &gt; 0) &#123;</div><div class="line">                    links[0].onClick(this);</div><div class="line">                    handled = true;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里会判断mMovement != null，如果不为空，会调用mMovement的onTouchEvent，那么这个mMovement又是个什么，点进去可以看到</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">public interface MovementMethod &#123;</div><div class="line">    public void initialize(TextView widget, Spannable text);</div><div class="line">    public boolean onKeyDown(TextView widget, Spannable text, int keyCode, KeyEvent event);</div><div class="line">    public boolean onKeyUp(TextView widget, Spannable text, int keyCode, KeyEvent event);</div><div class="line">    public boolean onKeyOther(TextView view, Spannable text, KeyEvent event);</div><div class="line"></div><div class="line">    public void onTakeFocus(TextView widget, Spannable text, int direction);</div><div class="line">    public boolean onTrackballEvent(TextView widget, Spannable text, MotionEvent event);</div><div class="line">    public boolean onTouchEvent(TextView widget, Spannable text, MotionEvent event);</div><div class="line">    public boolean onGenericMotionEvent(TextView widget, Spannable text, MotionEvent event);</div><div class="line">    public boolean canSelectArbitrarily();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这是一个接口，有一系列关于事件的方法，我觉得大致可以理解成为TextView提供事件响应服务的类，既然是一个接口，肯定是有实现类来提供具体功能的，那么和我们URLSpan又有什么关系？<br>不知道大家有没有注意到，其实在我们刚开始寻找mAutoLinkMask找到setText方法里已经看到MovementMethod了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">if (Linkify.addLinks(s2, mAutoLinkMask)) &#123;</div><div class="line">     text = s2;</div><div class="line">     type = (type == BufferType.EDITABLE) ? BufferType.EDITABLE : BufferType.SPANNABLE;</div><div class="line">      mText = text;</div><div class="line">      if (mLinksClickable &amp;&amp; !textCanBeSelected()) &#123;</div><div class="line">           setMovementMethod(LinkMovementMethod.getInstance());</div><div class="line">      &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>从这段代码来看，当Linkify.addLinks(s2, mAutoLinkMask)之后，如果mLinksClickable 为true和textCanBeSelected()为false的情况下，会给mMovement赋值，值就是MovementMethod 的实现类LinkMovementMethod，我们先不管LinkMovementMethod里面到底是什么，先看这个if条件能不能成立<br>mLinksClickable在TextView中可以找到</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">private boolean mLinksClickable = true;</div></pre></td></tr></table></figure>
+<p>本身就是true，而其唯一一次变动是在构造方法中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">case com.android.internal.R.styleable.TextView_linksClickable:</div><div class="line">     mLinksClickable = a.getBoolean(attr, true);</div><div class="line">     break;</div></pre></td></tr></table></figure>
+<p>显然，这里值一定是true的<br>那么textCanBeSelected()呢？点开这个方法来看</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">boolean textCanBeSelected() &#123;</div><div class="line">    if (mMovement == null || !mMovement.canSelectArbitrarily()) return false;</div><div class="line">    return isTextEditable() ||</div><div class="line">            (isTextSelectable() &amp;&amp; mText instanceof Spannable &amp;&amp; isEnabled());</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>先看第一句，<code>if (mMovement == null || !mMovement.canSelectArbitrarily()) return false;</code>这是又给绕回来了，当mMovement == null时就return false，那此时mMovement到底是不是null呢，答案其实是不确定的，因为在TextView中除了setText，还有一些地方有mMovement 赋值的操作，比如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">public void setTextIsSelectable(boolean selectable) &#123;</div><div class="line">        if (!selectable &amp;&amp; mEditor == null) return; // false is default value with no edit data</div><div class="line"></div><div class="line">        createEditorIfNeeded();</div><div class="line">        if (mEditor.mTextIsSelectable == selectable) return;</div><div class="line"></div><div class="line">        mEditor.mTextIsSelectable = selectable;</div><div class="line">        setFocusableInTouchMode(selectable);</div><div class="line">        setFocusable(selectable);</div><div class="line">        setClickable(selectable);</div><div class="line">        setLongClickable(selectable);</div><div class="line"></div><div class="line">        // mInputType should already be EditorInfo.TYPE_NULL and mInput should be null</div><div class="line"></div><div class="line">        setMovementMethod(selectable ? ArrowKeyMovementMethod.getInstance() : null);</div><div class="line">        setText(mText, selectable ? BufferType.SPANNABLE : BufferType.NORMAL);</div><div class="line"></div><div class="line">        // Called by setText above, but safer in case of future code changes</div><div class="line">        mEditor.prepareCursorControllers();</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>如果我们设置了TextView的文本可以被选择，那么mMovement在这里就会被赋值为ArrowKeyMovementMethod的实例，mMovement就不为null了，那mMovement.canSelectArbitrarily()呢，这个简单，看看ArrowKeyMovementMethod的实现会发现</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public boolean canSelectArbitrarily() &#123;</div><div class="line">    return true;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>是一定为true的，那么这种情况下这个if判断就不成立，textCanBeSelected会return true<br>那么我们再回到</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">if (mLinksClickable &amp;&amp; !textCanBeSelected()) &#123;</div><div class="line">     setMovementMethod(LinkMovementMethod.getInstance());</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>也就是说这里mMovement会不会被赋值成LinkMovementMethod的实例还不一定呢。</p>
+<p>那么我们现在假设两种情况，第一种是mMovement被赋值为LinkMovementMethod的实例，第二种是mMovement被赋值为ArrowKeyMovementMethod的实例。<br>无论是哪种，代码都会走到MovementMethod的onTouchEvent中，我们到各自的实现类里去看一看。</p>
+<p>先看第一种LinkMovementMethod的onTouchEvent方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">public boolean onTouchEvent(TextView widget, Spannable buffer,</div><div class="line">                                MotionEvent event) &#123;</div><div class="line">        int action = event.getAction();</div><div class="line"></div><div class="line">        if (action == MotionEvent.ACTION_UP ||</div><div class="line">            action == MotionEvent.ACTION_DOWN) &#123;</div><div class="line">            int x = (int) event.getX();</div><div class="line">            int y = (int) event.getY();</div><div class="line"></div><div class="line">            x -= widget.getTotalPaddingLeft();</div><div class="line">            y -= widget.getTotalPaddingTop();</div><div class="line"></div><div class="line">            x += widget.getScrollX();</div><div class="line">            y += widget.getScrollY();</div><div class="line"></div><div class="line">            Layout layout = widget.getLayout();</div><div class="line">            int line = layout.getLineForVertical(y);</div><div class="line">            int off = layout.getOffsetForHorizontal(line, x);</div><div class="line"></div><div class="line">            ClickableSpan[] link = buffer.getSpans(off, off, ClickableSpan.class);</div><div class="line"></div><div class="line">            if (link.length != 0) &#123;</div><div class="line">                if (action == MotionEvent.ACTION_UP) &#123;</div><div class="line">                    link[0].onClick(widget);</div><div class="line">                &#125; else if (action == MotionEvent.ACTION_DOWN) &#123;</div><div class="line">                    Selection.setSelection(buffer,</div><div class="line">                                           buffer.getSpanStart(link[0]),</div><div class="line">                                           buffer.getSpanEnd(link[0]));</div><div class="line">                &#125;</div><div class="line"></div><div class="line">                return true;</div><div class="line">            &#125; else &#123;</div><div class="line">                Selection.removeSelection(buffer);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        return super.onTouchEvent(widget, buffer, event);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>我们直接跳过x、y和Layout的代码，立刻就可以看到这里根据off取出了所有的ClickableSpan，并调用了ClickableSpan的onClick方法，而URLSpan是继承自ClickableSpan的，它就是一个ClickableSpan，这里还有一点要注意的，就是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">if (action == MotionEvent.ACTION_UP) &#123;</div><div class="line">    link[0].onClick(widget);</div></pre></td></tr></table></figure>
+<p>它是在 MotionEvent.ACTION_UP的时候才被调用的！<br>它是在 MotionEvent.ACTION_UP的时候才被调用的！<br>它是在 MotionEvent.ACTION_UP的时候才被调用的！</p>
+<p>关键的事情说三遍！</p>
+<p>为什么这个这么关键呢，因为我们找到了一开始提的问题4的根源了，这里其实和View的onLongClick根本没什么合作互动嘛，只要是在手指抬起事件传递过来一定会被调用！</p>
+<p>看到这我隐隐的觉得ArrowKeyMovementMethod不用看了，它的onTouchEvent一定和URLSpan没什么毛线关系了，但是标题上都写了从源码的角度理解，装了这么大一个B了，必须得严谨，严谨！</p>
+<p>事实证明，的确是毛线关系都没有…..代码就不贴了，好长，真的没关系，各位老爷们不信可以自己去看。</p>
+<p>wo cong wei jian guo you ru ci ren zhen cheng shi zhi ren</p>
+<p>那如果我们设置了TextView的IsSelectable，mMovement在这里是ArrowKeyMovementMethod的实例，岂不是autoLink点击事件就失效了，其实并不是这样，让我们坐时光机再回到TextView的onTouchEvent方法（绕来绕去你晕不晕！）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">if (mMovement != null) &#123;</div><div class="line">    handled |= mMovement.onTouchEvent(this, (Spannable) mText, event);</div><div class="line">&#125;</div><div class="line">final boolean textIsSelectable = isTextSelectable();</div><div class="line">if (touchIsFinished &amp;&amp; mLinksClickable &amp;&amp; mAutoLinkMask != 0 &amp;&amp; textIsSelectable) &#123;</div><div class="line">    ClickableSpan[] links = ((Spannable) mText).getSpans(getSelectionStart(),</div><div class="line">            getSelectionEnd(), ClickableSpan.class);</div><div class="line"></div><div class="line">    if (links.length &gt; 0) &#123;</div><div class="line">        links[0].onClick(this);</div><div class="line">        handled = true;</div><div class="line">    &#125;</div><div class="line"> &#125;</div></pre></td></tr></table></figure>
+<p>可以发现，谷歌霸霸其实已经帮我们处理好这种情况了，当textIsSelectable为true的时候，会直接走下面的if把所有的ClickableSpan取出来执行onClick，赞美谷歌霸霸。<br>这里依然有一点要注意，就是if判断里有一句touchIsFinished，来看一下它是怎么被赋值的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">final boolean touchIsFinished = (action == MotionEvent.ACTION_UP) &amp;&amp;</div><div class="line">          (mEditor == null || !mEditor.mIgnoreActionUpEvent) &amp;&amp; isFocused();</div></pre></td></tr></table></figure>
+<p>恩，一眼就可以看出，又是 MotionEvent.ACTION_UP ，我觉得我已经不用说什么了….</p>
+<p>到了这，我们其实已经摸清楚了URLSpan的onClick是怎么被调用的了，也摸清楚了和长按冲突的原因，总结一句话就是无论有没有长按，当MotionEvent.ACTION_UP传入TextView时，一定会触发autoLink的点击事件。</p>
+<p>知道了原因，解决起来就简单多了，有一个比较简单的方法就是可以在onLongClick中给TextView设置一个Tag，然后在URLSpan的onClick中取出这个Tag，只要Tag存在，就return，不再执行URLSpan的onClick，这和解决问题1、2、3的思路一样，都需要我们自定义一个URLSpan的子类替代掉原本的URLSpan。</p>
+<p>好，下面我们就动手写代码去解决这4个问题</p>
+<p>先写一个自己的AutolinkSpan</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">public class AutolinkSpan extends URLSpan &#123;</div><div class="line"></div><div class="line">    public AutolinkSpan(String url) &#123;</div><div class="line">        super(url);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void onClick(View widget) &#123;</div><div class="line">        if (widget.getTag(R.id.long_click) != null) &#123;</div><div class="line">            widget.setTag(R.id.long_click, null);</div><div class="line">            return;</div><div class="line">        &#125;</div><div class="line">        Intent i = new Intent(widget.getContext(),WebViewActivity.class);</div><div class="line">        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);</div><div class="line">        widget.getContext().startActivity(i);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void updateDrawState(TextPaint ds) &#123;</div><div class="line">        ds.setColor(ds.getColor());</div><div class="line">        ds.setUnderlineText(false);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>当然updateDrawState方法里那两句话其实是两句废话，和不写是一样的……..</p>
+<p>TextView onLongClick的改动</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">textview.setOnLongClickListener(new OnLongClickListener() &#123;</div><div class="line">     @Override</div><div class="line">     public boolean onLongClick(View v) &#123;</div><div class="line">          textview.setTag(R.id.long_click,true);</div><div class="line">          return true;</div><div class="line">     &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>最后，是将Linkify添加的URLSpan全部换成我们自己的AutolinkSpan，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">Spannable spannable = (Spannable) textview.getText();</div><div class="line">       URLSpan[] spans = spannable.getSpans(0, spannable.length(), URLSpan.class);</div><div class="line">       for (int i = 0; i &lt; spans.length; i++) &#123;</div><div class="line">           String url = spans[i].getURL();</div><div class="line">           int index = spannable.toString().indexOf(url);</div><div class="line">           int end = index + url.length();</div><div class="line">           if (index == -1) &#123;</div><div class="line">               if (url.contains(&quot;http://&quot;)) &#123;</div><div class="line">                   url = url.replace(&quot;http://&quot;, &quot;&quot;);</div><div class="line">               &#125; else if (url.contains(&quot;https://&quot;)) &#123;</div><div class="line">                   url = url.replace(&quot;https://&quot;, &quot;&quot;);</div><div class="line">               &#125; else if (url.contains(&quot;rtsp://&quot;)) &#123;</div><div class="line">                   url = url.replace(&quot;rtsp://&quot;, &quot;&quot;);</div><div class="line">               &#125;</div><div class="line">               index = spannable.toString().indexOf(url);</div><div class="line">               end = index + url.length();</div><div class="line">           &#125;</div><div class="line">           if (index != -1) &#123;</div><div class="line">               spannable.removeSpan(spans[i]);</div><div class="line">               spannable.setSpan(new AutolinkSpan(spans[i].getURL()), index</div><div class="line">                       , end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);</div><div class="line">           &#125;</div><div class="line">       &#125;</div></pre></td></tr></table></figure>
+<p>一定要在setText之后调用，因为从之前的分析可以知道URLSpan是在setText时才被生成设置的。<br>至于代码中好几个if的url.contains是因为URLSpan.getURL()拿到的url网址一定是<code>http://</code>开头，比如我们在setText的时候传的字符串是 <code>www.google.com</code>，URLSpan.getURL()拿到后会变为<code>http://www.google.com</code>，这个时候再去<code>indexOf(&quot;http://www.google.com&quot;)</code>肯定会得到-1。至于这是怎么回事，其实很简单，在Linkify中，有一个makeUrl方法，就是它干的好事！代码就不贴了，有兴趣的朋友可以自己去看。</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/08/25/android/code/TextView autoLink小技巧/" data-id="cj75t7ivd001j2dpjy9u8h40k" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/08/25/android/code/TextView autoLink小技巧/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/09/04/android/github/github hexo 博客迁移 /" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    (no title)
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2017/08/22/mysql/mac导出:导入mysql/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">mac导出/导入mysql</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="uyan_frame"></div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">recent</h3>
+        <div class="widget">
+            <ul id="recent-post" class="no-thumbnail">
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/09/04/android/github/github hexo 博客迁移 /" class="title"></a></p>
+                            <p class="item-date"><time datetime="2017-09-04T03:45:36.000Z" itemprop="datePublished">2017-09-04</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/code/">code</a></p>
+                            <p class="item-title"><a href="/2017/08/25/android/code/TextView autoLink小技巧/" class="title">TextView autoLink小技巧</a></p>
+                            <p class="item-date"><time datetime="2017-08-25T06:07:37.000Z" itemprop="datePublished">2017-08-25</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/mysql/">mysql</a></p>
+                            <p class="item-title"><a href="/2017/08/22/mysql/mac导出:导入mysql/" class="title">mac导出/导入mysql</a></p>
+                            <p class="item-date"><time datetime="2017-08-22T11:26:44.000Z" itemprop="datePublished">2017-08-22</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/linux/">linux</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/linux/vim/">vim</a></p>
+                            <p class="item-title"><a href="/2017/08/18/linux/vim的常用命令/" class="title">vim的常用命令</a></p>
+                            <p class="item-date"><time datetime="2017-08-18T06:59:13.000Z" itemprop="datePublished">2017-08-18</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/git/">git</a></p>
+                            <p class="item-title"><a href="/2017/07/19/git/git commit 编写风格模板/" class="title">git commit 编写风格模板</a></p>
+                            <p class="item-date"><time datetime="2017-07-19T12:15:00.000Z" itemprop="datePublished">2017-07-19</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">categories</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">9</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">3</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/linux/vim/">vim</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">archives</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tags</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tag cloud</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 13.33px;">code</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/github/" style="font-size: 10px;">github</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 10px;">markdown</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/node/" style="font-size: 16.67px;">node</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">links</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 Ernest Chang<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2142274"></script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>
