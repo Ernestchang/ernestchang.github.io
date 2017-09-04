@@ -89,7 +89,7 @@ deploy:
    type: git 
    repo: git@github.com:Ernestchang/ernestchang.github.io.git
   #  repo: https://github.com/Ernestchang/ernestchang.github.io.git
-  #  branch: master
+   branch: master
 
 
 # 头像
