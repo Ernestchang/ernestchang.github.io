@@ -5,18 +5,18 @@
     
     <title>github hexo博客多电脑迁移 | The Old Man and the Sea</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="使用Github Page + Hexo可以搭建出非常简洁和个性化的博客系统，本博客就是使用的Hexo的Next主题挂载在Github Page上的。现在的问题是，如果我想要在多台设备中进行博文的更新和推送，或者我重新安装系统，我原来的博客配置全部没有了如何进行数据和配置的恢复，今天我们就这介绍这么一种方法，我也刚刚成功的在一个新系统中配置好了博客环境。其核心就是在博客挂载的Github仓库中新建">
+    <meta name="description" content="利用github的不同分支来分别保存网站静态文件与hexo源码（md原始文件及主题等），实现在不同电脑上都可以自由写博客。 其核心就是在博客挂载的Github仓库中新建一个branch分支hexo，其中默认的master进行博文的deploy工作，hexo保存博客的源文件以及环境配置和主题配置文件（设置hexo为默认主分支），这样我们每次重新配置系统只需要从Github中clone一下，然后再进行">
 <meta name="keywords" content="github,hexo">
 <meta property="og:type" content="article">
 <meta property="og:title" content="github hexo博客多电脑迁移">
 <meta property="og:url" content="http://yoursite.com/2017/09/04/android/github/github hexo 博客迁移 /index.html">
 <meta property="og:site_name" content="The Old Man and the Sea">
-<meta property="og:description" content="使用Github Page + Hexo可以搭建出非常简洁和个性化的博客系统，本博客就是使用的Hexo的Next主题挂载在Github Page上的。现在的问题是，如果我想要在多台设备中进行博文的更新和推送，或者我重新安装系统，我原来的博客配置全部没有了如何进行数据和配置的恢复，今天我们就这介绍这么一种方法，我也刚刚成功的在一个新系统中配置好了博客环境。其核心就是在博客挂载的Github仓库中新建">
+<meta property="og:description" content="利用github的不同分支来分别保存网站静态文件与hexo源码（md原始文件及主题等），实现在不同电脑上都可以自由写博客。 其核心就是在博客挂载的Github仓库中新建一个branch分支hexo，其中默认的master进行博文的deploy工作，hexo保存博客的源文件以及环境配置和主题配置文件（设置hexo为默认主分支），这样我们每次重新配置系统只需要从Github中clone一下，然后再进行">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2017-09-04T07:35:30.000Z">
+<meta property="og:updated_time" content="2017-09-04T07:40:56.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="github hexo博客多电脑迁移">
-<meta name="twitter:description" content="使用Github Page + Hexo可以搭建出非常简洁和个性化的博客系统，本博客就是使用的Hexo的Next主题挂载在Github Page上的。现在的问题是，如果我想要在多台设备中进行博文的更新和推送，或者我重新安装系统，我原来的博客配置全部没有了如何进行数据和配置的恢复，今天我们就这介绍这么一种方法，我也刚刚成功的在一个新系统中配置好了博客环境。其核心就是在博客挂载的Github仓库中新建">
+<meta name="twitter:description" content="利用github的不同分支来分别保存网站静态文件与hexo源码（md原始文件及主题等），实现在不同电脑上都可以自由写博客。 其核心就是在博客挂载的Github仓库中新建一个branch分支hexo，其中默认的master进行博文的deploy工作，hexo保存博客的源文件以及环境配置和主题配置文件（设置hexo为默认主分支），这样我们每次重新配置系统只需要从Github中clone一下，然后再进行">
     
 
     
@@ -254,34 +254,52 @@
         <div class="article-entry" itemprop="articleBody">
         
             
-            <p>使用Github Page + Hexo可以搭建出非常简洁和个性化的博客系统，本博客就是使用的Hexo的Next主题挂载在Github Page上的。现在的问题是，如果我想要在多台设备中进行博文的更新和推送，或者我重新安装系统，我原来的博客配置全部没有了如何进行数据和配置的恢复，今天我们就这介绍这么一种方法，我也刚刚成功的在一个新系统中配置好了博客环境。<br><strong>其核心就是在博客挂载的Github仓库中新建一个branch分支hexo，其中默认的master进行博文的deploy工作，hexo保存博客的源文件以及环境配置和主题配置文件（设置hexo为默认主分支），这样我们每次重新配置系统只需要从Github中clone一下，然后再进行几步简单环境安装配置操作就完成了。</strong><br>具体步骤如下：<br>1.建立master和hexo两个分支<br>2.安装Node.js<br>3.安装git<br>4.安装hexo<br>5.git clone<br>6.更新theme主题文件配置<br>7.npm安装配置hexo<br>下面我们一步一步来完成！</p>
-<h3 id="建立master和hexo两个分支"><a href="#建立master和hexo两个分支" class="headerlink" title="建立master和hexo两个分支"></a>建立master和hexo两个分支</h3><p>其中master分支是默认建立好的，我们在<code>./_config.yml</code>文件中配置deploy布置信息，设置布置生成的静态文件的分支为<code>master</code>，使用<code>hexo deploy</code>命令会自动的将这些静态文件push到Github中去；<br>然后新建一个分支hexo，保存我们所有的源文件，这里需要手动<code>git push</code>，另外，由于hexo中<code>.gitignore</code>文件设置了忽略，所以<code>./theme</code>文件中的主题配置信息不会被push到Github中，所以这里新建一个<code>setting</code>文件夹保存<code>./theme</code>中的主题配置文件，进行备份更新。<br>将hexo分支设置为默认主分支，我们之后只需要通过hexo分支进行博文的更新即可，hexo分支保存博文源文件（Markdown文件），通过<code>hexo g -d</code>命令会自动将生成的静态文件push到master分支上去。</p>
-<h3 id="安装Node-js"><a href="#安装Node-js" class="headerlink" title="安装Node.js"></a>安装Node.js</h3><p>对于一台新的电脑进行配置，我们首先需要按如下步骤进行环境的安装配置。</p>
-<p>首先安装Node.js，最佳方法推荐nvm；<br>cURL:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">curl https://raw.github.com/creationix/nvm/master/install.sh | sh</div></pre></td></tr></table></figure>
-<p>Wget:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">wget -qO- https://raw.github.com/creationix/nvm/master/install.sh | sh</div></pre></td></tr></table></figure>
-<p>安装完成后，重启终端并执行下列命令即可安装 Node.js。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">nvm install stable</div></pre></td></tr></table></figure>
-<h3 id="安装git"><a href="#安装git" class="headerlink" title="安装git"></a>安装git</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install git-core</div></pre></td></tr></table></figure>
-<h3 id="安装Hexo"><a href="#安装Hexo" class="headerlink" title="安装Hexo"></a>安装Hexo</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install -g hexo-cli</div></pre></td></tr></table></figure>
-<p>如果这里报错的话可以尝试添加<code>--unsafe</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install -g hexo-cli --unsafe</div></pre></td></tr></table></figure>
-<p>然后安装要用到的一些插件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">npm install hexo-generator-index --save</div><div class="line">npm install hexo-generator-archive --save</div><div class="line">npm install hexo-generator-category --save</div><div class="line">npm install hexo-generator-tag --save</div><div class="line">npm install hexo-server --save</div><div class="line">npm install hexo-deployer-git --save</div><div class="line">npm install hexo-deployer-heroku --save</div><div class="line">npm install hexo-deployer-rsync --save</div><div class="line">npm install hexo-deployer-openshift --save</div><div class="line">npm install hexo-renderer-marked@0.2 --save</div><div class="line">npm install hexo-renderer-stylus@0.2 --save</div><div class="line">npm install hexo-generator-feed@1 --save</div><div class="line">npm install hexo-generator-sitemap@1 --save</div><div class="line">npm install hexo-generator-search --save</div><div class="line">npm install hexo-generator-searchdb --save</div></pre></td></tr></table></figure>
-<h3 id="git-clone"><a href="#git-clone" class="headerlink" title="git clone"></a>git clone</h3><p>git clone复制repo源文件，其中由于<code>.gitignore</code>文件，hexo目录中的theme主题文件不会被push到Github中，所以我采取的方法是新建一个<code>setting</code>文件夹，将theme文件复制到<code>setting</code>文件中进行备份保存。</p>
+            <p><strong>利用github的不同分支来分别保存网站静态文件与hexo源码（md原始文件及主题等）</strong>，实现在不同电脑上都可以自由写博客。</p>
+<p><strong>其核心就是在博客挂载的Github仓库中新建一个branch分支hexo，其中默认的master进行博文的deploy工作，hexo保存博客的源文件以及环境配置和主题配置文件（设置hexo为默认主分支），这样我们每次重新配置系统只需要从Github中clone一下，然后再进行几步简单环境安装配置操作就完成了。</strong></p>
+<p>本文是建立在你已有hexo博客的情况下，教你如何把它迁移到另外一台电脑上，使两台电脑同时可以进行博客部署。下面就具体讲解一下如何实现吧！</p>
+<p><em>注：假设你有工作PC和个人PC，你原有的博客搭建在个人PC上，以下首先介绍个人PC上的操作步骤。</em></p>
+<h4 id="基于master和hexo两个分支"><a href="#基于master和hexo两个分支" class="headerlink" title="基于master和hexo两个分支"></a>基于master和hexo两个分支</h4><p>其中master分支是默认建立好的，我们在<code>./_config.yml</code>文件中配置deploy布置信息，设置布置生成的静态文件的分支为<code>master</code>，使用<code>hexo deploy</code>命令会自动的将这些静态文件push到Github中去；<br>然后新建一个分支hexo，保存我们所有的源文件，这里需要手动<code>git push</code>，另外，由于hexo中<code>.gitignore</code>文件设置了忽略，所以<code>./theme</code>文件中的主题配置信息不会被push到Github中，所以这里新建一个<code>setting</code>文件夹保存<code>./theme</code>中的主题配置文件，进行备份更新。<br>将hexo分支设置为默认主分支，我们之后只需要通过hexo分支进行博文的更新即可，hexo分支保存博文源文件（Markdown文件），通过<code>hexo g -d</code>命令会自动将生成的静态文件push到master分支上去。</p>
+<h2 id="个人PC"><a href="#个人PC" class="headerlink" title="个人PC"></a>个人PC</h2><h3 id="在github上新建远程仓库"><a href="#在github上新建远程仓库" class="headerlink" title="在github上新建远程仓库"></a>在github上新建远程仓库</h3><p>将原来的page项目删除，新建一个和原来名字一样的空项目。不用初始README.md，此时只有一个空的master分支。</p>
+<p>本地的目录不要动，到时候需要用你原来博客的配置和文章替换该项目中的文件夹。你可以把你本地的博客目录复制一份作为备份，以免误操作将原来的内容进行改动。</p>
+<h3 id="本地初始化一个Hexo项目"><a href="#本地初始化一个Hexo项目" class="headerlink" title="本地初始化一个Hexo项目"></a>本地初始化一个Hexo项目</h3><p>新建一个空目录，作为你的博客目录。进入该目录，右击<code>Git bash here</code>，初始化一个Hexo项目：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">hexo init</div><div class="line">npm install</div><div class="line">npm install hexo-deployer-git --save</div></pre></td></tr></table></figure>
+<p>然后用自己原来博客里的文件替换掉这里的<code>source\</code>, <code>scaffolds\</code>, <code>themes\</code>, <code>_config.yml</code>替换成自己原来博客里的。另外，由于hexo中<code>.gitignore</code>文件设置了忽略，所以<code>./theme</code>文件中的主题配置信息不会被push到Github中，所以这里新建一个<code>setting</code>文件夹保存<code>./theme</code>中的主题配置文件，进行备份更新。</p>
+<h3 id="将整个目录推送到master"><a href="#将整个目录推送到master" class="headerlink" title="将整个目录推送到master"></a>将整个目录推送到master</h3><p>要推送到master分支，首先要将该目录初始化为本地Git仓库：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">git init</div><div class="line"> </div><div class="line">//把博客目录下所有文件推送到master分支</div><div class="line">git remote add origin git@github:chown-jane-y/chown-jane-y.github.io.git</div><div class="line">git add .</div><div class="line">git commit -m &quot;first add hexo source code&quot;</div><div class="line">git push origin master</div></pre></td></tr></table></figure>
+<h3 id="在github上新建一个分支"><a href="#在github上新建一个分支" class="headerlink" title="在github上新建一个分支"></a>在github上新建一个分支</h3><p>新建一个分支hexo(名字可以自定义)，这时候hexo分支和master分支的内容一样，都是hexo的源文件。</p>
+<p>并把hexo设为默认分支，这样的话在另外一台机器上克隆下来就直接进入hexo分支，并且以后所有操作都是在hexo分支下完成。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">git checkout -b hexo</div><div class="line">git push origin hexo</div></pre></td></tr></table></figure>
+<p>为什么需要这个额外的分支呢？</p>
+<p>因为<code>hexo d</code>只把静态网页文件部署到master分支上，所以你换了另外一台电脑，就无法pull下来继续写博客了。有了hexo分支的话，就可以把hexo分支中的源文件(配置文件、主题样式等)pull下来，再<code>hexo g</code>的话就可以生成一模一样的静态文件了。</p>
+<h3 id="部署博客"><a href="#部署博客" class="headerlink" title="部署博客"></a>部署博客</h3><p>还是和以前一样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hexo g -d</div></pre></td></tr></table></figure>
+<p>博客已经成功部署到master分支，这时候到github查看两个分支的内容，hexo分支里是源文件，master里是静态文件。</p>
+<p><strong>注意：根目录下的_config.yml配置文件中branch一定要填master，否则hexo d就会部署到hexo分支下。</strong></p>
+<h2 id="工作PC"><a href="#工作PC" class="headerlink" title="工作PC"></a>工作PC</h2><p>个人PC上的工作已经完成了，下面讲一下如果你换到了另外一台电脑上，应该如何操作。</p>
+<h3 id="将博客项目克隆下来"><a href="#将博客项目克隆下来" class="headerlink" title="将博客项目克隆下来"></a>将博客项目克隆下来</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git clone git@github.com:Ernestchang/ernestchang.github.io.git</div></pre></td></tr></table></figure>
+<p>git clone复制repo源文件，其中由于<code>.gitignore</code>文件，hexo目录中的theme主题文件不会被push到Github中，所以我采取的方法是新建一个<code>setting</code>文件夹，将theme文件复制到<code>setting</code>文件中进行备份保存。</p>
 <h3 id="更新theme文件配置"><a href="#更新theme文件配置" class="headerlink" title="更新theme文件配置"></a>更新theme文件配置</h3><p>所以这里git clone之后要进行theme主题配置的更新，执行如下命令：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cp -rf ./setting/next ./themes</div></pre></td></tr></table></figure>
 <p>主题与文件夹的名字大家按自己定义的就好。</p>
-<h3 id="npm安装配置Hexo"><a href="#npm安装配置Hexo" class="headerlink" title="npm安装配置Hexo"></a>npm安装配置Hexo</h3><p>执行如下几条命令：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">npm install hexo</div><div class="line">npm install</div><div class="line">npm install hexo-deployer-git</div></pre></td></tr></table></figure>
-<p>千万不要执行<code>hexo init</code>，这样会重置hexo的配置文件，配好的文件就丢失啦！</p>
-<h3 id="测试使用"><a href="#测试使用" class="headerlink" title="测试使用"></a>测试使用</h3><p>这时就可以测试一下，使用<code>hexo server</code>、<code>hexo g -d</code>等命令测试一下同步的情况，然后不同的机器可以使用<code>git pull</code>进行数据的同步，每次更新博文就使用<code>git push origin hexo</code>更新到hexo分支上去即可！</p>
-<blockquote>
-<ul>
-<li>PS：今天解决了Next博客主页空白的问题，由于Github Page更新了，所以将<code>/theme/next/source/</code>下的<code>vendor</code>文件夹改名为<code>lib</code>文件夹，并在<code>/theme/next/source/_config.yml</code>文件中进行了对应的替换，最后更新到<code>setting</code>文件夹中。</li>
-</ul>
-</blockquote>
+<p>克隆下来的仓库和你在个人PC中的目录是一模一样的，所以可以在这基础上继续写博客了。但是由于<code>.gitignore</code>文件中过滤了<code>node_modules\</code>，所以克隆下来的目录里没有<code>node_modules\</code>，这是hexo所需要的组件，所以要在该目录中重新安装hexo，千万不要执行<strong><code>hexo init</code></strong>，这样会重置hexo的配置文件，配好的文件就丢失啦！</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">npm install hexo</div><div class="line">npm install</div><div class="line">npm install hexo-deployer-git --save</div></pre></td></tr></table></figure>
+<h3 id="新建一篇文章测试"><a href="#新建一篇文章测试" class="headerlink" title="新建一篇文章测试"></a>新建一篇文章测试</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hexo new &quot;work PC test&quot;</div></pre></td></tr></table></figure>
+<p>推送到hexo分支</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">git add .</div><div class="line">git commit -m &quot;add work PC test&quot;</div><div class="line">git push origin hexo</div></pre></td></tr></table></figure>
+<p>部署到master分支</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hexo g -d</div></pre></td></tr></table></figure>
+<h2 id="日常操作"><a href="#日常操作" class="headerlink" title="日常操作"></a>日常操作</h2><p>如果上面的过程都操作无误的话，你就可以在任何能联网的电脑上写博客啦。一般写博客的流程是下面这样。</p>
+<h3 id="写博客前"><a href="#写博客前" class="headerlink" title="写博客前"></a>写博客前</h3><p>不管你本地的仓库是否是最新的，都先pull一下，以防万一：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git pull origin hexo</div></pre></td></tr></table></figure>
+<p>把最新的pull下来，再开始撰写新的博客。</p>
+<h3 id="写博客"><a href="#写博客" class="headerlink" title="写博客"></a>写博客</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hexo new &quot;title&quot;</div></pre></td></tr></table></figure>
+<p>然后打开<code>source/_posts/title.md</code>，撰写博文。</p>
+<h3 id="写完博客"><a href="#写完博客" class="headerlink" title="写完博客"></a>写完博客</h3><p>先推送到hexo分支上：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">git add .</div><div class="line">git commit -m &quot;add article xxx&quot;</div><div class="line">git push origin hexo</div></pre></td></tr></table></figure>
+<p>最后部署到master分支上：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hexo g -d</div></pre></td></tr></table></figure>
+<p>整个流程大概就是这样。</p>
+<p>这时就可以测试一下，使用<code>hexo server</code>、<code>hexo g -d</code>等命令测试一下同步的情况，然后不同的机器可以使用<code>git pull</code>进行数据的同步，每次更新博文就使用<code>git push origin hexo</code>更新到hexo分支上去即可！</p>
 
         
         </div>
