@@ -3,18 +3,19 @@
 <head>
     <meta charset="utf-8">
     
-    <title>Archive | The Old Man and the Sea</title>
+    <title>The Old Man and the Sea</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="All any predator can do is to keep on trying.">
-<meta property="og:type" content="website">
+    <meta name="description" content="常用指令ls　 显示文件或目录 -l 列出文件详细信息l(list) -a 列出当前目录下所有文件及目录，包括隐藏的a(all)mkdir 创建目录 -p 创建目录，若无父目录，则创建p(parent)cd 切换目录touch 创建空文件echo 创建带有内容的文件。cat 查看文件内容cp 拷贝mv 移动或重命名rm 删除文件 -r 递归删除，可删除子目录及文件 -f 强制删除find 在文件系">
+<meta property="og:type" content="article">
 <meta property="og:title" content="The Old Man and the Sea">
-<meta property="og:url" content="http://yoursite.com/archives/page/3/index.html">
+<meta property="og:url" content="http://yoursite.com/2017/09/05/git/git常用指令详解/index.html">
 <meta property="og:site_name" content="The Old Man and the Sea">
-<meta property="og:description" content="All any predator can do is to keep on trying.">
+<meta property="og:description" content="常用指令ls　 显示文件或目录 -l 列出文件详细信息l(list) -a 列出当前目录下所有文件及目录，包括隐藏的a(all)mkdir 创建目录 -p 创建目录，若无父目录，则创建p(parent)cd 切换目录touch 创建空文件echo 创建带有内容的文件。cat 查看文件内容cp 拷贝mv 移动或重命名rm 删除文件 -r 递归删除，可删除子目录及文件 -f 强制删除find 在文件系">
 <meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2017-09-05T01:30:27.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="The Old Man and the Sea">
-<meta name="twitter:description" content="All any predator can do is to keep on trying.">
+<meta name="twitter:description" content="常用指令ls　 显示文件或目录 -l 列出文件详细信息l(list) -a 列出当前目录下所有文件及目录，包括隐藏的a(all)mkdir 创建目录 -p 创建目录，若无父目录，则创建p(parent)cd 切换目录touch 创建空文件echo 创建带有内容的文件。cat 查看文件内容cp 拷贝mv 移动或重命名rm 删除文件 -r 递归删除，可删除子目录及文件 -f 强制删除find 在文件系">
     
 
     
@@ -209,234 +210,275 @@
 </aside>
 
             
-            <section id="main"><div class="timeline timeline-wrap">
-    
-            <div class="timeline-row timeline-row-major">
-                <span class="node"><i class="fa fa-calendar"></i></span>
-                <h1 class="title">2016</h1>
-            </div>
+            <section id="main"><article id="post-git/git常用指令详解" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
         
-        <div class="timeline-row">
-            <span class="node"></span>
-            <div class="content">
-                
-    
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/2016/03/23/node/books/7days/01_getting_started/">七天学会NodeJS - NodeJS基础</a>
-        </h1>
-    
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p><code>常用指令ls　 显示文件或目录 -l 列出文件详细信息l(list) -a 列出当前目录下所有文件及目录，包括隐藏的a(all)mkdir 创建目录 -p 创建目录，若无父目录，则创建p(parent)cd 切换目录touch 创建空文件echo 创建带有内容的文件。cat 查看文件内容cp 拷贝mv 移动或重命名rm 删除文件 -r 递归删除，可删除子目录及文件 -f 强制删除find 在文件系统中搜索某文件wc 统计文本中行数、字数、字符数grep 在文本文件中查找某个字符串rmdir 删除空目录tree 树形结构显示目录，需要安装tree包pwd 显示当前目录</code></p>
+<p>git速度快，分布式，</p>
+<ul>
+<li>回到过去，未来，版本</li>
+<li>使用git会在当前目录下，产生一个.git文件，记录</li>
+<li>多端共享</li>
+<li>团队协作</li>
+</ul>
+<ul>
+<li>冲突需要手动解决</li>
+</ul>
+<ul>
+<li>svn和git对比</li>
+</ul>
+<ul>
+<li>每个文件夹里面都有.svn文件，速度慢</li>
+</ul>
+<ul>
+<li>svn叫集中式，集中存放，有一个中央服务器，如果中央服务器报废，所有的文件将瘫痪</li>
+<li>git叫分布式，每个人都有本地仓库，（也有中央服务器github,可有可无，github/gitlab）</li>
+<li>git 速度快</li>
+</ul>
+<p>git界面化管理（sourceTree）/命令行</p>
+<ul>
+<li>常见编辑器 webstrom sublime vscode</li>
+</ul>
+<p>查看git 版本号</p>
+<p><code>git --version</code></p>
+<p>清屏</p>
+<p><code>clear</code></p>
+<p>创建目录</p>
+<p><code>mkdir</code></p>
+<p>创建文件</p>
+<p><code>touch</code></p>
+<p>使用git</p>
+<ul>
+<li>查看 git配置是否 git config –list</li>
+<li>配置git用户</li>
+</ul>
+<p><code>git config --global user.name 名字`` git config --global user.email 邮箱</code></p>
+<p>初始化git仓库</p>
+<p><code>git init</code></p>
+<p>删除文件夹（删除.git文件夹）</p>
+<p><code>rm -rf .git</code></p>
+<p>创建文件</p>
+<p><code>touch index.txt</code></p>
+<p>查看文件</p>
+<p><code>cat index.txt</code></p>
+<p>vi 编辑</p>
+<p><code>vi index.txti 表示插入编辑esc+:wq保存并退出</code></p>
+<p>列出了(修改过的、新创建的、已经暂存但未提交的)文件，</p>
+<ul>
+<li>git status</li>
+</ul>
+<p>git 三个区</p>
+<ul>
+<li>工作区</li>
+</ul>
+<p><code>git add .``- . 点代表所有</code></p>
+<ul>
+<li>暂存区/过渡区</li>
+</ul>
+<p><code>git commit -m &#39;解释文件信息&#39;</code></p>
+<ul>
+<li>历史去/版本库<code>git log</code></li>
+</ul>
+<ul>
+<li>每次提交都会产生一个版本号</li>
+<li>查看日志git log</li>
+</ul>
+<ul>
+<li>提交github</li>
+</ul>
+<p>git log 查看日志</p>
+<p>git比较三个区不同</p>
+<p><code>git dirr</code></p>
+<ul>
+<li>直接写git dirr 比较的是工作区和暂缓区</li>
+<li>git diff –cached 比较的是暂缓区和历史区</li>
+<li>git diff (分支名)</li>
+<li>git diff master 工作区和版本库</li>
+</ul>
+<p>输出内容到文件中</p>
+<p><code>echo world &gt;&gt; index.txt</code></p>
+<p>根据字段搜索日志</p>
+<p><code>git log --author=&#39;搜索的关键字&#39;</code></p>
+<p>回滚工作区</p>
+<ul>
+<li>用暂存区的覆盖掉工作区</li>
+</ul>
+<p><code>git checkout &#39;文件&#39;</code></p>
+<p>将暂存区的内容回到上一次的暂存区</p>
+<p><code>git reset HEAD .</code></p>
+<p>回滚历史区</p>
+<p><code>git reset --hard 版本id</code></p>
+<ul>
+<li>强制用–历史区–覆盖到–工作区–和–缓存区</li>
+</ul>
+<p>打印以前所有的日志</p>
+<p><code>git reflog</code></p>
+<p>打印日志合并提示</p>
+<p><code>git log --graph</code></p>
+<p>查看分支</p>
+<p><code>git branch</code></p>
+<p>git分支管理</p>
+<ul>
+<li>只有提交过一次，才会产生master分支，否做分支是空的</li>
+<li>新建一个(dev)分支</li>
+</ul>
+<p><code>git branch dev</code></p>
+<ul>
+<li>切换到（dev）分支上</li>
+</ul>
+<p><code>git checkout dev</code></p>
+<ul>
+<li>删除(dev)分支</li>
+</ul>
+<ul>
+<li>切换到别的分支，删除要删除的分支</li>
+<li>在要删除的分支上，没有办法删除要删除的分支</li>
+</ul>
+<p><code>git branch -D dev</code></p>
+<ul>
+<li>创建(dev)分支并切换到（dev）分支上</li>
+</ul>
+<p><code>git checkout -b dev</code></p>
+<ul>
+<li><p>在工作区中创建一个文件，这个文件不属于任何分支</p>
+</li>
+<li><p>只有提交过一次，此时两个分支才无任何关系</p>
+</li>
+<li><p>合并分支</p>
+<p><code>git merge &#39;要合并的分支名&#39;</code></p>
+</li>
+</ul>
+<ul>
+<li>切换到master</li>
+</ul>
+<ul>
+<li>解决冲突</li>
+<li>删除所有没用的，留下需要的，再次提交</li>
+</ul>
+<p>简写，提交</p>
+<p><code>git commit -a -m &#39;merge&#39;</code></p>
+<p>推送到github</p>
+<ul>
+<li>先在github上创建一个远程仓库</li>
+<li>初始化github</li>
+<li>添加readme文件</li>
+<li>添加忽视文件.gitignore这个文件上传</li>
+<li>空文件夹不会被提交（想提交并且还是空的的）添加.gitkeep</li>
+<li>添加暂存区 添加历史区 添加一个远程地址 提交github上</li>
+</ul>
+<p>** </p>
 
-                <div class="article-meta">
-                    
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2016/03/23/node/books/7days/01_getting_started/">
-            <time datetime="2016-03-22T22:06:34.000Z" itemprop="datePublished">2016-03-23</time>
-        </a>
-    </div>
-
-
-                    
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/node/">node</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/node/7days/">7days</a>
-    </div>
-
-                    
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/node/">node</a>
-    </div>
-
-                </div>
-            </div>
+        
         </div>
-    
-        <div class="timeline-row">
-            <span class="node"></span>
-            <div class="content">
-                
-    
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/2016/03/23/node/books/7days/05_process/">七天学会NodeJS - 进程管理</a>
-        </h1>
-    
-
-                <div class="article-meta">
-                    
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2016/03/23/node/books/7days/05_process/">
-            <time datetime="2016-03-22T22:06:34.000Z" itemprop="datePublished">2016-03-23</time>
-        </a>
-    </div>
+        <footer class="article-footer">
+            <div class="share-container">
 
 
-                    
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/node/">node</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/node/7days/">7days</a>
-    </div>
 
-                    
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/node/">node</a>
-    </div>
-
-                </div>
-            </div>
-        </div>
-    
-        <div class="timeline-row">
-            <span class="node"></span>
-            <div class="content">
-                
-    
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/2016/03/23/node/books/7days/06_async_programming/">七天学会NodeJS - 异步编程</a>
-        </h1>
-    
-
-                <div class="article-meta">
-                    
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2016/03/23/node/books/7days/06_async_programming/">
-            <time datetime="2016-03-22T22:06:34.000Z" itemprop="datePublished">2016-03-23</time>
-        </a>
-    </div>
-
-
-                    
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/node/">node</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/node/7days/">7days</a>
-    </div>
-
-                    
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/node/">node</a>
-    </div>
-
-                </div>
-            </div>
-        </div>
-    
-        <div class="timeline-row">
-            <span class="node"></span>
-            <div class="content">
-                
-    
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/2016/03/23/node/books/7days/07_example/">七天学会NodeJS - 大示例</a>
-        </h1>
-    
-
-                <div class="article-meta">
-                    
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2016/03/23/node/books/7days/07_example/">
-            <time datetime="2016-03-22T22:06:34.000Z" itemprop="datePublished">2016-03-23</time>
-        </a>
-    </div>
-
-
-                    
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/node/">node</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/node/7days/">7days</a>
-    </div>
-
-                    
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/node/">node</a>
-    </div>
-
-                </div>
-            </div>
-        </div>
-    
-        <div class="timeline-row">
-            <span class="node"></span>
-            <div class="content">
-                
-    
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/2016/03/23/node/books/7days/02_code_management_and_deployment/">七天学会NodeJS - 代码的组织和部署</a>
-        </h1>
-    
-
-                <div class="article-meta">
-                    
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2016/03/23/node/books/7days/02_code_management_and_deployment/">
-            <time datetime="2016-03-22T22:06:34.000Z" itemprop="datePublished">2016-03-23</time>
-        </a>
-    </div>
-
-
-                    
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/node/">node</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/node/7days/">7days</a>
-    </div>
-
-                    
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/node/">node</a>
-    </div>
-
-                </div>
-            </div>
-        </div>
-    
-        <div class="timeline-row">
-            <span class="node"></span>
-            <div class="content">
-                
-    
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/2016/03/23/node/books/7days/04_network/">七天学会NodeJS - 网络操作</a>
-        </h1>
-    
-
-                <div class="article-meta">
-                    
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2016/03/23/node/books/7days/04_network/">
-            <time datetime="2016-03-22T22:06:34.000Z" itemprop="datePublished">2016-03-23</time>
-        </a>
-    </div>
-
-
-                    
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/node/">node</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/node/7days/">7days</a>
-    </div>
-
-                    
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/node/">node</a>
-    </div>
-
-                </div>
-            </div>
-        </div>
-    
 </div>
 
-    <nav id="page-nav">
-        <a class="extend prev" rel="prev" href="/archives/page/2/">&laquo; Prev</a><a class="page-number" href="/archives/">1</a><a class="page-number" href="/archives/page/2/">2</a><span class="page-number current">3</span>
-    </nav>
+    <a data-url="http://yoursite.com/2017/09/05/git/git常用指令详解/" data-id="cj76ysgds00004cpjktqen7yj" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/09/05/git/git常用指令详解/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+    
+        <a href="/2017/09/05/android/books/《Android开发艺术探索》Chap1_Activity生命周期和启动模式/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">《Android开发艺术探索》Chap1_Activity生命周期和启动模式</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="uyan_frame"></div>
+</section>
+    
+
 </section>
             
                 
