@@ -3,12 +3,12 @@
 <head>
     <meta charset="utf-8">
     
-    <title>《Android开发艺术探索》Chap1_Activity生命周期和启动模式 | The Old Man and the Sea</title>
+    <title>《Android开发艺术探索》Chap2_IPC机制 | The Old Man and the Sea</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
     <meta name="description" content="本文主要参考http://szysky.com  Activity的生命周期  onCreate: 声明周期的第一个方法.做一些初始化的动作,例如setContentView onRestart: 表示Activity重新启动.当界面从不可见变为可见时调用,场景Home键切换,从任务栈返回 onStart: 表示Activity正在被启动.Activity为理论可见(取决上层界面是否透明),但不">
 <meta name="keywords" content="android">
 <meta property="og:type" content="article">
-<meta property="og:title" content="《Android开发艺术探索》Chap1_Activity生命周期和启动模式">
+<meta property="og:title" content="《Android开发艺术探索》Chap2_IPC机制">
 <meta property="og:url" content="http://yoursite.com/2017/09/05/android/books/《Android开发艺术探索》Chap1_Activity生命周期和启动模式/index.html">
 <meta property="og:site_name" content="The Old Man and the Sea">
 <meta property="og:description" content="本文主要参考http://szysky.com  Activity的生命周期  onCreate: 声明周期的第一个方法.做一些初始化的动作,例如setContentView onRestart: 表示Activity重新启动.当界面从不可见变为可见时调用,场景Home键切换,从任务栈返回 onStart: 表示Activity正在被启动.Activity为理论可见(取决上层界面是否透明),但不">
@@ -18,9 +18,9 @@
 <meta property="og:image" content="http://szysky.com/2016/08/01/Android%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%94%E8%AE%B001-Activity%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8C%E6%A8%A1%E5%BC%8F/singletop_1.png">
 <meta property="og:image" content="http://szysky.com/2016/08/01/Android%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%94%E8%AE%B001-Activity%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8C%E6%A8%A1%E5%BC%8F/singletop_2.png">
 <meta property="og:image" content="http://szysky.com/2016/08/01/Android%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%94%E8%AE%B001-Activity%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8C%E6%A8%A1%E5%BC%8F/singleTask_3.png">
-<meta property="og:updated_time" content="2017-09-05T01:18:59.000Z">
+<meta property="og:updated_time" content="2017-09-05T01:20:26.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="《Android开发艺术探索》Chap1_Activity生命周期和启动模式">
+<meta name="twitter:title" content="《Android开发艺术探索》Chap2_IPC机制">
 <meta name="twitter:description" content="本文主要参考http://szysky.com  Activity的生命周期  onCreate: 声明周期的第一个方法.做一些初始化的动作,例如setContentView onRestart: 表示Activity重新启动.当界面从不可见变为可见时调用,场景Home键切换,从任务栈返回 onStart: 表示Activity正在被启动.Activity为理论可见(取决上层界面是否透明),但不">
 <meta name="twitter:image" content="http://szysky.com/2016/08/01/Android%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%94%E8%AE%B001-Activity%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8C%E6%A8%A1%E5%BC%8F/activity_lifecycle.png">
     
@@ -225,7 +225,7 @@
                 
     
         <h1 class="article-title" itemprop="name">
-            《Android开发艺术探索》Chap1_Activity生命周期和启动模式
+            《Android开发艺术探索》Chap2_IPC机制
         </h1>
     
 
@@ -499,7 +499,7 @@
                         
                         <div class="item-inner">
                             <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a></p>
-                            <p class="item-title"><a href="/2017/09/05/android/books/《Android开发艺术探索》Chap1_Activity生命周期和启动模式/" class="title">《Android开发艺术探索》Chap1_Activity生命周期和启动模式</a></p>
+                            <p class="item-title"><a href="/2017/09/05/android/books/《Android开发艺术探索》Chap1_Activity生命周期和启动模式/" class="title">《Android开发艺术探索》Chap2_IPC机制</a></p>
                             <p class="item-date"><time datetime="2017-09-05T01:05:15.000Z" itemprop="datePublished">2017-09-05</time></p>
                         </div>
                     </li>
