@@ -6,15 +6,13 @@ categories:
 - 《Android开发艺术探索》
   tags:  
 - android
-
 ---
 
+> 第一章: Activity的启动模式详解,与Intent-filter的匹配
+>
+> 注：本文主要参考[http://szysky.com](http://szysky.com/2016/08/01/Android%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%94%E8%AE%B001-Activity%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8C%E6%A8%A1%E5%BC%8F/)
 
-
-> 本文主要参考[http://szysky.com](http://szysky.com/2016/08/01/Android%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%94%E8%AE%B001-Activity%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8C%E6%A8%A1%E5%BC%8F/)
-
-
-
+blog相关代码(https://github.com/suzeyu1992/Notes_AndroidDevSeek)
 
 ## Activity的生命周期
 
