@@ -157,7 +157,7 @@
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                26
+                27
                 <span>posts</span>
             </div>
             <div class="article-info-block">
@@ -210,6 +210,322 @@
 
             
             <section id="main">
+    <article id="post-android/books/《Android开发艺术探索》Chap4_View工作原理" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/09/05/android/books/《Android开发艺术探索》Chap4_View工作原理/">《Android开发艺术探索》Chap4_View工作原理</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/09/05/android/books/《Android开发艺术探索》Chap4_View工作原理/">
+            <time datetime="2017-09-05T02:14:01.000Z" itemprop="datePublished">2017-09-05</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/android/">android</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <blockquote>
+<p>拨开炫酷的外表, 看看衣服里面的View是怎样工作的<br>注：本文主要参考<a href="http://szysky.com/2016/08/10/%E3%80%8AAndroid%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B04-View%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" target="_blank" rel="external">http://szysky.com</a></p>
+</blockquote>
+<p><a href="https://github.com/suzeyu1992/Notes_AndroidDevSeek" target="_blank" rel="external">blog相关代码</a></p>
+<h2 id="ViewRoot和DecorView"><a href="#ViewRoot和DecorView" class="headerlink" title="ViewRoot和DecorView"></a>ViewRoot和DecorView</h2><p>这是在View三大流程之前(<code>measure</code>, <code>layout</code>, <code>draw</code>),需要了解的概念.</p>
+<p><code>ViewRoot</code>对应于<code>ViewRootImpl</code>, 它是连接<code>WindowManager</code>和<code>DecorView</code>的纽带. View的三大流程都是通过<code>ViewRoot</code>来完成的. 当一个<code>Activity</code>对象在<code>ActivityThread</code>被创建后. 会将<code>DecorView</code>添加到<code>Window</code>中, 同时会创建<code>ViewRootImp</code>对象, 并将<code>ViewRootImpl</code>对象和<code>DecorView</code>建立关联.</p>
+<p>View绘制流程是从ViewRoot的<code>PerformTraversals()</code>开始的. 经过三大流程才能将一个View绘制出来.</p>
+<p><code>PerformTraversals()</code>会依次调用<code>performMeasure</code>, <code>performLayout</code>, <code>performDraw</code>. 而前两种内部的调用基本一致,都是先调用<code>measure()/layout()</code>,然后再调用<code>onMeasure()/onLayout()</code>在这个方法中会对所有子元素进行测量和绘制.依次向内部传递. <code>performDraw()</code>有点不同是在<code>draw</code>调用的<code>dispatchDraw()</code>.</p>
+<ul>
+<li><strong>measure过程</strong>: 决定了View宽高, measure后可以通过<code>getMeasureWidth和getMeasureHeight</code>来获取View的宽高. 一般情况下是最终宽高.</li>
+<li><strong>layout过程</strong>: 决定了View的顶点坐标和实际View的宽高. 完成后通过<code>getTop, getBottom, getLeft, getRight</code>获得四个顶点, 通过<code>getWidth,和getHeight</code>获得宽高</li>
+<li><strong>draw过程</strong>: 只有draw()方法完成之后View的内容才会显示出来.</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">setContentView(R.layout.activity_inside_intercept);</div><div class="line">((ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content)).getChildAt(0);</div></pre></td></tr></table></figure>
+<p>上面第一行可以说无时无刻不存在. 而下面这行在上一章说过就是获得我们设置的布局.那<code>DecorView</code>布局究竟是怎么样的, 下图.</p>
+<p><img src="http://szysky.com/2016/08/10/%E3%80%8AAndroid%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B04-View%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/decorView.png" alt="img"></p>
+<p><code>DecorView</code>就是一个FrameLayout. 而一般情况下它的布局就如上面图那样(具体和主题有关系). 而我们经常<code>setContentView(xxx)</code>. 就是把我们编写的xml的布局添加到了<code>DecorView</code>的<code>android.R.id.content</code>的控件布局中. 所以也就能说通为什么<code>getChildAt(0)</code>会获得我们的的布局.<br>并且为什么我们用的关联布局的方法是setContent…</p>
+<h2 id="MeasureSpec"><a href="#MeasureSpec" class="headerlink" title="MeasureSpec"></a>MeasureSpec</h2><blockquote>
+<p>很大程度上决定一个View的尺寸规格, 之所以不是绝对, 是因为这个过程还受父容器的影响.</p>
+</blockquote>
+<h3 id="理解MeasureSpec"><a href="#理解MeasureSpec" class="headerlink" title="理解MeasureSpec"></a>理解MeasureSpec</h3><p><code>MeasureSpec</code>本身是一个32位的int值, 但是却表示了两种信息.</p>
+<ul>
+<li>高2位: 代表了SpecMode, 测量模式</li>
+<li>低30位: 代表了SpecSize, 在上述测量模式中的大小</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">public static class MeasureSpec &#123;</div><div class="line">    private static final int MODE_SHIFT = 30;</div><div class="line">    private static final int MODE_MASK  = 0x3 &lt;&lt; MODE_SHIFT;</div><div class="line">    public static final int UNSPECIFIED = 0 &lt;&lt; MODE_SHIFT;</div><div class="line">    public static final int EXACTLY     = 1 &lt;&lt; MODE_SHIFT;</div><div class="line">    public static final int AT_MOST     = 2 &lt;&lt; MODE_SHIFT;</div><div class="line">    </div><div class="line">    public static int makeMeasureSpec(int size, int mode) &#123;</div><div class="line">      if (sUseBrokenMakeMeasureSpec) &#123;</div><div class="line">          return size + mode;</div><div class="line">      &#125; else &#123;</div><div class="line">          return (size &amp; ~MODE_MASK) | (mode &amp; MODE_MASK);</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    public static int makeSafeMeasureSpec(int size, int mode) &#123;</div><div class="line">      if (sUseZeroUnspecifiedMeasureSpec &amp;&amp; mode == UNSPECIFIED) &#123;</div><div class="line">          return 0;</div><div class="line">      &#125;</div><div class="line">      return makeMeasureSpec(size, mode);</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    public static int getMode(int measureSpec) &#123;</div><div class="line">      return (measureSpec &amp; MODE_MASK);</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">         </div><div class="line">    public static int getSize(int measureSpec) &#123;</div><div class="line">      return (measureSpec &amp; ~MODE_MASK);</div><div class="line">   &#125;</div><div class="line">   .....</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>是不是挺有意思. 三种类型分别高二位01, 00, 10来代表. 直接利用位运算. 来实现可以让频繁计算的东西使用最接近计算机的运算方式. 不需要额外的转换. 也避免了过多的对象内存分配.</p>
+<p><strong>说一下SpecMode的三种模式</strong></p>
+<ul>
+<li><strong>UNSPECIFIED</strong>: 父容器不对View有任何的限制,要多大就给多大, 这种情况一般用于系统内部,表示一中测量状态</li>
+<li><strong>EXACTLY</strong>: 父容器已经检测出View所需要的精确大小, 这个时候View的最终大小就是<strong>SpecSize</strong>所指定的值. 对应着LayoutParams中的<code>match_parent</code>和具体的数值.</li>
+<li><strong>AT_MOST</strong>: 父容器制定了一个可用的大小及<strong>SpecSize</strong>, View的大小不能超过这个值, 它对应与LayoutParams中的<code>wrap_content</code></li>
+</ul>
+<h3 id="MeasureSpec和LayoutParams关系"><a href="#MeasureSpec和LayoutParams关系" class="headerlink" title="MeasureSpec和LayoutParams关系"></a>MeasureSpec和LayoutParams关系</h3><p>通常设置的<code>LayoutParams</code>,系统会在父容器的的约束下转换成对应的<code>MeasureSpec</code>,然后根据这个<code>MeasureSpec</code>来确定View测量后的宽高. 所以View自身的<code>MeasureSpec</code>是需要<code>LayoutParams</code>和父容器一起组合生成的.</p>
+<p>上面讲述的是普通View, 但是顶级View(DecorView)有所不同. DecorView是物理窗口尺寸和自身的<code>LayoutParams</code>决定的. 具体在<code>ViewRootImpl类measureHierarchy()</code>进行生成的.</p>
+<p>MeasureSpec一旦确定, onMeasure中就可以测量View的宽高.</p>
+<p><strong>对于我们日常操作的View</strong></p>
+<p>View的<code>measure</code>过程是由ViewGroup传递而来的. 看<code>ViewGroup#measureChildWithMargins()</code>方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">protected void measureChildWithMargins(View child,</div><div class="line">          int parentWidthMeasureSpec, int widthUsed,</div><div class="line">          int parentHeightMeasureSpec, int heightUsed) &#123;</div><div class="line">      </div><div class="line">      final MarginLayoutParams lp = (MarginLayoutParams) child.getLayoutParams();</div><div class="line">      </div><div class="line">      final int childWidthMeasureSpec = getChildMeasureSpec(parentWidthMeasureSpec,</div><div class="line">              mPaddingLeft + mPaddingRight + lp.leftMargin + lp.rightMargin</div><div class="line">                      + widthUsed, lp.width);</div><div class="line">      final int childHeightMeasureSpec = getChildMeasureSpec(parentHeightMeasureSpec,</div><div class="line">              mPaddingTop + mPaddingBottom + lp.topMargin + lp.bottomMargin</div><div class="line">                      + heightUsed, lp.height);</div><div class="line"></div><div class="line">      child.measure(childWidthMeasureSpec, childHeightMeasureSpec);</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+<p>上面会对子元素进行<code>measure</code>, 而在此之前,会通过<code>getChildMeasureSpec()</code>来得到子元素的<code>MeasureSpec</code>. 通过调用方法传入的参数看到. 生成View的<code>MeasureSpec</code>和父容器的<code>MeasureSpec</code>, View自身方向的<code>padding``margin</code>, 和自身的LayoutParams这三个因素相关联.</p>
+<p>而其中的<code>getChildmeasureSpec()</code>方法: 就是根据父容器的<code>MeasureSpec</code>同时结合View自身的LayoutParams来确定子元素的<code>MeasureSpec</code>.这个方法总结如下:</p>
+<ul>
+<li><strong>dp/px</strong>: 不管父容器的<code>MeasureSpec</code>是什么. View都是<code>EXACTLY</code>(精确模式), 而大小遵循自身<code>LayoutParams</code>的大小.</li>
+<li><strong>match_parent</strong>: 如果父容器是<code>EXACTLY</code>(精确模式),那么子View也是<code>EXACTLY</code>(精确模式)并且大小是父容器的剩余空间. 如果父容器是<code>AT_MOST</code>(最大模式),那么子View也是<code>AT_MOST</code>(最大模式)并且大小不会超过父容器的剩余空间.</li>
+<li><strong>wrap_content</strong>: 不管父容器是什么. View都是<code>AT_MOST</code>(最大模式), 并且大小不能超过父容器剩余空间.</li>
+</ul>
+<p>上述没有说明<code>UNSPECIFIED</code>在<code>match_parent</code>和<code>wrap_content</code>中. 因为这个模式主要用于系统多次Measure的情形,一般来说不需要关注.</p>
+<h2 id="View的工作流程"><a href="#View的工作流程" class="headerlink" title="View的工作流程"></a>View的工作流程</h2><blockquote>
+<p>主要指measure, layout, draw三大流程. 即测量,布局,绘制.</p>
+</blockquote>
+<h3 id="measure过程"><a href="#measure过程" class="headerlink" title="measure过程"></a>measure过程</h3><p>这里面存在两种场景:</p>
+<ul>
+<li>View: 通过了<code>measure</code>方法就完成了测量过程</li>
+<li>ViewGroup: 除了测量自己,还会遍历去调用所有子元素的<code>measure</code>方法. 各个子元素在递归去执行这个流程</li>
+</ul>
+<p><strong>View的measure过程</strong></p>
+<p>View的<strong>measure</strong>过程由其<code>measure()</code>方法来完成, <code>measure()</code>方法是一个final类型, 而在内部调用了<code>onMeasure()</code>这个可不是final, 所以也可以自定义的时候复写. 看一下内部.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) &#123;</div><div class="line">   setMeasuredDimension(getDefaultSize(getSuggestedMinimumWidth(), widthMeasureSpec),</div><div class="line">           getDefaultSize(getSuggestedMinimumHeight(), heightMeasureSpec));</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>setMeasureDimension()</code>会设置View宽高的测量值.</p>
+<p>这里需要看一下<code>getDefaultSize()</code>这个方法.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">public static int getDefaultSize(int size, int measureSpec) &#123;</div><div class="line">   int result = size;</div><div class="line">   int specMode = MeasureSpec.getMode(measureSpec);</div><div class="line">   int specSize = MeasureSpec.getSize(measureSpec);</div><div class="line"></div><div class="line">   switch (specMode) &#123;</div><div class="line">   case MeasureSpec.UNSPECIFIED:</div><div class="line">       result = size;</div><div class="line">       break;</div><div class="line">   case MeasureSpec.AT_MOST:</div><div class="line">   case MeasureSpec.EXACTLY:</div><div class="line">       result = specSize;</div><div class="line">       break;</div><div class="line">   &#125;</div><div class="line">   return result;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>看到如果这个view是<code>EXACTLY</code>(精准模式), 那么返回的大小就是SpecSize. <code>UNSPECIFIED</code>一般用于系统测量先不说. 而<code>AT_MOST</code>(最大模式)的时候. 虽然是不同模式但是默认情况下和精确模式是一样的结果.</p>
+<p><code>getSuggestedMinimumWidth()</code>和<code>getSuggestedMinimumHeight()</code>. 看一下实现.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">protected int getSuggestedMinimumWidth() &#123;</div><div class="line">    return (mBackground == null) ? mMinWidth : max(mMinWidth, mBackground.getMinimumWidth());</div><div class="line">&#125;</div><div class="line">protected int getSuggestedMinimumHeight() &#123;</div><div class="line">    return (mBackground == null) ? mMinHeight : max(mMinHeight, mBackground.getMinimumHeight());</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>首先会看是否设置了背景.</p>
+<ul>
+<li><strong>无背景:</strong> 那么宽度为<code>mMinWidth</code>,这个值对应布局中的<code>android:minWidth</code>属性,默认为0.</li>
+<li><strong>有背景:</strong> 那么取<code>mMinWidth</code>和<code>mBackground.getMinimumHeight()</code>最大值.</li>
+</ul>
+<p>而<code>getMinimumHeight()</code>根据看一下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">public int getMinimumHeight() &#123;</div><div class="line">   final int intrinsicHeight = getIntrinsicHeight();</div><div class="line">   return intrinsicHeight &gt; 0 ? intrinsicHeight : 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>原来<code>getMinimumHeight()</code>返回的就是<code>Drawable</code>的原始高度. 如果没有就返回0. 关于<strong>原始高度</strong>举个例子<code>ShapeDrawable</code>无原始宽高, <code>BitmapDrawble</code>有原始宽高就是图片的尺寸.</p>
+<p><strong>整理getDefaultSize()</strong>: 直接继承View的自定义控件需要重写<code>onMeasure()</code>方法并设置<code>wrap_content</code>时的自身大小,否则在布局中使用<code>wrap_content</code>虽然View自身的<code>MeasureSpec</code>的低30位保存了父容器计算自身的剩余大小. 但是在<strong>自定义的时候如果不进行处理wrap_content,那么就会调用默认setMeasureDimension()方法. 而默认中方法的实参传递的是getDefaultSize()这个方法中对AT_MOST这种模式没有处理. 直接沿用和精确模式的大小(相当于设置了wrap_content却得到了match_parent的显示结果)</strong></p>
+<p>可以针对这个问题, 做出对应的编码进行解决:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) &#123;</div><div class="line">       super.onMeasure(widthMeasureSpec, heightMeasureSpec);</div><div class="line"></div><div class="line">       int widthSpaceSize = MeasureSpec.getSize(widthMeasureSpec);</div><div class="line">       int widthSpaceMode = MeasureSpec.getMode(widthMeasureSpec);</div><div class="line">       int heightSpaceSize = MeasureSpec.getSize(heightMeasureSpec);</div><div class="line">       int heightSpaceMode = MeasureSpec.getMode(heightMeasureSpec);</div><div class="line">       </div><div class="line">       //设置两个默认值宽高</div><div class="line">       int defaultHeight = 100;</div><div class="line">       int defaultWidth = 100;</div><div class="line">       </div><div class="line">       </div><div class="line">       // 针对AT_MOST模式进行特殊处理</div><div class="line">       if (widthSpaceMode == MeasureSpec.AT_MOST </div><div class="line">               &amp;&amp; heightSpaceMode == MeasureSpec.AT_MOST)&#123;</div><div class="line">           </div><div class="line">           setMeasuredDimension(defaultWidth, defaultHeight);</div><div class="line">           </div><div class="line">       &#125;else if (widthSpaceMode == MeasureSpec.AT_MOST)&#123;</div><div class="line">           </div><div class="line">           setMeasuredDimension(defaultWidth, heightSpaceSize);</div><div class="line">           </div><div class="line">       &#125;else if (heightSpaceMode == MeasureSpec.AT_MOST)&#123;</div><div class="line">           </div><div class="line">           setMeasuredDimension(widthMeasureSpec, defaultHeight);</div><div class="line">           </div><div class="line">       &#125;</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<p><strong>ViewGroup的Measure</strong></p>
+<blockquote>
+<p>对于<code>ViewGroup</code>不光会测量自己,还会遍历调用所有的子元素的<code>measure()</code>. 和<code>View</code>不同的是<code>ViewGroup</code>是一个抽象类,它没有重写<code>onMeasure</code>,但提供了<code>measureChildren()</code>的方法.</p>
+</blockquote>
+<p>这个<code>measureChildren()</code>方法内部比较简单就是遍历自己的孩子然后调用-&gt;<code>measureChild()</code></p>
+<p>这个<code>measureChild()</code>这个方法前面贴过源码. 就是取出子元素的<code>LayoutParams</code>,并调用-&gt;<code>getChildMeasureSpec()</code>. 通过传入<strong>子元素的LayoutParams里面的宽高属性, 子元素的padding和margin, 父元素当前(当前ViewGroup)的MeasureSpec属性</strong>来计算出子元素的<code>MeasureSpec</code>最后调用-&gt;<code>child.measure()</code>传入之前计算的测量规格.</p>
+<p><strong>ViewGroup为什么没有定义测量的具体过程?</strong> 因为具体的测量过程需要交给子类去实现的. 比如<code>LinearLayout</code>,<code>RelativeLayout</code>.</p>
+<p>看一下<code>LinearLayout</code>的<code>onMeasure()</code>是如何定义的.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) &#123;</div><div class="line">   if (mOrientation == VERTICAL) &#123;</div><div class="line">       measureVertical(widthMeasureSpec, heightMeasureSpec);</div><div class="line">   &#125; else &#123;</div><div class="line">       measureHorizontal(widthMeasureSpec, heightMeasureSpec);</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>根据设置的排列方式这里分之了两种测量方法. 稍微看一下大概轮廓,选择<code>measureVertical()</code>不贴源码了这个方法300行呢!</p>
+<p>首先这个方法会遍历每个子元素并执行-&gt;<code>measureChildBeforeLayout()</code>方法.这个方法内部会调用子元素的<code>measure()</code>, 这样子元素会依次测量. 并且会通过<code>mTotalLenght</code>这个变量来存储LinearLayout在竖直方向上的初步高度, 每测量一个就会增加. 当子元素测量完之后,LinearLayout会测量自己的大小.</p>
+<hr>
+<p>在对自己进行测量的时候. 如果布局中的高度采用的是<code>match_parent</code>或者<code>具体数值</code>, 那么它的测量过程和View一样,即高度为<code>specSize</code>. 如果布局中采用<code>wrap_content</code>那么高度就是所有的子元素总和但是不能超过父元素剩余空间, 还有竖直方向LinearLayout的<code>padding</code>. 具体可参考<code>resolveSizeAndState()</code>的实现.</p>
+<p>到这里基本上<code>measure</code>测量过程已经做了比较详细的分析. 这个过程也是三大过程中最复杂的一个. 在<code>measure</code>完成之后就可以通过<code>getMeasuredWidth/Height</code>方法获取View的测量宽高. <strong>但是请注意</strong>:某些极端情况下,measure可能执行多次. 所以尽量在<code>onLayout()</code>方法中去获得最终宽高.</p>
+<h3 id="正确获取宽高方法"><a href="#正确获取宽高方法" class="headerlink" title="正确获取宽高方法"></a>正确获取宽高方法</h3><p><strong>首先明确一点:View的measure和Activity的生命周期方法不是同步执行.所以无法保证在某个生命周期(onCreate,onStart)获取到正确的测量宽高</strong></p>
+<ul>
+<li>onWindowFocusChanged()</li>
+<li>view.post(runnable)</li>
+<li>ViewTreeObserve</li>
+<li>view.measure()</li>
+</ul>
+<ol>
+<li><code>onWindowFocusChanged()</code>:View已经初始化完毕,宽高已经准备好. 这里需要注意只要Activity的焦点发生变化此方法就会被调用.所以如果你的界面会频繁的进行<code>onPause</code>和<code>onResume</code>.并且里面有很多关联依赖的方法. 那就请注意这不是一个好办法.</li>
+<li>通过<code>post</code>可以将一个runnable投递到消息队列的尾部,然后等待<code>Looper</code>调用此runnable的时候.View已经初始化完毕.</li>
+<li>使用<code>ViewTreeObserver</code>. 当View的可见性发生了改变的时候.<code>onGlobalLayout()</code>将发生回调.注意伴随着View树的状态改变等,这个回调方法可能会被调用多次. 使用代码如下</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">ViewTreeObserver viewTreeObserver = tv_main.getViewTreeObserver();</div><div class="line">       viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() &#123;</div><div class="line">           @Override</div><div class="line">           public void onGlobalLayout() &#123;</div><div class="line">               tv_main.getViewTreeObserver().removeOnGlobalLayoutListener(this);</div><div class="line">               tv_main.getMeasuredHeight();</div><div class="line">               tv_main.getMeasuredWidth();</div><div class="line">           &#125;</div><div class="line">       &#125;);</div></pre></td></tr></table></figure>
+<ol>
+<li>view.measure(widthMeasureSpec, heightMeasureSpec)</li>
+</ol>
+<p>也可以手动进行测量,但是需要分情况处理.</p>
+<p><strong>match_parent</strong></p>
+<p>当View是此属性的时候无法使用<code>measure()</code>,首先使用这种方法需要的参数,是通过父容器和子元素组合来生成的子元素的<code>MeasureSpec</code>属性. 所以在外部我们不知道父元素的参数值得时候只能处理<strong>不需要父元素数据就可以生成子元素的MeasureSpec的模式</strong></p>
+<p>所以很清楚, 这个<code>match_patch</code>这个模式,在给其子元素构造<code>MeasureSpec</code>的时候需要得值<code>parentSize</code>,所以得到的也是无效.</p>
+<p><strong>具体数值px/dx</strong></p>
+<p>假设这里是100px, 首先构成宽高对应的<code>MeasureSpec</code>属性</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">int widthSpec = View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY);</div><div class="line">int heightSpec = View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY);</div><div class="line">       tv_main.measure(widthSpec, heightSpec);</div></pre></td></tr></table></figure>
+<p><strong>wrap_content</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">int widthSpec = View.MeasureSpec.makeMeasureSpec(((1 &lt;&lt; 30)-1), View.MeasureSpec.AT_MOST);</div><div class="line">int heightSpec = View.MeasureSpec.makeMeasureSpec(((1 &lt;&lt; 30)-1), View.MeasureSpec.AT_MOST);</div><div class="line">    tv_main.measure(widthSpec, heightSpec);</div></pre></td></tr></table></figure>
+<p>通过(1&lt;&lt;30)-1 可以构成一个<code>MeasureSpec</code>低30位的最大值. 用理论上View能支持的最大值去构造</p>
+<p><strong>关于网上一些在make的使用传入UNSPECIFIED,属于违背了内部实现的规范.不用最好</strong></p>
+<p><strong>关于网上另一种measure()直接传入LayoutParams.WRAP_CONTENT. 其实也只有当子元素为wrap_content和子元素为match_parent并且父元素是wrap_conetnt时会碰巧有效.</strong></p>
+<h3 id="layout过程"><a href="#layout过程" class="headerlink" title="layout过程"></a>layout过程</h3><p>在<code>ViewGroup</code>中会先通过<code>layout()</code>方法确定本身的位置. 然后调用<code>onLayout()</code>方法遍历所有的子元素,并调用子元素的<code>layout()</code>方法确定子元素的位置…依次循环.</p>
+<p>提出<code>View</code>的<code>layout</code>方法, 这里抽取部分代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">public void layout(int l, int t, int r, int b) &#123;</div><div class="line">       int oldL = mLeft;</div><div class="line">       int oldT = mTop;</div><div class="line">       int oldB = mBottom;</div><div class="line">       int oldR = mRight;</div><div class="line"></div><div class="line">       boolean changed = isLayoutModeOptical(mParent) ?</div><div class="line">               setOpticalFrame(l, t, r, b) : setFrame(l, t, r, b);</div><div class="line"></div><div class="line">       if (changed || (mPrivateFlags &amp; PFLAG_LAYOUT_REQUIRED) == PFLAG_LAYOUT_REQUIRED) </div><div class="line">       &#123; onLayout(changed, l, t, r, b);&#125;</div><div class="line"></div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<p>这样来看,大致流程通过<code>setFrame()</code>方法来设定View的四个顶点的位置, 即<strong>mLeft,mTop,mBottom,mRight</strong>,这四个顶点一旦确定.当前View的位置也就确定. 然后会调用<code>onLayout()</code>方法. 这个方法是确定子元素的View位置.</p>
+<p>这里的和<code>onMeasure()</code>类似, <code>onLayout()</code>具体实现和具体的布局有关, 所以View和ViewGroup均没有真正实现<code>onLayout()</code>方法.</p>
+<p>看一下<code>LinearLayout</code>的<code>onLayout()</code>源码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">protected void onLayout(boolean changed, int l, int t, int r, int b) &#123;</div><div class="line">   if (mOrientation == VERTICAL) &#123;</div><div class="line">       layoutVertical(l, t, r, b);</div><div class="line">   &#125; else &#123;</div><div class="line">       layoutHorizontal(l, t, r, b);</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>和<code>onMeasure()</code>一样分支,接下来跟进<code>layoutVertical()</code>贴出主要代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">void layoutVertical(int left, int top, int right, int bottom) &#123;</div><div class="line">           //省略一部分...</div><div class="line">       for (int i = 0; i &lt; count; i++) &#123;</div><div class="line">           final View child = getVirtualChildAt(i);</div><div class="line">           if (child == null) &#123;</div><div class="line">               childTop += measureNullChild(i);</div><div class="line">           &#125; else if (child.getVisibility() != GONE) &#123;</div><div class="line">               final int childWidth = child.getMeasuredWidth();</div><div class="line">               final int childHeight = child.getMeasuredHeight();</div><div class="line">               </div><div class="line">               final LinearLayout.LayoutParams lp =</div><div class="line">                       (LinearLayout.LayoutParams) child.getLayoutParams();</div><div class="line">               </div><div class="line">               int gravity = lp.gravity;</div><div class="line">               if (gravity &lt; 0) &#123;</div><div class="line">                   gravity = minorGravity;</div><div class="line">               &#125;</div><div class="line">                //省略一部分...</div><div class="line"></div><div class="line">               if (hasDividerBeforeChildAt(i)) &#123;</div><div class="line">                   childTop += mDividerHeight;</div><div class="line">               &#125;</div><div class="line"></div><div class="line">               childTop += lp.topMargin;</div><div class="line">               setChildFrame(child, childLeft, childTop + getLocationOffset(child),</div><div class="line">                       childWidth, childHeight);</div><div class="line">               childTop += childHeight + lp.bottomMargin + getNextLocationOffset(child);</div><div class="line"></div><div class="line">               i += getChildrenSkipCount(child, i);</div><div class="line">           &#125;</div><div class="line">       &#125;</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<p>上面代码大体逻辑: 首先遍历所有孩子并调用<code>setChildFrame()</code>来为子元素指定对应的位置. 其中<code>childTop</code>会逐渐增大, 这就意味着后面的子元素会被放置在靠下的位置. 而<code>setChildFrame()</code>内部仅有一行代码, 就是调用子元素的<code>layout()</code>并传入它自身应该存放的位置.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">private void setChildFrame(View child, int left, int top, int width, int height) &#123;        </div><div class="line">     child.layout(left, top, left + width, top + height);</div><div class="line"> &#125;</div></pre></td></tr></table></figure>
+<p>而在<code>setChildFrame()</code>中传入的宽高就是子元素的测量宽高.</p>
+<p>而在子元素的<code>layout()</code>中通过<code>setFrame()</code>来设置元素的四个顶点.</p>
+<p><strong>getWidth()layout中的宽 和getMeasureWidth()中的宽永远一样么?</strong></p>
+<p>在一般情况下,测量measure和layout时候的值是完全一样的. 因为<code>layout()</code>中接受的参数就是通过测量的结果获取到的. 并且内部直接通过<code>setFrame()</code>赋值到自己的四个成员变量上. 但是如果对<code>layout()</code>进行了复写.如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"> @Override</div><div class="line">protected void layout(int l, int t, int r, int b) &#123;</div><div class="line">   super.layout( l,  t+200,  r,  b+200);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>如果进行了这样的复写, 那么<strong>最终宽高</strong>永远会与<strong>测量的</strong>出来的值相差200.</p>
+<h3 id="draw过程"><a href="#draw过程" class="headerlink" title="draw过程"></a>draw过程</h3><p>这个过程只是将View绘制到屏幕上面.</p>
+<ol>
+<li>绘制背景<code>background.draw(canvas)</code></li>
+<li>绘制自己<code>onDraw()</code></li>
+<li>绘制children<code>dispatchDraw()</code></li>
+<li>绘制装饰<code>onDrawScrollBars()</code></li>
+</ol>
+<p>View绘制过程传递是通过<code>dispatchDraw()</code>实现的. 传递了自己的画布. 这个方法会遍历子元素并且调用元素的<code>draw()</code></p>
+<p>View一个特有的方法<code>setWillNotDraw()</code>, 这个方法是设置了<code>true</code>那么系统会进行相应的优化. 在View中默认是关闭的. 而ViewGroup默认是开启的. 如果我们继承了自定义ViewGroup如果还需要绘制自己的内容那么需要显示的关闭此标记.</p>
+<h2 id="自定义View"><a href="#自定义View" class="headerlink" title="自定义View"></a>自定义View</h2><h3 id="自定义View的分类"><a href="#自定义View的分类" class="headerlink" title="自定义View的分类"></a>自定义View的分类</h3><p><a href="https://github.com/suzeyu1992/Notes_AndroidDevSeek" target="_blank" rel="external">相关代码</a></p>
+<p><strong>1.继承View重写onDraw方法</strong></p>
+<p>这种方法主要用于实现一些不规则的效果, 不方便组合布局实现,或者又有动态显示的一些图形. 需要自己绘制那么就重写<code>onDraw()</code>方法. <strong>这种方法需要自己支持wrap_content和padding</strong></p>
+<p><strong>2.继承ViewGroup派生特殊Layout</strong></p>
+<p>这种方式用于实现自定义布局, 这种布局的实现稍微复杂,需要合适的处理ViewGroup的测量,布局这两个过程,并同时处理子元素的测量和布局过程.</p>
+<p><strong>3.继承特定的View(TextView)</strong></p>
+<p>比较常见, 一般用于扩展已有的View的功能. 这种不需要自己处理wrap_content和padding</p>
+<p><strong>4.继承特定ViewGroup(LinearLayout)</strong></p>
+<p>当某种效果看起来像几种View的组合在一起的时候,可以采用这种方式. 这种方式不需要自己处理ViewGroup的测量和布局. 其实这种方式和2没什么区别, 主要是2更接近于底层的View实现.</p>
+<h3 id="自定义View的须知"><a href="#自定义View的须知" class="headerlink" title="自定义View的须知"></a>自定义View的须知</h3><ol>
+<li>让View支持<code>wrap_content</code></li>
+<li>最好让你的View支持<code>padding</code> -&gt; 如果直接继承View,在<code>draw()</code>中不处理padding,那么属性是无法起作用的. 还有继承ViewGroup的控件需要在<code>onMeasure</code>和<code>onLayout</code>中考虑<code>padding</code>和子元素的<code>margin</code>会造成的影响.</li>
+<li>尽量不要在View中使用<code>Handler</code> -&gt; 内部已经提供了post系列方法. 除非很明确要是用Handler发送消息.</li>
+<li>View中如果有线程或者动画,需要及时的停止.-&gt; 当包含此View的Activity退出或者此View被remove的时候,View的<code>onDetachedFromWindow()</code>会被调用,可以适当处理防止内存泄漏.</li>
+<li>View带有的滑动嵌套时,需要处理好滑动冲突.</li>
+</ol>
+<h3 id="自定义View实例"><a href="#自定义View实例" class="headerlink" title="自定义View实例"></a>自定义View实例</h3><p><strong>1.自定义View派生类</strong></p>
+<p>首先写一个类继承<code>View</code>, 并在<code>ondraw()</code>画一个圆. 并设置<code>margin</code>属性. 效果没有问题,因为<code>margin</code>属性是由父容器控制的.</p>
+<p><img src="http://szysky.com/2016/08/10/%E3%80%8AAndroid%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B04-View%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/cusview01.png" alt="img"></p>
+<p><strong>问题1:</strong>这里把<code>android:layout_width=&quot;wrap_content&quot;</code>设置根据内容. 发现无效.</p>
+<p><strong>不管是设置match_parent也好,wrap_content也好父容器都会给分配自己剩余空间的大小给子容器作为specSize的空间大小</strong>这时需要手动处理. 因为不处理那就是相当于和<code>match_parent</code>填充父容器的效果一样.</p>
+<p>所以增添<code>对onMeasure()</code>方法中的<code>AT_MOST</code>模式的制定默认大小, 然后在运行, ok,如下</p>
+<p><img src="http://szysky.com/2016/08/10/%E3%80%8AAndroid%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B04-View%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/cusview02.png" alt="img"></p>
+<p><strong>问题2:</strong>这时加上属性<code>padding=20dp</code>发现无效. 无变化. 之前说过<code>margin</code>是交给父容器分配的.<code>padding</code>确实要自己要分配处理的. 这时需要在<code>onDraw()</code>来处理. 处理后如下</p>
+<p><img src="http://szysky.com/2016/08/10/%E3%80%8AAndroid%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B04-View%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/cusview03.png" alt="img"></p>
+<p><strong>问题3:</strong>有时候我们需要提供自定义属性. 例如<code>android:id=</code>这种. 接下来添加自定义属性.</p>
+<ol>
+<li>在<code>values</code>目录下创建自定义属性的xml. 名字随便当最好<code>attrs.xml</code>或者<code>attrs_xxx_xxx.xml</code>.</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</div><div class="line">&lt;resources&gt;</div><div class="line">    &lt;declare-styleable name=&quot;CircleView&quot;&gt;</div><div class="line">        &lt;attr name=&quot;circle_color&quot; format=&quot;color&quot;/&gt;</div><div class="line">    &lt;/declare-styleable&gt;</div><div class="line">&lt;/resources&gt;</div></pre></td></tr></table></figure>
+<p>上面相当于,定义了一个<code>CircleView</code>的属性集合. 在这个集合里面会有自定义属性. 这里的<code>format</code>格式可以是指定尺寸的<code>dimension</code>, 资源id引用的<code>reference</code>, 基本类型<code>string, integer ,boolean</code>等.</p>
+<ol>
+<li>声明好了属性在我们自定义View中就可以引用处理了. 如构造方法中.</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">public CircleView(Context context, AttributeSet attrs) &#123;</div><div class="line">       super(context, attrs, defStyleAttr);</div><div class="line">       //获得一个自定义的对应属性值集合</div><div class="line">       TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.CircleView);</div><div class="line">       //取出属性集合中的某个属性值</div><div class="line">       mColor = typedArray.getColor(R.styleable.CircleView_circle_color, Color.GREEN);</div><div class="line">       //释放资源</div><div class="line">       typedArray.recycle();</div><div class="line">       init();</div><div class="line"></div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<ol>
+<li>在布局中使用即可.</li>
+</ol>
+<p>先声明schemas. <code>xmlns:app=&quot;http://schemas.android.com/apk/res-auto&quot;</code> ,使用<code>app</code>来替代之前的类似<code>android</code>前缀的引导.</p>
+<p>继承View的派生类就到此为止了.</p>
+<hr>
+<p><strong>继承ViewGroup就不说了, 可以看第三章中的仓库代码的那个自定义View大致实现ViewPager的滑动</strong></p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/09/05/android/books/《Android开发艺术探索》Chap4_View工作原理/" data-id="cj76yt8j300007apjsig3gdeg" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/09/05/android/books/《Android开发艺术探索》Chap4_View工作原理/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
     <article id="post-git/git常用指令详解" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
@@ -504,8 +820,10 @@
         
             
             <blockquote>
+<p>第一章: Activity的启动模式详解,与Intent-filter的匹配</p>
 <p>注：本文主要参考<a href="http://szysky.com/2016/08/01/Android%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%94%E8%AE%B001-Activity%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8C%E6%A8%A1%E5%BC%8F/" target="_blank" rel="external">http://szysky.com</a></p>
 </blockquote>
+<p>blog相关代码(<a href="https://github.com/suzeyu1992/Notes_AndroidDevSeek" target="_blank" rel="external">https://github.com/suzeyu1992/Notes_AndroidDevSeek</a>)</p>
 <h2 id="Activity的生命周期"><a href="#Activity的生命周期" class="headerlink" title="Activity的生命周期"></a>Activity的生命周期</h2><p><img src="http://szysky.com/2016/08/01/Android%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%94%E8%AE%B001-Activity%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8C%E6%A8%A1%E5%BC%8F/activity_lifecycle.png" alt="img"></p>
 <ul>
 <li><strong>onCreate</strong>: 声明周期的第一个方法.做一些初始化的动作,例如setContentView</li>
@@ -2177,129 +2495,6 @@ mTab.setupWithViewPager(mViewPager);
 
 
 
-    <article id="post-node/angular.js4.0 " class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2017/04/07/node/angular.js4.0 /">angular.js4.0学习笔记</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2017/04/07/node/angular.js4.0 /">
-            <time datetime="2017-04-07T10:04:59.000Z" itemprop="datePublished">2017-04-07</time>
-        </a>
-    </div>
-
-
-                        
-                        
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <p>angular.js4.0 </p>
-<p>我们之前用过angular2.0+ionic控件做的+cordva，效果一般</p>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="http://yoursite.com/2017/04/07/node/angular.js4.0 /" data-id="cj76wnr770009enpj1m9ywmu5" class="article-share-link"><i class="fa fa-share"></i>Share</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-        <a href="http://yoursite.com/2017/04/07/node/angular.js4.0 /#comments" class="article-comment-link">Comments</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
     <nav id="page-nav">
         <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
     </nav>
@@ -2313,6 +2508,15 @@ mTab.setupWithViewPager(mViewPager);
         <h3 class="widget-title">recent</h3>
         <div class="widget">
             <ul id="recent-post" class="no-thumbnail">
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a></p>
+                            <p class="item-title"><a href="/2017/09/05/android/books/《Android开发艺术探索》Chap4_View工作原理/" class="title">《Android开发艺术探索》Chap4_View工作原理</a></p>
+                            <p class="item-date"><time datetime="2017-09-05T02:14:01.000Z" itemprop="datePublished">2017-09-05</time></p>
+                        </div>
+                    </li>
                 
                     <li>
                         
@@ -2350,15 +2554,6 @@ mTab.setupWithViewPager(mViewPager);
                         </div>
                     </li>
                 
-                    <li>
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/mysql/">mysql</a></p>
-                            <p class="item-title"><a href="/2017/08/22/mysql/mac导出:导入mysql/" class="title">mac导出/导入mysql</a></p>
-                            <p class="item-date"><time datetime="2017-08-22T11:26:44.000Z" itemprop="datePublished">2017-08-22</time></p>
-                        </div>
-                    </li>
-                
             </ul>
         </div>
     </div>
@@ -2368,7 +2563,7 @@ mTab.setupWithViewPager(mViewPager);
     <div class="widget-wrap">
         <h3 class="widget-title">categories</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">9</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">3</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/linux/vim/">vim</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">1</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">10</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/linux/vim/">vim</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">1</span></li></ul>
         </div>
     </div>
 
@@ -2377,7 +2572,7 @@ mTab.setupWithViewPager(mViewPager);
     <div class="widget-wrap">
         <h3 class="widget-title">archives</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
         </div>
     </div>
 
@@ -2386,7 +2581,7 @@ mTab.setupWithViewPager(mViewPager);
     <div class="widget-wrap">
         <h3 class="widget-title">tags</h3>
         <div class="widget">
-            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li></ul>
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li></ul>
         </div>
     </div>
 
