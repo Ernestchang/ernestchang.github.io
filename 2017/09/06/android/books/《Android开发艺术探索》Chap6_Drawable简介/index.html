@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <meta charset="utf-8">
+    
+    <title>《Android开发艺术探索》Chap6_Drawable简介 | The Old Man and the Sea</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="梳理种类繁多的Drawable. 并了解相应的自定义Drawable注：本文主要参考http://szysky.com  blog相关代码 Drawable简介Drawable表示一种图像的概念. 优点:使用比自定义View的成本低, 非图片类型的Drawable占用空间较小. Drawable本身是一个抽象类. 是所有Drawable对象的基类, 每个具体的Drawable都是其子类. Dra">
+<meta name="keywords" content="android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Android开发艺术探索》Chap6_Drawable简介">
+<meta property="og:url" content="http://yoursite.com/2017/09/06/android/books/《Android开发艺术探索》Chap6_Drawable简介/index.html">
+<meta property="og:site_name" content="The Old Man and the Sea">
+<meta property="og:description" content="梳理种类繁多的Drawable. 并了解相应的自定义Drawable注：本文主要参考http://szysky.com  blog相关代码 Drawable简介Drawable表示一种图像的概念. 优点:使用比自定义View的成本低, 非图片类型的Drawable占用空间较小. Drawable本身是一个抽象类. 是所有Drawable对象的基类, 每个具体的Drawable都是其子类. Dra">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://szysky.com/2016/08/12/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-06-Android%E7%9A%84Drawable/titlemode.png">
+<meta property="og:image" content="http://szysky.com/2016/08/12/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-06-Android%E7%9A%84Drawable/shapemode.png">
+<meta property="og:image" content="http://szysky.com/2016/08/12/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-06-Android%E7%9A%84Drawable/gradient.png">
+<meta property="og:image" content="http://szysky.com/2016/08/12/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-06-Android%E7%9A%84Drawable/Layer_list.png">
+<meta property="og:image" content="http://szysky.com/2016/08/12/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-06-Android%E7%9A%84Drawable/clip.png">
+<meta property="og:image" content="http://szysky.com/2016/08/12/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-06-Android%E7%9A%84Drawable/clipgravity.png">
+<meta property="og:updated_time" content="2017-09-06T09:46:30.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="《Android开发艺术探索》Chap6_Drawable简介">
+<meta name="twitter:description" content="梳理种类繁多的Drawable. 并了解相应的自定义Drawable注：本文主要参考http://szysky.com  blog相关代码 Drawable简介Drawable表示一种图像的概念. 优点:使用比自定义View的成本低, 非图片类型的Drawable占用空间较小. Drawable本身是一个抽象类. 是所有Drawable对象的基类, 每个具体的Drawable都是其子类. Dra">
+<meta name="twitter:image" content="http://szysky.com/2016/08/12/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-06-Android%E7%9A%84Drawable/titlemode.png">
+    
+
+    
+        <link rel="alternate" href="/" title="The Old Man and the Sea" type="application/atom+xml" />
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">The Old Man and the Sea</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/uploads/images/avert.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/uploads/images/avert.png" />
+            <h2 id="name">Ernest Chang</h2>
+            <h3 id="title">Developer &amp; Designer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Hangzhou, China</span>
+            <a id="follow" target="_blank" href="https://github.com/Ernestchang/">FOLLOW</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                38
+                <span>posts</span>
+            </div>
+            <div class="article-info-block">
+                15
+                <span>tags</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/Ernestchang/" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="facebook" class=tooltip>
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="dribbble" class=tooltip>
+                            <i class="fa fa-dribbble"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-android/books/《Android开发艺术探索》Chap6_Drawable简介" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            《Android开发艺术探索》Chap6_Drawable简介
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/09/06/android/books/《Android开发艺术探索》Chap6_Drawable简介/">
+            <time datetime="2017-09-06T09:32:04.000Z" itemprop="datePublished">2017-09-06</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/android/">android</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <blockquote>
+<p>梳理种类繁多的Drawable. 并了解相应的自定义Drawable<br>注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a></p>
+</blockquote>
+<p><a href="https://github.com/suzeyu1992/Notes_AndroidDevSeek" target="_blank" rel="external">blog相关代码</a></p>
+<h2 id="Drawable简介"><a href="#Drawable简介" class="headerlink" title="Drawable简介"></a>Drawable简介</h2><p><code>Drawable</code>表示一种图像的概念. <strong>优点:</strong>使用比自定义View的成本低, 非图片类型的<code>Drawable</code>占用空间较小. <code>Drawable</code>本身是一个抽象类. 是所有<code>Drawable</code>对象的基类, 每个具体的Drawable都是其子类.</p>
+<p><strong>Drawable内部宽高</strong>通过<code>getIntrinsicWidth</code>和<code>getIntrinsicHeight</code>这两个方法获得. 需要注意这个内部宽高的概念针对不同的类型的<code>Drawable</code>, 对于图片形成的<code>Drawable</code>内部宽高就是图片的宽高. 而颜色所形成的<code>Drawable</code>没有内部宽高的概念. Drawable的内部宽高不等于它的大小. 当作为View的背景的视图, <code>Drawable</code>会被拉伸至View的同等大小.</p>
+<h2 id="Drawable的分类"><a href="#Drawable的分类" class="headerlink" title="Drawable的分类"></a>Drawable的分类</h2><h3 id="BitmapDrawable"><a href="#BitmapDrawable" class="headerlink" title="BitmapDrawable"></a>BitmapDrawable</h3><p>表示一张图片, 在开发中直接引用原始图片也可, 下面给出在XML中描述稍微完整的声明</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</div><div class="line">&lt;bitmap</div><div class="line">    xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    android:src=&quot;@mipmap/ic_sample&quot;</div><div class="line">    android:antialias=&quot;true&quot;</div><div class="line">    android:dither=&quot;true&quot;</div><div class="line">    android:filter=&quot;true&quot;</div><div class="line">    android:gravity=&quot;top&quot;</div><div class="line">    android:mipMap=&quot;true&quot;</div><div class="line">    android:tileMode=&quot;repeat&quot;</div><div class="line">    &gt;</div><div class="line"></div><div class="line">&lt;/bitmap&gt;</div></pre></td></tr></table></figure>
+<ul>
+<li>src: 图片的资源文件id(AS下可能不会自动提示<code>mipmap</code>,直接写入即可)</li>
+<li>antialias: 图片抗锯齿.属性值boolean 开启可以让图片变得平滑.</li>
+<li>dither: 抖动效果. 属性值Boolean. 当图片的像素配置和手机屏幕的像素配置不一致时,开启此选项可以让高质量的图片在低质量的屏幕上继续保持较好效果. 例如图片模式为<code>ARGB8888</code>,而设备屏幕所支持为RGB555. 开启可以让图片不会过于失真.</li>
+<li>filter: 过滤效果. 当图片尺寸被拉伸或者压缩,可以保持较好的效果.</li>
+<li>gravity: 可以对图片进行定位. 可以使用<code>|</code>组合属性使用. 可供使用的属性</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>可选项</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>top</td>
+<td>放在顶部, 不改变图片大小</td>
+</tr>
+<tr>
+<td>bottom</td>
+<td>放在底部, 不改变图片大小</td>
+</tr>
+<tr>
+<td>left</td>
+<td>放在左端, 不改变图片大小</td>
+</tr>
+<tr>
+<td>right</td>
+<td>放在右端, 不改变图片大小</td>
+</tr>
+<tr>
+<td>center_vertical</td>
+<td>使图片竖直居中, 不改变图片大小</td>
+</tr>
+<tr>
+<td>fill_vertical</td>
+<td>图片竖直方向填充容器</td>
+</tr>
+<tr>
+<td>center_horizontal</td>
+<td>使图片水平居中, 不改变图片大小</td>
+</tr>
+<tr>
+<td>fill_horizontal</td>
+<td>图片水平方向填充容器</td>
+</tr>
+<tr>
+<td>center</td>
+<td>图片同时水平和垂直居中, 不改变图片大小</td>
+</tr>
+<tr>
+<td>fill</td>
+<td>图片水平和竖直方向均填充容器, <strong>这是默认值</strong></td>
+</tr>
+<tr>
+<td>clip_vertical</td>
+<td>表示竖直方向的裁剪, 较少使用</td>
+</tr>
+<tr>
+<td>clip_horizontal</td>
+<td>表示水平方向的裁剪, 较少使用</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>mipmap: 纹理映射 默认为false</li>
+<li>tileMode: 平铺模式. 有四种值: <code>disable</code>关闭平铺模式(默认值), <code>repeat</code>普通平铺开启, <code>mirror</code>平铺的同时,平铺图片做镜面效果. <code>clamp</code>在原始图片最右边像素向右延伸, 最下边像素向下延伸.如图:</li>
+</ul>
+<p><img src="http://szysky.com/2016/08/12/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-06-Android%E7%9A%84Drawable/titlemode.png" alt="img"></p>
+<p><strong>NinePatchDrawable</strong></p>
+<p>表示一张.9格式的图片, .9图片可以自动的根据所需要的宽高进行相应的缩放并保证不失真. 和<code>BitmapDrawable</code>使用一样直接引入图片即可. xml方式如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</div><div class="line">&lt;nine-patch xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    android:src=&quot;xxxx&quot;</div><div class="line">    android:dither=&quot;true&quot;/&gt;</div></pre></td></tr></table></figure>
+<h3 id="ShapeDrawable"><a href="#ShapeDrawable" class="headerlink" title="ShapeDrawable"></a>ShapeDrawable</h3><p>这是一种通过颜色来构成的图片, 它可以为纯色的图形, 也可以具有渐变的图形. 以下是一个简单使用方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</div><div class="line">&lt;shape xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    android:shape=&quot;rectangle&quot;&gt;</div><div class="line">    &lt;!--圆角--&gt;</div><div class="line">    &lt;corners android:radius=&quot;50dp&quot;/&gt;</div><div class="line">    </div><div class="line">    &lt;padding android:top=&quot;5dp&quot;/&gt;</div><div class="line">    </div><div class="line">    &lt;!--填充--&gt;</div><div class="line">    &lt;solid android:color=&quot;@color/colorPrimary&quot;/&gt;</div><div class="line"></div><div class="line">    &lt;!--gradient 和solid 互斥属性谁放在后面谁才有效--&gt;</div><div class="line">    &lt;!--渐变--&gt;</div><div class="line">    &lt;gradient android:angle=&quot;90&quot;</div><div class="line">        android:startColor=&quot;#f00&quot;</div><div class="line">        android:centerColor=&quot;#0f0&quot;</div><div class="line">        android:endColor=&quot;#00f&quot;/&gt;</div><div class="line">    </div><div class="line">    &lt;!--边框--&gt;</div><div class="line">    &lt;stroke android:width=&quot;30dp&quot;</div><div class="line">        android:color=&quot;#ff0000&quot; /&gt;</div><div class="line">&lt;/shape&gt;</div></pre></td></tr></table></figure>
+<p>来说说具体的属性都有什么</p>
+<p><strong>shape:</strong></p>
+<p>表示图片的形状, 有四个选项: <code>rectangle</code>()矩形, <code>oval</code>(椭圆), <code>line</code>(横线), <code>ring</code>(圆环). <strong>默认值为矩形</strong>. 另外<code>line</code>和<code>ring</code>这两个选项必须要通过<code>&lt;stroke&gt;</code>标签来指定线的宽度和颜色等信息, 否则无法达到预期效果.<strong>当ring这个形状还需要添加几个属性</strong><code>innerRadius</code>圆环内半径, <code>thickness</code>圆环的厚度,外半径减去内半径的距离. 还有两个半分比的属性.效果一样. <code>useLevel</code>:基本都是用false, 否则可能无法到达预期的显示效果,除非被当做LevelListDrawable.如下图可以看看几个方式的样子</p>
+<p><img src="http://szysky.com/2016/08/12/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-06-Android%E7%9A%84Drawable/shapemode.png" alt="img"></p>
+<p><code>&lt;corner&gt;</code></p>
+<p>表示shape的四个角度. 它只适用于<strong>矩形shape</strong>. 支持属性总共有五个,一个<code>Radius</code>和四个顶角如<code>topLeftRadius</code>等等. <code>Radius</code>的优先级最低, 会被其他属性覆盖.</p>
+<p><code>&lt;gradient&gt;</code></p>
+<p>它与<code>&lt;solid&gt;</code>标签是互相互斥的. 其中solid表示纯色填充, 而gradient则表示渐变效果.</p>
+<p>有如下属性:</p>
+<ul>
+<li><code>android:angle</code> –渐变的角度, 默认为0, 其值必须为45的倍数. 0表示从左到右, 90表示从下到上.</li>
+<li><code>android:centerX</code> –渐变的中心点横坐标(范围0~1)</li>
+<li><code>android:centerY</code> –渐变的中心点纵坐标(范围0~1)</li>
+<li><code>android:startColor</code> –渐变的起始色</li>
+<li><code>android:centerColor</code> –渐变的中间色</li>
+<li><code>android:endColor</code> –渐变的结束色</li>
+<li><code>android:gradientRadius</code> –渐变半径, 仅当android:type=”radial”时有效,<strong>并且当type=”radial”</strong>的时候必须声明此属性,否则崩溃</li>
+<li><code>android:useLevel</code> –一般为false.当Drawable作为StateListDrawable使用时为true</li>
+<li><code>android:type</code> –渐变的类型, 有linear(线性渐变), radial(径向渐变), sweep(扫描线渐变)三种, 默认为线性渐变</li>
+</ul>
+<p>看看type不同的格式什么样子</p>
+<p><img src="http://szysky.com/2016/08/12/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-06-Android%E7%9A%84Drawable/gradient.png" alt="img"></p>
+<p><code>&lt;solid&gt;</code><br>表示纯色填充, 通过<code>android:color</code>来指定颜色</p>
+<p><code>&lt;stroke&gt;</code></p>
+<p>shape的描边,有四个属性. <code>width</code>描边的宽度, <code>color</code>描边的颜色, <code>dashWidth</code>组成虚线的线段的宽度, <code>dashGap</code>组成虚线的线段之间的间隔.</p>
+<p><code>&lt;padding&gt;</code></p>
+<p>这个表示空白, 但是他表示的不是shape的空白, 而是包含它的View的空白, 有上下左右四个属性</p>
+<p><code>&lt;size&gt;</code></p>
+<p><code>Drawable</code>有两个方法获得固有高度. <code>getIntrinsicWidth()</code>, <code>getIntrinsicHeight()</code>. 就是如果是图片<code>Drawable</code>那就是图片的属性大小. 如果不是那就是返回-1. 如果size标签设置了大小. 在方法返回的时候就不再是-1. 但是作为View的背景, shape还会被拉伸或者缩为View的大小.</p>
+<h3 id="LayerDrawable"><a href="#LayerDrawable" class="headerlink" title="LayerDrawable"></a>LayerDrawable</h3><p>对应的标签是<code>&lt;layer-list&gt;</code>, 他表示一个层次化得<code>Drawable</code>集合.通过将不同的Drawable放置在不同的层面上从而达到一种叠加的效果.</p>
+<p>一个这种标签可以包含多个item, 每个item表示一个<code>Drawable</code>. item的结构很简单上下左右四个属性加上id属性和drawable属性. 可以直接通过<code>drawable</code>属性引用一个<code>Drawable</code>也可以在标签写个子标签生成一个.</p>
+<p><img src="http://szysky.com/2016/08/12/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-06-Android%E7%9A%84Drawable/Layer_list.png" alt="img"></p>
+<h3 id="StateListDrawable"><a href="#StateListDrawable" class="headerlink" title="StateListDrawable"></a>StateListDrawable</h3><p>StateList对应<code>&lt;selector&gt;</code>标签, 也是Drawable集合. 这个我们经常使用在开发中的按钮状态选择器.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</div><div class="line">&lt;selector</div><div class="line">    xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    android:constantSize=&quot;true&quot;</div><div class="line">    android:dither=&quot;true&quot;</div><div class="line">    android:variablePadding=&quot;false&quot;</div><div class="line">    &gt;</div><div class="line">   &lt;!-- 只是列举一下</div><div class="line"></div><div class="line">   &lt;item android:state_pressed=&quot;true&quot; android:drawable=&quot;xxx&quot;/&gt;</div><div class="line"></div><div class="line">   &lt;item android:state_focused=&quot;true&quot; android:drawable=&quot;xxx&quot;/&gt;</div><div class="line"></div><div class="line">   &lt;item android:state_hovered=&quot;true&quot; android:drawable=&quot;xxx&quot;/&gt;</div><div class="line"></div><div class="line">   &lt;item android:state_pressed=&quot;true&quot; android:drawable=&quot;xxx&quot;/&gt;</div><div class="line"></div><div class="line">   &lt;item android:state_selected=&quot;true&quot; android:drawable=&quot;xxx&quot;/&gt;</div><div class="line"></div><div class="line">   &lt;item android:state_checkable=&quot;true&quot; android:drawable=&quot;xxx&quot;/&gt;</div><div class="line"></div><div class="line">   &lt;item android:state_checked=&quot;true&quot; android:drawable=&quot;xxx&quot;/&gt;</div><div class="line"></div><div class="line">   &lt;item android:state_enabled=&quot;true&quot; android:drawable=&quot;xxx&quot;/&gt;</div><div class="line"></div><div class="line">   &lt;item android:state_activated=&quot;true&quot; android:drawable=&quot;xxx&quot;/&gt;</div><div class="line"></div><div class="line">   &lt;item android:state_window_focused=&quot;true&quot; android:drawable=&quot;xxx&quot;/&gt;</div><div class="line"></div><div class="line">    --&gt;</div><div class="line"></div><div class="line"></div><div class="line">&lt;/selector&gt;</div></pre></td></tr></table></figure>
+<p><code>select</code>标签对应有三个属性</p>
+<ul>
+<li>constantSize: 用于<code>StateListDrawable</code>的固有大小是否不随着其状态改变而改变的, 因为状态的改变会切换不同的item的drawable, 而不同的drawable具有不同的固有大小. <strong>如果为true</strong>那就是整个<code>StateListDrawable</code>固有大小是内部所有<code>Drawable</code>的<strong>最大</strong>固有大小的值. false会随之变化, <strong>默认为false</strong></li>
+<li>dither: 是否开启抖动效果, 默认为true</li>
+<li>variablePadding: 表示padding是否随着状态的改变而改变, padding取得值是所有Drawable的最大值. 默认为false. 不会随之改变.</li>
+</ul>
+<p><code>&lt;item&gt;</code>标签也比较简单, 指定一个<code>drawable</code>,并加一个状态判断值.</p>
+<p>下面给出常见的状态判断</p>
+<table>
+<thead>
+<tr>
+<th>状态</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>android:state_pressed</td>
+<td>表示按下状态, 比如Button被按下后没有松开时的状态</td>
+</tr>
+<tr>
+<td>android:state_focused</td>
+<td>表示View已经获取了焦点</td>
+</tr>
+<tr>
+<td>android:state_selected</td>
+<td>表示用户选择了View</td>
+</tr>
+<tr>
+<td>android:state_checked</td>
+<td>表示用户选中了View, 一般适用于<code>CheckBox</code>这类在选中和非选中之间切换的</td>
+</tr>
+<tr>
+<td>android:state_enabled</td>
+<td>表示View当前是否可用</td>
+</tr>
+</tbody>
+</table>
+<p>默认状态的一定要放在最后一条, 因为系统是按照从上到下的顺序查找. 只要找到任何一个匹配状态的那么久结束了.</p>
+<h3 id="LevelListDrawable"><a href="#LevelListDrawable" class="headerlink" title="LevelListDrawable"></a>LevelListDrawable</h3><p><code>LevelListDrawable</code>对应于<code>&lt;level-list&gt;</code>标签, 也表示一个Drawable集合, 集合中每一个Drawable都有一个等级的概念, 根据不同的等级<code>LevelListDrawable</code>会切换不同的对应的Drawable.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</div><div class="line">&lt;level-list xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;&gt;</div><div class="line"></div><div class="line">    &lt;item android:drawable=&quot;@mipmap/ic_sample&quot;</div><div class="line">        android:maxLevel=&quot;2&quot;</div><div class="line">        android:minLevel=&quot;2&quot;/&gt;</div><div class="line"></div><div class="line">    &lt;item android:drawable=&quot;@mipmap/ic_launcher&quot;</div><div class="line">        android:maxLevel=&quot;1&quot;</div><div class="line">        android:minLevel=&quot;1&quot;</div><div class="line">        /&gt;</div><div class="line"></div><div class="line">&lt;/level-list&gt;</div></pre></td></tr></table></figure>
+<p>这里就相当于给每一个<code>Drawable</code>设定一个标识. <code>level-list</code>会根据这个标识去自己的item中查找. 默认等级为0, Level的取值在<code>0~10000</code>. 在给每个Item声明等级的时候尽量最大和最小等级保持一致. 让每个item都可以有一个唯一标识等级, 而避免有一些公共拥有等级的Item导致出现和我们预期的不符.</p>
+<p>如果作为了背景, 那么获得<code>Drawable</code>对象通过<code>getLevel()</code>, <code>setLevel()</code>来得到和设置不同的等级做到切换图片的效果. 如果是<code>ImageView</code>那么通过前景设置其等级就可以,一定别忘了把Drawable设置前景再通过这种方式实现.</p>
+<h3 id="TransitionDrawable"><a href="#TransitionDrawable" class="headerlink" title="TransitionDrawable"></a>TransitionDrawable</h3><p>对应着<code>&lt;transition&gt;</code>标签, 它用于实现两个Drawable之间的淡入淡出效果.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&lt;transition xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;&gt;</div><div class="line"></div><div class="line">    &lt;item android:drawable=&quot;@mipmap/ic_sample&quot;/&gt;</div><div class="line"></div><div class="line">    &lt;item android:drawable=&quot;@mipmap/ic_launcher&quot;/&gt;</div><div class="line"></div><div class="line">&lt;/transition&gt;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"> TransitionDrawable drawable = (TransitionDrawable) iv_main.getBackground();</div><div class="line">drawable.startTransition(5000);</div></pre></td></tr></table></figure>
+<p>这个没什么好说的了, 很简单. 注意一下如果是给<code>ImageView</code>设置前景的话那么不要用<code>getBackground()</code>来获取了,通过<code>getDrawable()</code>来获取.</p>
+<h3 id="InsetDrawable"><a href="#InsetDrawable" class="headerlink" title="InsetDrawable"></a>InsetDrawable</h3><p><code>InsetDrawable</code>对应<code>&lt;inset&gt;</code>标签, 它可以将其他Drawable内嵌到自己当中, 并可以在四周留出一定的距离. 当一个View希望自己的背景比自己的实际区域小的时候, 可以使用这个来实现.(相当于给使用的View增加了margin效果) <strong>LayerDrawable也可以实现此效果</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</div><div class="line">&lt;inset xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    android:insetBottom=&quot;20dp&quot;</div><div class="line">    android:insetTop=&quot;50dp&quot;</div><div class="line">    android:insetRight=&quot;20dp&quot;</div><div class="line">    android:insetLeft=&quot;20dp&quot;&gt;</div><div class="line">    &lt;shape &gt;</div><div class="line">        &lt;solid android:color=&quot;#ffff00&quot;/&gt;</div><div class="line">    &lt;/shape&gt;</div><div class="line"></div><div class="line">&lt;/inset&gt;</div></pre></td></tr></table></figure>
+<h3 id="ScaleDrawable"><a href="#ScaleDrawable" class="headerlink" title="ScaleDrawable"></a>ScaleDrawable</h3><p><code>ScaleDrawable</code>对应<code>&lt;scale&gt;</code>标签, 他可以根据自己的等级level将制定的<code>Drawable</code>缩放到一定比例.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</div><div class="line">&lt;scale xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    android:drawable=&quot;@mipmap/ic_sample&quot;</div><div class="line">    android:scaleHeight=&quot;10%&quot;</div><div class="line">    android:scaleWidth=&quot;10%&quot;</div><div class="line">    android:scaleGravity=&quot;center&quot;&gt;</div><div class="line">&lt;/scale&gt;</div></pre></td></tr></table></figure>
+<p>并在代码中设置等级, 默认为0是不显示<code>ScaleDrawable</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ScaleDrawable drawable = (ScaleDrawable) findViewById(R.id.activity_main).getBackground();</div><div class="line">drawable.setLevel(1);</div></pre></td></tr></table></figure>
+<p>其中<code>scaleHeight</code>和<code>scaleWidth</code>需要的是百分比值. 有点别扭, 如果你设置了<strong>10%</strong>, 那么实际的意义就是缩放了原大小的10%, 相当于去掉了设置的值. 最终呈现出来的是<strong>1-设定的百分比</strong>. 就是展现了90%.</p>
+<p>而设置的等级会影响最终的图片大小, 等级越大图片越大. 最好等级控制到0~10000 最后.</p>
+<h3 id="ClipDrawable"><a href="#ClipDrawable" class="headerlink" title="ClipDrawable"></a>ClipDrawable</h3><p><strong>ClipDrawable</strong>对应于<code>&lt;clip&gt;</code>标签, 他可以根据自己当前的等级来裁剪Drawable, 裁剪的方向通过<code>android:clipOrientation</code>和<code>android:gravity</code>这两个属性来共同控制.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</div><div class="line">&lt;clip xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    android:clipOrientation=&quot;horizontal&quot;</div><div class="line">    android:drawable=&quot;@mipmap/ic_sample&quot;</div><div class="line">    android:gravity=&quot;center&quot;&gt;</div><div class="line">&lt;/clip&gt;</div></pre></td></tr></table></figure>
+<p>首先<code>android:clipOrientation</code> 如果参数添加<code>水平 horizontal</code>. 实际上是竖直切割, 保留垂直方向的完整. 如果是Vertical反之. 看图吧.</p>
+<p><img src="http://szysky.com/2016/08/12/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-06-Android%E7%9A%84Drawable/clip.png" alt="img"></p>
+<p>而<code>gravity</code>有的属性和<code>BitmapDrawable</code>中的<code>gravity</code>一样. 这里现在是<code>android:clipOrientation=&quot;horizontal&quot;</code>它是以水平方向做的垂直切割. 那么通过给<code>gravity</code>设置左 中 右就是<code>left</code>, <code>center</code>, <code>right</code>可以达到不同的效果. 如图</p>
+<p><img src="http://szysky.com/2016/08/12/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-06-Android%E7%9A%84Drawable/clipgravity.png" alt="img"></p>
+<p><strong>重要的一点还有动态代码设置等级, 要是不设置等级就是默认的0, 0就是切割掉100%的部分,所以剩下的部位为0也就是空的</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ClipDrawable drawable = (ClipDrawable) findViewById(R.id.activity_main).getBackground();</div><div class="line">drawable.setLevel(5000);</div></pre></td></tr></table></figure>
+<p>这个等级的数还是<strong>1~10000</strong>.</p>
+<ul>
+<li>等级为<strong>0</strong>那么意味着裁剪Drawable的<strong>100%</strong>部分. 什么东西没有.空的</li>
+<li>等级为<strong>5000</strong>那么意味着裁剪Drawable的<strong>50%</strong>部分, 我上面的演示的图片都是以等级为5000为标准测试的</li>
+<li>等级为<strong>10000</strong>那么就意味的裁剪部分为Drawable的<strong>100%</strong>部分, 也就是完全显示了.</li>
+</ul>
+<p>可以看出来了, 综合上面的看出, 上面的<code>gravity</code>的方向可以认为是从那边开始进行裁剪保留.</p>
+<h2 id="自定义Drawable"><a href="#自定义Drawable" class="headerlink" title="自定义Drawable"></a>自定义Drawable</h2><p>一般<code>Drawable</code>都是作为View的背景图, 或者ImageView的显示图片. 其工作原理核心就是<code>draw()</code>方法. 而系统会调用<code>Drawable</code>的<code>draw()</code>来绘制View的背景, 所以我们通过重写draw()来实现自定义<code>Drawable</code>.</p>
+<p>一般<code>draw()</code>, <code>setAlpha()</code>, <code>setColorFilter()</code>, 和<code>getOpacity()</code>都是要实现的 , <code>draw()</code>里面的具体实现和我们View的<code>onDraw()</code>很相似. 可以参考<code>ShapeDrawable</code>和<code>BitmapDrawable</code>的源码去仿造实现.</p>
+<p>在自定义的时候注意: 如果要定义的Drawable有固有的大小值, 那么最好重写<code>getIntrinsicWidth()</code>和<code>getIntrinsicHeight()</code>这两个方法. 因为它会影响到View的wrap_content布局. 最后内部大小不一定等于Drawable的实际大小, Drawable实际大小可以通过<code>getBound()</code>来获取.</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/09/06/android/books/《Android开发艺术探索》Chap6_Drawable简介/" data-id="cj78uk380000hkbpj9i6uy0v1" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/09/06/android/books/《Android开发艺术探索》Chap6_Drawable简介/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/09/06/android/books/《Android开发艺术探索》Chap7_View动画/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    《Android开发艺术探索》Chap7_View动画
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2017/09/06/android/books/《Android开发艺术探索》Chap5_RemoteView的应用/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">《Android开发艺术探索》Chap5_RemoteView的应用</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="uyan_frame"></div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">recent</h3>
+        <div class="widget">
+            <ul id="recent-post" class="no-thumbnail">
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a></p>
+                            <p class="item-title"><a href="/2017/09/06/android/books/《Android开发艺术探索》Chap15_Android性能优化/" class="title">《Android开发艺术探索》Chap15_Android性能优化</a></p>
+                            <p class="item-date"><time datetime="2017-09-06T09:42:12.000Z" itemprop="datePublished">2017-09-06</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a></p>
+                            <p class="item-title"><a href="/2017/09/06/android/books/《Android开发艺术探索》Chap14_JNI和NDK/" class="title">《Android开发艺术探索》Chap14_JNI和NDK</a></p>
+                            <p class="item-date"><time datetime="2017-09-06T09:41:16.000Z" itemprop="datePublished">2017-09-06</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a></p>
+                            <p class="item-title"><a href="/2017/09/06/android/books/《Android开发艺术探索》Chap13_综合技术/" class="title">《Android开发艺术探索》Chap13_综合技术</a></p>
+                            <p class="item-date"><time datetime="2017-09-06T09:40:42.000Z" itemprop="datePublished">2017-09-06</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a></p>
+                            <p class="item-title"><a href="/2017/09/06/android/books/《Android开发艺术探索》Chap12_Bitmap的加载和Cache/" class="title">《Android开发艺术探索》Chap12_Bitmap的加载和Cache</a></p>
+                            <p class="item-date"><time datetime="2017-09-06T09:40:01.000Z" itemprop="datePublished">2017-09-06</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a></p>
+                            <p class="item-title"><a href="/2017/09/06/android/books/《Android开发艺术探索》Chap11_Android的线程和线程池/" class="title">《Android开发艺术探索》Chap11_Android的线程和线程池</a></p>
+                            <p class="item-date"><time datetime="2017-09-06T09:38:42.000Z" itemprop="datePublished">2017-09-06</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">categories</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">21</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/linux/vim/">vim</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">archives</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">17</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tags</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">20</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tag cloud</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 15px;">code</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/github/" style="font-size: 12.5px;">github</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 10px;">markdown</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/node/" style="font-size: 17.5px;">node</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">links</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 Ernest Chang<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2142274"></script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

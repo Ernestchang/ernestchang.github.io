@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <meta charset="utf-8">
+    
+    <title>《Android开发艺术探索》Chap13_综合技术 | The Old Man and the Sea</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="crash的异常处理, Android中的方法限制, 反编译等也是需要了解的技术.注：本文主要参考http://szysky.com  blog相关代码 捕捉Crash信息应用总会不可避免的发生Crash, 有可能是因为底层bug, 或者是适配问题, 代码逻辑问题等等. 当发生Crash的时候, 系统会kill掉正在执行的程序, 现象就是闪退或者提示用户程序已经停止运行, 这对用户来说是很不友好">
+<meta name="keywords" content="android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Android开发艺术探索》Chap13_综合技术">
+<meta property="og:url" content="http://yoursite.com/2017/09/06/android/books/《Android开发艺术探索》Chap13_综合技术/index.html">
+<meta property="og:site_name" content="The Old Man and the Sea">
+<meta property="og:description" content="crash的异常处理, Android中的方法限制, 反编译等也是需要了解的技术.注：本文主要参考http://szysky.com  blog相关代码 捕捉Crash信息应用总会不可避免的发生Crash, 有可能是因为底层bug, 或者是适配问题, 代码逻辑问题等等. 当发生Crash的时候, 系统会kill掉正在执行的程序, 现象就是闪退或者提示用户程序已经停止运行, 这对用户来说是很不友好">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://szysky.com/2016/08/25/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-13-%E7%BB%BC%E5%90%88%E6%8A%80%E6%9C%AF/uncaughtException_1.png">
+<meta property="og:image" content="http://szysky.com/2016/08/25/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-13-%E7%BB%BC%E5%90%88%E6%8A%80%E6%9C%AF/uncaughtException_2.png">
+<meta property="og:updated_time" content="2017-09-06T09:50:42.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="《Android开发艺术探索》Chap13_综合技术">
+<meta name="twitter:description" content="crash的异常处理, Android中的方法限制, 反编译等也是需要了解的技术.注：本文主要参考http://szysky.com  blog相关代码 捕捉Crash信息应用总会不可避免的发生Crash, 有可能是因为底层bug, 或者是适配问题, 代码逻辑问题等等. 当发生Crash的时候, 系统会kill掉正在执行的程序, 现象就是闪退或者提示用户程序已经停止运行, 这对用户来说是很不友好">
+<meta name="twitter:image" content="http://szysky.com/2016/08/25/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-13-%E7%BB%BC%E5%90%88%E6%8A%80%E6%9C%AF/uncaughtException_1.png">
+    
+
+    
+        <link rel="alternate" href="/" title="The Old Man and the Sea" type="application/atom+xml" />
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">The Old Man and the Sea</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/uploads/images/avert.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/uploads/images/avert.png" />
+            <h2 id="name">Ernest Chang</h2>
+            <h3 id="title">Developer &amp; Designer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Hangzhou, China</span>
+            <a id="follow" target="_blank" href="https://github.com/Ernestchang/">FOLLOW</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                38
+                <span>posts</span>
+            </div>
+            <div class="article-info-block">
+                15
+                <span>tags</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/Ernestchang/" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="facebook" class=tooltip>
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="dribbble" class=tooltip>
+                            <i class="fa fa-dribbble"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-android/books/《Android开发艺术探索》Chap13_综合技术" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            《Android开发艺术探索》Chap13_综合技术
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/09/06/android/books/《Android开发艺术探索》Chap13_综合技术/">
+            <time datetime="2017-09-06T09:40:42.000Z" itemprop="datePublished">2017-09-06</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/android/">android</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <blockquote>
+<p>crash的异常处理, Android中的方法限制, 反编译等也是需要了解的技术.<br>注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a></p>
+</blockquote>
+<p><a href="https://github.com/suzeyu1992/Notes_AndroidDevSeek" target="_blank" rel="external">blog相关代码</a></p>
+<h2 id="捕捉Crash信息"><a href="#捕捉Crash信息" class="headerlink" title="捕捉Crash信息"></a>捕捉Crash信息</h2><p>应用总会不可避免的发生Crash, 有可能是因为底层bug, 或者是适配问题, 代码逻辑问题等等. 当发生Crash的时候, 系统会kill掉正在执行的程序, 现象就是闪退或者提示用户程序已经停止运行, 这对用户来说是很不友好, 也是开发者不愿意看到的. 系统提供了在<strong>程序Crash之前可以保存异常信息的能力, 这样在崩溃前可以保存异常信息到文件中, 传回服务器,这样可以针对各种各样的用户发生的错误对应用进行完善</strong>的方法, 这个类在<code>Thread</code>中的<code>setDefaultUncaughtException()</code>方法.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">* Sets the default uncaught exception handler. This handler is invoked in</div><div class="line">* case any Thread dies due to an unhandled exception.</div><div class="line">*</div><div class="line">* @param handler The handler to set or null.</div><div class="line">*/</div><div class="line">public static void setDefaultUncaughtExceptionHandler(UncaughtExceptionHandler handler) &#123;</div><div class="line">   Thread.defaultUncaughtHandler = handler;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>从方法名的意思看出设置默认未捕获异常的处理器. 就是当Crash发生的时候, 系统会回调<code>UncaughtExceptionHandler#uncaughtException()</code>方法, 在这个方法中可以获取到异常的信息, 可以选择把信息写到SD卡中, 然后在合适的时机通过网络将Crash信息上传到服务器上. 也可以在这里弹出一个对话框告诉用户, 会比直接闪退好那么一点.</p>
+<p>首先要实现出一个<code>UncaughtExceptionHandler</code>的子类. 直接看实现:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div></pre></td><td class="code"><pre><div class="line">public class MyCrashHandler implements Thread.UncaughtExceptionHandler &#123;</div><div class="line"></div><div class="line">    private static final String TAG = MyCrashHandler.class.getSimpleName();</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 定义异常文件要存储的路径</div><div class="line">     */</div><div class="line">    private static final String PATH = Environment.getExternalStorageDirectory().getPath() + &quot;/szyCrash/log/&quot;;</div><div class="line"></div><div class="line">    private static final String FILE_NAME = &quot;crash-&quot;;</div><div class="line"></div><div class="line">    private static final String FILE_NAME_SUFFIX = &quot;.trace&quot;;</div><div class="line"></div><div class="line">    private Thread.UncaughtExceptionHandler mDefaultUncaughtExceptionHandler;</div><div class="line"></div><div class="line">    private Context mContext;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 单例模式三部曲    懒汉式</div><div class="line">     */</div><div class="line">    private static MyCrashHandler sInstance = new MyCrashHandler();</div><div class="line"></div><div class="line">    private MyCrashHandler() &#123;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static MyCrashHandler getsInstance() &#123;</div><div class="line">        return sInstance;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    /**</div><div class="line">     * 设置本类为当前进行的默认未捕捉异常处理器</div><div class="line">     */</div><div class="line">    public void init(Context context) &#123;</div><div class="line">        mContext = context.getApplicationContext();</div><div class="line">        mDefaultUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();</div><div class="line">        Thread.setDefaultUncaughtExceptionHandler(this);</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void uncaughtException(Thread thread, Throwable ex) &#123;</div><div class="line">        try &#123;</div><div class="line">            // 导出信息到sd卡上</div><div class="line">            dumpExceptionToSDCard(ex);</div><div class="line"></div><div class="line">            // 对本地的信息进行上传服务器处理</div><div class="line">            uploadExceptionToServer();</div><div class="line"></div><div class="line">        &#125; catch (IOException e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125; finally &#123;</div><div class="line">            // 也把异常打印到控制台 防止系统没有默认异常处理器导致的没有崩溃信息</div><div class="line">            ex.printStackTrace();</div><div class="line"></div><div class="line">            // 如果系统有默认的异常处理器那么就给系统处理  否则自己关闭掉</div><div class="line">            // 如果不交给系统 或者 自己手动杀掉, 那么应用就会进入假死, 点击会出现ANR</div><div class="line">            if (mDefaultUncaughtExceptionHandler != null) &#123;</div><div class="line">                ex.printStackTrace();</div><div class="line">                mDefaultUncaughtExceptionHandler.uncaughtException(thread, ex);</div><div class="line">            &#125; else &#123;</div><div class="line">                Process.killProcess(Process.myPid());</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 上传发生未捕获的错误日志</div><div class="line">     */</div><div class="line">    private void uploadExceptionToServer() &#123;</div><div class="line">        // TODO: 16/8/25   看具体需求, 也可以在每次启动app后检测本地是否有异常日志</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 开始异常信息进行本地存储处理</div><div class="line">     *</div><div class="line">     * @param ex 程序发生的异常对象</div><div class="line">     * @throws IOException 写入文件发生异常</div><div class="line">     */</div><div class="line">    private void dumpExceptionToSDCard(Throwable ex) throws IOException &#123;</div><div class="line">        // 首先判断sd卡是否被挂起</div><div class="line">        if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) &#123;</div><div class="line">            Log.w(TAG, &quot;sd卡不可用, 跳过 dump Exception&quot;);</div><div class="line">            return;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        File dir = new File(PATH);</div><div class="line">        if (!dir.exists()) &#123;</div><div class="line">            dir.mkdirs();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        // 获取日志记录时间</div><div class="line">        long currentTimeMillis = System.currentTimeMillis();</div><div class="line">        String formatTimeStr = new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm:ss&quot;).format(new Date(currentTimeMillis));</div><div class="line"></div><div class="line">        // 创建存储异常的文件</div><div class="line">        File file = new File(PATH + FILE_NAME + formatTimeStr + FILE_NAME_SUFFIX);</div><div class="line"></div><div class="line"></div><div class="line">        try &#123;</div><div class="line">            // 创建写入流, 开始哗哗写东西</div><div class="line">            PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));</div><div class="line">            pw.println(formatTimeStr);</div><div class="line">            dumpPhoneInfo(pw);</div><div class="line">            pw.println();</div><div class="line">            pw.println(&quot;**********************异常信息**************************&quot;);</div><div class="line">            ex.printStackTrace(pw);</div><div class="line">            pw.close();</div><div class="line"></div><div class="line"></div><div class="line">        &#125; catch (PackageManager.NameNotFoundException e) &#123;</div><div class="line">            Log.e(TAG, &quot;存储未捕获异常失败了.&quot;);</div><div class="line">        &#125;</div><div class="line"></div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 读取当前设备信息  并追加到异常日志中</div><div class="line">     */</div><div class="line">    private void dumpPhoneInfo(PrintWriter pw) throws PackageManager.NameNotFoundException &#123;</div><div class="line">        // 获得应用包管理者 并获取存储当前应用的信息对象</div><div class="line">        PackageManager pm = mContext.getPackageManager();</div><div class="line">        PackageInfo pi = pm.getPackageInfo(mContext.getPackageName(), PackageManager.GET_ACTIVITIES);</div><div class="line"></div><div class="line">        pw.println(&quot;**********************设备信息**************************&quot;);</div><div class="line">        // 开始写入 应用信息</div><div class="line">        pw.println(&quot;App Version &quot;);</div><div class="line">        pw.print(&quot;    VersionName: &quot;);</div><div class="line">        pw.println(pi.versionName);</div><div class="line">        pw.print(&quot;    VersionCode: &quot;);</div><div class="line">        pw.println(pi.versionCode);</div><div class="line"></div><div class="line">        // 开始写入 Android版本信息</div><div class="line">        pw.println(&quot;OS Version &quot;);</div><div class="line">        pw.println(&quot;    SDK_NAME: &quot; + Build.VERSION.RELEASE);</div><div class="line">        pw.println(&quot;    SDK_INT: &quot; + Build.VERSION.SDK_INT);</div><div class="line"></div><div class="line"></div><div class="line">        // 开始写入 手机制造商</div><div class="line">        pw.println(&quot;Vendor &quot;);</div><div class="line">        pw.println(&quot;    &quot; + Build.MANUFACTURER);</div><div class="line"></div><div class="line"></div><div class="line">        // 开始写入 手机型号</div><div class="line">        pw.println(&quot;Model &quot;);</div><div class="line">        pw.println(&quot;    &quot; + Build.MODEL);</div><div class="line"></div><div class="line"></div><div class="line">        // 开始写入 CPU架构</div><div class="line">        pw.println(&quot;CPU ABI &quot;);</div><div class="line">        String[] supportedAbis = SUPPORTED_ABIS;</div><div class="line">        for (int i = 0; i &lt; supportedAbis.length; i++) &#123;</div><div class="line">            pw.println(&quot;    &quot; + supportedAbis[i]);</div><div class="line">        &#125;</div><div class="line">        pw.println(&quot;*************************end***************************&quot;);</div><div class="line"></div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>核心方法就是复写了这个类的<code>uncaughtException()</code>方法. 别忘了在<code>Application</code>中进行这个类的<code>init()</code>方法调用. 这样才会把自定义的捕捉未捕获的异常这个类注册到系统.</p>
+<p>看一下模拟机和真机的两个log日志</p>
+<p><img src="http://szysky.com/2016/08/25/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-13-%E7%BB%BC%E5%90%88%E6%8A%80%E6%9C%AF/uncaughtException_1.png" alt="img"><br><img src="http://szysky.com/2016/08/25/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-13-%E7%BB%BC%E5%90%88%E6%8A%80%E6%9C%AF/uncaughtException_2.png" alt="img"></p>
+<h2 id="multidex解决方法数越界"><a href="#multidex解决方法数越界" class="headerlink" title="multidex解决方法数越界"></a>multidex解决方法数越界</h2><p>Android中单个<strong>dex</strong>文件所能包含的最大方法数为65536, 这包含了FrameWork, 依赖的jar包以及应用本身的代码中的所有方法. 会爆出:</p>
+<p><code>com.android.dex.DexIndexOverflowException: method ID not in[0, 0xffff] :65536</code></p>
+<p>可能在一些低版本的手机, 即使没有超过方法数的上限却还是出现错误</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">E/dalvikvm: Optimization failed</div><div class="line">E/installd: dexopt failed on &apos;/data/dalvik-cache/.....&apos;</div></pre></td></tr></table></figure>
+<p>这个现象, 首先<code>dexpot</code>是一个程序, 应用在安装时, 系统会通过<code>dexopt</code>来优化dex文件, 在优化过程中dexopt采用一个固定大小的缓冲区来存储应用中所有方法消息, 这个缓冲区就是<code>linearAlloc</code>. <code>LinearAlloc</code>缓冲区在新版本的Android系统中大小为8MB或者16MB. 在Android 2.2和2.3中却只有5MB. 这是如果方法过多, 即使方法数没有超过<code>65535</code>也有可能会因为存储空间失败而无法安装.</p>
+<p><strong>解决方案</strong></p>
+<ul>
+<li><strong>插件化</strong>: 是一套重量级的技术方案, 通过将一个<code>dex</code>拆分成两个或者多个<code>dex</code>,可以在一定程度上解决方法数的越界问题. 但是还有兼容性问题需要考虑, 所以需要权衡是否需要使用这个方案.</li>
+<li><strong>multidex</strong>: 这是Google在2014年提出的解决方案</li>
+</ul>
+<p>= =. 略过</p>
+<h2 id="Android的动态加载技术"><a href="#Android的动态加载技术" class="headerlink" title="Android的动态加载技术"></a>Android的动态加载技术</h2><p>动态加载也叫插件化. 当项目越来越大的时候, 可以通过插件化来减轻应用的内存和CPU占用. 还可以实现热插播, 即可以在不发布新版本的情况下更新某些模块.</p>
+<p>插件化基本都要面临解决的基本问题:</p>
+<ol>
+<li>资源访问</li>
+<li>Activity声明周期的管理</li>
+<li>ClassLoader的管理</li>
+</ol>
+<p>说明<strong>宿主</strong>和<strong>插件</strong>的概念, 宿主是指普通的apk, 而插件一般指经过处理的dex或者apk. 在主流的插件化框架中多采用经过处理的apk来作为插件, 处理方式往往和编译以及打包环节有关, 另外很多插件化框架都需要用到代理Activity的概念, 插件Activity的启动大多数是借助一个代理Activity来实现.</p>
+<p>= =. 略过</p>
+<h2 id="反编译"><a href="#反编译" class="headerlink" title="反编译"></a>反编译</h2><p>= =. 略过</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/09/06/android/books/《Android开发艺术探索》Chap13_综合技术/" data-id="cj78uk37q0005kbpjq8iaynyy" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/09/06/android/books/《Android开发艺术探索》Chap13_综合技术/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/09/06/android/books/《Android开发艺术探索》Chap14_JNI和NDK/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    《Android开发艺术探索》Chap14_JNI和NDK
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2017/09/06/android/books/《Android开发艺术探索》Chap12_Bitmap的加载和Cache/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">《Android开发艺术探索》Chap12_Bitmap的加载和Cache</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="uyan_frame"></div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">recent</h3>
+        <div class="widget">
+            <ul id="recent-post" class="no-thumbnail">
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a></p>
+                            <p class="item-title"><a href="/2017/09/06/android/books/《Android开发艺术探索》Chap15_Android性能优化/" class="title">《Android开发艺术探索》Chap15_Android性能优化</a></p>
+                            <p class="item-date"><time datetime="2017-09-06T09:42:12.000Z" itemprop="datePublished">2017-09-06</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a></p>
+                            <p class="item-title"><a href="/2017/09/06/android/books/《Android开发艺术探索》Chap14_JNI和NDK/" class="title">《Android开发艺术探索》Chap14_JNI和NDK</a></p>
+                            <p class="item-date"><time datetime="2017-09-06T09:41:16.000Z" itemprop="datePublished">2017-09-06</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a></p>
+                            <p class="item-title"><a href="/2017/09/06/android/books/《Android开发艺术探索》Chap13_综合技术/" class="title">《Android开发艺术探索》Chap13_综合技术</a></p>
+                            <p class="item-date"><time datetime="2017-09-06T09:40:42.000Z" itemprop="datePublished">2017-09-06</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a></p>
+                            <p class="item-title"><a href="/2017/09/06/android/books/《Android开发艺术探索》Chap12_Bitmap的加载和Cache/" class="title">《Android开发艺术探索》Chap12_Bitmap的加载和Cache</a></p>
+                            <p class="item-date"><time datetime="2017-09-06T09:40:01.000Z" itemprop="datePublished">2017-09-06</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a></p>
+                            <p class="item-title"><a href="/2017/09/06/android/books/《Android开发艺术探索》Chap11_Android的线程和线程池/" class="title">《Android开发艺术探索》Chap11_Android的线程和线程池</a></p>
+                            <p class="item-date"><time datetime="2017-09-06T09:38:42.000Z" itemprop="datePublished">2017-09-06</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">categories</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">21</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/linux/vim/">vim</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">archives</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">17</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tags</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">20</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tag cloud</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 15px;">code</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/github/" style="font-size: 12.5px;">github</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 10px;">markdown</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/node/" style="font-size: 17.5px;">node</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">links</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 Ernest Chang<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2142274"></script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

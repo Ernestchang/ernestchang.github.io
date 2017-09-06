@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <meta charset="utf-8">
+    
+    <title>《Android开发艺术探索》Chap12_Bitmap的加载和Cache | The Old Man and the Sea</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="由于Bitmap的特殊性以及Android对单个应用所施加的内存限制, 会导致加载Bitmap的时候很容易出现内存溢出. 还有常用的缓存策略.注：本文主要参考http://szysky.com  blog相关代码 Bitmap的高效加载先来简单介绍一下如何加载一个Bitmap, Bitmap在android中指的是一张图片, 可以是png格式也可以是jpg等其他常见的图片格式. 那么如何加载一个">
+<meta name="keywords" content="android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Android开发艺术探索》Chap12_Bitmap的加载和Cache">
+<meta property="og:url" content="http://yoursite.com/2017/09/06/android/books/《Android开发艺术探索》Chap12_Bitmap的加载和Cache/index.html">
+<meta property="og:site_name" content="The Old Man and the Sea">
+<meta property="og:description" content="由于Bitmap的特殊性以及Android对单个应用所施加的内存限制, 会导致加载Bitmap的时候很容易出现内存溢出. 还有常用的缓存策略.注：本文主要参考http://szysky.com  blog相关代码 Bitmap的高效加载先来简单介绍一下如何加载一个Bitmap, Bitmap在android中指的是一张图片, 可以是png格式也可以是jpg等其他常见的图片格式. 那么如何加载一个">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://szysky.com/2016/08/23/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-12-Bitmap%E7%9A%84%E5%8A%A0%E8%BD%BD%E5%92%8CCache/load_oom_480dpi.png">
+<meta property="og:image" content="http://szysky.com/2016/08/23/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-12-Bitmap%E7%9A%84%E5%8A%A0%E8%BD%BD%E5%92%8CCache/load_oom_560dpi.png">
+<meta property="og:image" content="http://szysky.com/2016/08/23/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-12-Bitmap%E7%9A%84%E5%8A%A0%E8%BD%BD%E5%92%8CCache/lrucache_result.png">
+<meta property="og:image" content="http://szysky.com/2016/08/23/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-12-Bitmap%E7%9A%84%E5%8A%A0%E8%BD%BD%E5%92%8CCache/photo_wall_result.png">
+<meta property="og:updated_time" content="2017-09-06T09:50:10.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="《Android开发艺术探索》Chap12_Bitmap的加载和Cache">
+<meta name="twitter:description" content="由于Bitmap的特殊性以及Android对单个应用所施加的内存限制, 会导致加载Bitmap的时候很容易出现内存溢出. 还有常用的缓存策略.注：本文主要参考http://szysky.com  blog相关代码 Bitmap的高效加载先来简单介绍一下如何加载一个Bitmap, Bitmap在android中指的是一张图片, 可以是png格式也可以是jpg等其他常见的图片格式. 那么如何加载一个">
+<meta name="twitter:image" content="http://szysky.com/2016/08/23/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-12-Bitmap%E7%9A%84%E5%8A%A0%E8%BD%BD%E5%92%8CCache/load_oom_480dpi.png">
+    
+
+    
+        <link rel="alternate" href="/" title="The Old Man and the Sea" type="application/atom+xml" />
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">The Old Man and the Sea</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/uploads/images/avert.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/uploads/images/avert.png" />
+            <h2 id="name">Ernest Chang</h2>
+            <h3 id="title">Developer &amp; Designer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Hangzhou, China</span>
+            <a id="follow" target="_blank" href="https://github.com/Ernestchang/">FOLLOW</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                38
+                <span>posts</span>
+            </div>
+            <div class="article-info-block">
+                15
+                <span>tags</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/Ernestchang/" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="facebook" class=tooltip>
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="dribbble" class=tooltip>
+                            <i class="fa fa-dribbble"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-android/books/《Android开发艺术探索》Chap12_Bitmap的加载和Cache" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            《Android开发艺术探索》Chap12_Bitmap的加载和Cache
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/09/06/android/books/《Android开发艺术探索》Chap12_Bitmap的加载和Cache/">
+            <time datetime="2017-09-06T09:40:01.000Z" itemprop="datePublished">2017-09-06</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/android/">android</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <blockquote>
+<p>由于Bitmap的特殊性以及Android对单个应用所施加的内存限制, 会导致加载Bitmap的时候很容易出现内存溢出. 还有常用的缓存策略.<br>注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a></p>
+</blockquote>
+<p><a href="https://github.com/suzeyu1992/Notes_AndroidDevSeek" target="_blank" rel="external">blog相关代码</a></p>
+<h2 id="Bitmap的高效加载"><a href="#Bitmap的高效加载" class="headerlink" title="Bitmap的高效加载"></a>Bitmap的高效加载</h2><p>先来简单介绍一下如何加载一个<code>Bitmap</code>, <code>Bitmap</code>在android中指的是一张图片, 可以是png格式也可以是jpg等其他常见的图片格式.</p>
+<p><strong>那么如何加载一个图片?</strong>首先<code>BitmapFactory</code>类提供了四种方法: <code>decodeFile()</code>, <code>decodeResource()</code>, <code>decodeStream()</code>, <code>decodeByteArray()</code>. 分别用于从文件系统, 资源文件, 输入流以及字节数组加载出一个<code>Bitmap</code>对象. 其中<code>decodeFile</code>和<code>decodeResource</code>又间接调用了<code>decodeStream()</code>方法, 这四类方法最终是在Android的底层实现的, 对应着<code>BitmapFactory</code>类的几个native方法.</p>
+<p><strong>高效加载的Bitmap的核心思想:</strong>采用<code>BitmapFactory.Options</code>来加载所需尺寸的图片. 比如说一个<code>ImageView</code>控件的大小为<code>300*300</code>. 而图片的大小为<code>800*800</code>. 这个时候如果直接加载那么就比较浪费资源, 需要更多的内存空间来加载图片, 这不是很必要的. 这里我们就可以先把图片按一定的采样率来缩小图片在进行加载. 不仅降低了内存占用,还在一定程度上避免了<code>OOM</code>异常. 也提高了加载bitmap时的性能.</p>
+<p><strong>而通过Options参数来缩放图片</strong>: 主要是用到了<code>inSampleSize</code>参数, 即采样率.</p>
+<ul>
+<li>如果是<strong>inSampleSize=1</strong>那么和原图大小一样,</li>
+<li>如果是<strong>inSampleSize=2</strong>那么宽高都为原图<strong>1/2</strong>, 而像素为原图的<strong>1/4</strong>, 占用的内存大小也为原图的<strong>1/4</strong></li>
+<li>如果是<strong>inSampleSize=3</strong>那么宽高都为原图<strong>1/3</strong>, 而像素为原图的<strong>1/9</strong>, 占用的内存大小也为原图的<strong>1/9</strong></li>
+<li>以此类推…..</li>
+</ul>
+<p><strong>要知道Android中加载图片具体在内存中的占有的大小是根据图片的像素决定的, 而与图片的实际占用空间大小没有关系.而且如果要加载mipmap下的图片, 还会根据不同的分辨率下的文件夹进行不同的放大缩小.</strong></p>
+<p>列举现在有一张图片像素为:<strong>1024*1024</strong>, 如果采用<code>ARGB8888</code>(四个颜色通道每个占有一个字节,相当于1点像素占用4个字节的空间)的格式来存储.(这里不考虑不同的资源文件下情况分析) 那么图片的占有大小就是<code>1024*1024*4</code>那现在这张图片在内存中占用<strong>4MB</strong>.</p>
+<p>如果针对刚才的图片进行<code>inSampleSize=2</code>, 那么最后占用内存大小为<code>512*512*4</code>, 也就是<strong>1MB</strong></p>
+<p>采样率的数值必须是大于1的整数是才会有缩放效果, 并且采样率同时作用于宽/高, 这将导致缩放后的图片以这个<strong>采样率的2次方递减, 即内存占用缩放大小为1/(inSampleSize的二次方).</strong> 如果小于1那么相当于=1的时候. 在官方文档中指出, <code>inSampleSize</code>的取值应该总是为2的指数, 比如1,2,4,8,16,32…如果外界传递<code>inSampleSize</code>不为2的指数, 那么系统会向下取整并选择一个最接近的2的指数来代替. 比如如果<code>inSampleSize=3</code>,那么系统会选择2来代替. <strong>但是这条规则并不作用于所有的android版本, 所以可以当成一个开发建议</strong></p>
+<hr>
+<p>整理一下开发中代码流程:</p>
+<ol>
+<li>将<code>BitmapFactory.Options</code>的<code>inJustDecodeBounds</code>参数设置为true并加载图片.</li>
+<li>从<code>BitmapFactory.Options</code>取出图片的原始宽高信息, 他们对应于<code>outWidth</code>和<code>outHeight</code>参数</li>
+<li>根据采样率的规则并结合目标View的所需大小计算出采样率<code>inSampleSize</code></li>
+<li>将<code>BitmapFactory.Options</code>的<code>inJustDecodeBounds</code>参数设为false, 然后重新加载.</li>
+</ol>
+<p>第一个步骤设置了一个参数, 这个参数的作用就是在加载图片的时候是否只是加载图片宽高信息而不把图片全部加载到内存. 所以这个操作是个<strong>轻量级的</strong>.</p>
+<p>通过这些步骤就可以整理出以下的工具加载图片类调用<code>decodeFixedSizeForResource()</code>即可.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div></pre></td><td class="code"><pre><div class="line">public class MyBitmapLoadUtil &#123;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 对一个Resources的资源文件进行指定长宽来加载进内存, 并把这个bitmap对象返回</div><div class="line">     *</div><div class="line">     * @param res   资源文件对象</div><div class="line">     * @param resId 要操作的图片id</div><div class="line">     * @param reqWidth 最终想要得到bitmap的宽度</div><div class="line">     * @param reqHeight 最终想要得到bitmap的高度</div><div class="line">     * @return 返回采样之后的bitmap对象</div><div class="line">     */</div><div class="line">    public static Bitmap decodeFixedSizeForResource(Resources res, int resId, int reqWidth, int reqHeight)&#123;</div><div class="line">        // 首先先指定加载的模式 为只是获取资源文件的大小</div><div class="line">        BitmapFactory.Options options = new BitmapFactory.Options();</div><div class="line">        options.inJustDecodeBounds = true;</div><div class="line">        BitmapFactory.decodeResource(res, resId, options);</div><div class="line"></div><div class="line">        //Calculate Size  计算要设置的采样率 并把值设置到option上</div><div class="line">        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);</div><div class="line"></div><div class="line">        // 关闭只加载属性模式, 并重新加载的时候传入自定义的options对象</div><div class="line">        options.inJustDecodeBounds = false;</div><div class="line">        return BitmapFactory.decodeResource(res, resId, options);</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     *  一个计算工具类的方法, 传入图片的属性对象和 想要实现的目标大小. 通过计算得到采样值</div><div class="line">     */</div><div class="line">    private static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) &#123;</div><div class="line">        //Raw height and width of image</div><div class="line">        //原始图片的宽高属性</div><div class="line">        final int height = options.outHeight;</div><div class="line">        final int width = options.outWidth;</div><div class="line">        int inSampleSize = 1;</div><div class="line"></div><div class="line">        // 如果想要实现的宽高比原始图片的宽高小那么就可以计算出采样率, 否则不需要改变采样率</div><div class="line">        if (reqWidth &lt; height || reqHeight &lt; width)&#123;</div><div class="line">            int halfWidth = width/2;</div><div class="line">            int halfHeight = height/2;</div><div class="line"></div><div class="line">            // 判断原始长宽的一半是否比目标大小小, 如果小那么增大采样率2倍, 直到出现修改后原始值会比目标值大的时候</div><div class="line">            while((halfHeight/inSampleSize) &gt;= reqHeight &amp;&amp; (halfWidth/inSampleSize) &gt;= reqWidth)&#123;</div><div class="line">                inSampleSize *= 2;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        return inSampleSize;</div><div class="line"></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>当给<code>ImageView</code>设置的时候传入控件的大小, 就会自动转换返回. 可以看一下下面的两张图, 当加载一个分辨率很大的图片如果不使用此方法那么就出<strong>程序崩溃</strong></p>
+<p><strong>了解一下一个原始图片到手机显示的最终占用内存大小</strong></p>
+<p><img src="http://szysky.com/2016/08/23/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-12-Bitmap%E7%9A%84%E5%8A%A0%E8%BD%BD%E5%92%8CCache/load_oom_480dpi.png" alt="img"></p>
+<p><img src="http://szysky.com/2016/08/23/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-12-Bitmap%E7%9A%84%E5%8A%A0%E8%BD%BD%E5%92%8CCache/load_oom_560dpi.png" alt="img"></p>
+<h2 id="Android中的缓存策略"><a href="#Android中的缓存策略" class="headerlink" title="Android中的缓存策略"></a>Android中的缓存策略</h2><p>目前常用的一种缓存算法是<strong>LRU(Least Recently Used)</strong>, 最近最少使用算法. 核心思想: 当缓存存满时, 会优先淘汰那些近期最少使用的缓存对象. 采用LRU算法的缓存有两种: <strong>LruCache</strong>和<strong>DiskLruCache</strong>,<strong>LruCache</strong>用于实现内存缓存, <strong>DiskLruCache</strong>则充当了存储设备缓存, 当组合使用后就可以实现一个类似<code>ImageLoader</code>这样的类库.</p>
+<h3 id="LruCache"><a href="#LruCache" class="headerlink" title="LruCache"></a>LruCache</h3><p><strong>LruCache</strong>是Android 3.1所提供的一个缓存类, 通过<code>support-v4</code>兼容包可以兼容到早期的Android版本</p>
+<p><strong>LruCache</strong>是一个泛型类, 它内部采用了一个<code>LinkedHashMap</code>以强引用的方式存储外界的缓存对象, 其提供了get和put方法来完成缓存的获取和添加的操作. 当缓存满了时, <strong>LruCache</strong>会移除较早使用的缓存对象, 然后在添加新的缓存对象. 普及一下各种引用的区别:</p>
+<ul>
+<li>强引用: 直接的对象引用</li>
+<li>软引用: 当一个对象只有软引用存在时, 系统内存不足时此对象会被gc回收</li>
+<li>弱引用: 当一个对象只有弱引用存在时, 对象会随下一次gc时被回收</li>
+</ul>
+<p>创建的缓存对象大小通过可用内存的1/8来进行分配, 并需要重写<code>sizeOf()</code>方法, <code>sizeOf()</code>是计算缓存对象的大小, 如果有需要还可以重写<code>entryRemoved()</code>,在<strong>Lru</strong>移除旧缓存的时候回调用此方法.</p>
+<p>获取, 添加, 删除, 分别对应get, put, remove</p>
+<h3 id="DiskLruCache"><a href="#DiskLruCache" class="headerlink" title="DiskLruCache"></a>DiskLruCache</h3><p><strong>DiskLruCache</strong>用于实现存储设备缓存, 即磁盘缓存. 它通过将缓存对象写入文件系统从而实现缓存的效果.</p>
+<p><strong>1. DiskLruCache</strong>的创建</p>
+<p><strong>DiskLruCache</strong>并不能通过构造方法来创建, 他提供了<code>open()</code>方法用于创建自身, 如下所示</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">public static DiskLruCache open(File directory, int appVersion, int valueCount, long maxSize)</div></pre></td></tr></table></figure>
+<p>这个方法有四个参数:</p>
+<ol>
+<li><code>File directory</code>: 表示磁盘缓存在文件系统中的存储路径. 可以选择SD卡上的缓存目录, 具体是指<code>/sdcard/Andriod/data/package_name/cache</code>目录, package_name表示当前应用的包名, 当应用被卸载后, 此目录会一并删除掉. 也可以选择data目录下. 或者其他地方. <strong>这里给出的建议:</strong>如果应用卸载后就希望删除缓存文件的话 , 那么就选择SD卡上的缓存目录, 如果希望保留缓存数据那就应该选择SD卡上的其他目录.</li>
+<li><code>int appVersion</code>: 表示应用的版本号, 一般设为1即可. 当版本号发生改变的时候<code>DiskLruCache</code>会清空之前所有的缓存文件, 在实际开发中这个实用性不大.</li>
+<li><code>int valueCount</code>: 表示单个节点所对应的数据的个数, 一般设为1.</li>
+<li><code>long maxSize</code>: 表示缓存的总大小, 比如50MB, 当缓存大小超出这个设定值后, <code>DiskLruCache</code>会清除一些缓存而保证总大小不大于这个设定值.</li>
+</ol>
+<p><strong>2. DiskLruCache的缓存添加</strong></p>
+<p><code>DiskLruCache</code>的缓存添加的操作是通过<code>Editor</code>完成的, <code>Editor</code>表示一个缓存对象的编辑对象.</p>
+<p>如果还是缓存图片为例子, 每一张图片都通过图片的<code>url</code>为key, 这里由于url可能会有特殊字符所以采用<strong>url的md5值</strong>作为key. 根据这个key就可以通过<code>edit()</code>来获取<code>Editor</code>对象, 如果这个缓存对象正在被编辑, 那么edit()就会返回null. 即<code>DiskLruCache</code>不允许同时编辑一个缓存对象.</p>
+<p>当用<code>.edit(key)</code>获得了<code>Editor</code>对象之后. 通过<code>editor.newOutputStream(0)</code>就可以得到一个文件输出流. 由于之前<code>open()</code>方法设置了一个节点只能有一个数据. 所以在获得输出流的时候传入常量0即可.</p>
+<p>有了文件输出流, 可以当网络下载图片时, 图片就可以通过这个文件输出流写入到文件系统上. 别忘了使用<code>Bufferedxxxxx</code>写完之后, 要通过<code>Editor中commit()</code>来提交写操作, 如果下载中发生异常, 那么使用<code>Editor中abort()</code>来回退整个操作.</p>
+<p><strong>3. DiskLruCache的缓存查找</strong></p>
+<p>和缓存的添加过程类似, 缓存查找过程也需要将url转换成key, 然后通过<code>DiskLruCache#get()</code>方法可以得到一个<code>Snapshot</code>对象, 接着在通过<code>Snapshot</code>对象即可得到缓存的文件输入流, 有了文件输入流, 自然就可以得到<code>Bitmap</code>对象. 为了避免加载图片出现OOM所以采用压缩的方式. 在前面对<code>BitmapFactory.Options</code>的使用说明了. <strong>但是这中方法对FileInputStream的缩放存在问题</strong>. 原因是<code>FileInputStream</code>是一种有序的文件流, 而两次<code>decodeStream</code>调用会影响文件的位置属性, 这样在第二次<code>decodeStream</code>的时候得到的会是null. 针对这一个问题, 可以通过文件流来得到它所对应的<strong>文件描述符</strong>, 然后通过<code>BitmapFactory.decodeFileDescription()</code>来加载一张缩放后的图片.</p>
+<h3 id="ImageLoader的实现"><a href="#ImageLoader的实现" class="headerlink" title="ImageLoader的实现"></a>ImageLoader的实现</h3><p>一个好的ImageLoader应该具备以下几点:</p>
+<ul>
+<li>图片的压缩</li>
+<li>网络拉取</li>
+<li>内存缓存</li>
+<li>磁盘缓存</li>
+<li>图片的同步加载</li>
+<li>图片的异步加载</li>
+</ul>
+<p>也可以利用<code>picasso</code>和<code>glide</code>这种图片加载类库, 使用<strong>构建者</strong>模式提供使用. 本文练习demo实现了链式调用设置控件,并制定url然后自动去获取. 相关联的类在<code>load包中</code></p>
+<p>可以看看有了缓存的区别</p>
+<p><img src="http://szysky.com/2016/08/23/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-12-Bitmap%E7%9A%84%E5%8A%A0%E8%BD%BD%E5%92%8CCache/lrucache_result.png" alt="img"></p>
+<h2 id="ImageLoader的使用"><a href="#ImageLoader的使用" class="headerlink" title="ImageLoader的使用"></a>ImageLoader的使用</h2><h3 id="照片墙效果"><a href="#照片墙效果" class="headerlink" title="照片墙效果"></a>照片墙效果</h3><p>这里定义一个自定义的<code>ImageView</code>作为GridView的item布局控件, 之所以这样是想让图片的控件自动去使用设备达到<strong>宽高相等的效果比较好看些</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">public class SquareImageView extends ImageView &#123;</div><div class="line">    public SquareImageView(Context context) &#123;</div><div class="line">        super(context);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public SquareImageView(Context context, AttributeSet attrs) &#123;</div><div class="line">        super(context, attrs);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public SquareImageView(Context context, AttributeSet attrs, int defStyleAttr) &#123;</div><div class="line">        super(context, attrs, defStyleAttr);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">      @Override</div><div class="line">    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) &#123;</div><div class="line">        // 由于这里准备提供给GridView控件使用, 对于一个水平线有几个是未知的</div><div class="line">        // 那么通过父控件的测量传到这里的宽度规格, 也当做高度即可</div><div class="line">        super.onMeasure(widthMeasureSpec, widthMeasureSpec);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这个实现很简单, 利用动态的宽度同时也当做高度即可实现预期的效果.</p>
+<p><img src="http://szysky.com/2016/08/23/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-12-Bitmap%E7%9A%84%E5%8A%A0%E8%BD%BD%E5%92%8CCache/photo_wall_result.png" alt="img"></p>
+<p>这个就是结果, 或许应该对网络加上判断非wifi给一个提示, 可能首次加载会需要比较多的流量.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"> // 根据连接网络的情况判断是否加载图片</div><div class="line">if (!NetWorkUtil.isWifi(getApplicationContext())) &#123;</div><div class="line">  AlertDialog.Builder builder = new AlertDialog.Builder(this);</div><div class="line">  builder.setMessage(&quot;首次使用会从手机网络下载图片, 是否确认下载?&quot;)</div><div class="line">          .setTitle(&quot;友情提示&quot;)</div><div class="line">          .setPositiveButton(&quot;好的.&quot;, new DialogInterface.OnClickListener() &#123;</div><div class="line">              @Override</div><div class="line">              public void onClick(DialogInterface dialog, int which) &#123;</div><div class="line">                  mCanLoadForPhoneNet = true;</div><div class="line">                  imageAdapter.notifyDataSetChanged();</div><div class="line">              &#125;</div><div class="line">          &#125;)</div><div class="line">          .setNegativeButton(&quot;不行!&quot;, new DialogInterface.OnClickListener() &#123;</div><div class="line">              @Override</div><div class="line">              public void onClick(DialogInterface dialog, int which) &#123;</div><div class="line">                  Toast.makeText(getApplicationContext(), &quot;瞅你扣那样!!!&quot;, Toast.LENGTH_LONG).show();</div><div class="line">              &#125;</div><div class="line">          &#125;).show();</div><div class="line">&#125;else&#123;</div><div class="line">  mCanLoadForPhoneNet = true;</div><div class="line">&#125;</div><div class="line"></div><div class="line">// NetWorkUtil类</div><div class="line">public class NetWorkUtil &#123;</div><div class="line">    public static boolean isWifi(Context context) &#123;</div><div class="line">        ConnectivityManager connectivityManager = (ConnectivityManager) context</div><div class="line">                .getSystemService(Context.CONNECTIVITY_SERVICE);</div><div class="line">        NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();</div><div class="line">        if (activeNetInfo != null</div><div class="line">                &amp;&amp; activeNetInfo.getType() == ConnectivityManager.TYPE_WIFI) &#123;</div><div class="line">            return true;</div><div class="line">        &#125;</div><div class="line">        return false;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>然后优化列表 <strong>只有在GridView静止的时候才进行图片加载, 避免滑动时候的无谓的线程加载消耗(即使ImageLoader内部使用了线程池, 你仍然有这么做的必要)</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">GridView gv_main = (GridView) findViewById(R.id.gv_main);</div><div class="line">// 监听GridView的滑动状态</div><div class="line">  gv_main.setOnScrollListener(new AbsListView.OnScrollListener() &#123;</div><div class="line">      @Override</div><div class="line">      public void onScrollStateChanged(AbsListView view, int scrollState) &#123;</div><div class="line">          if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE)&#123;</div><div class="line">              mIsGridViewIdle = true;</div><div class="line">              // 并触发更新adapter</div><div class="line">              imageAdapter.notifyDataSetChanged();</div><div class="line">          &#125;else&#123;</div><div class="line">              mIsGridViewIdle = false;</div><div class="line">          &#125;</div><div class="line">      &#125;</div><div class="line"></div><div class="line">      @Override</div><div class="line">      public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) &#123;</div><div class="line"></div><div class="line">      &#125;</div><div class="line">  &#125;);</div></pre></td></tr></table></figure>
+<p>最后在<strong>adapter中的getView()设置标记位的判断, 只有在wifi和静止的状态下才进行加载请求</strong>下面是<code>getView()</code>代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public View getView(int position, View convertView, ViewGroup parent) &#123;</div><div class="line">  ViewHolder holder = null;</div><div class="line">  if (convertView == null)&#123;</div><div class="line">      convertView = View.inflate(mContext, R.layout.item_photo_wall, null);</div><div class="line">      holder = new ViewHolder();</div><div class="line">      holder.mImageView = (ImageView) convertView.findViewById(R.id.iv_square);</div><div class="line">      convertView.setTag(holder);</div><div class="line">  &#125;else&#123;</div><div class="line">      holder = (ViewHolder) convertView.getTag();</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  // 设置默认图片</div><div class="line">  ImageView mImageView = holder.mImageView;</div><div class="line">  mImageView.setImageResource(android.R.drawable.screen_background_dark_transparent);</div><div class="line"></div><div class="line"></div><div class="line">  // 检测是否wifi 和 是否是滑动状态</div><div class="line">  // 优化重点</div><div class="line">  if (mCanLoadForPhoneNet &amp;&amp; mIsGridViewIdle)&#123;</div><div class="line">      // 加载图片</div><div class="line">      mImageLoader.setImageView(mImageView).url(mUrls.get(position));</div><div class="line">  &#125;</div><div class="line"></div><div class="line"></div><div class="line">  return convertView;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/09/06/android/books/《Android开发艺术探索》Chap12_Bitmap的加载和Cache/" data-id="cj78uk37m0003kbpjtovgua5o" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/09/06/android/books/《Android开发艺术探索》Chap12_Bitmap的加载和Cache/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/09/06/android/books/《Android开发艺术探索》Chap13_综合技术/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    《Android开发艺术探索》Chap13_综合技术
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2017/09/06/android/books/《Android开发艺术探索》Chap11_Android的线程和线程池/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">《Android开发艺术探索》Chap11_Android的线程和线程池</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="uyan_frame"></div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">recent</h3>
+        <div class="widget">
+            <ul id="recent-post" class="no-thumbnail">
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a></p>
+                            <p class="item-title"><a href="/2017/09/06/android/books/《Android开发艺术探索》Chap15_Android性能优化/" class="title">《Android开发艺术探索》Chap15_Android性能优化</a></p>
+                            <p class="item-date"><time datetime="2017-09-06T09:42:12.000Z" itemprop="datePublished">2017-09-06</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a></p>
+                            <p class="item-title"><a href="/2017/09/06/android/books/《Android开发艺术探索》Chap14_JNI和NDK/" class="title">《Android开发艺术探索》Chap14_JNI和NDK</a></p>
+                            <p class="item-date"><time datetime="2017-09-06T09:41:16.000Z" itemprop="datePublished">2017-09-06</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a></p>
+                            <p class="item-title"><a href="/2017/09/06/android/books/《Android开发艺术探索》Chap13_综合技术/" class="title">《Android开发艺术探索》Chap13_综合技术</a></p>
+                            <p class="item-date"><time datetime="2017-09-06T09:40:42.000Z" itemprop="datePublished">2017-09-06</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a></p>
+                            <p class="item-title"><a href="/2017/09/06/android/books/《Android开发艺术探索》Chap12_Bitmap的加载和Cache/" class="title">《Android开发艺术探索》Chap12_Bitmap的加载和Cache</a></p>
+                            <p class="item-date"><time datetime="2017-09-06T09:40:01.000Z" itemprop="datePublished">2017-09-06</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a></p>
+                            <p class="item-title"><a href="/2017/09/06/android/books/《Android开发艺术探索》Chap11_Android的线程和线程池/" class="title">《Android开发艺术探索》Chap11_Android的线程和线程池</a></p>
+                            <p class="item-date"><time datetime="2017-09-06T09:38:42.000Z" itemprop="datePublished">2017-09-06</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">categories</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">21</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/linux/vim/">vim</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">archives</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">17</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tags</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">20</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tag cloud</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 15px;">code</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/github/" style="font-size: 12.5px;">github</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 10px;">markdown</a> <a href="/tags/mysql/" style="font-size: 10px;">mysql</a> <a href="/tags/node/" style="font-size: 17.5px;">node</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">links</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 Ernest Chang<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2142274"></script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>
