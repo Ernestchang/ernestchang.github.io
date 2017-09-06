@@ -4,13 +4,13 @@ date:
 categories: 
 - android 
 - 《Android开发艺术探索》
-  tags:  
+tags:  
 - android
 ---
 
 > Anroid中的事件是怎样进行的
 >
->  注：本文主要参考[http://szysky.com](http://szysky.com/2016/08/08/Android%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%94%E8%AE%B003-View%E7%9A%84%E4%BA%8B%E4%BB%B6%E4%BD%93%E7%B3%BB/)
+>  注：本文主要参考[http://szysky.com](http://szysky.com)
 
 [blog相关代码](https://github.com/suzeyu1992/Notes_AndroidDevSeek)
 

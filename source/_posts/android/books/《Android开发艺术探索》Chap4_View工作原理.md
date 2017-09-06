@@ -4,12 +4,12 @@ date:
 categories: 
 - android 
 - 《Android开发艺术探索》
-  tags:  
+tags:  
 - android
 ---
 
 > 拨开炫酷的外表, 看看衣服里面的View是怎样工作的
-> 注：本文主要参考[http://szysky.com](http://szysky.com/2016/08/10/%E3%80%8AAndroid%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B04-View%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/)
+> 注：本文主要参考[http://szysky.com](http://szysky.com)
 
 [blog相关代码](https://github.com/suzeyu1992/Notes_AndroidDevSeek)
 

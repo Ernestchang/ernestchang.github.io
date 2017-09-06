@@ -4,13 +4,13 @@ date:
 categories: 
 - android 
 - 《Android开发艺术探索》
-  tags:  
+tags:  
 - android
 ---
 
 > 第二章: Android中的IPC机制,深入记录Bundle, 文件共享, AIDL, Messenger, ContentProvider, Socket等进程间的通信.
 >
->  注：本文主要参考[http://szysky.com](http://szysky.com/2016/08/02/Android%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%94%E8%AE%B002-IPC%E6%9C%BA%E5%88%B6/)
+>  注：本文主要参考[http://szysky.com](http://szysky.com)
 
 [blog相关代码](https://github.com/suzeyu1992/Notes_AndroidDevSeek)
 
