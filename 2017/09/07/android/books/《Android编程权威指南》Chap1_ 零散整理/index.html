@@ -5,13 +5,13 @@
     
     <title>《Android编程权威指南》Chap1_ 零散整理 | The Old Man and the Sea</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="这本书属于入门, 有很多内容可以当做扩展来了解一些API, 并且有的时候可以适当的利用Google提供好的API来做一些高效开发节约时间成本. 原理东西本书偏少. 不过可以学习本书中的代码的编写风格, 书中代码都是采用MVC模型来编写的. 就写这么多, 下面开始整理一些小知识点.  Activity的生命周期有7种分别为: 除去onRestart()比较特殊一点的生命周期. 可以把activit">
+    <meta name="description" content="这本书属于入门, 有很多内容可以当做扩展来了解一些API, 并且有的时候可以适当的利用Google提供好的API来做一些高效开发节约时间成本. 原理东西本书偏少. 不过可以学习本书中的代码的编写风格, 书中代码都是采用MVC模型来编写的. 就写这么多, 下面开始整理一些小知识点.注：本文主要参考http://szysky.com  Activity的生命周期有7种分别为: 除去onRestart">
 <meta name="keywords" content="android">
 <meta property="og:type" content="article">
 <meta property="og:title" content="《Android编程权威指南》Chap1_ 零散整理">
 <meta property="og:url" content="http://yoursite.com/2017/09/07/android/books/《Android编程权威指南》Chap1_ 零散整理/index.html">
 <meta property="og:site_name" content="The Old Man and the Sea">
-<meta property="og:description" content="这本书属于入门, 有很多内容可以当做扩展来了解一些API, 并且有的时候可以适当的利用Google提供好的API来做一些高效开发节约时间成本. 原理东西本书偏少. 不过可以学习本书中的代码的编写风格, 书中代码都是采用MVC模型来编写的. 就写这么多, 下面开始整理一些小知识点.  Activity的生命周期有7种分别为: 除去onRestart()比较特殊一点的生命周期. 可以把activit">
+<meta property="og:description" content="这本书属于入门, 有很多内容可以当做扩展来了解一些API, 并且有的时候可以适当的利用Google提供好的API来做一些高效开发节约时间成本. 原理东西本书偏少. 不过可以学习本书中的代码的编写风格, 书中代码都是采用MVC模型来编写的. 就写这么多, 下面开始整理一些小知识点.注：本文主要参考http://szysky.com  Activity的生命周期有7种分别为: 除去onRestart">
 <meta property="og:locale" content="en">
 <meta property="og:image" content="http://szysky.com/2016/09/07/%E3%80%8AAndroid%E7%BC%96%E7%A8%8B%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E3%80%8B%E9%9A%8F%E8%AE%B0%E4%B8%80/local_1.png">
 <meta property="og:image" content="http://szysky.com/2016/09/07/%E3%80%8AAndroid%E7%BC%96%E7%A8%8B%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E3%80%8B%E9%9A%8F%E8%AE%B0%E4%B8%80/local_2.png">
@@ -21,10 +21,10 @@
 <meta property="og:image" content="http://szysky.com/2016/09/07/%E3%80%8AAndroid%E7%BC%96%E7%A8%8B%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E3%80%8B%E9%9A%8F%E8%AE%B0%E4%B8%80/subtitle.png">
 <meta property="og:image" content="http://szysky.com/2016/09/07/%E3%80%8AAndroid%E7%BC%96%E7%A8%8B%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E3%80%8B%E9%9A%8F%E8%AE%B0%E4%B8%80/multidex.gif">
 <meta property="og:image" content="http://szysky.com/2016/09/07/%E3%80%8AAndroid%E7%BC%96%E7%A8%8B%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E3%80%8B%E9%9A%8F%E8%AE%B0%E4%B8%80/screen_1.png">
-<meta property="og:updated_time" content="2017-09-07T09:45:06.000Z">
+<meta property="og:updated_time" content="2017-09-07T10:10:36.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="《Android编程权威指南》Chap1_ 零散整理">
-<meta name="twitter:description" content="这本书属于入门, 有很多内容可以当做扩展来了解一些API, 并且有的时候可以适当的利用Google提供好的API来做一些高效开发节约时间成本. 原理东西本书偏少. 不过可以学习本书中的代码的编写风格, 书中代码都是采用MVC模型来编写的. 就写这么多, 下面开始整理一些小知识点.  Activity的生命周期有7种分别为: 除去onRestart()比较特殊一点的生命周期. 可以把activit">
+<meta name="twitter:description" content="这本书属于入门, 有很多内容可以当做扩展来了解一些API, 并且有的时候可以适当的利用Google提供好的API来做一些高效开发节约时间成本. 原理东西本书偏少. 不过可以学习本书中的代码的编写风格, 书中代码都是采用MVC模型来编写的. 就写这么多, 下面开始整理一些小知识点.注：本文主要参考http://szysky.com  Activity的生命周期有7种分别为: 除去onRestart">
 <meta name="twitter:image" content="http://szysky.com/2016/09/07/%E3%80%8AAndroid%E7%BC%96%E7%A8%8B%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E3%80%8B%E9%9A%8F%E8%AE%B0%E4%B8%80/local_1.png">
     
 
@@ -264,7 +264,7 @@
         
             
             <blockquote>
-<p>这本书属于入门, 有很多内容可以当做扩展来了解一些API, 并且有的时候可以适当的利用Google提供好的API来做一些高效开发节约时间成本. 原理东西本书偏少. 不过可以学习本书中的代码的编写风格, 书中代码都是采用<strong>MVC</strong>模型来编写的. 就写这么多, 下面开始整理一些小知识点.</p>
+<p>这本书属于入门, 有很多内容可以当做扩展来了解一些API, 并且有的时候可以适当的利用Google提供好的API来做一些高效开发节约时间成本. 原理东西本书偏少. 不过可以学习本书中的代码的编写风格, 书中代码都是采用<strong>MVC</strong>模型来编写的. 就写这么多, 下面开始整理一些小知识点.<br>注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a></p>
 </blockquote>
 <h2 id="Activity的生命周期"><a href="#Activity的生命周期" class="headerlink" title="Activity的生命周期"></a>Activity的生命周期</h2><p>有7种分别为: 除去<code>onRestart()</code>比较特殊一点的生命周期. 可以把<code>activity</code>认为分别在<strong>3种状态</strong>切换, 分别是<code>运行, 暂停, 停止</code>.</p>
 <h2 id="配置文件改变导致Activity重建-如屏幕旋转"><a href="#配置文件改变导致Activity重建-如屏幕旋转" class="headerlink" title="配置文件改变导致Activity重建,如屏幕旋转"></a>配置文件改变导致Activity重建,如屏幕旋转</h2><p><strong>设备配置(device configuration)</strong>是用来描述设备当前状态的一系列特征. 这些特征包括<strong>屏幕的方向, 手机语言, 屏幕的密度, 屏幕的尺寸, 键盘类型, 底座模式等</strong></p>

@@ -5,18 +5,18 @@
     
     <title>《Android编程权威指南》Chap2_ Fragment概括 | The Old Man and the Sea</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="这本书属于入门, 有很多内容可以当做扩展来了解一些API, 并且有的时候可以适当的利用Google提供好的API来做一些高效开发节约时间成本. 原理东西本书偏少. 可以学习本书中的代码的编写风格, 书中代码都是采用MVC模型来编写的. 就写这么多, 下面开始整理一些小知识点. 关于Fragment的知识点练习都保存在仓库中的Criminal项目中. git地址  Fragment的生命周期fra">
+    <meta name="description" content="这本书属于入门, 有很多内容可以当做扩展来了解一些API, 并且有的时候可以适当的利用Google提供好的API来做一些高效开发节约时间成本. 原理东西本书偏少. 可以学习本书中的代码的编写风格, 书中代码都是采用MVC模型来编写的. 就写这么多, 下面开始整理一些小知识点.注：本文主要参考http://szysky.com关于Fragment的知识点练习都保存在仓库中的Criminal项目中.">
 <meta name="keywords" content="android">
 <meta property="og:type" content="article">
 <meta property="og:title" content="《Android编程权威指南》Chap2_ Fragment概括">
 <meta property="og:url" content="http://yoursite.com/2017/09/07/android/books/《Android编程权威指南》Chap2_ Fragment概括/index.html">
 <meta property="og:site_name" content="The Old Man and the Sea">
-<meta property="og:description" content="这本书属于入门, 有很多内容可以当做扩展来了解一些API, 并且有的时候可以适当的利用Google提供好的API来做一些高效开发节约时间成本. 原理东西本书偏少. 可以学习本书中的代码的编写风格, 书中代码都是采用MVC模型来编写的. 就写这么多, 下面开始整理一些小知识点. 关于Fragment的知识点练习都保存在仓库中的Criminal项目中. git地址  Fragment的生命周期fra">
+<meta property="og:description" content="这本书属于入门, 有很多内容可以当做扩展来了解一些API, 并且有的时候可以适当的利用Google提供好的API来做一些高效开发节约时间成本. 原理东西本书偏少. 可以学习本书中的代码的编写风格, 书中代码都是采用MVC模型来编写的. 就写这么多, 下面开始整理一些小知识点.注：本文主要参考http://szysky.com关于Fragment的知识点练习都保存在仓库中的Criminal项目中.">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2017-09-07T09:45:51.000Z">
+<meta property="og:updated_time" content="2017-09-07T10:10:31.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="《Android编程权威指南》Chap2_ Fragment概括">
-<meta name="twitter:description" content="这本书属于入门, 有很多内容可以当做扩展来了解一些API, 并且有的时候可以适当的利用Google提供好的API来做一些高效开发节约时间成本. 原理东西本书偏少. 可以学习本书中的代码的编写风格, 书中代码都是采用MVC模型来编写的. 就写这么多, 下面开始整理一些小知识点. 关于Fragment的知识点练习都保存在仓库中的Criminal项目中. git地址  Fragment的生命周期fra">
+<meta name="twitter:description" content="这本书属于入门, 有很多内容可以当做扩展来了解一些API, 并且有的时候可以适当的利用Google提供好的API来做一些高效开发节约时间成本. 原理东西本书偏少. 可以学习本书中的代码的编写风格, 书中代码都是采用MVC模型来编写的. 就写这么多, 下面开始整理一些小知识点.注：本文主要参考http://szysky.com关于Fragment的知识点练习都保存在仓库中的Criminal项目中.">
     
 
     
@@ -255,8 +255,7 @@
         
             
             <blockquote>
-<p>这本书属于入门, 有很多内容可以当做扩展来了解一些API, 并且有的时候可以适当的利用Google提供好的API来做一些高效开发节约时间成本. 原理东西本书偏少. 可以学习本书中的代码的编写风格, 书中代码都是采用<strong>MVC</strong>模型来编写的. 就写这么多, 下面开始整理一些小知识点.</p>
-<p>关于Fragment的知识点练习都保存在仓库中的<strong>Criminal</strong>项目中. <a href="https://github.com/suzeyu1992/AndroidProgramminGuide" target="_blank" rel="external">git地址</a></p>
+<p>这本书属于入门, 有很多内容可以当做扩展来了解一些API, 并且有的时候可以适当的利用Google提供好的API来做一些高效开发节约时间成本. 原理东西本书偏少. 可以学习本书中的代码的编写风格, 书中代码都是采用<strong>MVC</strong>模型来编写的. 就写这么多, 下面开始整理一些小知识点.<br>注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a><br>关于Fragment的知识点练习都保存在仓库中的<strong>Criminal</strong>项目中. <a href="https://github.com/suzeyu1992/AndroidProgramminGuide" target="_blank" rel="external">git地址</a></p>
 </blockquote>
 <h2 id="Fragment的生命周期"><a href="#Fragment的生命周期" class="headerlink" title="Fragment的生命周期"></a>Fragment的生命周期</h2><p><code>fragment</code>是一种控制器对象, <code>activity</code>可委派其完成一些任务. 通常这些任务就是管理用户界面. 受管理的用户界面可以是一整屏或是整屏的一部分.</p>
 <p><code>fragment</code>的生命周期共<strong>有11种</strong>: <code>onAttach()</code> -&gt; <code>onCreate()</code> -&gt; <code>onCreateView()</code> -&gt; <code>onActivityCreated()</code> -&gt; <code>onStart()</code> -&gt; <code>onResume()</code> -&gt; <code>onPause()</code> -&gt; <code>onStop()</code> -&gt; <code>onDestroyView()</code> -&gt; <code>onDestroy()</code> -&gt; <code>onDetach()</code></p>

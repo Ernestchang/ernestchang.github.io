@@ -5,21 +5,21 @@
     
     <title>《Android编程权威指南》Chap3_ 媒体与Intent | The Old Man and the Sea</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="这本书属于入门, 有很多内容可以当做扩展来了解一些API, 并且有的时候可以适当的利用Google提供好的API来做一些高效开发节约时间成本. 原理东西本书偏少. 可以学习本书中的代码的编写风格, 书中代码都是采用MVC模型来编写的. 就写这么多, 下面开始整理一些小知识点. 关于Camera和SurfaceView的知识点练习都保存在仓库中的Criminal项目中.git地址  MediaPl">
+    <meta name="description" content="这本书属于入门, 有很多内容可以当做扩展来了解一些API, 并且有的时候可以适当的利用Google提供好的API来做一些高效开发节约时间成本. 原理东西本书偏少. 可以学习本书中的代码的编写风格, 书中代码都是采用MVC模型来编写的. 就写这么多, 下面开始整理一些小知识点.注：本文主要参考http://szysky.com 关于Camera和SurfaceView的知识点练习都保存在仓库中的C">
 <meta name="keywords" content="android">
 <meta property="og:type" content="article">
 <meta property="og:title" content="《Android编程权威指南》Chap3_ 媒体与Intent">
 <meta property="og:url" content="http://yoursite.com/2017/09/07/android/books/《Android编程权威指南》Chap3_ 媒体与Intent/index.html">
 <meta property="og:site_name" content="The Old Man and the Sea">
-<meta property="og:description" content="这本书属于入门, 有很多内容可以当做扩展来了解一些API, 并且有的时候可以适当的利用Google提供好的API来做一些高效开发节约时间成本. 原理东西本书偏少. 可以学习本书中的代码的编写风格, 书中代码都是采用MVC模型来编写的. 就写这么多, 下面开始整理一些小知识点. 关于Camera和SurfaceView的知识点练习都保存在仓库中的Criminal项目中.git地址  MediaPl">
+<meta property="og:description" content="这本书属于入门, 有很多内容可以当做扩展来了解一些API, 并且有的时候可以适当的利用Google提供好的API来做一些高效开发节约时间成本. 原理东西本书偏少. 可以学习本书中的代码的编写风格, 书中代码都是采用MVC模型来编写的. 就写这么多, 下面开始整理一些小知识点.注：本文主要参考http://szysky.com 关于Camera和SurfaceView的知识点练习都保存在仓库中的C">
 <meta property="og:locale" content="en">
 <meta property="og:image" content="http://szysky.com/2016/09/09/%E3%80%8AAndroid%E7%BC%96%E7%A8%8B%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E3%80%8B%E9%9A%8F%E8%AE%B0%E4%B8%89-%E5%AA%92%E4%BD%93%E4%B8%8EIntent%E7%AD%89/Launch.png">
 <meta property="og:image" content="http://szysky.com/2016/09/09/%E3%80%8AAndroid%E7%BC%96%E7%A8%8B%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E3%80%8B%E9%9A%8F%E8%AE%B0%E4%B8%89-%E5%AA%92%E4%BD%93%E4%B8%8EIntent%E7%AD%89/taskStack.png">
 <meta property="og:image" content="http://szysky.com/2016/09/09/%E3%80%8AAndroid%E7%BC%96%E7%A8%8B%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E3%80%8B%E9%9A%8F%E8%AE%B0%E4%B8%89-%E5%AA%92%E4%BD%93%E4%B8%8EIntent%E7%AD%89/xmlPullParser.png">
-<meta property="og:updated_time" content="2017-09-07T09:45:40.000Z">
+<meta property="og:updated_time" content="2017-09-07T10:10:29.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="《Android编程权威指南》Chap3_ 媒体与Intent">
-<meta name="twitter:description" content="这本书属于入门, 有很多内容可以当做扩展来了解一些API, 并且有的时候可以适当的利用Google提供好的API来做一些高效开发节约时间成本. 原理东西本书偏少. 可以学习本书中的代码的编写风格, 书中代码都是采用MVC模型来编写的. 就写这么多, 下面开始整理一些小知识点. 关于Camera和SurfaceView的知识点练习都保存在仓库中的Criminal项目中.git地址  MediaPl">
+<meta name="twitter:description" content="这本书属于入门, 有很多内容可以当做扩展来了解一些API, 并且有的时候可以适当的利用Google提供好的API来做一些高效开发节约时间成本. 原理东西本书偏少. 可以学习本书中的代码的编写风格, 书中代码都是采用MVC模型来编写的. 就写这么多, 下面开始整理一些小知识点.注：本文主要参考http://szysky.com 关于Camera和SurfaceView的知识点练习都保存在仓库中的C">
 <meta name="twitter:image" content="http://szysky.com/2016/09/09/%E3%80%8AAndroid%E7%BC%96%E7%A8%8B%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E3%80%8B%E9%9A%8F%E8%AE%B0%E4%B8%89-%E5%AA%92%E4%BD%93%E4%B8%8EIntent%E7%AD%89/Launch.png">
     
 
@@ -259,7 +259,7 @@
         
             
             <blockquote>
-<p>这本书属于入门, 有很多内容可以当做扩展来了解一些API, 并且有的时候可以适当的利用Google提供好的API来做一些高效开发节约时间成本. 原理东西本书偏少. 可以学习本书中的代码的编写风格, 书中代码都是采用<strong>MVC</strong>模型来编写的. 就写这么多, 下面开始整理一些小知识点.</p>
+<p>这本书属于入门, 有很多内容可以当做扩展来了解一些API, 并且有的时候可以适当的利用Google提供好的API来做一些高效开发节约时间成本. 原理东西本书偏少. 可以学习本书中的代码的编写风格, 书中代码都是采用<strong>MVC</strong>模型来编写的. 就写这么多, 下面开始整理一些小知识点.<br>注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a></p>
 <p>关于Camera和SurfaceView的知识点练习都保存在仓库中的<strong>Criminal</strong>项目中.<br><a href="https://github.com/suzeyu1992/AndroidProgramminGuide" target="_blank" rel="external">git地址</a></p>
 </blockquote>
 <h2 id="MediaPlay播放音频"><a href="#MediaPlay播放音频" class="headerlink" title="MediaPlay播放音频"></a>MediaPlay播放音频</h2><blockquote>
