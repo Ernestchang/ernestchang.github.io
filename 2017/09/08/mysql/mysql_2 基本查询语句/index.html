@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <meta charset="utf-8">
+    
+    <title>mysql_2 基本查询语句 | The Old Man and the Sea</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="注：本文主要参考http://szysky.com  数据库表设计3范式第一范式(1NF) 要求数据达到原子性，是数据不可再分 第二范式(2NF) 使每一行数据具有唯一性，并消除数据之间的部分依赖  每一行数据具有唯一性: 只要给表设计主键，就可以保证唯一性 消除数据之间的”部分依赖”  依赖的概念 就是在一个表中，其中某个字段的值B可以由另一个字段的值A来决定，则此时我们就称为：字段B依赖于字">
+<meta name="keywords" content="mysql">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mysql_2 基本查询语句">
+<meta property="og:url" content="http://yoursite.com/2017/09/08/mysql/mysql_2 基本查询语句/index.html">
+<meta property="og:site_name" content="The Old Man and the Sea">
+<meta property="og:description" content="注：本文主要参考http://szysky.com  数据库表设计3范式第一范式(1NF) 要求数据达到原子性，是数据不可再分 第二范式(2NF) 使每一行数据具有唯一性，并消除数据之间的部分依赖  每一行数据具有唯一性: 只要给表设计主键，就可以保证唯一性 消除数据之间的”部分依赖”  依赖的概念 就是在一个表中，其中某个字段的值B可以由另一个字段的值A来决定，则此时我们就称为：字段B依赖于字">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2017-09-08T09:12:38.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="mysql_2 基本查询语句">
+<meta name="twitter:description" content="注：本文主要参考http://szysky.com  数据库表设计3范式第一范式(1NF) 要求数据达到原子性，是数据不可再分 第二范式(2NF) 使每一行数据具有唯一性，并消除数据之间的部分依赖  每一行数据具有唯一性: 只要给表设计主键，就可以保证唯一性 消除数据之间的”部分依赖”  依赖的概念 就是在一个表中，其中某个字段的值B可以由另一个字段的值A来决定，则此时我们就称为：字段B依赖于字">
+    
+
+    
+        <link rel="alternate" href="/" title="The Old Man and the Sea" type="application/atom+xml" />
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">The Old Man and the Sea</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/uploads/images/avert.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/uploads/images/avert.png" />
+            <h2 id="name">Ernest Chang</h2>
+            <h3 id="title">Developer &amp; Designer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Hangzhou, China</span>
+            <a id="follow" target="_blank" href="https://github.com/Ernestchang/">FOLLOW</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                48
+                <span>posts</span>
+            </div>
+            <div class="article-info-block">
+                15
+                <span>tags</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/Ernestchang/" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="facebook" class=tooltip>
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="dribbble" class=tooltip>
+                            <i class="fa fa-dribbble"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-mysql/mysql_2 基本查询语句" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            mysql_2 基本查询语句
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/09/08/mysql/mysql_2 基本查询语句/">
+            <time datetime="2017-09-08T09:09:49.000Z" itemprop="datePublished">2017-09-08</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/mysql/">mysql</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/mysql/">mysql</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <blockquote>
+<p>注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a></p>
+</blockquote>
+<h3 id="数据库表设计3范式"><a href="#数据库表设计3范式" class="headerlink" title="数据库表设计3范式"></a>数据库表设计3范式</h3><p><strong>第一范式(1NF)</strong></p>
+<p>要求数据达到原子性，是数据不可再分</p>
+<p><strong>第二范式(2NF)</strong></p>
+<p>使每一行数据具有唯一性，并消除数据之间的部分依赖</p>
+<ol>
+<li>每一行数据具有唯一性: 只要给表设计主键，就可以保证唯一性</li>
+<li>消除数据之间的”部分依赖”</li>
+</ol>
+<p>依赖的概念</p>
+<p>就是在一个表中，其中某个字段的值B可以由另一个字段的值A来决定，则此时我们就称为：字段B依赖于字段A,或者字段A决定字段B。</p>
+<p>就是根据字段A的某个值，一定可以找出一个确定的字段B的值，就是A决定B.</p>
+<p>部分依赖？</p>
+<p>如果某个字段，值依赖于部分主键字段，此时就称为部分依赖。–发生此情况的前提一定是: 主键字段有多个。</p>
+<p>完全依赖？<br>某个字段，是依赖于主键的所有字段。– 如果一个表的主键只有一个字段，则此时必然是完全依赖。</p>
+<p><strong>第三范式(3NF)</strong></p>
+<p>独立性，消除传递依赖。</p>
+<p>使每个字段都独立地依赖于主键字段(独立性),而要消除其中部分非主键字段的内部依赖–这种内部依赖会构成传递依赖</p>
+<h3 id="数据操作语言-DML"><a href="#数据操作语言-DML" class="headerlink" title="数据操作语言 DML"></a>数据操作语言 DML</h3><p><strong>插入数据(增)</strong></p>
+<ul>
+<li>形式1: <code>insert [into] 表名 [(字段名1，字段名2...)] values(值表达式1，值表达式2,...),(),()...;</code></li>
+<li><ul>
+<li>这是最常用的插入语句，可以一次性插入多行数据，用逗号隔开；</li>
+</ul>
+</li>
+<li><ul>
+<li>插入语句，要理解为每次插入数据都是以行为单位进行插入；</li>
+</ul>
+</li>
+<li><ul>
+<li>字段名通常不推荐省略，其后续的值列表应该字段列表一一对应</li>
+</ul>
+</li>
+<li><ul>
+<li>其中的值表达式，可以是一个直接或函数调用结果，或变量值; 其中，如果对应字段是字符或时间类型，则直接值应该使用单引号</li>
+</ul>
+</li>
+<li>形式2: <code>replace [into] 表名 [(字段名1，字段名2...)] values(值表达式1，值表达式2,...),(),()...;</code></li>
+<li><ul>
+<li>其跟<code>insert into</code>几乎一样: 唯一区别 如果插入的数据的主键或唯一键有重复，则此时就会变成修改改行数据</li>
+</ul>
+</li>
+<li>形式3: <code>insert [into] 表名 [(字段名1，字段名2，...)] select 字段名1，字段名2,... from 其他表名;</code></li>
+<li>形式4: <code>insert [into] 表名 set 字段名1=值表达式1，字段名2=值表达式2,...;</code></li>
+</ul>
+<p><strong>load data (载入数据) 语法</strong></p>
+<p>使用于载入 结构整齐的纯文本数据。 前提也要有一个对应结构的已存在的表。</p>
+<p>简单格式: <code>LOAD DATA INFILE &#39;文件名&#39; INTO TABLE 表名;</code></p>
+<p><strong>删除数据</strong></p>
+<p>形式: <code>delete from 表名 [where 条件] [order by 排序] [limit 限定];</code></p>
+<p>说明:</p>
+<ol>
+<li>删除数据仍然是以行为单位进行</li>
+<li>通常删除数据都需要带<code>where</code>条件，否则就会删除所有数据。</li>
+<li><code>where</code>条件的语法跟<code>select</code>中的语法一样</li>
+<li><code>order by</code> 排序设定，用于指定这些数据的删除顺序，他通常跟<code>limit</code>配合使用才有意义</li>
+<li><code>limit</code>限定用于设定删除多少行(按<code>orderby</code> 设定顺序)</li>
+</ol>
+<h3 id="修改数据"><a href="#修改数据" class="headerlink" title="修改数据"></a>修改数据</h3><p>形式: <code>update 表名 set 字段1=值1, 字段2=值2,...[where 条件] [order by 排序字段][limit 限制行数];</code></p>
+<p>说明:</p>
+<ol>
+<li>通常，<code>update</code>语句，也都需要<code>where</code>条件，否则: 就会修改所有(这很少见);</li>
+<li><code>where</code>条件的语法跟select中语法一样;</li>
+<li><code>order by</code> 用于设定修改的顺序，<code>limit</code>用于设定修改的行数，他们通常也是结合使用(虽然很少用)</li>
+<li>实际应用中，通常很少用到<code>order by</code>和<code>limit</code>，修改的常规操作就成为: <code>update 表名 set 字段1=值1，字段2=值2,... where条件</code></li>
+</ol>
+<h3 id="数据查询语言-DQL"><a href="#数据查询语言-DQL" class="headerlink" title="数据查询语言 DQL"></a>数据查询语言 DQL</h3><p><strong>基本语法形式</strong></p>
+<p><code>select [all | distinct] 字段或表达式列表 [from 子句] [where 子句] [group by 子句] [having 子句] [order by 子句] [limit 子句];</code></p>
+<p><strong>字段或表达式列表</strong></p>
+<ol>
+<li>字段，肯定来源于表，所以必然依赖于<code>from</code>语句</li>
+<li>表达式是类似这样一个内容: 8 ， 8+3， now(); //concat()函数是mysql中的系统函数，用于连接多个字符串。</li>
+<li>每个输出项(字段或表达式结果)，都可以给其设定一个别名，形式为: 字段或表达式 <code>as</code> 别名。</li>
+<li><code>all</code> 和 <code>distinct</code> 设定<code>select</code>出来的数据，是否消除重复行，可以不写，那就是默认值<code>all</code>。 <code>all</code>表示不消除，既所有都出来，默认值；<code>distinct</code>表示会消除。</li>
+<li><code>form</code>，表示<code>select</code>部分从中取得数据的数据源—就是表。</li>
+<li><code>where</code>，对数据源中的数据进行帅选的条件设定，所以<code>where</code>依赖于<code>form</code>子句。</li>
+</ol>
+<p><strong>is 运算符: 空值和布尔值的判断</strong></p>
+<p>有四种情况:</p>
+<ul>
+<li><code>xx is null</code>: 判断某个字段是null值，就是没有值</li>
+<li><code>xx is not null</code>: 判断某个字段不是null值</li>
+<li><code>xx is true</code>: 判断某个字段为真</li>
+<li><code>xx is false</code>: 判断某个字段为假，false，0，0.0，’’, null</li>
+</ul>
+<p><strong>其他扩展</strong></p>
+<ul>
+<li>位类型<code>bit</code>: 使用形式: <code>bit[(M)]</code> ，其中M是1~64的数字，表示使用多少位二进制数字来存储数据。插入形式为: b’value’ 比如: b’101’</li>
+<li>序列类型<code>serial</code>: 只是BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE的一个别名(同义词)</li>
+<li>布尔类型<code>bool</code>: 其实只是<code>tinyint(1)</code>的同义词，其值为<code>0</code>就表示<code>false</code>，否则为<code>true</code></li>
+</ul>
+<p><strong>between运算符: 范围判断</strong></p>
+<p>用于判断某个字段的数据值是否在某个给定的范围之间–适用于数字类型</p>
+<p>形式: <code>xx between 值1 and 值2;</code></p>
+<p>含义: xx字段的值在给定值1和值2之间，其实相当于: xx&gt;=值1 and xx&lt;=值2</p>
+<p><strong>in运算符</strong></p>
+<p>给出确定数据的范围判断</p>
+<p>语法: <code>xx in (值1, 值2, 值3, ...);</code></p>
+<p>含义: 表示字段xx的值为所给出的这些值中的一个，就算是满足了条件；这些值，通常是零散无规律的。</p>
+<p><strong>like运算符</strong></p>
+<p>对字符串进行模糊查找</p>
+<p>语法: <code>xx like &#39;要查找的内容&#39;</code></p>
+<p>含义: 实现对字符串的某种特征信息的模糊查找，它依赖于一下两个特殊的符号。</p>
+<ul>
+<li><code>%</code> :它代表任何个数的任何字符</li>
+<li><code>_</code> :它代表一个任何字符</li>
+</ul>
+<p><strong>group by 分组</strong></p>
+<p>形式: <code>group by 字段1 [desc|asc] ,字段2 [desc | asc], ....</code></p>
+<p>说明:</p>
+<ol>
+<li>分组是对前述已经找出的数据(既<code>where</code>已经筛选结束的)进行某种指定标准依据的分组。</li>
+<li>同时，该分组结果，可以同时指定其 排序方式 ：<code>desc</code>倒序 ，<code>asc</code>顺序</li>
+<li>通常，分组就是一个字段，2个以上很少</li>
+</ol>
+<p>什么叫做分组？</p>
+<p>分组: 就是讲多行数据，以某种标准(就是指定的字段)来进行分类存放。</p>
+<p>特别注意: 分组之后的结果，一定要理解为：只有一个个的组。 在部分语言此语法可能会出现不同的问题。</p>
+<p>应用中，分组之后，通常只有如下几种可用的组信息。</p>
+<ul>
+<li>分组依据本身的信息，其实就是该分组依据的字段名</li>
+<li>每一组的数量信息: 就是<code>count(*)</code>获得</li>
+<li>原来数据中的 数值类型字段的聚合信息 包括如下几个:</li>
+<li>最大值: <code>max(字段名)</code>; 最小值: <code>min(字段名)</code>; 平均值 <code>avg(字段名)</code>; 总和值: <code>sum(字段名)</code>; 上述其实是4个系统内部函数。</li>
+</ul>
+<p><strong>having 子句</strong></p>
+<p><code>having</code>的作用和<code>where</code>完全一样，但其只是对 分组的结果数据 进行筛选。 既<code>where</code>对原始数据进行筛选； <code>having</code>对分组之后的数据进行筛选。</p>
+<p>这里既是在<code>select</code> 后面没有写查询<code>count(*)</code> 时，在<code>having</code>设定筛选条件的时候，也可以使用，因为<code>count(\*)</code>是独立计算的结果，既对每一组进行原始数据行的统计，并用该条件进行筛选。</p>
+<p><strong>恢复(导入)数据</strong></p>
+<p>mysql登录后: <code>source &quot;备份数据文件的完整路径&quot;</code></p>
+<p><strong>order by 子句</strong></p>
+<p>用于 将前面取得的数据以设定的标准(字段)来进行排序以输出结果。</p>
+<p>形式: <code>order by 字段1 [asc | desc], 字段2 [asc | desc], ...</code></p>
+<p><strong>limit子句</strong></p>
+<p>用于将 前述取得的数据 ，按指定的行取出来: 从第几行开始取出多少行。</p>
+<p>形式: <code>limit</code> 起始行号 , 要取出的行号</p>
+<p>说明: 行号默认从<code>0</code>开始， 行号和<code>id</code>没有关系。</p>
+<h3 id="对select语句进行简要总结"><a href="#对select语句进行简要总结" class="headerlink" title="对select语句进行简要总结"></a>对select语句进行简要总结</h3><ol>
+<li>虽然在形式上，<code>select</code>的很多子句都是可以省略的，但是他们的顺序(如果出现)，就不能打乱:必须仍然按照给出的顺序写出</li>
+<li><code>where</code>子句依赖于<code>from</code>子句: 既没有<code>from</code>，就不能有<code>where</code></li>
+<li><code>having</code>子句依赖于<code>group by</code>子句: 既没有<code>group by</code>就不能有<code>having</code></li>
+<li><code>select</code> 中的字段也是依赖于<code>from</code>子句</li>
+<li>上述子句的执行过程，基本上也是按照该顺序进行: – 从from的数据源中获取所有的数据，然后使用<code>where</code>对这些数据进行筛选，之后再使用<code>group by</code>子句对筛选出来的数据进行分组，接下来才可以使用<code>having</code>对这些分组的数据进行筛选，然后才可以<code>order by</code> 和<code>limit</code>。</li>
+</ol>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/09/08/mysql/mysql_2 基本查询语句/" data-id="cj7bo43r20003v5pj2v2k51v0" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/09/08/mysql/mysql_2 基本查询语句/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/09/08/mysql/mysql_3 子查询/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    mysql_3 子查询
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2017/09/08/mysql/mysql_1 数据库入门/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">mysql_1 数据库入门</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="uyan_frame"></div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">recent</h3>
+        <div class="widget">
+            <ul id="recent-post" class="no-thumbnail">
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/mysql/">mysql</a></p>
+                            <p class="item-title"><a href="/2017/09/08/mysql/mysql_4 数据控制语言控制/" class="title">mysql_4 数据控制语言控制</a></p>
+                            <p class="item-date"><time datetime="2017-09-08T09:10:54.000Z" itemprop="datePublished">2017-09-08</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/mysql/">mysql</a></p>
+                            <p class="item-title"><a href="/2017/09/08/mysql/mysql_3 子查询/" class="title">mysql_3 子查询</a></p>
+                            <p class="item-date"><time datetime="2017-09-08T09:10:17.000Z" itemprop="datePublished">2017-09-08</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/mysql/">mysql</a></p>
+                            <p class="item-title"><a href="/2017/09/08/mysql/mysql_2 基本查询语句/" class="title">mysql_2 基本查询语句</a></p>
+                            <p class="item-date"><time datetime="2017-09-08T09:09:49.000Z" itemprop="datePublished">2017-09-08</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/mysql/">mysql</a></p>
+                            <p class="item-title"><a href="/2017/09/08/mysql/mysql_1 数据库入门/" class="title">mysql_1 数据库入门</a></p>
+                            <p class="item-date"><time datetime="2017-09-08T09:08:51.000Z" itemprop="datePublished">2017-09-08</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/09/08/life/买车注意事项/" class="title"></a></p>
+                            <p class="item-date"><time datetime="2017-09-08T02:51:21.000Z" itemprop="datePublished">2017-09-08</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">categories</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">25</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/linux/vim/">vim</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">archives</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">27</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tags</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">24</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tag cloud</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 14px;">code</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/github/" style="font-size: 12px;">github</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 10px;">markdown</a> <a href="/tags/mysql/" style="font-size: 16px;">mysql</a> <a href="/tags/node/" style="font-size: 18px;">node</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">links</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 Ernest Chang<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2142274"></script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>
