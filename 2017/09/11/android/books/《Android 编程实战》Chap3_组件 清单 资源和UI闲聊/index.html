@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <meta charset="utf-8">
+    
+    <title>《Android 编程实战》Chap3_组件 清单 资源和UI闲聊 | The Old Man and the Sea</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="阅读《Android 编程实战》一书的随记笔记注：本文主要参考http://szysky.com  应用程序清单 AndroidManifest是一个定义各种组件以及应用程序各个方向的XML文件. 该清单是所有Android的核心.  manifest元素AndroidManifest.xml文件的根节点元素是manifest. 应用程序的包名和唯一识别符都定义在该节点. 还可以在该节点中定义L">
+<meta name="keywords" content="android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Android 编程实战》Chap3_组件 清单 资源和UI闲聊">
+<meta property="og:url" content="http://yoursite.com/2017/09/11/android/books/《Android 编程实战》Chap3_组件 清单 资源和UI闲聊/index.html">
+<meta property="og:site_name" content="The Old Man and the Sea">
+<meta property="og:description" content="阅读《Android 编程实战》一书的随记笔记注：本文主要参考http://szysky.com  应用程序清单 AndroidManifest是一个定义各种组件以及应用程序各个方向的XML文件. 该清单是所有Android的核心.  manifest元素AndroidManifest.xml文件的根节点元素是manifest. 应用程序的包名和唯一识别符都定义在该节点. 还可以在该节点中定义L">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2017-09-11T13:39:09.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="《Android 编程实战》Chap3_组件 清单 资源和UI闲聊">
+<meta name="twitter:description" content="阅读《Android 编程实战》一书的随记笔记注：本文主要参考http://szysky.com  应用程序清单 AndroidManifest是一个定义各种组件以及应用程序各个方向的XML文件. 该清单是所有Android的核心.  manifest元素AndroidManifest.xml文件的根节点元素是manifest. 应用程序的包名和唯一识别符都定义在该节点. 还可以在该节点中定义L">
+    
+
+    
+        <link rel="alternate" href="/" title="The Old Man and the Sea" type="application/atom+xml" />
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">The Old Man and the Sea</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/uploads/images/avert.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/uploads/images/avert.png" />
+            <h2 id="name">Ernest Chang</h2>
+            <h3 id="title">Developer &amp; Designer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Hangzhou, China</span>
+            <a id="follow" target="_blank" href="https://github.com/Ernestchang/">FOLLOW</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                52
+                <span>posts</span>
+            </div>
+            <div class="article-info-block">
+                15
+                <span>tags</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/Ernestchang/" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="facebook" class=tooltip>
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="dribbble" class=tooltip>
+                            <i class="fa fa-dribbble"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-android/books/《Android 编程实战》Chap3_组件 清单 资源和UI闲聊" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            《Android 编程实战》Chap3_组件 清单 资源和UI闲聊
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/09/11/android/books/《Android 编程实战》Chap3_组件 清单 资源和UI闲聊/">
+            <time datetime="2017-09-11T13:36:06.000Z" itemprop="datePublished">2017-09-11</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/android/">android</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <blockquote>
+<p>阅读《Android 编程实战》一书的随记笔记<br>注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a></p>
+</blockquote>
+<h2 id="应用程序清单"><a href="#应用程序清单" class="headerlink" title="应用程序清单"></a>应用程序清单</h2><blockquote>
+<p><code>AndroidManifest</code>是一个定义各种组件以及应用程序各个方向的XML文件. 该清单是所有<code>Android</code>的核心.</p>
+</blockquote>
+<h3 id="manifest元素"><a href="#manifest元素" class="headerlink" title="manifest元素"></a>manifest元素</h3><p><code>AndroidManifest.xml</code>文件的根节点元素是<code>manifest</code>. 应用程序的<strong>包名</strong>和<strong>唯一识别符</strong>都定义在该节点. 还可以在该节点中定义<code>Linux用户ID</code>和<code>名称(应用程序将运行在该ID下)</code>. 应用的版本, APK的安装位置.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&lt;manifest xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    package=&quot;com.test.printertestdemo&quot;</div><div class="line">    android:sharedUserId=&quot;com.szysky.userid&quot;</div><div class="line">    android:sharedUserLabel=&quot;@string/user_name&quot;</div><div class="line">    android:installLocation=&quot;auto&quot;</div><div class="line">    android:versionCode=&quot;6&quot;</div><div class="line">    android:versionName=&quot;2.0&quot; &gt;</div><div class="line">    </div><div class="line">&lt;/manifest&gt;</div></pre></td></tr></table></figure>
+<p>这是一个比较完整的配置. <code>sharedUserId</code>和<code>sharedUserLabel</code>是Linux用户ID和名称. 应用程序将会运行在上面. 默认情况下, 这些都是系统分配的. 如果为使用证书发布的多个应用设置同样的值时, 开发者就可以访问相同的数据, 并有可能可以共享这些应用的进程(下面说道).</p>
+<p>多个应用共享同一个进程可以节省应用程序使用的<code>RAM</code>总量. 但当其中一个应用出现运行时错误, 那所有共享相同进程的其他应用也会崩溃.</p>
+<p>使用<code>installLocation</code>属性来控制应用程序的安装位置. 即可以在设备的内部存储器(data分区)安装应用程序, 也可以在外部存储装置(SD卡)安装. 需要注意: 只能通过这个属性控制APK的<strong>安装位置</strong>. 应用程序数据仍然安全地存储在内部存储器中.</p>
+<h3 id="user-feature"><a href="#user-feature" class="headerlink" title="user-feature"></a>user-feature</h3><p>这个属性元素<code>&lt;user-feature&gt;</code>可以让<code>Google Play</code>去过滤应用在哪台设备可见. 比如应用需要一个打电话的功能, 但是当前设备只支持wifi的平板电脑. 或者说一个Android电视是不支持触屏控制, 但是应用需要这个硬件特性的支持. 就可以通过这个属性设置.</p>
+<p>例如:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;user-feature android:name=&quot;android.hardware.microphone&quot;&gt;</div><div class="line">&lt;!--需要电话功能支持--&gt;</div><div class="line">&lt;user-feature android:name=&quot;android.hardware.telephony&quot;&gt; </div><div class="line">&lt;!--支持多点触控的触摸屏--&gt;</div><div class="line">&lt;user-feature android:name=&quot;android.hardware.touchscreen.multitouch.jazzhand&quot;&gt;</div></pre></td></tr></table></figure>
+<h3 id="application"><a href="#application" class="headerlink" title="application"></a>application</h3><p>使用自定义的<code>Application</code>必须要做的就是在清单文件中指定<code>&lt;application&gt;</code>中的<code>name</code>属性到自定义的application.</p>
+<p>列举一下属性:</p>
+<ul>
+<li><code>label</code>, <code>description</code>: 可以让用户在设置页面中看到关于应用的更多详细的描述.</li>
+<li><code>android:backupAgent</code>: 这是<code>Google</code>提供的一个备份服务, 需要实现自己的<strong>备份代理</strong>的类,并使用此属性指向此类.</li>
+<li><code>android:largeHeap</code>: 可以让系统知道需要更多的内存. 但是, 除非特别需要, 否则不要这么做. 因为这样做会浪费系统资源,而且<strong>系统会更快的终止应用程序</strong>.</li>
+<li><code>android:process</code>: 当多应用程序共享一个用户ID, 并且<code>process</code>属性设置为一个值的时候, 可以<strong>强制这些应用共享同一个进程</strong>. (所以如果需要使多应用使用一个进程, 那么所有的应用必须共享同一个用户ID并同一个证书签名和相同的process)</li>
+<li><code>android:theme</code>: 属相设置整个应用的主题.</li>
+</ul>
+<h3 id="组件元素和属性"><a href="#组件元素和属性" class="headerlink" title="组件元素和属性"></a>组件元素和属性</h3><p>每个标准组件(<code>activity</code>, <code>service</code>, <code>broadcastReceiver</code>, <code>contentProvider</code>)在清单文件都有自己的节点元素, <code>AS</code>创建的默认属性通常能满足大部分情况. 下面看一下其他的属相把</p>
+<hr>
+<p><strong>android:enabled = “false”</strong></p>
+<p>我们所定义的所有组件默认都是<strong>可用的</strong>. 当把enable设置为false的时候, 可以修改默认行为, 这将阻止组件接收<code>Intent</code>.</p>
+<ul>
+<li>禁用的<code>Activity</code>不会显示在应用程序启动器中;</li>
+<li>禁用的<code>Service</code>不会响应<code>startService()</code>调用;</li>
+<li>禁用的<code>BroadcastReceiver</code>不会监听<code>BroadcastIntent</code>;</li>
+<li>禁用的<code>ContentProvider</code>不会响应<code>ContentResolver</code>.</li>
+</ul>
+<p>代码中同样可以设置:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">PackageManager pm = getPackageManager();</div><div class="line">		</div><div class="line">// 启用一个activity</div><div class="line">pm.setComponentEnabledSetting(new ComponentName(this, MainActivity.class),</div><div class="line">		PackageManager.COMPONENT_ENABLED_STATE_ENABLED,</div><div class="line">		PackageManager.DONT_KILL_APP);</div><div class="line">	</div><div class="line">// 禁用一个activity</div><div class="line">pm.setComponentEnabledSetting(new ComponentName(this, MainActivity.class),</div><div class="line">		PackageManager.COMPONENT_ENABLED_STATE_DISABLED,</div><div class="line">		PackageManager.DONT_KILL_APP);</div></pre></td></tr></table></figure>
+<hr>
+<p>有时候出于安全的原因, 我们不希望把某个组件暴露给系统的其他应用使用, 这时可以通过<code>android:exported=&quot;false&quot;</code>, 这会有效地把对外可被调用属性关闭.</p>
+<hr>
+<p>如果你想设置一个组件供其他应用使用, 但又想提供某个安全级别, 则可以<strong>定义权限</strong>, 要做到这一点, 那么调用者应该在清单文件中添加使用权限(user-permission), 然后在提供者应用注册一个权限(permission).</p>
+<h3 id="Intent过滤"><a href="#Intent过滤" class="headerlink" title="Intent过滤"></a>Intent过滤</h3><p>在<code>Android</code>中所有的组件都是通过<code>Intent</code>访问的, <code>Intent</code>抽象地描述了要执行的动作. <code>Intent</code>会被发送给<code>Activity</code>, <code>Service</code>, <code>BroadcastReceiver</code>. 一旦发送, <code>Android系统</code>的Intent将决定将Intent分发给哪个组件.</p>
+<ol>
+<li><code>Intent</code>要确认的第一件事情就是分辨出<strong>隐式</strong>还是<strong>显示</strong>. <code>显示Intent</code>包含有关包和组件的名称信息, 他们可以立即分发, 因为只能匹配到一个组件. 此方法通常应用于程序内部的通信. <code>隐式Intent</code>的取决于三个因素: <strong>action</strong>, <strong>数据的URI和类型</strong>, <strong>以及类别</strong>. 注意: <strong>extras和flags对Intent区分没有影响</strong></li>
+<li><code>action</code>是最主要的, 通常也是唯一应该重点关注的. Android有许多预定义的action, 开发者也可以定义自己的action. 开发者定义自己的action时, 通常在前面加上自己的包名, 这样不同应用之间action定义的冲突也就基本不存在了.</li>
+<li><code>data</code>并没有实际的数据, 只是包含了<code>URI</code>和<code>MIME</code>类型, 使用<code>Activity</code>打开只包含特定类型文件会非常有用.</li>
+<li><code>category和Activity最相关</code>. 所有通过<code>startActivity()</code>发送的隐式Intent都至少定义了一个<code>category(android.intent.category,DEFAULT)</code>, 所以除非Activity的<code>Intent-filter</code>也包含这个<code>category</code>. 否则就不会通过<code>Intent</code>的匹配. 比较例外的是图标启动器的<code>intent-filter</code></li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&lt;activity</div><div class="line">  android:name=&quot;.PrinterTestDemoAct&quot;</div><div class="line">  android:label=&quot;@string/app_name&quot;&gt;</div><div class="line">  &lt;intent-filter&gt;</div><div class="line">      &lt;action android:name=&quot;android.intent.action.MAIN&quot; /&gt;</div><div class="line">      &lt;category android:name=&quot;android.intent.category.LAUNCHER&quot; /&gt;</div><div class="line">  &lt;/intent-filter&gt;</div><div class="line">  </div><div class="line">  &lt;intent-filter&gt;</div><div class="line">      &lt;action android:name=&quot;android.intent.action.VIEW&quot;/&gt;</div><div class="line">      &lt;category android:name=&quot;android.intent.category.DEFAULT&quot;/&gt;</div><div class="line">      &lt;data android:mimeType=&quot;video/*&quot;/&gt;</div><div class="line">  &lt;/intent-filter&gt;</div><div class="line">&lt;/activity&gt;</div></pre></td></tr></table></figure>
+<p>如上清单配置: 有两个<code>intent-filter</code>, 第一个是用于桌面图标启动应用; 第二个是用于打开video开头的<code>MIME</code>类型文件.</p>
+<p>第一个<code>intent-filter</code>不需要<code>category.DEFAULT</code>. 因为它将由启动器程序管理.<br>第二个<code>intent-filter</code>是我们经常使用<code>startActivity()</code>方法会匹配到的, 所以其中的<code>category</code>应该设置<code>default</code>, 无论被打开视频文件是本地还是网络, 只要<code>MIME</code>类型以<code>Video</code>开头就行.</p>
+<h2 id="resources-和-assets"><a href="#resources-和-assets" class="headerlink" title="resources 和 assets"></a>resources 和 assets</h2><p>开发中除了实现业务逻辑的代码, 还有就是一些像<code>XML布局</code>,<code>图标</code>,<code>文本值</code>等这样的内容, 这些静态内容存储在APK文件的<code>resources</code>或者<code>assets</code>目录中. 所有的组员都属于一个特定的类型(比如layout, drawable等), 而<code>assets</code>是简单地存储在应用内的通用文件. 大多数非代码的内容都以资源的形式呈现, 因为他们紧密集成在Android API中.</p>
+<p>从开发的角度来看, Android中的资源特性是平台最强大的功能之一, 它允许开发者根据<strong>屏幕尺寸</strong>, <strong>定位参数</strong>, <strong>设备能力</strong>等来提供多个版本的资源. 最常见的解决方案是通过在不同的文件中提供多个版本的文本字符串来支持多语言, 或者通过提供不同的布局文件和不同大小的图标来支持各种屏幕的尺寸.</p>
+<hr>
+<p><strong>在应用中定义资源要遵循的几个规则</strong></p>
+<ol>
+<li>一定要在应用中为每种类型的资源都提供一个默认值, 就是在没有任何限定符的资源目录中提供默认的图片, 图标, 文本字符串和布局. 确保当所有特定资源文件都无法匹配设备, 可以加载默认的资源而不会出现崩溃.</li>
+<li>避免硬编码, 例如字符串和值. 虽然可能会需要做一些额外工作也不算太累, 相比与之后当需要改变整个应用中的所有字体, 外边距, 内边距, 增加字符串本地化的时候. 修改起来这简直就是轻而易举的简单.</li>
+<li>通过提供<strong>限定符</strong>来过滤资源. 例如, 如果想为高密度像素的设备提供一套高分辨率的图标, 可以通过<code>drawable-xxxhdpi</code>目录内存储</li>
+</ol>
+<hr>
+<h3 id="高级String资源"><a href="#高级String资源" class="headerlink" title="高级String资源"></a>高级String资源</h3><p>通常, 应用中的所有字符串都应该放在<code>string</code>资源中. 这样比在java代码中相比, 可以消除一下问题, 特别是当涉及格式化字符串和本地化时.</p>
+<p>比如: 在<code>string.xml</code>声明</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&lt;string name=&quot;personal_message&quot;&gt;Hi %s !&lt;/string&gt;</div><div class="line"></div><div class="line">&lt;string-array name=&quot;default_categories&quot;&gt;</div><div class="line">   &lt;item&gt;Work!&lt;/item&gt;</div><div class="line">   &lt;item&gt;personal&lt;/item&gt;</div><div class="line">&lt;/string-array&gt;</div></pre></td></tr></table></figure>
+<p>在java中使用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">String oneStr = getString(R.string.personal_message, &quot;suzeyu&quot;);</div><div class="line">		String[] stringArray = getResources().getStringArray(R.array.default_categories);</div></pre></td></tr></table></figure>
+<p>第一个在获取string资源的时候, 传入了一个字符串参数, 并在<code>%s</code>处进行插入处理.</p>
+<h3 id="本地化"><a href="#本地化" class="headerlink" title="本地化"></a>本地化</h3><p>要做到本地化的支持, 把默认字符串资源复制到一个适当语言和地区限定符的新目录中, 然后开始翻译文本.</p>
+<p>如果要翻译一种语言的资源文件到另一种语言, 你可以通过使用<strong>谷歌翻译工具Google Translator ToolKit</strong>, 这是谷歌的一个服务, 允许上传一个文件, 然后将字符串自动翻译为指定的语言.</p>
+<h3 id="使用assets"><a href="#使用assets" class="headerlink" title="使用assets"></a>使用assets</h3><p>如果有一些较大的资源文件可以考虑放到<code>assets</code>和<code>raw</code>目录下.</p>
+<p>考虑这样一种场景, 如果有一个游戏有许多的音效, 那么就可以在<code>assets</code>文件夹内创建一个<code>soundfx</code>目录, 接下来把所有的音频文件都放入此子目录中. (<code>assets</code>目录支持子文件夹)</p>
+<p>如下代码显示了如何使用<code>SoundPool</code>和<code>AssetManager</code>来加载<code>assets/soundfx</code>目录内的所有音频文件. 并且最后关闭打开的文件, 防止内存泄漏.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">public HashMap&lt;String, Integer&gt; loadSoundEffects(SoundPool soundPool) throws IOException&#123;</div><div class="line">		// 获取assets资源管理者</div><div class="line">		AssetManager assets = getAssets();</div><div class="line">		String[] soundEffectFiles = assets.list(&quot;soundfx&quot;);</div><div class="line">		HashMap&lt;String, Integer&gt; soundEffectMap = new HashMap&lt;String, Integer&gt;();</div><div class="line"></div><div class="line">		for (String soundEffectFile: soundEffectFiles) &#123;</div><div class="line">			AssetFileDescriptor fileDescriptor = assets.openFd(&quot;soundfx/&quot; + soundEffectFile);</div><div class="line">			int id = soundPool.load(fileDescriptor, 1);</div><div class="line">			soundEffectMap.put(soundEffectFile, id);</div><div class="line">			</div><div class="line">			fileDescriptor.close();</div><div class="line">		&#125;</div><div class="line">		return soundEffectMap;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<h2 id="UI的一些小知识"><a href="#UI的一些小知识" class="headerlink" title="UI的一些小知识"></a>UI的一些小知识</h2><h3 id="文本"><a href="#文本" class="headerlink" title="文本"></a>文本</h3><p><strong>字体:</strong>人脑利用图像识别来分辨不同的字母汉字, 所以逻辑上来说, 应该使用很容易辨认的字体, 而高度装饰字体只适用于标识(logo)等其他场合.</p>
+<hr>
+<p><strong>文本布局:</strong>例如报纸中的布局分成若干个专栏, 人们更偏向于稍微适中, 比较短的文本阅读. 所以切记不要让你的文本布局显示一行很长很长的文字. 尽量可以保持一行在<code>45~72</code>个字符.</p>
+<hr>
+<p><strong>android中的大小单位</strong></p>
+<ul>
+<li><code>dp</code> (density-independent) 控制控件大小</li>
+<li><code>sp</code> 基于dp产生, 主要用于文字大小</li>
+<li><code>pt</code> (points, 磅)</li>
+<li><code>px</code> (pixel, 像素)</li>
+<li><code>mm</code> (millimeter, 毫米)</li>
+<li><code>in</code> (inch, 英寸)</li>
+</ul>
+<hr>
+<p><strong>推荐尺寸:</strong>一个按钮一个比较好的大小值为<code>48dp</code>转换之后相当于9毫米, 这个尺寸可以让用户手指在触摸屏上轻松的交互.</p>
+<hr>
+<p><strong>图标大小:</strong>针对之前说的<code>48dp</code>,当不同分辨密度下相对应的为 48像素(MDPI), 72像素(HDPI), 96像素(XHDPI), 以及144像素(XXHDPI). 这就是所谓的2:3:4:6. 对应的DPI分别指~160, ~240, ~320, ~480.</p>
+<p>如果将位图作为图标使用, 那么就应该使用dp而不是像素为单位. 一个正常的图标, 如主屏幕上的启动图标, 应该为<code>48dp*48dp</code>, 而操作栏(action bar)的图标为<code>32dp*32dp</code>, 通知栏的图标<code>24dp*24dp</code></p>
+<hr>
+<p><strong>字体的大小:</strong>谷歌创建的<code>Roboto</code>字体被用于所有标准的Android程序. 不同的字体的尺寸即使一样, 实际看起来可能也会不同, 主要是因为他们的<code>x-height</code>不同, <code>x-height</code>即为当前字体小写字母x的高度. 经常使用的<code>x-height</code>较大的字体有<code>Arial</code>和<code>Verdana</code></p>
+<p>谷歌为Android字体定义了四个标准大小:</p>
+<ul>
+<li><code>micro</code> 极小, 12sp</li>
+<li><code>small</code> 小, 14sp</li>
+<li><code>medium</code> 中, 18sp</li>
+<li><code>large</code> 大, 22sp</li>
+</ul>
+<hr>
+<p><strong>典型透视:</strong>当我们需要凭借记忆画一个物体时, 大多数人会从一个略高于它的角度来描述它, 这就叫做<strong>典型透视</strong>.</p>
+<p><strong>人脸识别:</strong>人类擅长人脸识别, 许多人可以轻松地从一堆人中挑选出自己的朋友. 实际上相对于识别物体, 我们能更快识别人脸. 此外, 我们对文字的理解远远慢于识别人脸.</p>
+<hr>
+<p>不要让用户思考! 用户不应该花大量时间来研究如何使用应用程序. 开发者应该让第一次看到应用程序UI的用户无需置疑下一步该如何操作;</p>
+<p><strong>视觉线索</strong>是指一个物体向用户发出的如何与之交互的信息. 人们对文字的理解慢于对简单图标的理解.</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/09/11/android/books/《Android 编程实战》Chap3_组件 清单 资源和UI闲聊/" data-id="cj7g7uql9000316pjn6qp7fqi" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/09/11/android/books/《Android 编程实战》Chap3_组件 清单 资源和UI闲聊/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/09/11/android/books/《Android 编程实战》Chap4_手势操作进阶, 重识Service/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    《Android 编程实战》Chap4_手势操作进阶, 重识Service
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2017/09/11/android/books/《Android 编程实战》Chap2_Android上编写高效Java/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">《Android 编程实战》Chap2_Android上编写高效Java</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="uyan_frame"></div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">recent</h3>
+        <div class="widget">
+            <ul id="recent-post" class="no-thumbnail">
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a></p>
+                            <p class="item-title"><a href="/2017/09/11/android/books/《Android 编程实战》Chap4_手势操作进阶, 重识Service/" class="title">《Android 编程实战》Chap4_手势操作进阶, 重识Service</a></p>
+                            <p class="item-date"><time datetime="2017-09-11T13:36:48.000Z" itemprop="datePublished">2017-09-11</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a></p>
+                            <p class="item-title"><a href="/2017/09/11/android/books/《Android 编程实战》Chap3_组件 清单 资源和UI闲聊/" class="title">《Android 编程实战》Chap3_组件 清单 资源和UI闲聊</a></p>
+                            <p class="item-date"><time datetime="2017-09-11T13:36:06.000Z" itemprop="datePublished">2017-09-11</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a></p>
+                            <p class="item-title"><a href="/2017/09/11/android/books/《Android 编程实战》Chap2_Android上编写高效Java/" class="title">《Android 编程实战》Chap2_Android上编写高效Java</a></p>
+                            <p class="item-date"><time datetime="2017-09-11T13:35:09.000Z" itemprop="datePublished">2017-09-11</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a></p>
+                            <p class="item-title"><a href="/2017/09/11/android/books/《Android 编程实战》Chap1_完善开发环境和优化/" class="title">《Android 编程实战》Chap1_完善开发环境和优化</a></p>
+                            <p class="item-date"><time datetime="2017-09-11T13:34:19.000Z" itemprop="datePublished">2017-09-11</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/mysql/">mysql</a></p>
+                            <p class="item-title"><a href="/2017/09/08/mysql/mysql_4 数据控制语言控制/" class="title">mysql_4 数据控制语言控制</a></p>
+                            <p class="item-date"><time datetime="2017-09-08T09:10:54.000Z" itemprop="datePublished">2017-09-08</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">categories</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">29</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/linux/vim/">vim</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">archives</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">31</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tags</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">28</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tag cloud</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 14px;">code</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/github/" style="font-size: 12px;">github</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 10px;">markdown</a> <a href="/tags/mysql/" style="font-size: 16px;">mysql</a> <a href="/tags/node/" style="font-size: 18px;">node</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">links</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 Ernest Chang<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2142274"></script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <meta charset="utf-8">
+    
+    <title>《Android 编程实战》Chap2_Android上编写高效Java | The Old Man and the Sea</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="阅读《Android 编程实战》一书的随记笔记注：本文主要参考http://szysky.com  Dalvik Java和Java SE在Android设备上运行的VM成为Dalvik. 适用于CPU和内存受限的移动设备. Java SE和Dalvik Java存在一些差异, 这些差异主要体现在虚拟机上.  Java SE: 使用了栈机设计 Dalvik: 使用了基于寄存器的机器的设计  An">
+<meta name="keywords" content="android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Android 编程实战》Chap2_Android上编写高效Java">
+<meta property="og:url" content="http://yoursite.com/2017/09/11/android/books/《Android 编程实战》Chap2_Android上编写高效Java/index.html">
+<meta property="og:site_name" content="The Old Man and the Sea">
+<meta property="og:description" content="阅读《Android 编程实战》一书的随记笔记注：本文主要参考http://szysky.com  Dalvik Java和Java SE在Android设备上运行的VM成为Dalvik. 适用于CPU和内存受限的移动设备. Java SE和Dalvik Java存在一些差异, 这些差异主要体现在虚拟机上.  Java SE: 使用了栈机设计 Dalvik: 使用了基于寄存器的机器的设计  An">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2017-09-11T13:38:49.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="《Android 编程实战》Chap2_Android上编写高效Java">
+<meta name="twitter:description" content="阅读《Android 编程实战》一书的随记笔记注：本文主要参考http://szysky.com  Dalvik Java和Java SE在Android设备上运行的VM成为Dalvik. 适用于CPU和内存受限的移动设备. Java SE和Dalvik Java存在一些差异, 这些差异主要体现在虚拟机上.  Java SE: 使用了栈机设计 Dalvik: 使用了基于寄存器的机器的设计  An">
+    
+
+    
+        <link rel="alternate" href="/" title="The Old Man and the Sea" type="application/atom+xml" />
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">The Old Man and the Sea</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/uploads/images/avert.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/uploads/images/avert.png" />
+            <h2 id="name">Ernest Chang</h2>
+            <h3 id="title">Developer &amp; Designer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Hangzhou, China</span>
+            <a id="follow" target="_blank" href="https://github.com/Ernestchang/">FOLLOW</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                52
+                <span>posts</span>
+            </div>
+            <div class="article-info-block">
+                15
+                <span>tags</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/Ernestchang/" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="facebook" class=tooltip>
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="dribbble" class=tooltip>
+                            <i class="fa fa-dribbble"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-android/books/《Android 编程实战》Chap2_Android上编写高效Java" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            《Android 编程实战》Chap2_Android上编写高效Java
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/09/11/android/books/《Android 编程实战》Chap2_Android上编写高效Java/">
+            <time datetime="2017-09-11T13:35:09.000Z" itemprop="datePublished">2017-09-11</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/android/">android</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <blockquote>
+<p>阅读《Android 编程实战》一书的随记笔记<br>注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a></p>
+</blockquote>
+<h2 id="Dalvik-Java和Java-SE"><a href="#Dalvik-Java和Java-SE" class="headerlink" title="Dalvik Java和Java SE"></a>Dalvik Java和Java SE</h2><p>在<code>Android</code>设备上运行的<code>VM</code>成为<code>Dalvik</code>. 适用于CPU和内存受限的移动设备. <code>Java SE</code>和<code>Dalvik Java</code>存在一些差异, 这些差异主要体现在虚拟机上.</p>
+<ul>
+<li><code>Java SE</code>: 使用了栈机设计</li>
+<li><code>Dalvik</code>: 使用了基于寄存器的机器的设计</li>
+</ul>
+<p><code>Android SDK</code>中个有一个<code>dx</code>工具, 它会把<code>Java SE</code>栈机器的字节码转换成基于寄存器的<code>Dalvik</code>机器字节码, 这个步骤平时是由<code>AS</code>自动完成的.</p>
+<p>虽然基于寄存器的虚拟机最多可以比基于栈的虚拟机快32%, 但这只限于执行解释代码的虚拟机. 在<code>Android 2.2</code>之前, <code>Dalvik</code>虚拟机都是纯解释性的. 之后才引入了<code>JIT</code>编译器.</p>
+<p><strong>JIT编译</strong></p>
+<p>也称<code>即时编译或者动态编译</code>. 它在执行前把字节码翻译成本地代码, 这样的两个好处:</p>
+<ul>
+<li>消除了那些纯解释性虚拟机的开销</li>
+<li>它能对本机代码执行优化, 这通常是静态编译代码无法做到的.</li>
+</ul>
+<p>另一个区别是: <code>Dalvik</code>在开机时会启动一个<code>zygote</code>的进程, 该进程会创建第一个<code>Dalvik</code>实例, 由这个实例创建所有其他的实例. 当应用程序启动的时候, <code>zygote</code>进行会收到一个创建新虚拟机实例的请求, 并给该应用程序创建一个新进程.</p>
+<hr>
+<p>对于两个方向的API也不是一模一样, 比方说<code>Android</code>移除了<code>Java SE</code>中<code>Swing/AWT</code>包. 因为<code>Android</code>有自己的UI框架. 还有一些例如<code>RMI</code>, <code>CORBA</code>,<code>JMX</code>等.</p>
+<h2 id="优化Android上的Java代码"><a href="#优化Android上的Java代码" class="headerlink" title="优化Android上的Java代码"></a>优化Android上的Java代码</h2><p><strong>1.更安全的队列</strong></p>
+<p>例如如果需要实现一个<strong>生产者/消费者</strong>模式, 关于所使用的管理存储的集合可能需要选择队列(<code>LinkedList</code>)并且具体的存取操作要套上<code>synchronize</code>防止并发问题. 但是如果通过<code>LinkedBlockingQueue</code>就可以实现上面的手动编写的步骤. 对于做同样的事情但是更快的实现方法,我们没有例如不去使用</p>
+<p>其实在<code>JDK1.5</code>之后, 提供了<code>java.util.concurrent</code>包, 这个包不仅有相关的类, 此外还包含信号量, 锁, 以及对单个变量进行原子操作的类.</p>
+<hr>
+<p><strong>2.更好的锁</strong></p>
+<p>对于Java提供的<code>synchronize</code>关键字允许创建线程安全的代码块和方法. <code>synchronize</code>关键字虽然便于使用, 但也很容易滥用, 对性能造成损耗. 当需要区分读数据和写数据时, <code>synchronize</code>也不是最有效的.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">public class ReadWriteLockDemo &#123;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 控制读写操作并发的锁</div><div class="line">     */</div><div class="line">    private final ReentrantReadWriteLock mLock ;</div><div class="line">    private String mName;</div><div class="line"></div><div class="line">    public ReadWriteLockDemo()&#123;</div><div class="line">        mLock = new ReentrantReadWriteLock();</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    public void setPersonData(String name)&#123;</div><div class="line">        // 获取写操作的锁</div><div class="line">        ReentrantReadWriteLock.WriteLock writeLock = mLock.writeLock();</div><div class="line">        </div><div class="line">        try &#123;</div><div class="line">            //  获取 写锁使用权, 其余线程需要操作只有在写锁被关闭才可以</div><div class="line">            writeLock.lock();</div><div class="line">            mName = name;    </div><div class="line">        &#125;finally &#123;</div><div class="line">            //  释放 写锁使用权 </div><div class="line">            writeLock.unlock();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    public String getName()&#123;</div><div class="line">        ReentrantReadWriteLock.ReadLock readLock = mLock.readLock();</div><div class="line">        </div><div class="line">        try &#123;</div><div class="line">            readLock.lock();</div><div class="line">            return mName;</div><div class="line">        &#125;finally &#123;</div><div class="line">            readLock.unlock();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    // 省略其余实现</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上面代码允许多个并发线程对数据进行只读方法, 并确保同一时间只有一个线程写入数据.</p>
+<h2 id="管理和分配内存"><a href="#管理和分配内存" class="headerlink" title="管理和分配内存"></a>管理和分配内存</h2><p>Java的自动内存管理有效消除了开发过程中的许多问题. 不再需要记住为每个创建的对象进行手动释放对象内存. 当时同时也需要付出一定的性能代价. <strong>自动垃圾收集器会和程序并行运行. 垃圾回收器会一直运行, 并检查是否有可以回收的内存. 这种行为意味着应用程序进程会和垃圾收集器竞争CPU时间,即使垃圾回收器不会运行太长时间,但是也是一种性能损失. 虽然我们不能抛弃这中垃圾收集方式, 但是可以有效的控制, 例如:</strong></p>
+<p><strong>减少对象分配</strong></p>
+<p>如果可以不要在循环内部创建对象, 在循环的外部创建对象, 并复用此对象. 减少对象的生成造成的空间开辟, 和无用对象的回收.</p>
+<h2 id="Android中的多线程"><a href="#Android中的多线程" class="headerlink" title="Android中的多线程"></a>Android中的多线程</h2><p>确保不再<code>UI线程</code>做耗时操作, 这基本已经印在<code>Android</code>开发的脑袋里了. 那么如何知道一个方法是否在主线程执行? <code>Android</code>文档指出, <strong>默认情况下, 应用的所有组件都运行在同一个进程和线程中(主线程)</strong>. 更确切点的说三个组件(<code>Activity</code>, <code>Service</code>, <code>Broadcast</code>, <code>Application</code>)的所有回调基本上所有的<code>onXXXX()</code>这种命名的方法都是运行在主线程的.</p>
+<hr>
+<p><strong>那么什么样的代码在主线程执行才是安全的?</strong></p>
+<p>只有那些必须在主线程执行的方法才能放在主线程中. 其他一切操作都应该放在另一个单独的线程中执行. 实际情况下, 那些不会耗时的操作也可以放在主线程中. 如何能确保在另一个单独的线程中执行文件, 数据库或者网络操作, 通常主线程会是安全的. 当然也要确保同一时间不会运行太多线程, 原因是<code>CPU</code>切换线程也会造成性能损失.</p>
+<h3 id="Thread"><a href="#Thread" class="headerlink" title="Thread"></a>Thread</h3><p><code>Thread</code>类是<code>Android</code>中所有线程的基类, <code>Java SE</code>中也包含它. 如果要在线程中执行代码, 即可以创建一个继承, 也可以把实现<code>Runnable</code>接口的类对象传给<code>Thread</code>的构造函数.</p>
+<p>对于这个基础的类, 尽量能不用就不用. 除非配合缓冲池, 不然频繁的创建新的线程开销很大.</p>
+<h3 id="AsyncTask"><a href="#AsyncTask" class="headerlink" title="AsyncTask"></a>AsyncTask</h3><p>这是<code>Android</code>中比较流行的一种, 因为使用简单,并且允许定义一个运行在单独线程中的任务, 并且提供了不同阶段的回调, 如<code>doInBackground()</code>会被回调在单独的线程. 而其余的三个回调都是被回调在主线程. 这都是为了让开发者可以把代码编写的重点放在实现的功能上, 而不是考虑是否应该避免系统级的问题发生.</p>
+<p>使用<code>AsyncTask</code>创建的实例只能使用一次, 这也就意味着每次执行操作都新建一个实例对象. 虽然是个轻量级的类(实际的线程是由<code>ExecutorService</code>管理的), <strong>但是不适合那些频繁的操作</strong>, 因为这会快速聚集需要垃圾回收的对象, 并最终导致应用程序的卡顿.</p>
+<p>并且, <code>AsyncTask</code>不能对操作设置执行时间, 也无法间隔一段时间去执行操作. 它适合文件下载, 以及不会频繁发生或通过用户交互等类似情况的操作. 但是使用简单嘛.</p>
+<h3 id="Handler"><a href="#Handler" class="headerlink" title="Handler"></a>Handler</h3><p>当需要更细粒度地控制一个单独的线程中执行操作的时候, <code>Handler</code>类会是一个很有用的工具. 该类允许准确地控制操作的执行时间. 还可以重复多次的使用. 执行操作的线程会一直运行, 直到被显示地终止. <code>Loop</code>会处理幕后的事情, 但是作为开发人员却很少和其打交道.</p>
+<p>使用<code>Handler</code>类最常见的方式是发送<code>Message</code>. 当向后台线程传递数据和参数时, 这些消息对象简单,易于创建, 并且可以重用. <code>Message</code>对象通常是由它的共有整型成员变量<code>what</code>定义的. 还有两个名为<code>arg1和arg2</code>的整型成员变量, 他们用于创建低开销的的参数, 以及<code>obj</code>成员变量(可以存储任意单个对象的引用). 如果你需要存储更复杂的数据那么通过<code>setData(Bundle)</code>方法设置更复杂的数据.</p>
+<hr>
+<p><strong>发送消息</strong></p>
+<p>既可以使用<code>Message#sendToTarget()</code>也可以使用<code>Handler#sendXXX()</code>等方法. 如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">// 创建一个带有data参数的Message, 然后立刻把它发送到handler执行</div><div class="line">Message.obtain(mHandler, FLAG_SYNC_DATA, data).sendToTarget();</div><div class="line"></div><div class="line">// 立刻给handler发送一个空消息</div><div class="line">mHandler.sendEmptyMessage(FLAG_SYNC_DATA);</div><div class="line"></div><div class="line">// 给handler发送一个空消息, 在30秒后执行</div><div class="line">mHandler.sendEmptyMessageAtTime(FLAG_SYNC_DATA, 30 * 1000);</div><div class="line"></div><div class="line">// 给handler发送带有arguments和obj参数的消息, 并在10秒后执行</div><div class="line">Message msg = mHandler.obtainMessage(FLAG_SYNC_DATA, 参数1, 参数2, data);</div><div class="line">mHandler.sendMessageDelayed(msg, 10 * 1000);</div></pre></td></tr></table></figure>
+<hr>
+<p>在创建<code>Handler</code>的时候构造函数传入<code>Looper</code>对象可以为<code>Handler</code>分配线程, 所以可以创建一个主线程消息的<code>Handler</code>, 避免使用<code>runOnUiThread()</code>这种丑陋缩进的代码并且还低效.</p>
+<p>只要确保把消息发送给正确的<code>handler</code>即可.</p>
+<h3 id="选择合适的线程"><a href="#选择合适的线程" class="headerlink" title="选择合适的线程"></a>选择合适的线程</h3><p>之前说过了三种在<code>Android</code>上创建和使用线程的方式, <code>API</code>中和线程相关的类还有<code>ExecutorService</code>和<code>Loader</code>.</p>
+<ul>
+<li><code>ExecutorService</code>适合处理并行运行的多个任务, 这个非常适合编写相应多客户端的服务器应用. <code>AsyncTask</code>内部同样使用了<code>ExecutorService</code>处理多线程</li>
+</ul>
+<p>三种中尽量少的直接使用<code>Thread</code>类, 大多数情况下推荐使用<code>AsyncTask</code>和<code>Handler</code>类, 具体使用哪一个取决于具体的需求. 如果不是很频繁地执行操作, 比如超过每分钟一次, 那么<code>AsyncTask</code>是个选择的对象. 如果需要安排操作时间或者需要快速间隔地执行操作, <code>Handler</code>是个更好的选择. 从长远的角度来看, <code>Handler</code>生成的代码较少, 而<code>AsyncTask</code>更容易使用.</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/09/11/android/books/《Android 编程实战》Chap2_Android上编写高效Java/" data-id="cj7g7uql6000116pjqgp82afq" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/09/11/android/books/《Android 编程实战》Chap2_Android上编写高效Java/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/09/11/android/books/《Android 编程实战》Chap3_组件 清单 资源和UI闲聊/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    《Android 编程实战》Chap3_组件 清单 资源和UI闲聊
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2017/09/11/android/books/《Android 编程实战》Chap1_完善开发环境和优化/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">《Android 编程实战》Chap1_完善开发环境和优化</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="uyan_frame"></div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">recent</h3>
+        <div class="widget">
+            <ul id="recent-post" class="no-thumbnail">
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a></p>
+                            <p class="item-title"><a href="/2017/09/11/android/books/《Android 编程实战》Chap4_手势操作进阶, 重识Service/" class="title">《Android 编程实战》Chap4_手势操作进阶, 重识Service</a></p>
+                            <p class="item-date"><time datetime="2017-09-11T13:36:48.000Z" itemprop="datePublished">2017-09-11</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a></p>
+                            <p class="item-title"><a href="/2017/09/11/android/books/《Android 编程实战》Chap3_组件 清单 资源和UI闲聊/" class="title">《Android 编程实战》Chap3_组件 清单 资源和UI闲聊</a></p>
+                            <p class="item-date"><time datetime="2017-09-11T13:36:06.000Z" itemprop="datePublished">2017-09-11</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a></p>
+                            <p class="item-title"><a href="/2017/09/11/android/books/《Android 编程实战》Chap2_Android上编写高效Java/" class="title">《Android 编程实战》Chap2_Android上编写高效Java</a></p>
+                            <p class="item-date"><time datetime="2017-09-11T13:35:09.000Z" itemprop="datePublished">2017-09-11</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a></p>
+                            <p class="item-title"><a href="/2017/09/11/android/books/《Android 编程实战》Chap1_完善开发环境和优化/" class="title">《Android 编程实战》Chap1_完善开发环境和优化</a></p>
+                            <p class="item-date"><time datetime="2017-09-11T13:34:19.000Z" itemprop="datePublished">2017-09-11</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/mysql/">mysql</a></p>
+                            <p class="item-title"><a href="/2017/09/08/mysql/mysql_4 数据控制语言控制/" class="title">mysql_4 数据控制语言控制</a></p>
+                            <p class="item-date"><time datetime="2017-09-08T09:10:54.000Z" itemprop="datePublished">2017-09-08</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">categories</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">29</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/linux/vim/">vim</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">archives</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">31</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tags</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">28</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tag cloud</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 14px;">code</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/github/" style="font-size: 12px;">github</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 10px;">markdown</a> <a href="/tags/mysql/" style="font-size: 16px;">mysql</a> <a href="/tags/node/" style="font-size: 18px;">node</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">links</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 Ernest Chang<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2142274"></script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>
