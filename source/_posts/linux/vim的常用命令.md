@@ -1,5 +1,5 @@
 
-title: vim的常用命令
+title: Vim的常用命令
 date: 
 categories: 
 - linux
@@ -208,3 +208,16 @@ Text Object (change inner)
     Ctrl-w j    移动到窗口下边
     Ctrl-w k    移动到窗口上边
     Ctrl-w l    移动到窗口右边
+
+
+## 报错处理
+> 使用vim修改文件报错，系统提示如下：
+> E37: No write since last change (add ! to override)
+
+故障原因：
+文件为只读文件，无法修改。
+
+解决办法：
+使用命令:'w!'强制存盘即可，在vim模式下，键入以下命令：
+    :w！
+存盘后在使用vim命令检查是否保存，如未保存，编辑后重复以上操作。
