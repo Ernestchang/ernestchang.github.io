@@ -157,11 +157,11 @@
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                52
+                67
                 <span>posts</span>
             </div>
             <div class="article-info-block">
-                15
+                18
                 <span>tags</span>
             </div>
         </div>
@@ -210,7 +210,7 @@
 
             
             <section id="main">
-    <article id="post-node/books/7days/07_example" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-git/git commit 编写风格模板" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
         
@@ -218,7 +218,7 @@
                 
     
         <h1 itemprop="name">
-            <a class="article-title" href="/2016/03/23/node/books/7days/07_example/">七天学会NodeJS - 大示例</a>
+            <a class="article-title" href="/2017/07/19/git/git commit 编写风格模板/">git commit 编写风格模板</a>
         </h1>
     
 
@@ -227,8 +227,8 @@
                         
     <div class="article-date">
         <i class="fa fa-calendar"></i>
-        <a href="/2016/03/23/node/books/7days/07_example/">
-            <time datetime="2016-03-22T22:06:34.000Z" itemprop="datePublished">2016-03-23</time>
+        <a href="/2017/07/19/git/git commit 编写风格模板/">
+            <time datetime="2017-07-19T12:15:00.000Z" itemprop="datePublished">2017-07-19</time>
         </a>
     </div>
 
@@ -236,13 +236,13 @@
                         
     <div class="article-category">
     	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/node/">node</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/node/7days/">7days</a>
+        <a class="article-category-link" href="/categories/git/">git</a>
     </div>
 
                         
     <div class="article-tag">
         <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/node/">node</a>
+        <a class="tag-link" href="/tags/git/">git</a>
     </div>
 
                     </div>
@@ -253,276 +253,75 @@
         <div class="article-entry" itemprop="articleBody">
         
             
-            <p>学习讲究的是学以致用和融会贯通。至此我们已经分别介绍了NodeJS的很多知识点，本章作为最后一章，将完整地介绍一个使用NodeJS开发Web服务器的示例。</p>
-<h3 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h3><p>我们要开发的是一个简单的静态文件合并服务器，该服务器需要支持类似以下格式的JS或CSS文件合并请求。</p>
-<pre><code>http://assets.example.com/foo/??bar.js,baz.js
-</code></pre><p>在以上URL中，<code>??</code>是一个分隔符，之前是需要合并的多个文件的URL的公共部分，之后是使用<code>,</code>分隔的差异部分。因此服务器处理这个URL时，返回的是以下两个文件按顺序合并后的内容。</p>
-<pre><code>/foo/bar.js
-/foo/baz.js
-</code></pre><p>另外，服务器也需要能支持类似以下格式的普通的JS或CSS文件请求。</p>
-<pre><code>http://assets.example.com/foo/bar.js
-</code></pre><p>以上就是整个需求。</p>
-<h3 id="第一次迭代"><a href="#第一次迭代" class="headerlink" title="第一次迭代"></a>第一次迭代</h3><p>快速迭代是一种不错的开发方式，因此我们在第一次迭代时先实现服务器的基本功能。</p>
-<h4 id="设计"><a href="#设计" class="headerlink" title="设计"></a>设计</h4><p>简单分析了需求之后，我们大致会得到以下的设计方案。</p>
-<pre><code>           +---------+   +-----------+   +----------+
-request --&gt;|  parse  |--&gt;|  combine  |--&gt;|  output  |--&gt; response
-           +---------+   +-----------+   +----------+
-</code></pre><p>也就是说，服务器会首先分析URL，得到请求的文件的路径和类型（MIME）。然后，服务器会读取请求的文件，并按顺序合并文件内容。最后，服务器返回响应，完成对一次请求的处理。</p>
-<p>另外，服务器在读取文件时需要有个根目录，并且服务器监听的HTTP端口最好也不要写死在代码里，因此服务器需要是可配置的。</p>
-<h4 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h4><p>根据以上设计，我们写出了第一版代码如下。</p>
-<pre><code>var fs = require(&apos;fs&apos;),
-    path = require(&apos;path&apos;),
-    http = require(&apos;http&apos;);
-
-var MIME = {
-    &apos;.css&apos;: &apos;text/css&apos;,
-    &apos;.js&apos;: &apos;application/javascript&apos;
-};
-
-function combineFiles(pathnames, callback) {
-    var output = [];
-
-    (function next(i, len) {
-        if (i &lt; len) {
-            fs.readFile(pathnames[i], function (err, data) {
-                if (err) {
-                    callback(err);
-                } else {
-                    output.push(data);
-                    next(i + 1, len);
-                }
-            });
-        } else {
-            callback(null, Buffer.concat(output));
-        }
-    }(0, pathnames.length));
-}
-
-function main(argv) {
-    var config = JSON.parse(fs.readFileSync(argv[0], &apos;utf-8&apos;)),
-        root = config.root || &apos;.&apos;,
-        port = config.port || 80;
-
-    http.createServer(function (request, response) {
-        var urlInfo = parseURL(root, request.url);
-
-        combineFiles(urlInfo.pathnames, function (err, data) {
-            if (err) {
-                response.writeHead(404);
-                response.end(err.message);
-            } else {
-                response.writeHead(200, {
-                    &apos;Content-Type&apos;: urlInfo.mime
-                });
-                response.end(data);
-            }
-        });
-    }).listen(port);
-}
-
-function parseURL(root, url) {
-    var base, pathnames, parts;
-
-    if (url.indexOf(&apos;??&apos;) === -1) {
-        url = url.replace(&apos;/&apos;, &apos;/??&apos;);
-    }
-
-    parts = url.split(&apos;??&apos;);
-    base = parts[0];
-    pathnames = parts[1].split(&apos;,&apos;).map(function (value) {
-        return path.join(root, base, value);
-    });
-
-    return {
-        mime: MIME[path.extname(pathnames[0])] || &apos;text/plain&apos;,
-        pathnames: pathnames
-    };
-}
-
-main(process.argv.slice(2));
-</code></pre><p>以上代码完整实现了服务器所需的功能，并且有以下几点值得注意：</p>
-<ol>
-<li><p>使用命令行参数传递JSON配置文件路径，入口函数负责读取配置并创建服务器。</p>
-</li>
-<li><p>入口函数完整描述了程序的运行逻辑，其中解析URL和合并文件的具体实现封装在其它两个函数里。</p>
-</li>
-<li><p>解析URL时先将普通URL转换为了文件合并URL，使得两种URL的处理方式可以一致。</p>
-</li>
-<li><p>合并文件时使用异步API读取文件，避免服务器因等待磁盘IO而发生阻塞。</p>
-</li>
-</ol>
-<p>我们可以把以上代码保存为<code>server.js</code>，之后就可以通过<code>node server.js config.json</code>命令启动程序，于是我们的第一版静态文件合并服务器就顺利完工了。</p>
-<p>另外，以上代码存在一个不那么明显的逻辑缺陷。例如，使用以下URL请求服务器时会有惊喜。</p>
-<pre><code>http://assets.example.com/foo/bar.js,foo/baz.js
-</code></pre><p>经过分析之后我们会发现问题出在<code>/</code>被自动替换<code>/??</code>这个行为上，而这个问题我们可以到第二次迭代时再解决。</p>
-<h3 id="第二次迭代"><a href="#第二次迭代" class="headerlink" title="第二次迭代"></a>第二次迭代</h3><p>在第一次迭代之后，我们已经有了一个可工作的版本，满足了功能需求。接下来我们需要从性能的角度出发，看看代码还有哪些改进余地。</p>
-<h4 id="设计-1"><a href="#设计-1" class="headerlink" title="设计"></a>设计</h4><p>把<code>map</code>方法换成<code>for</code>循环或许会更快一些，但第一版代码最大的性能问题存在于从读取文件到输出响应的过程当中。我们以处理<code>/??a.js,b.js,c.js</code>这个请求为例，看看整个处理过程中耗时在哪儿。</p>
-<pre><code> 发送请求       等待服务端响应         接收响应
----------+----------------------+-------------&gt;
-         --                                        解析请求
-           ------                                  读取a.js
-                 ------                            读取b.js
-                       ------                      读取c.js
-                             --                    合并数据
-                               --                  输出响应
-</code></pre><p>可以看到，第一版代码依次把请求的文件读取到内存中之后，再合并数据和输出响应。这会导致以下两个问题：</p>
-<ol>
-<li><p>当请求的文件比较多比较大时，串行读取文件会比较耗时，从而拉长了服务端响应等待时间。</p>
-</li>
-<li><p>由于每次响应输出的数据都需要先完整地缓存在内存里，当服务器请求并发数较大时，会有较大的内存开销。</p>
-</li>
-</ol>
-<p>对于第一个问题，很容易想到把读取文件的方式从串行改为并行。但是别这样做，因为对于机械磁盘而言，因为只有一个磁头，尝试并行读取文件只会造成磁头频繁抖动，反而降低IO效率。而对于固态硬盘，虽然的确存在多个并行IO通道，但是对于服务器并行处理的多个请求而言，硬盘已经在做并行IO了，对单个请求采用并行IO无异于拆东墙补西墙。因此，正确的做法不是改用并行IO，而是一边读取文件一边输出响应，把响应输出时机提前至读取第一个文件的时刻。这样调整后，整个请求处理过程变成下边这样。</p>
-<pre><code>发送请求 等待服务端响应 接收响应
----------+----+-------------------------------&gt;
-         --                                        解析请求
-           --                                      检查文件是否存在
-             --                                    输出响应头
-               ------                              读取和输出a.js
-                     ------                        读取和输出b.js
-                           ------                  读取和输出c.js
-</code></pre><p>按上述方式解决第一个问题后，因为服务器不需要完整地缓存每个请求的输出数据了，第二个问题也迎刃而解。</p>
-<h4 id="实现-1"><a href="#实现-1" class="headerlink" title="实现"></a>实现</h4><p>根据以上设计，第二版代码按以下方式调整了部分函数。</p>
-<pre><code>function main(argv) {
-    var config = JSON.parse(fs.readFileSync(argv[0], &apos;utf-8&apos;)),
-        root = config.root || &apos;.&apos;,
-        port = config.port || 80;
-
-    http.createServer(function (request, response) {
-        var urlInfo = parseURL(root, request.url);
-
-        validateFiles(urlInfo.pathnames, function (err, pathnames) {
-            if (err) {
-                response.writeHead(404);
-                response.end(err.message);
-            } else {
-                response.writeHead(200, {
-                    &apos;Content-Type&apos;: urlInfo.mime
-                });
-                outputFiles(pathnames, response);
-            }
-        });
-    }).listen(port);
-}
-
-function outputFiles(pathnames, writer) {
-    (function next(i, len) {
-        if (i &lt; len) {
-            var reader = fs.createReadStream(pathnames[i]);
-
-            reader.pipe(writer, { end: false });
-            reader.on(&apos;end&apos;, function() {
-                next(i + 1, len);
-            });
-        } else {
-            writer.end();
-        }
-    }(0, pathnames.length));
-}
-
-function validateFiles(pathnames, callback) {
-    (function next(i, len) {
-        if (i &lt; len) {
-            fs.stat(pathnames[i], function (err, stats) {
-                if (err) {
-                    callback(err);
-                } else if (!stats.isFile()) {
-                    callback(new Error());
-                } else {
-                    next(i + 1, len);
-                }
-            });
-        } else {
-            callback(null, pathnames);
-        }
-    }(0, pathnames.length));
-}
-</code></pre><p>可以看到，第二版代码在检查了请求的所有文件是否有效之后，立即就输出了响应头，并接着一边按顺序读取文件一边输出响应内容。并且，在读取文件时，第二版代码直接使用了只读数据流来简化代码。</p>
-<h3 id="第三次迭代"><a href="#第三次迭代" class="headerlink" title="第三次迭代"></a>第三次迭代</h3><p>第二次迭代之后，服务器本身的功能和性能已经得到了初步满足。接下来我们需要从稳定性的角度重新审视一下代码，看看还需要做些什么。</p>
-<h4 id="设计-2"><a href="#设计-2" class="headerlink" title="设计"></a>设计</h4><p>从工程角度上讲，没有绝对可靠的系统。即使第二次迭代的代码经过反复检查后能确保没有bug，也很难说是否会因为NodeJS本身，或者是操作系统本身，甚至是硬件本身导致我们的服务器程序在某一天挂掉。因此一般生产环境下的服务器程序都配有一个守护进程，在服务挂掉的时候立即重启服务。一般守护进程的代码会远比服务进程的代码简单，从概率上可以保证守护进程更难挂掉。如果再做得严谨一些，甚至守护进程自身可以在自己挂掉时重启自己，从而实现双保险。</p>
-<p>因此在本次迭代时，我们先利用NodeJS的进程管理机制，将守护进程作为父进程，将服务器程序作为子进程，并让父进程监控子进程的运行状态，在其异常退出时重启子进程。</p>
-<h4 id="实现-2"><a href="#实现-2" class="headerlink" title="实现"></a>实现</h4><p>根据以上设计，我们编写了守护进程需要的代码。</p>
-<pre><code>var cp = require(&apos;child_process&apos;);
-
-var worker;
-
-function spawn(server, config) {
-    worker = cp.spawn(&apos;node&apos;, [ server, config ]);
-    worker.on(&apos;exit&apos;, function (code) {
-        if (code !== 0) {
-            spawn(server, config);
-        }
-    });
-}
-
-function main(argv) {
-    spawn(&apos;server.js&apos;, argv[0]);
-    process.on(&apos;SIGTERM&apos;, function () {
-        worker.kill();
-        process.exit(0);
-    });
-}
-
-main(process.argv.slice(2));
-</code></pre><p>此外，服务器代码本身的入口函数也要做以下调整。</p>
-<pre><code>function main(argv) {
-    var config = JSON.parse(fs.readFileSync(argv[0], &apos;utf-8&apos;)),
-        root = config.root || &apos;.&apos;,
-        port = config.port || 80,
-        server;
-
-    server = http.createServer(function (request, response) {
-        ...
-    }).listen(port);
-
-    process.on(&apos;SIGTERM&apos;, function () {
-        server.close(function () {
-            process.exit(0);
-        });
-    });
-}
-</code></pre><p>我们可以把守护进程的代码保存为<code>daemon.js</code>，之后我们可以通过<code>node daemon.js config.json</code>启动服务，而守护进程会进一步启动和监控服务器进程。此外，为了能够正常终止服务，我们让守护进程在接收到<code>SIGTERM</code>信号时终止服务器进程。而在服务器进程这一端，同样在收到<code>SIGTERM</code>信号时先停掉HTTP服务再正常退出。至此，我们的服务器程序就靠谱很多了。</p>
-<h3 id="第四次迭代"><a href="#第四次迭代" class="headerlink" title="第四次迭代"></a>第四次迭代</h3><p>在我们解决了服务器本身的功能、性能和可靠性的问题后，接着我们需要考虑一下代码部署的问题，以及服务器控制的问题。</p>
-<h4 id="设计-3"><a href="#设计-3" class="headerlink" title="设计"></a>设计</h4><p>一般而言，程序在服务器上有一个固定的部署目录，每次程序有更新后，都重新发布到部署目录里。而一旦完成部署后，一般也可以通过固定的服务控制脚本启动和停止服务。因此我们的服务器程序部署目录可以做如下设计。</p>
-<pre><code>- deploy/
-    - bin/
-        startws.sh
-        killws.sh
-    + conf/
-        config.json
-    + lib/
-        daemon.js
-        server.js
-</code></pre><p>在以上目录结构中，我们分类存放了服务控制脚本、配置文件和服务器代码。</p>
-<h4 id="实现-3"><a href="#实现-3" class="headerlink" title="实现"></a>实现</h4><p>按以上目录结构分别存放对应的文件之后，接下来我们看看控制脚本怎么写。首先是<code>start.sh</code>。</p>
-<pre><code>#!/bin/sh
-if [ ! -f &quot;pid&quot; ]
-then
-    node ../lib/daemon.js ../conf/config.json &amp;
-    echo $! &gt; pid
-fi
-</code></pre><p>然后是<code>killws.sh</code>。</p>
-<pre><code>#!/bin/sh
-if [ -f &quot;pid&quot; ]
-then
-    kill $(tr -d &apos;\r\n&apos; &lt; pid)
-    rm pid
-fi
-</code></pre><p>于是这样我们就有了一个简单的代码部署目录和服务控制脚本，我们的服务器程序就可以上线工作了。</p>
-<h3 id="后续迭代"><a href="#后续迭代" class="headerlink" title="后续迭代"></a>后续迭代</h3><p>我们的服务器程序正式上线工作后，我们接下来或许会发现还有很多可以改进的点。比如服务器程序在合并JS文件时可以自动在JS文件之间插入一个<code>;</code>来避免一些语法问题，比如服务器程序需要提供日志来统计访问量，比如服务器程序需要能充分利用多核CPU，等等。而此时的你，在学习了这么久NodeJS之后，应该已经知道该怎么做了。</p>
-<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>本章将之前零散介绍的知识点串了起来，完整地演示了一个使用NodeJS开发程序的例子，至此我们的课程就全部结束了。以下是对新诞生的NodeJSer的一些建议。</p>
+            <p>最近看了Ruan YiFeng写的<a href="http://www.ruanyifeng.com/blog/2016/01/commit_message_change_log.html" target="_blank" rel="external">Commit message 和 Change log 编写指南</a>。<br>了解了如何写规范的commit message。</p>
+<!-- * 目录
+{:toc} -->
+<h3 id="编写规范"><a href="#编写规范" class="headerlink" title="编写规范"></a>编写规范</h3><p>先简要记录一下编写规范，这部分内容可以直接看Ruan YiFeng的博客，要比我写的详细。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;type&gt;(&lt;scope&gt;): &lt;subject&gt;</div><div class="line">// 空一行</div><div class="line">&lt;body&gt;</div><div class="line">// 空一行</div><div class="line">&lt;footer&gt;</div></pre></td></tr></table></figure></p>
+<p>commit message包含三个部分，header, body和footer，其中header必须有，body和footer可以按情况省略。</p>
+<p><strong>type 字段</strong></p>
 <ul>
-<li><p>要熟悉官方API文档。并不是说要熟悉到能记住每个API的名称和用法，而是要熟悉NodeJS提供了哪些功能，一旦需要时知道查询API文档的哪块地方。</p>
-</li>
-<li><p>要先设计再实现。在开发一个程序前首先要有一个全局的设计，不一定要很周全，但要足够能写出一些代码。</p>
-</li>
-<li><p>要实现后再设计。在写了一些代码，有了一些具体的东西后，一定会发现一些之前忽略掉的细节。这时再反过来改进之前的设计，为第二轮迭代做准备。</p>
-</li>
-<li><p>要充分利用三方包。NodeJS有一个庞大的生态圈，在写代码之前先看看有没有现成的三方包能节省不少时间。</p>
-</li>
-<li><p>不要迷信三方包。任何事情做过头了就不好了，三方包也是一样。三方包是一个黑盒，每多使用一个三方包，就为程序增加了一份潜在风险。并且三方包很难恰好只提供程序需要的功能，每多使用一个三方包，就让程序更加臃肿一些。因此在决定使用某个三方包之前，最好三思而后行。</p>
-</li>
+<li>feat：新功能（feature）</li>
+<li>fix：修补bug</li>
+<li>docs：文档（documentation）</li>
+<li>style： 格式（不影响代码运行的变动）</li>
+<li>refactor：重构（即不是新增功能，也不是修改bug的代码变动）</li>
+<li>test：增加测试</li>
+<li>chore：构建过程或辅助工具的变动</li>
 </ul>
+<p><strong>scope用于说明 commit 影响的范围，比如数据层、控制层、视图层等等，视项目不同而不同。</strong></p>
+<p>也就是写用户会感觉到改变在哪个地方。</p>
+<p><strong>subject是 commit 目的的简短描述，不超过50个字符</strong></p>
+<ul>
+<li>以动词开头，使用第一人称现在时，比如change，而不是changed或changes</li>
+<li>第一个字母小写</li>
+<li>结尾不加句号（.）</li>
+</ul>
+<p><strong>Body 部分是对本次 commit 的详细描述，可以分成多行</strong></p>
+<ul>
+<li>使用第一人称现在时，比如使用change而不是changed或changes。</li>
+<li>应该说明代码变动的动机，以及与以前行为的对比。</li>
+</ul>
+<p><strong>Footer</strong></p>
+<ul>
+<li>如果当前代码与上一个版本不兼容，则 Footer 部分以BREAKING CHANGE开头，后面是对变动的描述、以及变动理由和迁移方法。</li>
+<li>关闭 Issue</li>
+</ul>
+<p>另外，也可以包括JIRA issue references或者其他actions。</p>
+<p><q><strong>Revert</strong></q></p>
+<p>这是一种特殊情况，为了撤销前面的操作。</p>
+<p>如果当前 commit 用于撤销以前的 commit，则必须以revert:开头，后面跟着被撤销 Commit 的 Header。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">revert: feat(pencil): add &apos;graphiteWidth&apos; option</div><div class="line"></div><div class="line">This reverts commit 667ecc1654a317a13331b17617d973392f415f02.</div></pre></td></tr></table></figure>
+<p>Body部分的格式是固定的，必须写成<code>This reverts commit &amp;lt;hash&gt;.</code>，其中的<code>hash</code>是被撤销 commit 的 <code>SHA 标识符</code>。<br>如果当前 commit 与被撤销的 commit，在同一个发布（release）里面，<br>那么它们都不会出现在 Change log 里面。如果两者在不同的发布，那么当前 commit，会出现在 Change log 的Reverts小标题下面。</p>
+<p><a href="https://github.com/yulijia/cn/commit/e36d3ee657107623ff3fffc4bf8aec4b26a9bac0" target="_blank" rel="external">https://github.com/yulijia/cn/commit/e36d3ee657107623ff3fffc4bf8aec4b26a9bac0</a></p>
+<h3 id="修改git-message默认编辑器"><a href="#修改git-message默认编辑器" class="headerlink" title="修改git message默认编辑器"></a>修改git message默认编辑器</h3><p>说了这么多写作规范，如果有个模板可以直接拷贝，是再好不过的。</p>
+<p>使用模板之前，先对git message的默认编辑器做个修改，默认的是<code>nano</code>，但这个软件我不会用。</p>
+<p>用下面的命令，可以把默认编辑器改成<code>vim</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git config core.editor &quot;vim&quot;</div></pre></td></tr></table></figure>
+<h3 id="使用模板"><a href="#使用模板" class="headerlink" title="使用模板"></a>使用模板</h3><p>我采用了<a href="https://gist.github.com/Linell/bd8100c4e04348c7966d" target="_blank" rel="external">Linell编写的模板</a></p>
+<p>安装方式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">curl https://gist.githubusercontent.com/Linell/bd8100c4e04348c7966d/raw/84c0ea6e0f0a1431d406be6b7bb6e136949090cd/.git-commit-template.txt &gt;&gt; ~/.git-commit-template.txt</div><div class="line">git config --global commit.template ~/.git-commit-template.txt</div></pre></td></tr></table></figure>
+<p>另外，在这里也提供一个<a href="https://gist.github.com/yulijia/fe2522fe138b6ed41ff4" target="_blank" rel="external">中文的模板</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">curl https://gist.githubusercontent.com/yulijia/fe2522fe138b6ed41ff4/raw/5fa0007d1863f70cf4631f2dc1513c8676cd4ab8/.git-commit-template.txt &gt;&gt; ~/.git-commit-template.txt</div><div class="line">git config --global commit.template ~/.git-commit-template.txt</div></pre></td></tr></table></figure>
+<p>实际使用截图如下：</p>
+<p><img src="http://i.imgur.com/LMDCXdN.png" alt="Imgur"></p>
+<h3 id="写博客的commit-message应该怎么写？"><a href="#写博客的commit-message应该怎么写？" class="headerlink" title="写博客的commit message应该怎么写？"></a>写博客的commit message应该怎么写？</h3><p><u>这部分就是自娱自乐了</u>。查看了一下自己写博客提交的message，基本分为四类：1.提交一篇/多篇新内容；2.改错别字；3.修改/更新内容；4.修改/更新YAML说明；5.增加新页面。</p>
+<p>根据现有的git commit message写作规范，编写了自己的博客提交message规范。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;type&gt;(&lt;scope&gt;): &lt;subject&gt;</div><div class="line">// 空一行</div><div class="line">&lt;body&gt;</div><div class="line">// 空一行</div><div class="line">&lt;footer&gt;</div></pre></td></tr></table></figure>
+<p><strong>type</strong>为：</p>
+<ul>
+<li>add 增加新博客/页面（add new post/page）</li>
+<li>correct 改错别字/语法（correct spelling/grammar ）</li>
+<li>update 更新内容（update content）</li>
+<li>change 修改YAML说明（change YAML front-matter）</li>
+</ul>
+<p><strong>scope</strong>为：post/page, spelling/grammar, content, YAML front-matter</p>
+<p><strong>subject</strong>为：短描述，可以包含文件名等内容(如果名字过长，用首字母大写代替，省略连词)。（<code>add(post):20160121-postname.md</code>)</p>
+<p><strong>body</strong>为：具体的修改内容，如果是新增博客/页面，则可以省略。</p>
+<p><strong>footer</strong>为：空</p>
+<p>这个模板也放到<a href="https://gist.github.com/yulijia/fe2522fe138b6ed41ff4#file-git-commit-blog-txt" target="_blank" rel="external">gist</a>上。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">curl https://gist.githubusercontent.com/yulijia/fe2522fe138b6ed41ff4/raw/1e90ec272180dba299f5ad861e72dfab876c0c5b/.git-commit-blog.txt &gt;&gt; ~/.git-commit-template.txt</div><div class="line">git config --global commit.template ~/.git-commit-template.txt</div></pre></td></tr></table></figure>
+<p>实际使用时的截图如下</p>
+<p><img src="http://i.imgur.com/rVEhe7Z.png" alt="Imgur"></p>
 
         
         </div>
@@ -533,7 +332,7 @@ fi
 
 </div>
 
-    <a data-url="http://yoursite.com/2016/03/23/node/books/7days/07_example/" data-id="cj76wnr9q003venpjfavx2lo4" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+    <a data-url="http://yoursite.com/2017/07/19/git/git commit 编写风格模板/" data-id="cj76wnr6x0004enpjzrccax9w" class="article-share-link"><i class="fa fa-share"></i>Share</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -601,7 +400,7 @@ fi
 
             
     
-        <a href="http://yoursite.com/2016/03/23/node/books/7days/07_example/#comments" class="article-comment-link">Comments</a>
+        <a href="http://yoursite.com/2017/07/19/git/git commit 编写风格模板/#comments" class="article-comment-link">Comments</a>
     
 
         </footer>
@@ -611,7 +410,7 @@ fi
 
 
 
-    <article id="post-node/books/7days/05_process" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-android/code/realm使用" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
         
@@ -619,7 +418,7 @@ fi
                 
     
         <h1 itemprop="name">
-            <a class="article-title" href="/2016/03/23/node/books/7days/05_process/">七天学会NodeJS - 进程管理</a>
+            <a class="article-title" href="/2017/04/13/android/code/realm使用/">Realm使用笔记</a>
         </h1>
     
 
@@ -628,8 +427,8 @@ fi
                         
     <div class="article-date">
         <i class="fa fa-calendar"></i>
-        <a href="/2016/03/23/node/books/7days/05_process/">
-            <time datetime="2016-03-22T22:06:34.000Z" itemprop="datePublished">2016-03-23</time>
+        <a href="/2017/04/13/android/code/realm使用/">
+            <time datetime="2017-04-13T06:22:45.000Z" itemprop="datePublished">2017-04-13</time>
         </a>
     </div>
 
@@ -637,13 +436,13 @@ fi
                         
     <div class="article-category">
     	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/node/">node</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/node/7days/">7days</a>
+        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/code/">code</a>
     </div>
 
                         
     <div class="article-tag">
         <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/node/">node</a>
+        <a class="tag-link" href="/tags/android/">android</a>, <a class="tag-link" href="/tags/code/">code</a>
     </div>
 
                     </div>
@@ -654,137 +453,21 @@ fi
         <div class="article-entry" itemprop="articleBody">
         
             
-            <p>NodeJS可以感知和控制自身进程的运行环境和状态，也可以创建子进程并与其协同工作，这使得NodeJS可以把多个程序组合在一起共同完成某项工作，并在其中充当胶水和调度器的作用。本章除了介绍与之相关的NodeJS内置模块外，还会重点介绍典型的使用场景。</p>
-<h3 id="开门红"><a href="#开门红" class="headerlink" title="开门红"></a>开门红</h3><p>我们已经知道了NodeJS自带的<code>fs</code>模块比较基础，把一个目录里的所有文件和子目录都拷贝到另一个目录里需要写不少代码。另外我们也知道，终端下的<code>cp</code>命令比较好用，一条<code>cp -r source/* target</code>命令就能搞定目录拷贝。那我们首先看看如何使用NodeJS调用终端命令来简化目录拷贝，示例代码如下：</p>
-<pre><code>var child_process = require(&apos;child_process&apos;);
-var util = require(&apos;util&apos;);
-
-function copy(source, target, callback) {
-    child_process.exec(
-        util.format(&apos;cp -r %s/* %s&apos;, source, target), callback);
-}
-
-copy(&apos;a&apos;, &apos;b&apos;, function (err) {
-    // ...
-});
-</code></pre><p>从以上代码中可以看到，子进程是异步运行的，通过回调函数返回执行结果。</p>
-<h3 id="API走马观花"><a href="#API走马观花" class="headerlink" title="API走马观花"></a>API走马观花</h3><p>我们先大致看看NodeJS提供了哪些和进程管理有关的API。这里并不逐一介绍每个API的使用方法，官方文档已经做得很好了。</p>
-<h4 id="Process"><a href="#Process" class="headerlink" title="Process"></a>Process</h4><blockquote>
-<p>   <strong>官方文档： </strong> <a href="http://nodejs.org/api/process.html" target="_blank" rel="external">http://nodejs.org/api/process.html</a></p>
-</blockquote>
-<p>任何一个进程都有启动进程时使用的命令行参数，有标准输入标准输出，有运行权限，有运行环境和运行状态。在NodeJS中，可以通过<code>process</code>对象感知和控制NodeJS自身进程的方方面面。另外需要注意的是，<code>process</code>不是内置模块，而是一个全局对象，因此在任何地方都可以直接使用。</p>
-<h4 id="Child-Process"><a href="#Child-Process" class="headerlink" title="Child Process"></a>Child Process</h4><blockquote>
-<p>   <strong>官方文档： </strong> <a href="http://nodejs.org/api/child_process.html" target="_blank" rel="external">http://nodejs.org/api/child_process.html</a></p>
-</blockquote>
-<p>使用<code>child_process</code>模块可以创建和控制子进程。该模块提供的API中最核心的是<code>.spawn</code>，其余API都是针对特定使用场景对它的进一步封装，算是一种语法糖。</p>
-<h4 id="Cluster"><a href="#Cluster" class="headerlink" title="Cluster"></a>Cluster</h4><blockquote>
-<p>   <strong>官方文档： </strong> <a href="http://nodejs.org/api/cluster.html" target="_blank" rel="external">http://nodejs.org/api/cluster.html</a></p>
-</blockquote>
-<p><code>cluster</code>模块是对<code>child_process</code>模块的进一步封装，专用于解决单进程NodeJS Web服务器无法充分利用多核CPU的问题。使用该模块可以简化多进程服务器程序的开发，让每个核上运行一个工作进程，并统一通过主进程监听端口和分发请求。</p>
-<h3 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h3><p>和进程管理相关的API单独介绍起来比较枯燥，因此这里从一些典型的应用场景出发，分别介绍一些重要API的使用方法。</p>
-<h4 id="如何获取命令行参数"><a href="#如何获取命令行参数" class="headerlink" title="如何获取命令行参数"></a>如何获取命令行参数</h4><p>在NodeJS中可以通过<code>process.argv</code>获取命令行参数。但是比较意外的是，<code>node</code>执行程序路径和主模块文件路径固定占据了<code>argv[0]</code>和<code>argv[1]</code>两个位置，而第一个命令行参数从<code>argv[2]</code>开始。为了让<code>argv</code>使用起来更加自然，可以按照以下方式处理。</p>
-<pre><code>function main(argv) {
-    // ...
-}
-
-main(process.argv.slice(2));
-</code></pre><h4 id="如何退出程序"><a href="#如何退出程序" class="headerlink" title="如何退出程序"></a>如何退出程序</h4><p>通常一个程序做完所有事情后就正常退出了，这时程序的退出状态码为<code>0</code>。或者一个程序运行时发生了异常后就挂了，这时程序的退出状态码不等于<code>0</code>。如果我们在代码中捕获了某个异常，但是觉得程序不应该继续运行下去，需要立即退出，并且需要把退出状态码设置为指定数字，比如<code>1</code>，就可以按照以下方式：</p>
-<pre><code>try {
-    // ...
-} catch (err) {
-    // ...
-    process.exit(1);
-}
-</code></pre><h4 id="如何控制输入输出"><a href="#如何控制输入输出" class="headerlink" title="如何控制输入输出"></a>如何控制输入输出</h4><p>NodeJS程序的标准输入流（stdin）、一个标准输出流（stdout）、一个标准错误流（stderr）分别对应<code>process.stdin</code>、<code>process.stdout</code>和<code>process.stderr</code>，第一个是只读数据流，后边两个是只写数据流，对它们的操作按照对数据流的操作方式即可。例如，<code>console.log</code>可以按照以下方式实现。</p>
-<pre><code>function log() {
-    process.stdout.write(
-        util.format.apply(util, arguments) + &apos;\n&apos;);
-}
-</code></pre><h4 id="如何降权"><a href="#如何降权" class="headerlink" title="如何降权"></a>如何降权</h4><p>在Linux系统下，我们知道需要使用root权限才能监听1024以下端口。但是一旦完成端口监听后，继续让程序运行在root权限下存在安全隐患，因此最好能把权限降下来。以下是这样一个例子。</p>
-<pre><code>http.createServer(callback).listen(80, function () {
-    var env = process.env,
-        uid = parseInt(env[&apos;SUDO_UID&apos;] || process.getuid(), 10),
-        gid = parseInt(env[&apos;SUDO_GID&apos;] || process.getgid(), 10);
-
-    process.setgid(gid);
-    process.setuid(uid);
-});
-</code></pre><p>上例中有几点需要注意：</p>
-<ol>
-<li><p>如果是通过<code>sudo</code>获取root权限的，运行程序的用户的UID和GID保存在环境变量<code>SUDO_UID</code>和<code>SUDO_GID</code>里边。如果是通过<code>chmod +s</code>方式获取root权限的，运行程序的用户的UID和GID可直接通过<code>process.getuid</code>和<code>process.getgid</code>方法获取。</p>
-</li>
-<li><p><code>process.setuid</code>和<code>process.setgid</code>方法只接受<code>number</code>类型的参数。</p>
-</li>
-<li><p>降权时必须先降GID再降UID，否则顺序反过来的话就没权限更改程序的GID了。</p>
-</li>
-</ol>
-<h4 id="如何创建子进程"><a href="#如何创建子进程" class="headerlink" title="如何创建子进程"></a>如何创建子进程</h4><p>以下是一个创建NodeJS子进程的例子。</p>
-<pre><code>var child = child_process.spawn(&apos;node&apos;, [ &apos;xxx.js&apos; ]);
-
-child.stdout.on(&apos;data&apos;, function (data) {
-    console.log(&apos;stdout: &apos; + data);
-});
-
-child.stderr.on(&apos;data&apos;, function (data) {
-    console.log(&apos;stderr: &apos; + data);
-});
-
-child.on(&apos;close&apos;, function (code) {
-    console.log(&apos;child process exited with code &apos; + code);
-});
-</code></pre><p>上例中使用了<code>.spawn(exec, args, options)</code>方法，该方法支持三个参数。第一个参数是执行文件路径，可以是执行文件的相对或绝对路径，也可以是根据PATH环境变量能找到的执行文件名。第二个参数中，数组中的每个成员都按顺序对应一个命令行参数。第三个参数可选，用于配置子进程的执行环境与行为。</p>
-<p>另外，上例中虽然通过子进程对象的<code>.stdout</code>和<code>.stderr</code>访问子进程的输出，但通过<code>options.stdio</code>字段的不同配置，可以将子进程的输入输出重定向到任何数据流上，或者让子进程共享父进程的标准输入输出流，或者直接忽略子进程的输入输出。</p>
-<h4 id="进程间如何通讯"><a href="#进程间如何通讯" class="headerlink" title="进程间如何通讯"></a>进程间如何通讯</h4><p>在Linux系统下，进程之间可以通过信号互相通信。以下是一个例子。</p>
-<pre><code>/* parent.js */
-var child = child_process.spawn(&apos;node&apos;, [ &apos;child.js&apos; ]);
-
-child.kill(&apos;SIGTERM&apos;);
-
-/* child.js */
-process.on(&apos;SIGTERM&apos;, function () {
-    cleanUp();
-    process.exit(0);
-});
-</code></pre><p>在上例中，父进程通过<code>.kill</code>方法向子进程发送<code>SIGTERM</code>信号，子进程监听<code>process</code>对象的<code>SIGTERM</code>事件响应信号。不要被<code>.kill</code>方法的名称迷惑了，该方法本质上是用来给进程发送信号的，进程收到信号后具体要做啥，完全取决于信号的种类和进程自身的代码。</p>
-<p>另外，如果父子进程都是NodeJS进程，就可以通过IPC（进程间通讯）双向传递数据。以下是一个例子。</p>
-<pre><code>/* parent.js */
-var child = child_process.spawn(&apos;node&apos;, [ &apos;child.js&apos; ], {
-        stdio: [ 0, 1, 2, &apos;ipc&apos; ]
-    });
-
-child.on(&apos;message&apos;, function (msg) {
-    console.log(msg);
-});
-
-child.send({ hello: &apos;hello&apos; });
-
-/* child.js */
-process.on(&apos;message&apos;, function (msg) {
-    msg.hello = msg.hello.toUpperCase();
-    process.send(msg);
-});
-</code></pre><p>可以看到，父进程在创建子进程时，在<code>options.stdio</code>字段中通过<code>ipc</code>开启了一条IPC通道，之后就可以监听子进程对象的<code>message</code>事件接收来自子进程的消息，并通过<code>.send</code>方法给子进程发送消息。在子进程这边，可以在<code>process</code>对象上监听<code>message</code>事件接收来自父进程的消息，并通过<code>.send</code>方法向父进程发送消息。数据在传递过程中，会先在发送端使用<code>JSON.stringify</code>方法序列化，再在接收端使用<code>JSON.parse</code>方法反序列化。</p>
-<h4 id="如何守护子进程"><a href="#如何守护子进程" class="headerlink" title="如何守护子进程"></a>如何守护子进程</h4><p>守护进程一般用于监控工作进程的运行状态，在工作进程不正常退出时重启工作进程，保障工作进程不间断运行。以下是一种实现方式。</p>
-<pre><code>/* daemon.js */
-function spawn(mainModule) {
-    var worker = child_process.spawn(&apos;node&apos;, [ mainModule ]);
-
-    worker.on(&apos;exit&apos;, function (code) {
-        if (code !== 0) {
-            spawn(mainModule);
-        }
-    });
-}
-
-spawn(&apos;worker.js&apos;);
-</code></pre><p>可以看到，工作进程非正常退出时，守护进程立即重启工作进程。</p>
-<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>本章介绍了使用NodeJS管理进程时需要的API以及主要的应用场景，总结起来有以下几点：</p>
-<ul>
-<li><p>使用<code>process</code>对象管理自身。</p>
-</li>
-<li><p>使用<code>child_process</code>模块创建和管理子进程。</p>
-</li>
-</ul>
+            <p>1.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">// Create a RealmConfiguration that saves the Realm file in the app&apos;s &quot;files&quot; directory.</div><div class="line">RealmConfiguration realmConfig = new RealmConfiguration.Builder(context).build();</div><div class="line">Realm.setDefaultConfiguration(realmConfig);</div><div class="line">// Get a Realm instance for this thread</div><div class="line">Realm realm = Realm.getDefaultInstance();</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">// The RealmConfiguration is created using the builder pattern.</div><div class="line">// The Realm file will be located in Context.getFilesDir() with name &quot;myrealm.realm&quot;</div><div class="line">RealmConfiguration config = new RealmConfiguration.Builder(context)</div><div class="line">  .name(&quot;myrealm.realm&quot;)</div><div class="line">  .encryptionKey(getKey())</div><div class="line">  .schemaVersion(42)</div><div class="line">  .modules(new MySchemaModule())</div><div class="line">  .migration(new MyMigration())</div><div class="line">  .build();</div><div class="line">// Use the config</div><div class="line">Realm realm = Realm.getInstance(config);</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">RealmConfiguration myConfig = new RealmConfiguration.Builder(context)</div><div class="line">  .name(&quot;myrealm.realm&quot;)</div><div class="line">  .schemaVersion(2)</div><div class="line">  .modules(new MyCustomSchema())</div><div class="line">  .build();</div><div class="line">RealmConfiguration otherConfig = new RealmConfiguration.Builder(context)</div><div class="line">  .name(&quot;otherrealm.realm&quot;)</div><div class="line">  .schemaVersion(5)</div><div class="line">  .modules(new MyOtherSchema())</div><div class="line">  .build();</div><div class="line">Realm myRealm = Realm.getInstance(myConfig);</div><div class="line">Realm otherRealm = Realm.getInstance(otherConfig);</div><div class="line">public class MyApplication extends Application &#123;</div><div class="line">  @Override</div><div class="line">  public void onCreate() &#123;</div><div class="line">    super.onCreate();</div><div class="line">    // The Realm file will be located in Context.getFilesDir() with name &quot;default.realm&quot;</div><div class="line">    RealmConfiguration config = new RealmConfiguration.Builder(this).build();</div><div class="line">    Realm.setDefaultConfiguration(config);</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">public class MyActivity extends Activity &#123;</div><div class="line">  @Override</div><div class="line">  protected void onCreate(Bundle savedInstanceState) &#123;</div><div class="line">    super.onCreate(savedInstanceState);</div><div class="line">    Realm realm = Realm.getDefaultInstance();</div><div class="line">    // ... Do something ...</div><div class="line">    realm.close();</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">​`</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">@RealmClass</div><div class="line">public class User implements RealmModel &#123;</div><div class="line">&#125;</div><div class="line">// With RealmObject</div><div class="line">user.isValid();</div><div class="line">user.addChangeListener(listener);</div><div class="line">// With RealmModel</div><div class="line">RealmObject.isValid(user);</div><div class="line">RealmObject.addChangeListener(user, listener);</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">final MyObject obj = new MyObject();</div><div class="line">obj.setId(42);</div><div class="line">obj.setName(&quot;Fish&quot;);</div><div class="line">realm.executeTransaction(new Realm.Transaction() &#123;</div><div class="line">    @Override</div><div class="line">    public void execute(Realm realm) &#123;</div><div class="line">        // This will create a new object in Realm or throw an exception if the</div><div class="line">        // object already exists (same primary key)</div><div class="line">        // realm.copyToRealm(obj);</div><div class="line">        // This will update an existing object with the same primary key</div><div class="line">        // or create a new object if an object with no primary key = 42</div><div class="line">        realm.copyToRealmOrUpdate(obj);</div><div class="line">    &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">realm.beginTransaction();</div><div class="line">User user = realm.createObject(User.class); // Create a new object</div><div class="line">user.setName(&quot;John&quot;);</div><div class="line">user.setEmail(&quot;john@corporation.com&quot;);</div><div class="line">realm.commitTransaction();</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">User user = new User(&quot;John&quot;);</div><div class="line">user.setEmail(&quot;john@corporation.com&quot;);</div><div class="line">// Copy the object to Realm. Any further changes must happen on realmUser</div><div class="line">realm.beginTransaction();</div><div class="line">User realmUser = realm.copyToRealm(user);</div><div class="line">realm.commitTransaction();</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">// Query Realm for all dogs younger than 2 years old</div><div class="line">final RealmResults&lt;Dog&gt; puppies = realm.where(Dog.class).lessThan(&quot;age&quot;, 2).findAll();</div><div class="line">puppies.size(); // =&gt; 0 because no dogs have been added to the Realm yet</div><div class="line">// Persist your data in a transaction</div><div class="line">realm.beginTransaction();</div><div class="line">final Dog managedDog = realm.copyToRealm(dog); // Persist unmanaged objects</div><div class="line">Person person = realm.createObject(Person.class); // Create managed objects directly</div><div class="line">person.getDogs().add(managedDog);</div><div class="line">realm.commitTransaction();</div><div class="line">public void onStop () &#123;</div><div class="line">    if (transaction != null &amp;&amp; !transaction.isCancelled()) &#123;</div><div class="line">        transaction.cancel();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>​<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">// Listeners will be notified when data changes</div><div class="line">puppies.addChangeListener(new RealmChangeListener&lt;RealmResults&lt;Dog&gt;&gt;() &#123;</div><div class="line">    @Override</div><div class="line">    public void onChange(RealmResults&lt;Dog&gt; results) &#123;</div><div class="line">        // Query results are updated in real time</div><div class="line">        puppies.size(); // =&gt; 1</div><div class="line">    &#125;</div><div class="line">&#125;);</div><div class="line"></div><div class="line">// Asynchronously update objects on a background thread</div><div class="line">realm.executeTransactionAsync(new Realm.Transaction() &#123;</div><div class="line">    @Override</div><div class="line">    public void execute(Realm bgRealm) &#123;</div><div class="line">        Dog dog = bgRealm.where(Dog.class).equalTo(&quot;age&quot;, 1).findFirst();</div><div class="line">        dog.setAge(3);</div><div class="line">    &#125;</div><div class="line">&#125;, new Realm.Transaction.OnSuccess() &#123;</div><div class="line">    @Override</div><div class="line">    public void onSuccess() &#123;</div><div class="line">    	// Original queries and Realm objects are automatically updated.</div><div class="line">    	puppies.size(); // =&gt; 0 because there are no more puppies younger than 2 years old</div><div class="line">    	managedDog.getAge();   // =&gt; 3 the dogs age is updated</div><div class="line">    &#125;</div><div class="line">&#125;);</div><div class="line"></div><div class="line">realm.executeTransaction(new Realm.Transaction() &#123;</div><div class="line">    @Override</div><div class="line">    public void execute(Realm realm) &#123;</div><div class="line">        Dog myDog = realm.createObject(Dog.class);</div><div class="line">        myDog.setName(&quot;Fido&quot;);</div><div class="line">        myDog.setAge(1);</div><div class="line">    &#125;</div><div class="line">&#125;);</div><div class="line">​</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">Dog myDog = realm.where(Dog.class).equalTo(&quot;age&quot;, 1).findFirst();</div><div class="line">realm.executeTransaction(new Realm.Transaction() &#123;</div><div class="line">    @Override</div><div class="line">    public void execute(Realm realm) &#123;</div><div class="line">        Dog myPuppy = realm.where(Dog.class).equalTo(&quot;age&quot;, 1).findFirst();</div><div class="line">        myPuppy.setAge(2);</div><div class="line">    &#125;</div><div class="line">&#125;);</div><div class="line">myDog.getAge(); // =&gt; 2</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">realm.executeTransactionAsync(new Realm.Transaction() &#123;</div><div class="line">            @Override</div><div class="line">            public void execute(Realm bgRealm) &#123;</div><div class="line">                User user = bgRealm.createObject(User.class);</div><div class="line">                user.setName(&quot;John&quot;);</div><div class="line">                user.setEmail(&quot;john@corporation.com&quot;);</div><div class="line">            &#125;</div><div class="line">        &#125;, new Realm.Transaction.OnSuccess() &#123;</div><div class="line">            @Override</div><div class="line">            public void onSuccess() &#123;</div><div class="line">                // Transaction was a success.</div><div class="line">            &#125;</div><div class="line">        &#125;, new Realm.Transaction.OnError() &#123;</div><div class="line">            @Override</div><div class="line">            public void onError(Throwable error) &#123;</div><div class="line">                // Transaction failed and was automatically canceled.</div><div class="line">            &#125;</div><div class="line">        &#125;);</div><div class="line">public void onStop () &#123;</div><div class="line">    if (transaction != null &amp;&amp; !transaction.isCancelled()) &#123;</div><div class="line">        transaction.cancel();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div></pre></td><td class="code"><pre><div class="line">// r1 =&gt; [U1,U2]</div><div class="line">RealmResults&lt;Person&gt; r1 = realm.where(Person.class)</div><div class="line">                             .equalTo(&quot;dogs.name&quot;, &quot;Fluffy&quot;)</div><div class="line">                             .equalTo(&quot;dogs.color&quot;, &quot;Brown&quot;)</div><div class="line">                             .findAll();</div><div class="line">// r2 =&gt; [U2]</div><div class="line">RealmResults&lt;Person&gt; r2 = realm.where(Person.class)</div><div class="line">                             .equalTo(&quot;dogs.name&quot;, &quot;Fluffy&quot;)</div><div class="line">                             .findAll()</div><div class="line">                             .where()</div><div class="line">                             .equalTo(&quot;dogs.color&quot;, &quot;Brown&quot;)</div><div class="line">                             .findAll();</div><div class="line">                             .where()</div><div class="line">                             .equalTo(&quot;dogs.color&quot;, &quot;Yellow&quot;)</div><div class="line">                             .findAll();</div><div class="line">// Build the query looking at all users:</div><div class="line">RealmQuery&lt;User&gt; query = realm.where(User.class);</div><div class="line">// Add query conditions:</div><div class="line">query.equalTo(&quot;name&quot;, &quot;John&quot;);</div><div class="line">query.or().equalTo(&quot;name&quot;, &quot;Peter&quot;);</div><div class="line">// Execute the query:</div><div class="line">RealmResults&lt;User&gt; result1 = query.findAll();</div><div class="line">// Or alternatively do the same all at once (the &quot;Fluent interface&quot;):</div><div class="line">RealmResults&lt;User&gt; result2 = realm.where(User.class)</div><div class="line">                                  .equalTo(&quot;name&quot;, &quot;John&quot;)</div><div class="line">                                  .or()</div><div class="line">                                  .equalTo(&quot;name&quot;, &quot;Peter&quot;)</div><div class="line">                                  .findAll();</div><div class="line">RealmResults&lt;User&gt; r = realm.where(User.class)</div><div class="line">                            .greaterThan(&quot;age&quot;, 10)  //implicit AND</div><div class="line">                            .beginGroup()</div><div class="line">                                .equalTo(&quot;name&quot;, &quot;Peter&quot;)</div><div class="line">                                .or()</div><div class="line">                                .contains(&quot;name&quot;, &quot;Jo&quot;)</div><div class="line">                            .endGroup()</div><div class="line">                            .findAll();</div><div class="line">// r1 =&gt; [U1,U2]</div><div class="line">RealmResults&lt;Person&gt; r1 = realm.where(Person.class)</div><div class="line">                             .equalTo(&quot;dogs.name&quot;, &quot;Fluffy&quot;)</div><div class="line">                             .equalTo(&quot;dogs.color&quot;, &quot;Brown&quot;)</div><div class="line">                             .findAll();</div><div class="line">// r2 =&gt; [U2]</div><div class="line">RealmResults&lt;Person&gt; r2 = realm.where(Person.class)</div><div class="line">                             .equalTo(&quot;dogs.name&quot;, &quot;Fluffy&quot;)</div><div class="line">                             .findAll()</div><div class="line">                             .where()</div><div class="line">                             .equalTo(&quot;dogs.color&quot;, &quot;Brown&quot;)</div><div class="line">                             .findAll();</div><div class="line">                             .where()</div><div class="line">                             .equalTo(&quot;dogs.color&quot;, &quot;Yellow&quot;)</div><div class="line">                             .findAll();</div><div class="line">6</div><div class="line">final RealmResults&lt;User&gt; users = getUsers();</div><div class="line">realm.executeTransaction(new Realm.Transaction() &#123;</div><div class="line">    @Override</div><div class="line">    public void execute(Realm realm) &#123;</div><div class="line">        users.deleteFromRealm(0); // Delete and remove object directly</div><div class="line">    &#125;</div><div class="line">&#125;);</div><div class="line">for (User user : users) &#123;</div><div class="line">    showUser(user); // Deleted user will not be shown</div><div class="line">&#125;</div><div class="line">// obtain the results of a query</div><div class="line">final RealmResults&lt;Dog&gt; results = realm.where(Dog.class).findAll();</div><div class="line">// All changes to data must happen in a transaction</div><div class="line">realm.executeTransaction(new Realm.Transaction() &#123;</div><div class="line">    @Override</div><div class="line">    public void execute(Realm realm) &#123;</div><div class="line">        // remove single match</div><div class="line">        results.deleteFirstFromRealm();</div><div class="line">        results.deleteLastFromRealm();</div><div class="line">        // remove a single object</div><div class="line">        Dog dog = results.get(5);</div><div class="line">        dog.deleteFromRealm();</div><div class="line">        // Delete all matches</div><div class="line">        results.deleteAllFromRealm();</div><div class="line">    &#125;</div><div class="line">&#125;);</div><div class="line">As</div><div class="line">7.</div><div class="line">/ Setup Realm in your Application</div><div class="line">public class MyApplication extends Application &#123;</div><div class="line">    @Override</div><div class="line">    public void onCreate() &#123;</div><div class="line">        super.onCreate();</div><div class="line">        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder(this).build();</div><div class="line">        Realm.setDefaultConfiguration(realmConfiguration);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">// onCreate()/onDestroy() overlap when switching between activities so onCreate()</div><div class="line">// on Activity 2 will be called before onDestroy() on Activity 1.</div><div class="line">public class MyActivity extends Activity &#123;</div><div class="line">    private Realm realm;</div><div class="line">    @Override</div><div class="line">    protected void onCreate(Bundle savedInstanceState) &#123;</div><div class="line">        super.onCreate(savedInstanceState);</div><div class="line">        realm = Realm.getDefaultInstance();</div><div class="line">    &#125;</div><div class="line">    @Override</div><div class="line">    protected void onDestroy() &#123;</div><div class="line">        super.onDestroy();</div><div class="line">        realm.close();</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">// Use onStart()/onStop() for Fragments as onDestroy() might not be called.</div><div class="line">public class MyFragment extends Fragment &#123;</div><div class="line">    private Realm realm;</div><div class="line">    @Override</div><div class="line">    public void onStart() &#123;</div><div class="line">        super.onStart();</div><div class="line">        realm = Realm.getDefaultInstance();</div><div class="line">    &#125;</div><div class="line">    @Override</div><div class="line">    public void onStop() &#123;</div><div class="line">        super.onStop();</div><div class="line">        realm.close();</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">.</div><div class="line">`</div></pre></td></tr></table></figure>
+<p>````</p>
 
         
         </div>
@@ -795,7 +478,7 @@ spawn(&apos;worker.js&apos;);
 
 </div>
 
-    <a data-url="http://yoursite.com/2016/03/23/node/books/7days/05_process/" data-id="cj76wnr9c0035enpj9y3wzgv0" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+    <a data-url="http://yoursite.com/2017/04/13/android/code/realm使用/" data-id="cj76wnr8g001aenpjv5zeqe5s" class="article-share-link"><i class="fa fa-share"></i>Share</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -863,7 +546,1348 @@ spawn(&apos;worker.js&apos;);
 
             
     
-        <a href="http://yoursite.com/2016/03/23/node/books/7days/05_process/#comments" class="article-comment-link">Comments</a>
+        <a href="http://yoursite.com/2017/04/13/android/code/realm使用/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-node/angular.js4.0 " class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/04/07/node/angular.js4.0 /">angular.js4.0学习笔记</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/04/07/node/angular.js4.0 /">
+            <time datetime="2017-04-07T10:04:59.000Z" itemprop="datePublished">2017-04-07</time>
+        </a>
+    </div>
+
+
+                        
+                        
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>angular.js4.0 </p>
+<p>我们之前用过angular2.0+ionic控件做的+cordva，效果一般</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/04/07/node/angular.js4.0 /" data-id="cj76wnr770009enpj1m9ywmu5" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/04/07/node/angular.js4.0 /#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-node/Lesson1" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/03/29/node/Lesson1/">Node.js学习笔记 lesson1</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/03/29/node/Lesson1/">
+            <time datetime="2017-03-29T05:31:20.000Z" itemprop="datePublished">2017-03-29</time>
+        </a>
+    </div>
+
+
+                        
+                        
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h4 id="Golbal"><a href="#Golbal" class="headerlink" title="Golbal"></a>Golbal</h4><ol>
+<li><p><code>__dirname</code> : 全路径名</p>
+</li>
+<li><p><code>__filename</code>:文件的绝对路径</p>
+</li>
+<li><p><code>console.log(--dirname)</code>:日志输出</p>
+</li>
+<li><p><code>module.exports</code>:定义一个模块导出什么，且通过<code>require()</code>引入。<code>module</code>实际上不是全局变量，而是每个模块内部的。</p>
+</li>
+<li><p><code>require()</code>：用于引入变量，也是每个模块内部的。</p>
+</li>
+</ol>
+<h4 id="module"><a href="#module" class="headerlink" title="module"></a>module</h4><ol>
+<li><p>在Node.js中，文件和模块是一一对应的，每个文件被视为一个独立模块。</p>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">const circle = require(&apos;./circle.js&apos;);</div><div class="line">console.log(&apos;半径为 4 的圆的面积是 $&#123;circle.area(4)&#125;&apos;)</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">const PI = Math.PI;</div><div class="line">exports.area = (r) =&gt;PI *r *r;</div><div class="line">exports.circumference = (r) =&gt;2 * PI *r;</div></pre></td></tr></table></figure>
+<p>模块内的本地变量是私有的，因为模块被Node.js包装在一个函数中。</p>
+</li>
+<li><p>如果希望模块根导出为一个函数(比如构造函数)，或者一次导出一个完整的对象而不是每次创建一个属性，可以将它赋值给<code>module.exports</code>，而不是<code>exports</code>。</p>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">const square = require(&apos;./square.js&apos;);</div><div class="line">var mySquare = square(2);</div><div class="line">console.log(&apos;正方形的面积是 $&#123;mySquare.area()&#125;&apos;);</div></pre></td></tr></table></figure>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">module.exports = (width) =&gt;&#123;</div><div class="line">  return &#123;</div><div class="line">    area:() =&gt; width * width;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>模块第一次加载后会被缓存。以后每次调用都会解析到同一个文件，返回相同的对象。多次调用<code>require(foo)</code>不会导致模块代码被执行多次，如果想多次执行一个模块，可以先导出一个函数，然后调研该函数。</p>
+</li>
+<li><p>模块是基于其缓存的模块名进行解析。调用模块的位置不同，模块可能别解析成不同的文件名，这样就不能保证<code>require(&#39;foo&#39;)</code>总能返回同一个对象。</p>
+</li>
+<li><p>为了防止无限的循环，相互调用时，会先返回一个未完成的副本。</p>
+</li>
+<li><p>以<code>/</code>为前缀的模块是文件的绝对路径。</p>
+<p>以<code>./</code>为前缀的模块是相对于调用<code>require()</code>的文件的。</p>
+<p>​</p>
+</li>
+</ol>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/03/29/node/Lesson1/" data-id="cj76wnr79000denpjw5f1jmzt" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/03/29/node/Lesson1/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-android/code/CharSequence" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/03/21/android/code/CharSequence/">类似网页超链接实现</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/03/21/android/code/CharSequence/">
+            <time datetime="2017-03-21T03:26:52.000Z" itemprop="datePublished">2017-03-21</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/code/">code</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/android/">android</a>, <a class="tag-link" href="/tags/code/">code</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div></pre></td><td class="code"><pre><div class="line">CharSequence agreementTxt = (getString(R.string.maimai_register_license_html) + &quot;《&quot; + getString(R.string.app_name) + getString(R.string.maimai_license_html) + &quot;》&quot;);</div><div class="line">        SpannableString content = new SpannableString(agreementTxt);</div><div class="line">        content.setSpan(new ClickableSpan() &#123;</div><div class="line"></div><div class="line">            @Override</div><div class="line">            public void onClick(View widget) &#123;</div><div class="line">                L.d(&quot;into click&quot;);</div><div class="line">                String url = &quot;http://maimai.cn/maimai_license&quot;;</div><div class="line"></div><div class="line">                new FinestWebView.Builder(RegisterActivity.this).theme(R.style.FinestWebViewTheme)</div><div class="line">//                   .titleDefault(&quot;Vimeo&quot;)</div><div class="line">                        .showUrl(false)</div><div class="line">                        .statusBarColorRes(R.color.bg_top_tab)</div><div class="line">                        .toolbarColorRes(R.color.bg_top_tab)</div><div class="line">                        .titleColorRes(R.color.finestWhite)</div><div class="line">                        .iconDefaultColorRes(R.color.finestWhite)</div><div class="line">                        .progressBarColorRes(R.color.finestWhite)</div><div class="line">                        .stringResCopiedToClipboard(R.string.copied_to_clipboard)</div><div class="line">                        .showSwipeRefreshLayout(false)</div><div class="line">                        .menuSelector(R.drawable.selector_light_theme)</div><div class="line">                        .menuTextGravity(Gravity.CENTER)</div><div class="line">                        .menuTextPaddingRightRes(R.dimen.defaultMenuTextPaddingLeft)</div><div class="line">                        .dividerHeight(0)</div><div class="line">                        .gradientDivider(false)</div><div class="line">                        .setCustomAnimations(R.anim.slide_up, R.anim.hold, R.anim.hold, R.anim.slide_down)</div><div class="line">                        .show(url);</div><div class="line"></div><div class="line">                WebView webView  = new WebView(JinkeApplication.getInstance());</div><div class="line"></div><div class="line"></div><div class="line">            &#125;</div><div class="line"></div><div class="line">            @Override</div><div class="line">            public void updateDrawState(TextPaint ds) &#123;</div><div class="line">                super.updateDrawState(ds);</div><div class="line">                ds.setUnderlineText(false);</div><div class="line">                ds.setColor(getResources().getColor(android.R.color.holo_blue_dark));</div><div class="line">                mobileRegisterLicenseTips.setHighlightColor(getResources().getColor(android.R.color.transparent));</div><div class="line">                ds.clearShadowLayer();</div><div class="line">            &#125;</div><div class="line">        &#125;, agreementTxt.length() - 10, agreementTxt.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);</div><div class="line"></div><div class="line">        mobileRegisterLicenseTips.setText(content);</div><div class="line">        mobileRegisterLicenseTips.setMovementMethod(LinkMovementMethod.getInstance());</div></pre></td></tr></table></figure>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/03/21/android/code/CharSequence/" data-id="cj76wnr8b0014enpj4v3dwdag" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/03/21/android/code/CharSequence/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-android/code/Android桌面图标实现" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/03/17/android/code/Android桌面图标实现/">Android桌面图标实现</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/03/17/android/code/Android桌面图标实现/">
+            <time datetime="2017-03-17T03:15:43.000Z" itemprop="datePublished">2017-03-17</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/code/">code</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/android/">android</a>, <a class="tag-link" href="/tags/code/">code</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h3 id="基于ShortcutBadger实现"><a href="#基于ShortcutBadger实现" class="headerlink" title="基于ShortcutBadger实现"></a>基于<a href="https://github.com/leolin310148/ShortcutBadger" target="_blank" rel="external">ShortcutBadger</a>实现</h3><blockquote>
+<p>The ShortcutBadger makes your Android App show the count of unread messages as a badge on your App shortcut!</p>
+</blockquote>
+<p> <img src="http://upload-images.jianshu.io/upload_images/759172-2b36d5b0302a4a12.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img"></p>
+<h3 id="ShortcutBadger使用"><a href="#ShortcutBadger使用" class="headerlink" title="ShortcutBadger使用"></a>ShortcutBadger使用</h3><ul>
+<li><p>主要实现badge生成和消除功能。</p>
+</li>
+<li><p>一般badge会配合Notifaction使用，故而在生成Notifaction的地方，调用badge生成方法。</p>
+</li>
+<li><p>而当App从后台返回前台时，调用badge清除方法。</p>
+</li>
+</ul>
+<h3 id="测试运行效果"><a href="#测试运行效果" class="headerlink" title="测试运行效果"></a>测试运行效果</h3><ul>
+<li><p>测试可行厂商</p>
+<ul>
+<li>华为</li>
+<li>三星</li>
+</ul>
+</li>
+<li><p>需调试厂商</p>
+<ul>
+<li><a href="http://dev.xiaomi.com/doc/p=3904/index.html" target="_blank" rel="external">小米</a><ul>
+<li>小米MIUI 6.0开始，发送通知自动生成桌面角标，且默认桌面角标数badge会根据通知ID个数自动累加，点击应用badge自动消失。同时，其提供开放API，可自定义badge个数。</li>
+<li>针对小米，在调用端分开处理。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>未开通桌面图标厂商</p>
+<ul>
+<li><p>魅族</p>
+</li>
+<li><p>中兴</p>
+</li>
+<li><p>酷派</p>
+</li>
+<li><p>OPPO部分应用开通</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="最终代码"><a href="#最终代码" class="headerlink" title="最终代码"></a>最终代码</h3><ul>
+<li><p>生成Notifaction和Badge时：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div></pre></td><td class="code"><pre><div class="line">  /**</div><div class="line">     * 生成通知和桌面角标</div><div class="line">     */</div><div class="line">    private void setFlowNotifaction(Context context, Intent resultIntent, String title, String msg) &#123;</div><div class="line"></div><div class="line">        mBadge++;</div><div class="line"></div><div class="line">        // 小米miui6.0以后根据通知自动生成badge,根据通知次数自动累加。调用ShortcutBadger会自动生成空通知，需调用以下修改badge</div><div class="line">        if (Build.MANUFACTURER.equalsIgnoreCase(&quot;Xiaomi&quot;) &amp;&amp; Build.VERSION.SDK_INT &gt; Build.VERSION_CODES.JELLY_BEAN) &#123;</div><div class="line">            tryNewMiuiBadge(context, resultIntent, mBadge, title, msg, R.drawable.icon_app);</div><div class="line">        &#125; else &#123;</div><div class="line">            showNotifacitonBadge(context, resultIntent, mBadge, title, msg, R.drawable.icon_app);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    private void showNotifacitonBadge(Context context, Intent resultIntent, int badge, String title, String msg, int drawIcon) &#123;</div><div class="line">        PendingIntent pendingIntent = PendingIntent.getActivity(context,</div><div class="line">                0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);</div><div class="line">        NotificationCompat.Builder mBuilder =</div><div class="line">                new NotificationCompat.Builder(context)</div><div class="line">                        .setSmallIcon(drawIcon)</div><div class="line">                        .setContentTitle(title)</div><div class="line">                        .setContentText(msg)</div><div class="line">                        .setTicker(msg);</div><div class="line">//        mBuilder.setFullScreenIntent(pendingIntent, true);</div><div class="line">        mBuilder.setContentIntent(pendingIntent);</div><div class="line">        mBuilder.setAutoCancel(true);</div><div class="line"></div><div class="line"></div><div class="line">        // 设置通知的优先级</div><div class="line">        mBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);</div><div class="line">//        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);</div><div class="line">//        // 设置通知的提示音</div><div class="line">//        mBuilder.setSound(alarmSound);</div><div class="line">        mBuilder.setDefaults(Notification.DEFAULT_ALL);</div><div class="line"></div><div class="line"></div><div class="line">        int mNotificationId = 10086;</div><div class="line">        NotificationManager mNotifyMgr = (NotificationManager) context</div><div class="line">                .getSystemService(Context.NOTIFICATION_SERVICE);</div><div class="line">        mNotifyMgr.notify(mNotificationId, mBuilder.build());</div><div class="line">        // 生成桌面角标</div><div class="line">        ShortcutBadger.applyCount(JApplication.getInstance(), badge);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)</div><div class="line">    private void tryNewMiuiBadge(Context context, Intent resultIntent, int badgeCount, String title, String msg, int drawIcon) &#123;</div><div class="line"></div><div class="line">        PendingIntent pendingIntent = PendingIntent.getActivity(context,</div><div class="line">                0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);</div><div class="line">        NotificationCompat.Builder mBuilder =</div><div class="line">                new NotificationCompat.Builder(context)</div><div class="line">                        .setSmallIcon(drawIcon)</div><div class="line">                        .setContentTitle(title)</div><div class="line">                        .setContentText(msg)</div><div class="line">                        .setTicker(msg);</div><div class="line">//        mBuilder.setFullScreenIntent(pendingIntent, true);</div><div class="line">        mBuilder.setContentIntent(pendingIntent);</div><div class="line">        mBuilder.setAutoCancel(true);</div><div class="line"></div><div class="line"></div><div class="line">        // 设置通知的优先级</div><div class="line">        mBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);</div><div class="line">//        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);</div><div class="line">//        // 设置通知的提示音</div><div class="line">//        mBuilder.setSound(alarmSound);</div><div class="line">        mBuilder.setDefaults(Notification.DEFAULT_ALL);</div><div class="line"></div><div class="line"></div><div class="line">//        int mNotificationId = 10086;</div><div class="line">        NotificationManager mNotifyMgr = (NotificationManager) context</div><div class="line">                .getSystemService(Context.NOTIFICATION_SERVICE);</div><div class="line">        Notification notification = mBuilder.build();</div><div class="line"></div><div class="line">        try &#123;</div><div class="line">            Field field = notification.getClass().getDeclaredField(&quot;extraNotification&quot;);</div><div class="line">            Object extraNotification = field.get(notification);</div><div class="line">            Method method = extraNotification.getClass().getDeclaredMethod(&quot;setMessageCount&quot;, int.class);</div><div class="line">            method.invoke(extraNotification, badgeCount);</div><div class="line"></div><div class="line">        &#125; catch (Exception e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        mNotifyMgr.notify(0, notification);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>​</p>
+</li>
+<li><p>消除Badge时：</p>
+<blockquote>
+<p>App从后台返回前台都需要清除badge，故而现在Activity基类中做统一检测处理</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line"> protected void onResume() &#123;</div><div class="line">     super.onResume();</div><div class="line">     MobclickAgent.onResume(this);</div><div class="line"></div><div class="line">     // 小米miui6.0后，会自动清除badge，调用ShortcutBadger会自动生成空通知</div><div class="line">     if (mBadge &gt; 0) &#123;</div><div class="line">         if (Build.MANUFACTURER.equalsIgnoreCase(&quot;Xiaomi&quot;) &amp;&amp; Build.VERSION.SDK_INT &gt; Build.VERSION_CODES.JELLY_BEAN) &#123;</div><div class="line">             mBadge = 0;</div><div class="line"></div><div class="line">         &#125; else &#123;</div><div class="line">             mBadge = 0;</div><div class="line">             ShortcutBadger.applyCount(this, 0);</div><div class="line">         &#125;</div><div class="line">     &#125;</div><div class="line"> &#125;</div></pre></td></tr></table></figure></li>
+</ul>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/03/17/android/code/Android桌面图标实现/" data-id="cj76wnr8a0013enpjl8k4y9ux" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/03/17/android/code/Android桌面图标实现/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-learn/如何高效学习" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/03/11/learn/如何高效学习/">《如何高效学习》</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/03/11/learn/如何高效学习/">
+            <time datetime="2017-03-11T06:21:11.000Z" itemprop="datePublished">2017-03-11</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/learn/">learn</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/learn/">learn</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h1 id="Part-1-整体性学习策略"><a href="#Part-1-整体性学习策略" class="headerlink" title="Part 1 整体性学习策略"></a>Part 1 整体性学习策略</h1><h2 id="1-1-什么是整体性学习"><a href="#1-1-什么是整体性学习" class="headerlink" title="1.1 什么是整体性学习"></a>1.1 什么是整体性学习</h2><ul>
+<li>整体性学习需要采取多种途径综合学习，而不是试图在大脑中复制一个完美的拷贝。</li>
+<li>整体性学习是运用你大脑里已有的丰富的神经元网络吸收、整合信息。</li>
+<li>整体性学习在于创造<strong>信息的网络</strong>，一个知识与另一个知识相互关联，那些相互关联的知识网络使你真正做到对知识的完全理解，从而轻松地驾驭知识。</li>
+</ul>
+<h2 id="1-2-整体性学习基于三种主要观点"><a href="#1-2-整体性学习基于三种主要观点" class="headerlink" title="1.2 整体性学习基于三种主要观点"></a>1.2 整体性学习基于三种主要观点</h2><ol>
+<li>结构</li>
+<li>模型</li>
+<li>高速公路</li>
+</ol>
+<h3 id="1-21-结构"><a href="#1-21-结构" class="headerlink" title="1.21 结构"></a>1.21 结构</h3><p>结构就是说一系列紧密联系的知识体系。</p>
+<p>打个比方：<br>结构就好像你思想中的一座城市，在城市中有很多建筑物，建筑物之间有道路相连，有些建筑高大而且重要，与城市中的其他建筑有上百条路相连。</p>
+<p>理解就是结构<strong>高度发达完善</strong>的结果。</p>
+<ul>
+<li>是不是有些学科你可以轻松“拿下”？你读起这些科目的书毫不费力、兴趣盎然，一切内容看起来那么浅显、通俗，原因何在？因为你的脑袋里已经有这些科目的发达知识结构。假如说结构就是脑袋里的城市的话，那么这些城市一定是道路四通八达、路面整洁而且交通井然有序，虽然车水马龙，却从不见交通堵塞。</li>
+<li>相反，为什么有些学科理解起来那么困难呢？这说明城市简陋，道路不畅，甚至乱建一气，违章建筑、豆腐渣工程比比皆是，有些道路甚至无所指向。</li>
+</ul>
+<p>建立良好的知识结构就是绘制一份优秀的地图，就是建造一座设计良好的城市。所以建立知识结构时，你的目标就是<strong>在各种知识之间建立尽可能多的联系</strong>，聪明的人会很自然地这么做，每学习一个新概念，都会自动地与其他知识相联系。</p>
+<h3 id="1-22-模型"><a href="#1-22-模型" class="headerlink" title="1.22 模型"></a>1.22 模型</h3><p>模型是简化的结构，是结构的快照，更为简单和更易储存。</p>
+<p>通过将一些<strong>核心概念</strong>联系在一起，就可以创建一个模型。</p>
+<p>打个比方：<br>书的目录。</p>
+<p>模型是一种压缩形式，它把多个关键思想压至一处。</p>
+<p>模型就像是结构的种子，是一座建筑的地基和框架，是知识最核心的概念，在此基础上将引出全部的知识。</p>
+<h3 id="1-23-高速公路"><a href="#1-23-高速公路" class="headerlink" title="1.23 高速公路"></a>1.23 高速公路</h3><p>高速公路是知识体系(结构)间的联系。</p>
+<p>打个比方：<br>城市之间的高速公路。</p>
+<p>高速公路能激发创造力。“跳出盒子”之外思考最恰当地描述了那些在结构之外思考的人们。高速公路让他们以前所未有的方式思考，以不曾想过的方式将常人眼里风马牛不相及的专业联系在一起思考，这就是创造。利用高速公路可以在专业交叉的领域建立起新的结构。</p>
+<h2 id="1-3-整体性学习的顺序"><a href="#1-3-整体性学习的顺序" class="headerlink" title="1.3 整体性学习的顺序"></a>1.3 整体性学习的顺序</h2><ol>
+<li>获取</li>
+<li>理解</li>
+<li>拓展</li>
+<li>纠错</li>
+<li>应用</li>
+</ol>
+<h3 id="1-31-获取"><a href="#1-31-获取" class="headerlink" title="1.31 获取"></a>1.31 获取</h3><p>获取指信息从采集进入到大脑的过程。</p>
+<p>获取信息有三个主要目标</p>
+<ol>
+<li>简化：将无用的东西尽量删除，只有那些对于形成模型有帮助的例子才需要认真学习。</li>
+<li>容量：尽可能获得更多的信息。</li>
+<li>速度：尽可能提高获取信息的速度。</li>
+</ol>
+<h3 id="1-32-理解"><a href="#1-32-理解" class="headerlink" title="1.32 理解"></a>1.32 理解</h3><p>理解不能指停留在信息的表面意思，还要了解信息(公式)是如何得来的，与其它信息(公式)的关系。</p>
+<h3 id="1-33-拓展"><a href="#1-33-拓展" class="headerlink" title="1.33 拓展"></a>1.33 拓展</h3><p>拓展：利用模型来建华和扩展你的知识结构，也要拓展对知识的理解。</p>
+<p>一名整体性学习者在学习新公式时会问道：</p>
+<ul>
+<li>公式是怎么来的？</li>
+<li>公式中的每个成分代表的真实含义是什么？</li>
+<li>公式中的什么成分可以做些改变？</li>
+<li>这种改变会导致结果发生什么样的变化？</li>
+<li>其他公式与这个公式有什么相同之处，又有什么不同之处？</li>
+</ul>
+<p>拓展有三种主要方式：</p>
+<ol>
+<li>深度拓展(知识背景探究)：在信息内部创造联系。</li>
+<li>横向拓展(类似知识探究)：与此类似的结论有哪些？那些地方类似？那些地方不同？</li>
+<li>纵向拓展(创造性探究)：在结构间建立高速通道，联系不同知识体系。</li>
+</ol>
+<h3 id="1-34-纠错"><a href="#1-34-纠错" class="headerlink" title="1.34 纠错"></a>1.34 纠错</h3><p>纠错可以看作在整体性知识网络中做修剪工作，添加一些特殊的例子，删除一些现实中不存在的联系，这不是一个完美的过程，修剪工作是必要的。</p>
+<h3 id="1-35-应用阶段"><a href="#1-35-应用阶段" class="headerlink" title="1.35 应用阶段"></a>1.35 应用阶段</h3><p>应用是学习的最终目的，能做到学以致用方能更好地适应现实世界。</p>
+<p>对概念不仅仅停留在理解上，而是要<strong>形成一种感觉</strong>。</p>
+<h3 id="1-36-测试阶段"><a href="#1-36-测试阶段" class="headerlink" title="1.36 测试阶段"></a>1.36 测试阶段</h3><p>五个阶段都要进行<a href="http://lib.csdn.net/base/softwaretest" target="_blank" rel="external">测试</a>，测试可以让你了解弱点是什么，该如何改进它。</p>
+<ol>
+<li>获取阶段的测试──我以前看过或听过这个知识吗？</li>
+<li>理解阶段的测试──我理解知识的含义吗？</li>
+<li>拓展阶段的测试──我知道知识从何而来，与哪些知识有关系吗？</li>
+<li>纠错阶段的测试──我删除了那些不恰当的联系吗？我删除了那些错误结论吗？</li>
+<li>应用阶段的测试──我将知识用到实际生活中了吗？</li>
+</ol>
+<h2 id="1-4-找出薄弱环节"><a href="#1-4-找出薄弱环节" class="headerlink" title="1.4 找出薄弱环节"></a>1.4 找出薄弱环节</h2><ol>
+<li>获取阶段──养成良好的学习，阅读和记笔记的习惯。</li>
+<li>理解阶段──放慢阅读速度，寻找不同的说法。</li>
+<li>拓展阶段──提高灵活性，做到举一反三，触类旁通。</li>
+<li>纠错阶段──对建立的联系做足够严谨的检查。</li>
+<li>应用阶段──抛开书本，做实验，接触生活。</li>
+</ol>
+<h2 id="1-5-信息结构"><a href="#1-5-信息结构" class="headerlink" title="1.5 信息结构"></a>1.5 信息结构</h2><ol>
+<li>随意信息：缺少逻辑分类多零散知识。</li>
+<li>观点信息：存在争论的信息。</li>
+<li>过程信息：讲述一系列动作，操作的信息。</li>
+<li>具体信息：实际生活中可以观察到，听到，触到的信息。</li>
+<li>抽象信息：难以理解，但是逻辑性很强，需要抽象思维理解的信息。</li>
+</ol>
+<h1 id="Part-2-整体性学习技术"><a href="#Part-2-整体性学习技术" class="headerlink" title="Part 2 整体性学习技术"></a>Part 2 整体性学习技术</h1><h2 id="2-1-获取知识"><a href="#2-1-获取知识" class="headerlink" title="2.1 获取知识"></a>2.1 获取知识</h2><ol>
+<li>快速阅读</li>
+<li>笔记流</li>
+</ol>
+<h3 id="2-11-快速阅读"><a href="#2-11-快速阅读" class="headerlink" title="2.11 快速阅读"></a>2.11 快速阅读</h3><ol>
+<li>指读法:用手指帮助阅读</li>
+<li>练习阅读法:两次在相同时间里阅读相同的资料，比较理解程度</li>
+<li>积极阅读法(针对难以理解的知识)<br>这一节主要观点是什么我怎样才能记住主要观点我要怎样将主要观点拓展开以及应用它</li>
+</ol>
+<h3 id="2-12-笔记流"><a href="#2-12-笔记流" class="headerlink" title="2.12 笔记流"></a>2.12 笔记流</h3><p>笔记流的制作：</p>
+<ol>
+<li>使用笔记流时，首先写下最主要的观点，尽量用很短的单词来替换完整的句子。</li>
+<li>一旦你写下了一个观点，下一步就是在这个观点和其他观点之间画上一些箭头，观点不是建立成金字塔式的结构，而是呈现出相互关联的关系。</li>
+</ol>
+<p>两种笔记流：</p>
+<ul>
+<li>课下笔记流：课堂上按常规记笔记，下课后根据笔记内容制作标准的笔记流。</li>
+<li>评注流：首先写下最关键的信息，然后在信息之间加入联系</li>
+</ul>
+<h2 id="2-2-联系观点"><a href="#2-2-联系观点" class="headerlink" title="2.2 联系观点"></a>2.2 联系观点</h2><p>在获得知识之后，仅仅理解知识的表面意思一般是记不牢的，我们需要利用技巧理解和拓展这些知识。</p>
+<h3 id="2-21-比喻"><a href="#2-21-比喻" class="headerlink" title="2.21 比喻"></a>2.21 比喻</h3><p>比喻就是在不熟悉的知识和熟悉的知识之间架起一座沟通的桥梁。</p>
+<p>找出比喻的步骤：</p>
+<ol>
+<li>确定你要深入理解和记忆的信息。</li>
+<li>在你的个人经验中寻找与信息部分相似的东西，要达到完全符合不太可能，所以与其寻找一个完全符合的东西，不如稍作让步，找到十几个部分符合的“不完美比喻”，在上面的例子里我想到的是雪中行走。</li>
+<li>重复上述过程，检查比喻不恰当的地方。例如，雪中行走是线性的痕迹，而脑神经却是错综复杂的网络。</li>
+</ol>
+<p>运用比喻法的技巧</p>
+<ul>
+<li>要有寻找比喻的欲望</li>
+<li>注意第一个出现在脑海中的念头</li>
+<li>优化和测试你的比喻(多找几个比喻)</li>
+</ul>
+<h3 id="2-22-内在化"><a href="#2-22-内在化" class="headerlink" title="2.22 内在化"></a>2.22 内在化</h3><p>内在化：在脑海中出现图像，而且有声音，触觉和情感</p>
+<p>注意：具体信息的内在化效果最好，而抽象信息最适合比喻法</p>
+<p>怎样进行内在化</p>
+<ol>
+<li>明确你要内在化的概念。这是一个生物过程，还是编程中的函数或者是一个数学概念？</li>
+<li>从建立脑海中的图像开始。如果你不习惯内在化，可以先试着在纸上画出概念的粗略图，多次尝试后，你就会直接在脑海中想象了。</li>
+<li>脑海中的图像是静态的，还是栩栩如生的动态场景？掌握一个行列式需要好几个步骤，所以要让图像动起来，就仿佛在看一部电影一样。</li>
+<li>现在开始加上其他感官。试着用手去拿它，去摸它，去打开它，去嗅它的味道，去听它的声音，动用你身体的所有感官，将所有的感觉与运动的图像相联系。</li>
+<li>加入更多的感觉或情感。</li>
+<li>不断重复和优化图像，直到你一想到它就能很快地回忆起知识。</li>
+</ol>
+<h3 id="2-23-图表法"><a href="#2-23-图表法" class="headerlink" title="2.23 图表法"></a>2.23 图表法</h3><ol>
+<li>流程图：一系列的步骤；历史事件；一个系统。</li>
+<li>概念图：观点之间的内在关系</li>
+<li>图像：用粗糙简单的涂鸦来代替文字，包括观点和观点之间的联系。</li>
+</ol>
+<h2 id="2-3-随意信息的处理"><a href="#2-3-随意信息的处理" class="headerlink" title="2.3 随意信息的处理"></a>2.3 随意信息的处理</h2><ol>
+<li>联想法</li>
+<li>挂钩法</li>
+<li>信息压缩技术</li>
+</ol>
+<h3 id="2-31-联想法"><a href="#2-31-联想法" class="headerlink" title="2.31 联想法"></a>2.31 联想法</h3><p>联想法：将一系列观点串在一起，就像链条。</p>
+<p>联想法的步骤： </p>
+<ol>
+<li>创造顺序 </li>
+<li>给每一项预设一个符号 </li>
+<li>创建属于自己的联想，前后项的联系</li>
+</ol>
+<h3 id="2-32-挂钩法"><a href="#2-32-挂钩法" class="headerlink" title="2.32 挂钩法"></a>2.32 挂钩法</h3><p>挂钩法：将要记忆的信息与数字联系在一起。</p>
+<h3 id="2-33-信息压缩技术"><a href="#2-33-信息压缩技术" class="headerlink" title="2.33 信息压缩技术"></a>2.33 信息压缩技术</h3><p>信息压缩：减少信息的容量，寻找信息的逻辑关系</p>
+<p>信息压缩的三种方式：</p>
+<ul>
+<li>记忆术:用一个短语储存数个信息的方法<ol>
+<li>图像联系：简单的符号替代每一个信息，然后将这些符号放在一张图像中</li>
+<li>笔记压缩:</li>
+<li>拿几张空白纸。准备好要压缩的笔记，这个练习可能会花费一两小时，所以要确保你有这么多时间。<ul>
+<li>用最小的字，写下笔记中的主要观点。使用尽可能少的字。</li>
+<li>接着写下与之相联系的观点、公式、概念或定义。尽可能写小一点和写少一点，节省空间。</li>
+<li>持续上述自由写下观点的过程，直到将笔记中的每一个主要观点都写了下来为止。最后你得到大约1～3张密密麻麻写满信息的纸。</li>
+<li>有时候，还可以更进一步，将上面压缩后的内容加工、修饰得更有条理，更好看一些。</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+<h2 id="2-4-以项目为基础的学习"><a href="#2-4-以项目为基础的学习" class="headerlink" title="2.4 以项目为基础的学习"></a>2.4 以项目为基础的学习</h2><p>以项目为基础的学习方式简单地说就是设定一个需要1～3个月达成的目标，达成目标的过程就是学习的过程，达成了目标也就达到了学习的效果。为了完成项目，你必须围绕着目标努力学习，以项目为基础的学习符合整体性学习的每一个过程。</p>
+<h2 id="2-5-整体性学习技术的实际应用-费曼技巧"><a href="#2-5-整体性学习技术的实际应用-费曼技巧" class="headerlink" title="2.5 整体性学习技术的实际应用-费曼技巧"></a>2.5 整体性学习技术的实际应用-费曼技巧</h2><p>费曼技巧：</p>
+<p>第一步：选择要学习的概念<br>首先选好你打算深入理解的概念，拿一张空白纸，在最上方写下概念的名称。</p>
+<p>第二步：设想你是老师，正在试图教会一名新生这个知识点<br>这一步你要假想自己费尽口舌让一名毫无这方面知识的学生听懂，并把你的解释记录下来。这一步至关重要，因为在自我解释那些你理解或不理解的知识过程中，你会理解得更好，而原先不明白的地方也得以理清。</p>
+<p>第三步：当你感到疑惑时，返回去吧。<br>每当你碰到难题感到疑惑时，别急着往下走，学习不是单行道，回过头来，重新阅读参考材料、听讲座或找老师解答，直到你觉得搞懂了为止，然后把解释记到纸上。</p>
+<p>第四步：简单化和比喻<br>如果你的解释很啰唆或者艰涩，尽量用简单直白的语言重新表述它，或者找到一个恰当的比喻以更好地理解它。</p>
+<p>你可以通过这种技术仔细地查明到底是什么地方你不明白，然后你可以去翻阅教材、笔记或询问老师，弄清楚到底你遗漏了哪些关键知识。</p>
+<p>费曼技巧对于自我测试、考察对知识点的理解程度，是一个真正的好方法。因为如果你不翻阅教科书就能用自己的话把观点解释清楚，那么就意味着你真正理解了该观点。</p>
+<h1 id="Part-3-超越整体性学习"><a href="#Part-3-超越整体性学习" class="headerlink" title="Part 3 超越整体性学习"></a>Part 3 超越整体性学习</h1><h2 id="3-1-成为高效学生的关键点："><a href="#3-1-成为高效学生的关键点：" class="headerlink" title="3.1 成为高效学生的关键点："></a>3.1 成为高效学生的关键点：</h2><ol>
+<li>能量管理</li>
+<li>不要“学习”（Don’t study）</li>
+<li>绝不拖延时间</li>
+<li>批处理</li>
+<li>有组织</li>
+</ol>
+<h3 id="3-11-能量管理"><a href="#3-11-能量管理" class="headerlink" title="3.11 能量管理"></a>3.11 能量管理</h3><ul>
+<li>增加你的能量储备<ul>
+<li>坚持运动</li>
+<li>充足的睡眠</li>
+<li>多吃粗纤维，粗加工的食物</li>
+<li>多喝水</li>
+<li>少吃多餐</li>
+</ul>
+</li>
+<li>将日程表由线性的改为循环式的<ul>
+<li>一周休息一天</li>
+<li>工作在白天集中完成</li>
+<li>设定90分钟集中完成某任务</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-12-不要学习"><a href="#3-12-不要学习" class="headerlink" title="3.12 不要学习"></a>3.12 不要学习</h3><p>大多数学生认为如果不能一直待在图书馆、坐在书桌前沉思苦读，就会有负罪感。于是学生生活变成了一种持久的自我斗争过程──总是试图多‘学习’，但总是感到收获少。这就好像总是做出一副吃饭的样子，但是吃下去得不多，消化得不够，吸收得也不好，如此这般学习效果怎么可能好呢？</p>
+<p>不用“学习”（学习就好比整个食物经过咀嚼、消化、吸收的过程，它不是表面看起来“吃”的动作。人们不可能永远吃个不停，所以学习也不是坐在书桌前越长越好，学习需要挑选要吃的食物（获取信息）、咀嚼（明白阶段）、消化（理解阶段）、吸收（应用阶段）。 学习的定义：学习不是指坐在书桌前12个小时，也不是指每天坚持看书。这些是学习的表象，不是学习的实质。</p>
+<h3 id="3-13-绝不拖延"><a href="#3-13-绝不拖延" class="headerlink" title="3.13 绝不拖延"></a>3.13 绝不拖延</h3><p>周/日目标体系:</p>
+<ol>
+<li>每周周末，列一个清单，包括所有的任务、作业以及你想在下周完成的读书和学习活动。</li>
+<li>每天晚上，检查周计划，列出每日目标清单。</li>
+</ol>
+<h3 id="3-14-批处理"><a href="#3-14-批处理" class="headerlink" title="3.14 批处理"></a>3.14 批处理</h3><p>批处理的意思就是将那些类似的、散在的工作集中起来一次做完。批处理有助于节省时间，因为你可以集中时间和精力。</p>
+<p>例如：某个时间把一周需要阅读的材料一次性读完，而抽出另外一个时间连续写三四篇文章。</p>
+<p>批处理的使用技巧：</p>
+<ul>
+<li>批处理最适用于将那些需要时间不长的零散工作放在一起做。</li>
+<li>一次性完成作业。如果一项作业花费的时间不会超过8小时，我就坐在凳子上一鼓作气完成它。将一个花3小时就可以写完的文章，分成15次零散时间内完成，肯定会浪费很多时间，每一次都要花时间重新鼓起写作的激情才能开始正式的写作。</li>
+<li>提髙注意力阈值。注意力阈值就是指集中完成某项工作的最长时间，超过这个时间，注意力就急剧下降。通过不断接受越来越多的批处理，你可以逐渐提高你的注意力阈值。阈值越高，表示能一次完成的工作量也越大。</li>
+</ul>
+<h3 id="3-15-有组织"><a href="#3-15-有组织" class="headerlink" title="3.15 有组织"></a>3.15 有组织</h3><p>让你变得有组织：</p>
+<ul>
+<li>所有的物品都放在固定的位置。作业、课外作业以及约会日期都记录在固定的地方。没有固定地方的结果就是混乱。专门找一个地方放东西，这样会更容易放得有序。</li>
+<li>随身携带一个记事本。每天随时记录，日积月累，必有所获。</li>
+<li>坚持日历和做事清单。应用做事清单记录任务和目标，使用日历来记录要做的事和截止日期。</li>
+</ul>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/03/11/learn/如何高效学习/" data-id="cj76wnr6t0003enpjxvdg0f7v" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/03/11/learn/如何高效学习/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-android/code/H5启动Android App" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/03/07/android/code/H5启动Android App/">H5启动Android App</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/03/07/android/code/H5启动Android App/">
+            <time datetime="2017-03-07T01:58:25.000Z" itemprop="datePublished">2017-03-07</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/code/">code</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/android/">android</a>, <a class="tag-link" href="/tags/code/">code</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <blockquote>
+<p>首先明晰，<a href="http://lib.csdn.net/base/wechat" target="_blank" rel="external">微信</a>里屏蔽了schema协议。除非你是微信的合作伙伴之类的，他们专门给你配置进白名单。否则，我们就没办法通过这个协议在微信中直接唤起app。</p>
+<p>因此，我们需要先判断页面场景是否在微信中，如果在微信中，则会提示用户在浏览器中打开。</p>
+</blockquote>
+<h3 id="H5中间接判断应用是否安装"><a href="#H5中间接判断应用是否安装" class="headerlink" title="H5中间接判断应用是否安装"></a>H5中间接判断应用是否安装</h3><blockquote>
+<p>这里的逻辑很简单，当没有成功打开app的时候，新页面不会弹出则页面逻辑继续进行；否则如果进入了新页面，则页面逻辑便终止了。所以我们可以另开一个延时的线程来判断这个事情</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">if(...)&#123;</div><div class="line">document.location = &apos;&apos;;</div><div class="line">setTimeout(function()&#123;</div><div class="line">   //此处如果执行则表示没有app</div><div class="line">&#125;,200);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="通过H5唤起APP"><a href="#通过H5唤起APP" class="headerlink" title="通过H5唤起APP"></a>通过H5唤起APP</h3><blockquote>
+<p>编辑AndroidManifest.xml，主要是增加第二个<intent-filter>，launchapp用来标识schema，最好能保证手机系统唯一，那样就可以打开应用，而不是弹出一个选择框。可以附带自己的数据通过string传递到activity，比如完整url为 launchapp://?data=mydata</intent-filter></p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">&lt;activity    </div><div class="line">     android:name=&quot;com.robert.MainActivity&quot;    </div><div class="line">     android:configChanges=&quot;orientation|keyboardHidden|navigation|screenSize&quot;    </div><div class="line">     android:screenOrientation=&quot;landscape&quot;    </div><div class="line">     android:theme=&quot;@android:style/Theme.NoTitleBar.Fullscreen&quot; &gt;    </div><div class="line">     &lt;intent-filter&gt;    </div><div class="line">         &lt;action android:name=&quot;android.intent.action.MAIN&quot; /&gt;    </div><div class="line">         &lt;category android:name=&quot;android.intent.category.LAUNCHER&quot; /&gt;    </div><div class="line">     &lt;/intent-filter&gt;    </div><div class="line">     &lt;intent-filter&gt;    </div><div class="line">         &lt;action android:name=&quot;android.intent.action.VIEW&quot; /&gt;    </div><div class="line">         &lt;category android:name=&quot;android.intent.category.BROWSABLE&quot; /&gt;    </div><div class="line">         &lt;category android:name=&quot;android.intent.category.DEFAULT&quot;/&gt;    </div><div class="line">         &lt;data android:scheme=&quot;launchapp&quot; android:pathPrefix=&quot;/haha&quot; /&gt;    </div><div class="line">     &lt;/intent-filter&gt;    </div><div class="line">   &lt;/activity&gt;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>然后通过activity获得data数据：</p>
+</blockquote>
+   <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">     public void onCreate(Bundle savedInstanceState) &#123;             </div><div class="line">     	Uri uridata = this.getIntent().getData();             </div><div class="line">     	String mydata = uridata.getQueryParameter(&quot;data&quot;);            </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="编写html页面"><a href="#编写html页面" class="headerlink" title="编写html页面"></a>编写html页面</h3><blockquote>
+<p>整个页面也许是某个app的详细介绍，这里只写出关键的js代码：</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">&lt;activity  </div><div class="line">     android:name=&quot;com.robert.MainActivity&quot;    </div><div class="line">     android:configChanges=&quot;orientation|keyboardHidden|navigation|screenSize&quot;    </div><div class="line">     android:screenOrientation=&quot;landscape&quot;    </div><div class="line">     android:theme=&quot;@android:style/Theme.NoTitleBar.Fullscreen&quot; &gt;    </div><div class="line">     &lt;intent-filter&gt;    </div><div class="line">         &lt;action android:name=&quot;android.intent.action.MAIN&quot; /&gt;    </div><div class="line">         &lt;category android:name=&quot;android.intent.category.LAUNCHER&quot; /&gt;    </div><div class="line">     &lt;/intent-filter&gt;    </div><div class="line">     &lt;intent-filter&gt;    </div><div class="line">         &lt;action android:name=&quot;android.intent.action.VIEW&quot; /&gt;    </div><div class="line">         &lt;category android:name=&quot;android.intent.category.BROWSABLE&quot; /&gt;    </div><div class="line">         &lt;category android:name=&quot;android.intent.category.DEFAULT&quot;/&gt;    </div><div class="line">         &lt;data android:scheme=&quot;launchapp&quot; android:pathPrefix=&quot;/haha&quot; /&gt;    </div><div class="line">     &lt;/intent-filter&gt;    </div><div class="line">&lt;/activity&gt;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>下面代码可以达到这样一个目的，先请求 launchapp:// ,如果系统能处理，或者说已经安装了myapp表示的应用，那么就可以打开，另外，如果不能打开，直接刷新一下当前页面，等于是重置location。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">function openApp() &#123;    </div><div class="line">       </div><div class="line">           if (/android/i.test(navigator.userAgent)) &#123;    </div><div class="line">                var isrefresh = getUrlParam(&apos;refresh&apos;); // 获得refresh参数    </div><div class="line">                if(isrefresh == 1) &#123;    </div><div class="line">                    return    </div><div class="line">                &#125;    </div><div class="line">                window.location.href = &apos;launchapp://haha?data=mydata&apos;;    </div><div class="line">                window.setTimeout(function () &#123;    </div><div class="line">                        window.location.href += &apos;&amp;refresh=1&apos; // 附加一个特殊参数，用来标识这次刷新不要再调用myapp:// 了    </div><div class="line">                &#125;, 500);    </div><div class="line">            &#125;    </div><div class="line">       </div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<h3 id="整体代码"><a href="#整体代码" class="headerlink" title="整体代码"></a>整体代码</h3><blockquote>
+<p>代码功能: 判断手机/平板是否安装app 如果安装 则调用app的scheme，传入url当作参数，来做后续操作 如果没有安装 则跳转到app store/google play 下载app</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">(function () &#123;</div><div class="line">    var openUrl = window.location.search;</div><div class="line">    try &#123;</div><div class="line">        openUrl = openUrl.substring(1, openUrl.length);</div><div class="line">    &#125; catch (e) &#123;&#125;</div><div class="line">    var isiOS = navigator.userAgent.match(&apos;iPad&apos;) || navigator.userAgent.match(&apos;iPhone&apos;) || navigator.userAgent.match(</div><div class="line">        &apos;iPod&apos;),</div><div class="line">        isAndroid = navigator.userAgent</div><div class="line">            .match(&apos;Android&apos;),</div><div class="line">        isDesktop = !isiOS &amp;&amp; !isAndroid;</div><div class="line">    if (isiOS) &#123;</div><div class="line">        setTimeout(function () &#123;</div><div class="line">            window.location = &quot;itms-apps://itunes.apple.com/app/[name]/[id]?mt=8&quot;;</div><div class="line">        &#125;, 25);</div><div class="line">        window.location = &quot;[scheme]://[host]?url=&quot; + openUrl;</div><div class="line">    &#125; else if (isAndroid) &#123;</div><div class="line">        window.location = &quot;intent://[host]/&quot; + &quot;url=&quot; + openUrl + &quot;#Intent;scheme=[scheme];package=[package_name];end&quot;;</div><div class="line">    &#125; else &#123;</div><div class="line">        window.location.href = openUrl;</div><div class="line">    &#125;</div><div class="line">&#125;)();</div></pre></td></tr></table></figure>
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/03/07/android/code/H5启动Android App/" data-id="cj76wnr8c0015enpj8s1tyb1n" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/03/07/android/code/H5启动Android App/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-other/markdown转换教程" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2016/06/29/other/markdown转换教程/">markdown转换教程</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2016/06/29/other/markdown转换教程/">
+            <time datetime="2016-06-28T16:55:50.000Z" itemprop="datePublished">2016-06-29</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/markdown/">markdown</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/markdown/">markdown</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h1 id="markdown转换教程"><a href="#markdown转换教程" class="headerlink" title="markdown转换教程"></a>markdown转换教程</h1><p>Author：<a href="https://github.com/tmc9031" target="_blank" rel="external">tmc9031</a></p>
+<h2 id="HTML转markdown"><a href="#HTML转markdown" class="headerlink" title="HTML转markdown"></a>HTML转markdown</h2><h3 id="WHY"><a href="#WHY" class="headerlink" title="WHY"></a>WHY</h3><p>为提高翻译效率，推荐把原文的html格式先转换为markdown格式，可以简化手工整理原文的过程</p>
+<h3 id="INSTALL"><a href="#INSTALL" class="headerlink" title="INSTALL"></a>INSTALL</h3><p>这里介绍一款格式转换神器 <a href="http://pandoc.org" target="_blank" rel="external">pandoc.org</a></p>
+<p>Linux系统下的的安装</p>
+<pre><code>$ sudo apt-get install pandoc
+</code></pre><p>其它系统的详见官方 <a href="http://pandoc.org/installing.html" target="_blank" rel="external">installing</a></p>
+<h3 id="HOWTO"><a href="#HOWTO" class="headerlink" title="HOWTO"></a>HOWTO</h3><p>以下以该文章为例 <a href="https://medium.com/google-developer-experts/automating-android-development-6daca3a98396" target="_blank" rel="external">Automating Android development</a></p>
+<ol>
+<li>用浏览器打开另保存为aad.html，注意保存类型选择 <code>网页，仅 HTML</code></li>
+<li><p>使用pandoc工具，Linux系统下使用shell终端命令</p>
+<p> $ pandoc aad.html -o aad.md –from=html –to=markdown</p>
+</li>
+<li><p>接下来打开aad.md去除一些头尾的多余部分即可开始翻译</p>
+</li>
+</ol>
+<blockquote>
+<p>注意：<br>建议在翻译过程中善用git保存转换出来的原文markdown<br>另外保留中英双语方便校对，完成后再删除英文原文</p>
+</blockquote>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2016/06/29/other/markdown转换教程/" data-id="cj76wnr7e000henpjz6xu97w7" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2016/06/29/other/markdown转换教程/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-other/about" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h3 id="the-old-man-and-the-sea"><a href="#the-old-man-and-the-sea" class="headerlink" title="the old man and the sea"></a>the old man and the sea</h3><p>I am Ernest Chang.</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2016/06/29/other/about/" data-id="cj76wnr7b000eenpjew9bemd5" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2016/06/29/other/about/#comments" class="article-comment-link">Comments</a>
     
 
         </footer>
@@ -874,7 +1898,7 @@ spawn(&apos;worker.js&apos;);
 
 
     <nav id="page-nav">
-        <a class="extend prev" rel="prev" href="/page/5/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span>
+        <a class="extend prev" rel="prev" href="/page/5/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/7/">Next &raquo;</a>
     </nav>
 </section>
             
@@ -890,45 +1914,45 @@ spawn(&apos;worker.js&apos;);
                     <li>
                         
                         <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a></p>
-                            <p class="item-title"><a href="/2017/09/11/android/books/《Android 编程实战》Chap4_手势操作进阶, 重识Service/" class="title">《Android 编程实战》Chap4_手势操作进阶, 重识Service</a></p>
-                            <p class="item-date"><time datetime="2017-09-11T13:36:48.000Z" itemprop="datePublished">2017-09-11</time></p>
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/09/12/android/github/Glide解析1/" class="title"></a></p>
+                            <p class="item-date"><time datetime="2017-09-12T10:13:13.000Z" itemprop="datePublished">2017-09-12</time></p>
                         </div>
                     </li>
                 
                     <li>
                         
                         <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a></p>
-                            <p class="item-title"><a href="/2017/09/11/android/books/《Android 编程实战》Chap3_组件 清单 资源和UI闲聊/" class="title">《Android 编程实战》Chap3_组件 清单 资源和UI闲聊</a></p>
-                            <p class="item-date"><time datetime="2017-09-11T13:36:06.000Z" itemprop="datePublished">2017-09-11</time></p>
+                            <p class="item-category"><a class="article-category-link" href="/categories/vim/">vim</a></p>
+                            <p class="item-title"><a href="/2017/09/12/linux/Vim入门/" class="title">Vim入门</a></p>
+                            <p class="item-date"><time datetime="2017-09-12T02:19:50.000Z" itemprop="datePublished">2017-09-12</time></p>
                         </div>
                     </li>
                 
                     <li>
                         
                         <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a></p>
-                            <p class="item-title"><a href="/2017/09/11/android/books/《Android 编程实战》Chap2_Android上编写高效Java/" class="title">《Android 编程实战》Chap2_Android上编写高效Java</a></p>
-                            <p class="item-date"><time datetime="2017-09-11T13:35:09.000Z" itemprop="datePublished">2017-09-11</time></p>
+                            <p class="item-category"><a class="article-category-link" href="/categories/shell/">shell</a></p>
+                            <p class="item-title"><a href="/2017/09/12/linux/Shell常用手册/" class="title">Shell常用手册</a></p>
+                            <p class="item-date"><time datetime="2017-09-12T01:26:25.000Z" itemprop="datePublished">2017-09-12</time></p>
                         </div>
                     </li>
                 
                     <li>
                         
                         <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a></p>
-                            <p class="item-title"><a href="/2017/09/11/android/books/《Android 编程实战》Chap1_完善开发环境和优化/" class="title">《Android 编程实战》Chap1_完善开发环境和优化</a></p>
-                            <p class="item-date"><time datetime="2017-09-11T13:34:19.000Z" itemprop="datePublished">2017-09-11</time></p>
+                            <p class="item-category"><a class="article-category-link" href="/categories/java/">java</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/java/设计模式/">设计模式</a></p>
+                            <p class="item-title"><a href="/2017/09/12/java/设计模式六大原则解析/" class="title">设计模式六大原则解析</a></p>
+                            <p class="item-date"><time datetime="2017-09-12T01:24:10.000Z" itemprop="datePublished">2017-09-12</time></p>
                         </div>
                     </li>
                 
                     <li>
                         
                         <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/mysql/">mysql</a></p>
-                            <p class="item-title"><a href="/2017/09/08/mysql/mysql_4 数据控制语言控制/" class="title">mysql_4 数据控制语言控制</a></p>
-                            <p class="item-date"><time datetime="2017-09-08T09:10:54.000Z" itemprop="datePublished">2017-09-08</time></p>
+                            <p class="item-category"><a class="article-category-link" href="/categories/java/">java</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/java/设计模式/">设计模式</a></p>
+                            <p class="item-title"><a href="/2017/09/12/java/设计模式之路/" class="title">设计模式之路</a></p>
+                            <p class="item-date"><time datetime="2017-09-12T01:23:31.000Z" itemprop="datePublished">2017-09-12</time></p>
                         </div>
                     </li>
                 
@@ -941,7 +1965,7 @@ spawn(&apos;worker.js&apos;);
     <div class="widget-wrap">
         <h3 class="widget-title">categories</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">29</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/linux/vim/">vim</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">1</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">37</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/linux/vim/">vim</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">1</span></li></ul>
         </div>
     </div>
 
@@ -950,7 +1974,7 @@ spawn(&apos;worker.js&apos;);
     <div class="widget-wrap">
         <h3 class="widget-title">archives</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">31</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">46</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
         </div>
     </div>
 
@@ -959,7 +1983,7 @@ spawn(&apos;worker.js&apos;);
     <div class="widget-wrap">
         <h3 class="widget-title">tags</h3>
         <div class="widget">
-            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">28</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li></ul>
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">36</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -968,7 +1992,7 @@ spawn(&apos;worker.js&apos;);
     <div class="widget-wrap">
         <h3 class="widget-title">tag cloud</h3>
         <div class="widget tagcloud">
-            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 14px;">code</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/github/" style="font-size: 12px;">github</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 10px;">markdown</a> <a href="/tags/mysql/" style="font-size: 16px;">mysql</a> <a href="/tags/node/" style="font-size: 18px;">node</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a>
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 15px;">code</a> <a href="/tags/git/" style="font-size: 11.67px;">git</a> <a href="/tags/github/" style="font-size: 11.67px;">github</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 13.33px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 10px;">markdown</a> <a href="/tags/mysql/" style="font-size: 16.67px;">mysql</a> <a href="/tags/node/" style="font-size: 18.33px;">node</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.67px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.67px;">设计模式</a>
         </div>
     </div>
 

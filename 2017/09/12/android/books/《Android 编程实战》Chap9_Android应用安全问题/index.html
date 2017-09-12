@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <meta charset="utf-8">
+    
+    <title>《Android 编程实战》Chap9_Android应用安全问题 | The Old Man and the Sea</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="阅读《Android 编程实战》一书的随记笔记注：本文主要参考http://szysky.com  Android安全的概念Android具备一个先进的安全模型来保护应用数据和服务不被其他应用访问. 每个应用都有自己的唯一ID来提供最基本的保护. 每个应用都经过它唯一的密钥签名, 这种机制是Android框架中的安全模型基础. 此外只有当其他应用在清单文件中显式声明了正确权限后, Android">
+<meta name="keywords" content="android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Android 编程实战》Chap9_Android应用安全问题">
+<meta property="og:url" content="http://yoursite.com/2017/09/12/android/books/《Android 编程实战》Chap9_Android应用安全问题/index.html">
+<meta property="og:site_name" content="The Old Man and the Sea">
+<meta property="og:description" content="阅读《Android 编程实战》一书的随记笔记注：本文主要参考http://szysky.com  Android安全的概念Android具备一个先进的安全模型来保护应用数据和服务不被其他应用访问. 每个应用都有自己的唯一ID来提供最基本的保护. 每个应用都经过它唯一的密钥签名, 这种机制是Android框架中的安全模型基础. 此外只有当其他应用在清单文件中显式声明了正确权限后, Android">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2017-09-12T02:26:52.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="《Android 编程实战》Chap9_Android应用安全问题">
+<meta name="twitter:description" content="阅读《Android 编程实战》一书的随记笔记注：本文主要参考http://szysky.com  Android安全的概念Android具备一个先进的安全模型来保护应用数据和服务不被其他应用访问. 每个应用都有自己的唯一ID来提供最基本的保护. 每个应用都经过它唯一的密钥签名, 这种机制是Android框架中的安全模型基础. 此外只有当其他应用在清单文件中显式声明了正确权限后, Android">
+    
+
+    
+        <link rel="alternate" href="/" title="The Old Man and the Sea" type="application/atom+xml" />
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">The Old Man and the Sea</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/uploads/images/avert.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/uploads/images/avert.png" />
+            <h2 id="name">Ernest Chang</h2>
+            <h3 id="title">Developer &amp; Designer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Hangzhou, China</span>
+            <a id="follow" target="_blank" href="https://github.com/Ernestchang/">FOLLOW</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                67
+                <span>posts</span>
+            </div>
+            <div class="article-info-block">
+                18
+                <span>tags</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/Ernestchang/" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="facebook" class=tooltip>
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="dribbble" class=tooltip>
+                            <i class="fa fa-dribbble"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-android/books/《Android 编程实战》Chap9_Android应用安全问题" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            《Android 编程实战》Chap9_Android应用安全问题
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/09/12/android/books/《Android 编程实战》Chap9_Android应用安全问题/">
+            <time datetime="2017-09-11T23:57:47.000Z" itemprop="datePublished">2017-09-12</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/android/">android</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <blockquote>
+<p>阅读《Android 编程实战》一书的随记笔记<br>注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a></p>
+</blockquote>
+<h2 id="Android安全的概念"><a href="#Android安全的概念" class="headerlink" title="Android安全的概念"></a>Android安全的概念</h2><p><code>Android</code>具备一个先进的安全模型来保护应用数据和服务不被其他应用访问. 每个应用都有自己的唯一<code>ID</code>来提供最基本的保护. 每个应用都经过它唯一的密钥签名, 这种机制是<code>Android</code>框架中的安全模型基础. 此外只有当其他应用在清单文件中显式声明了正确权限后, <code>Android</code>的权限系统才会和他们共享特定的组件. 应用也可以定义权限, 比如只有使用同一个密钥签名的应用才能使用它们. 最后<code>Android</code>的API提供了各种方法来验证签名, 验证调用进程的用户ID和使用强加密方案.</p>
+<h3 id="签名和密钥"><a href="#签名和密钥" class="headerlink" title="签名和密钥"></a>签名和密钥</h3><p><code>Android</code>系统中运行的所有应用都要用密钥来签名, 包括<code>Android</code>系统本身.</p>
+<p>可以用同一个密钥来对发布的所有应用进行签名, 但建议为各个应用单独创建一个密钥. 多个应用共享一个密钥通常是因为这些应用要直接访问彼此的数据, 或者设定权限时将保护等级改为<code>signature</code></p>
+<p>下面是一种为应用生成密钥的一个方式, 有一种比较好的方式是使用应用的包名作为别名传给<code>-alias</code>.</p>
+<p><code>$ keytool -genkey -v -keystore &lt;keystore filename&gt; -alias &lt;alias for key&gt; keyalg RSA -keysize 2048 -validity 10000</code></p>
+<p>在生成新密钥时, <code>keytool</code>会让你输入一个密码.</p>
+<h3 id="Android权限"><a href="#Android权限" class="headerlink" title="Android权限"></a>Android权限</h3><p>要在<code>Android</code>中使用特殊权限功能, 只要在清单文件中加入一个<code>uses-permission</code>标记即可. 它会告诉系统你的应用需要该项权限, 并在安装时通知用户这项需求.</p>
+<p><code>Android</code>中定义了五个保护等级: <code>常规normal</code>, <code>危险dangerous</code>, <code>同一签名signature</code>, <code>同一签名或系统signatureOrSystem</code>, <code>系统system</code>. 除非特殊指定, 默认等级一般为常规. 用来告知系统有应用要用到这个权限的函数. 只有将权限设为危险时, 它才会在用户安装(通常是通过Google Play Store)前提醒用户.</p>
+<ul>
+<li><code>同一签名</code>保护等级要求应用使用跟定义该权限的应用相同的同一证书来签名. 这对设备制造商来说非常有用, 因为他们可以定义只有跟系统使用同一证书签名的应用才能使用的权限. 这样, 设备制造商就可以像他们使用受保护的系统服务的设备发布新应用.</li>
+<li><code>同一签名或系统 以及 系统</code>这两个等级会告诉<code>Android</code>系统, 应用必须驻存在设备的系统分区上, 这样才能使用该权限. 这个功能最常见的例子是预装在系统分区上的Google应用. 这些应用可以使用许多常规应用无法企及的权限, 即使他们用的是Google的签名而不是设备制造商的.</li>
+</ul>
+<blockquote>
+<p>也可以添加属性<code>android:permissionFlags=&quot;costsMoney&quot;</code>它会告诉用户使用此权限的应用会产生费用, 例如要用到发短信的功能的应用. 只要应用提供了可能会给用户带来费用的API, 那就应该用带有此标记的权限来保护该API.</p>
+</blockquote>
+<h3 id="保护用户数据"><a href="#保护用户数据" class="headerlink" title="保护用户数据"></a>保护用户数据</h3><p>如果要创建安全的数据文件, 不被其他应用访问, 可以在应用数据目录中存储文件. 而不是外部存储中.</p>
+<p>如下:演示在应用的数据目录中对一个文件进行数据追加</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">public static void appendStringToPrivateFile(Context context, String data, String fileName)&#123;</div><div class="line">    FileOutputStream out = context.openFileOutput(fileName, Context.MODE_APPEND | Context.MODE_PRIVATE);</div><div class="line">    out.write(data.getBytes(&quot;UTF-8&quot;));</div><div class="line">    out.close();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里使用了两个标志位:</p>
+<ul>
+<li><code>MODE_APPEND</code> 要写入的数据都被追加到文件的末尾,</li>
+<li><code>MODE_PRIVATE</code> 该文件只允许你的应用访问, 这个标识位也是默认标志位.</li>
+</ul>
+<p>当然这只是一种比较安全的方式, 但是如果存储非常敏感的信息, 最好再对文件进行一些加密处理.</p>
+<h2 id="客户端数据加密"><a href="#客户端数据加密" class="headerlink" title="客户端数据加密"></a>客户端数据加密</h2><h3 id="Android的加密API"><a href="#Android的加密API" class="headerlink" title="Android的加密API"></a>Android的加密API</h3><p><code>Android</code>中的数据加密和解密API是基于Java SE的<code>javax.crypto</code>包中的API开始的. 实际的实现基于开源的<code>Bouncy Castle</code>加密API. 因此, 在开发<code>Android</code>应用时, 大多是使用Java SE的<code>javax.crypto</code>API就可以.</p>
+<h3 id="生成密钥"><a href="#生成密钥" class="headerlink" title="生成密钥"></a>生成密钥</h3><p>使用加密和解密函数时, 需要生成一个可根据用户输入(密码或其他安全方法)重新生成的安全且唯一的密钥.</p>
+<p>下面的代码演示了如何为<code>AES算法</code>生成一个<code>SecretKey</code> <code>salt</code>是用于生成密钥的输入部分, 你需要记录下来. 在密码学中, <code>盐salt</code>是用做加密算法中单向函数输入的一段随机数据.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">public static SecretKey generateKey(char[] password , byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException &#123;</div><div class="line">   int iterations = 1000;</div><div class="line">   int outputKeyLength = 128;</div><div class="line"></div><div class="line">   SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(&quot;PBKDF2WithHmacSHA1&quot;);</div><div class="line"></div><div class="line">   PBEKeySpec pbeKeySpec = new PBEKeySpec(password, salt, iterations, outputKeyLength);</div><div class="line"></div><div class="line">   byte[] keyBytes = secretKeyFactory.generateSecret(pbeKeySpec).getEncoded();</div><div class="line">   return new SecretKeySpec(keyBytes, &quot;AES&quot;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这个密钥在后面会使用</p>
+<h3 id="加密数据"><a href="#加密数据" class="headerlink" title="加密数据"></a>加密数据</h3><p>要加密数据, 必须先生成用于加密的作为<code>Cipher</code>输入的盐和初始化向量. 下面的代码会通过<code>SecureRandom</code>类生成一个长度为8字节的盐. 注意: 不需要人工给<code>SecureRandom</code>喂种子, 系统会自动帮你处理. 创建一个初始化向量, 初始化<code>Cipher</code>, 然后将明文加密成字节队列. 有了密文数据之后, 可以使用<code>Base64</code>工具类从这些字节生成一个普通的String对象. 并把初始化向量和盐用同样的方式追加上去, 并通过一个<code>非Base64</code>字符来分开.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">public static String encryptClearText(char[] password, String plainText)</div><div class="line">       throws Exception &#123;</div><div class="line">   SecureRandom secureRandom = new SecureRandom();</div><div class="line">   int saltLength = 8;</div><div class="line">   byte[] salt = new byte[saltLength];</div><div class="line">   secureRandom.nextBytes(salt);</div><div class="line">   SecretKey secretKey = generateKey(password, salt);</div><div class="line"></div><div class="line">   Cipher cipher = Cipher.getInstance(&quot;AES/CBC/PKCS5Padding&quot;);</div><div class="line">   byte[] initVector = new byte[cipher.getBlockSize()];</div><div class="line">   secureRandom.nextBytes(initVector);</div><div class="line">   IvParameterSpec ivParameterSpec = new IvParameterSpec(initVector);</div><div class="line">   cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivParameterSpec);</div><div class="line">   byte[] cipherData = cipher.doFinal(plainText.getBytes(&quot;UTF-8&quot;));</div><div class="line">   return Base64.encodeToString(cipherData,</div><div class="line">           Base64.NO_WRAP | Base64.NO_PADDING)</div><div class="line">           + &quot;]&quot; + Base64.encodeToString(initVector,</div><div class="line">           Base64.NO_WRAP | Base64.NO_PADDING)</div><div class="line">           + &quot;]&quot; + Base64.encodeToString(salt,</div><div class="line">           Base64.NO_WRAP | Base64.NO_PADDING);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>方法返回的结果就是加密后的密文字符串. 解密的时候使用同样的规则解密即可</p>
+<h3 id="解密数据"><a href="#解密数据" class="headerlink" title="解密数据"></a>解密数据</h3><p>和加密基本相似, 取出加密的的数据部分. 代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">public static String decryptData(char[] password, String encodedData)</div><div class="line">       throws Exception &#123;</div><div class="line">   String[] parts = encodedData.split(&quot;]&quot;);</div><div class="line">   byte[] cipherData = Base64.decode(parts[0], Base64.DEFAULT);</div><div class="line">   byte[] initVector = Base64.decode(parts[1], Base64.DEFAULT);</div><div class="line">   byte[] salt = Base64.decode(parts[2], Base64.DEFAULT);</div><div class="line"></div><div class="line">   Cipher cipher = Cipher.getInstance(&quot;AES/CBC/PKCS5Padding&quot;);</div><div class="line">   IvParameterSpec ivParams = new IvParameterSpec(initVector);</div><div class="line">   SecretKey secretKey = generateKey(password, salt);</div><div class="line">   cipher.init(Cipher.DECRYPT_MODE, secretKey, ivParams);</div><div class="line">   return new String(cipher.doFinal(cipherData), &quot;UTF-8&quot;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>从上面方法可以了解到<code>Cipher</code>,<code>初始化向量</code>,<code>SecretKey</code>是如何通过输入的字符串重新生成的. 只要密码匹配, 就能够对数据进行解码和编码.</p>
+<h2 id="设备管理API"><a href="#设备管理API" class="headerlink" title="设备管理API"></a>设备管理API</h2><p>关于这部分, 更多偏向于系统级别的开发. 例如对远程安全加固功能, 当丢失设备通过短信,锁定设备等. 所以此处不做记录. 如果有兴趣可以查看API文档<a href="https://developer.android.com/guide/topics/admin/device-admin.html" target="_blank" rel="external">Device Administration API</a></p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/09/12/android/books/《Android 编程实战》Chap9_Android应用安全问题/" data-id="cj7hnife3001g6opjy9mtaxk6" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/09/12/android/books/《Android 编程实战》Chap9_Android应用安全问题/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/09/12/android/books/《Android 编程实战》Chap10_隐藏的Android API/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    《Android 编程实战》Chap10_隐藏的Android API
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2017/09/12/android/books/《Android 编程实战》Chap8_高级音频,视频及相机应用/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">《Android 编程实战》Chap8_高级音频,视频及相机应用</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="uyan_frame"></div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">recent</h3>
+        <div class="widget">
+            <ul id="recent-post" class="no-thumbnail">
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/09/12/android/github/Glide解析1/" class="title"></a></p>
+                            <p class="item-date"><time datetime="2017-09-12T10:13:13.000Z" itemprop="datePublished">2017-09-12</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/vim/">vim</a></p>
+                            <p class="item-title"><a href="/2017/09/12/linux/Vim入门/" class="title">Vim入门</a></p>
+                            <p class="item-date"><time datetime="2017-09-12T02:19:50.000Z" itemprop="datePublished">2017-09-12</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/shell/">shell</a></p>
+                            <p class="item-title"><a href="/2017/09/12/linux/Shell常用手册/" class="title">Shell常用手册</a></p>
+                            <p class="item-date"><time datetime="2017-09-12T01:26:25.000Z" itemprop="datePublished">2017-09-12</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/java/">java</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/java/设计模式/">设计模式</a></p>
+                            <p class="item-title"><a href="/2017/09/12/java/设计模式六大原则解析/" class="title">设计模式六大原则解析</a></p>
+                            <p class="item-date"><time datetime="2017-09-12T01:24:10.000Z" itemprop="datePublished">2017-09-12</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/java/">java</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/java/设计模式/">设计模式</a></p>
+                            <p class="item-title"><a href="/2017/09/12/java/设计模式之路/" class="title">设计模式之路</a></p>
+                            <p class="item-date"><time datetime="2017-09-12T01:23:31.000Z" itemprop="datePublished">2017-09-12</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">categories</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">37</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/linux/vim/">vim</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">archives</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">46</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tags</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">36</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tag cloud</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 15px;">code</a> <a href="/tags/git/" style="font-size: 11.67px;">git</a> <a href="/tags/github/" style="font-size: 11.67px;">github</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 13.33px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 10px;">markdown</a> <a href="/tags/mysql/" style="font-size: 16.67px;">mysql</a> <a href="/tags/node/" style="font-size: 18.33px;">node</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.67px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.67px;">设计模式</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">links</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 Ernest Chang<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2142274"></script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

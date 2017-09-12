@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <meta charset="utf-8">
+    
+    <title>《Android 编程实战》Chap6_重识BroadcastReceiver | The Old Man and the Sea</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="阅读《Android 编程实战》一书的随记笔记注：本文主要参考http://szysky.com  BroadcastReceiverAndroid中发送广播事件最常用的方式是通过Content.sendBroadcast()方法给BroadcastReceiver发送Intent对象. 许多标准系统事件都被定义成操作字符串, 并可以在Intent类的API文档中查看. 例如, 如果需要在用户连">
+<meta name="keywords" content="android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Android 编程实战》Chap6_重识BroadcastReceiver">
+<meta property="og:url" content="http://yoursite.com/2017/09/12/android/books/《Android 编程实战》Chap6_重识BroadcastReceiver/index.html">
+<meta property="og:site_name" content="The Old Man and the Sea">
+<meta property="og:description" content="阅读《Android 编程实战》一书的随记笔记注：本文主要参考http://szysky.com  BroadcastReceiverAndroid中发送广播事件最常用的方式是通过Content.sendBroadcast()方法给BroadcastReceiver发送Intent对象. 许多标准系统事件都被定义成操作字符串, 并可以在Intent类的API文档中查看. 例如, 如果需要在用户连">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2017-09-12T02:26:08.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="《Android 编程实战》Chap6_重识BroadcastReceiver">
+<meta name="twitter:description" content="阅读《Android 编程实战》一书的随记笔记注：本文主要参考http://szysky.com  BroadcastReceiverAndroid中发送广播事件最常用的方式是通过Content.sendBroadcast()方法给BroadcastReceiver发送Intent对象. 许多标准系统事件都被定义成操作字符串, 并可以在Intent类的API文档中查看. 例如, 如果需要在用户连">
+    
+
+    
+        <link rel="alternate" href="/" title="The Old Man and the Sea" type="application/atom+xml" />
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">The Old Man and the Sea</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/uploads/images/avert.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/uploads/images/avert.png" />
+            <h2 id="name">Ernest Chang</h2>
+            <h3 id="title">Developer &amp; Designer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Hangzhou, China</span>
+            <a id="follow" target="_blank" href="https://github.com/Ernestchang/">FOLLOW</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                67
+                <span>posts</span>
+            </div>
+            <div class="article-info-block">
+                18
+                <span>tags</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/Ernestchang/" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="facebook" class=tooltip>
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="dribbble" class=tooltip>
+                            <i class="fa fa-dribbble"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-android/books/《Android 编程实战》Chap6_重识BroadcastReceiver" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            《Android 编程实战》Chap6_重识BroadcastReceiver
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/09/12/android/books/《Android 编程实战》Chap6_重识BroadcastReceiver/">
+            <time datetime="2017-09-11T23:55:35.000Z" itemprop="datePublished">2017-09-12</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/android/">android</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <blockquote>
+<p>阅读《Android 编程实战》一书的随记笔记<br>注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a></p>
+</blockquote>
+<h2 id="BroadcastReceiver"><a href="#BroadcastReceiver" class="headerlink" title="BroadcastReceiver"></a>BroadcastReceiver</h2><p><code>Android</code>中发送广播事件最常用的方式是通过<code>Content.sendBroadcast()</code>方法给<code>BroadcastReceiver</code>发送<code>Intent</code>对象. 许多标准系统事件都被定义成操作字符串, 并可以在<code>Intent</code>类的API文档中查看. 例如, 如果需要在用户连接或者断开充电器的时候收到通知, 可以使用<code>Intent</code>中定义的两个广播操作: <code>ACTION_POWER_DISCONNECTED</code>和<code>ACTION_POWER_CONNECTED</code>.</p>
+<hr>
+<p><strong>举例: 例如监听手机充电状态改变的广播</strong></p>
+<p>首先派生出一个<code>BroadcastReceiver</code>的子类.复写<code>onReceiver()</code>方法. 如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">public class ChargerConnectedReceiver extends BroadcastReceiver &#123;</div><div class="line">    public ChargerConnectedReceiver() &#123;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void onReceive(Context context, Intent intent) &#123;</div><div class="line">        String action = intent.getAction();</div><div class="line"></div><div class="line">        if (Intent.ACTION_POWER_CONNECTED.equals(action))&#123;</div><div class="line">            Toast.makeText(context, &quot;手机充电啦&quot;, Toast.LENGTH_SHORT).show();</div><div class="line">        &#125;else if (Intent.ACTION_POWER_DISCONNECTED.equals(action))&#123;</div><div class="line">            Toast.makeText(context, &quot;手机不充电了&quot;, Toast.LENGTH_SHORT).show();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>然后需要注册广播, 告诉系统在当哪一个<code>action</code>动作发生的时候需要回调我们自定的接收者的<code>onReceive()</code>方法. 这里有两种方法, <code>静态注册</code>和<code>动态注册</code>.</p>
+<p><strong>静态注册</strong></p>
+<p>在清单文件中声明这个广播组件, 并设置<code>intent-filter</code>即可</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&lt;receiver android:name=&quot;broadcast.ChargerConnectedReceiver&quot;&gt;</div><div class="line">  &lt;intent-filter&gt;</div><div class="line">      &lt;action android:name=&quot;android.intent.action.ACTION_POWER_CONNECTED&quot;/&gt;</div><div class="line">      &lt;action android:name=&quot;android.intent.action.ACTION_POWER_DISCONNECTED&quot;/&gt;</div><div class="line">  &lt;/intent-filter&gt;</div><div class="line">&lt;/receiver&gt;</div></pre></td></tr></table></figure>
+<p><strong>动态注册</strong></p>
+<p>一般情况动态注册都是在<code>Activity</code>中的<code>onCreate()</code>和<code>onResume()</code>同时出现的. 例如:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">public class ChargerConnectedActivity extends Activity &#123;</div><div class="line"></div><div class="line">    private ChargerConnectedReceiver chargerConnectedReceiver;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    protected void onResume() &#123;</div><div class="line">        super.onResume();</div><div class="line">        // 生成对于广播的 intent过滤条件</div><div class="line">        IntentFilter intentFilter = new IntentFilter();</div><div class="line">        intentFilter.addAction(Intent.ACTION_POWER_CONNECTED);</div><div class="line">        intentFilter.addAction(Intent.ACTION_POWER_DISCONNECTED);</div><div class="line">        chargerConnectedReceiver = new ChargerConnectedReceiver();</div><div class="line">        registerReceiver(chargerConnectedReceiver, intentFilter);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    protected void onPause() &#123;</div><div class="line">        super.onPause();</div><div class="line">        unregisterReceiver(chargerConnectedReceiver);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>如果只在应用程序处于运行或活动状态时才关心广播事件时, 可以选择在代码中注册广播. 这样可以让应用程序消耗更少的资源; 如果在清单文件中声明, 则每当有事件发生时, 广播接收器都会启动, 因此会消耗更多资源.</p>
+<h3 id="本地BroadcastReceiver"><a href="#本地BroadcastReceiver" class="headerlink" title="本地BroadcastReceiver"></a>本地BroadcastReceiver</h3><p>如果只是在应用程序进程内发送和接收广播, 那么可以使用<code>LocalBroadcastManager</code>而不是更常用的<code>Context.sendBroadcast()</code>方法. 这种方法更高效, 因为不需要跨进程管理操作, 也不需要考虑广播通常涉及的安全问题. 标准IPA中没有包含<code>LocalBroadcastManager</code>类, 但是可以在支持包(support_V4)中找到. 下面演示如何使用:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">public static final String LOCAL_BROADCAST_ACTION = &quot;localBroadcast&quot;;</div><div class="line">private BroadcastReceiver mLocalReceiver;</div><div class="line"></div><div class="line">// 注册本地广播</div><div class="line">private void initLocalBroadcast() &#123;</div><div class="line">   LocalBroadcastManager instance = LocalBroadcastManager.getInstance(getApplicationContext());</div><div class="line">   IntentFilter intentFilter = new IntentFilter(LOCAL_BROADCAST_ACTION);</div><div class="line"></div><div class="line">   mLocalReceiver = new BroadcastReceiver() &#123;</div><div class="line">       @Override</div><div class="line">       public void onReceive(Context context, Intent intent) &#123;</div><div class="line">           Toast.makeText(getApplicationContext(), &quot;本地广播接收到&quot;, Toast.LENGTH_SHORT).show();</div><div class="line">       &#125;</div><div class="line">   &#125;;</div><div class="line"></div><div class="line">   instance.registerReceiver(mLocalReceiver, intentFilter);</div><div class="line">&#125;</div><div class="line"></div><div class="line">// 发送本地广播</div><div class="line">findViewById(R.id.btn_send).setOnClickListener(new View.OnClickListener() &#123;</div><div class="line">  @Override</div><div class="line">  public void onClick(View v) &#123;</div><div class="line">      LocalBroadcastManager instance = LocalBroadcastManager.getInstance(getApplicationContext());</div><div class="line">      // 上面定义的通电状态action</div><div class="line">      Intent intent = new Intent(LOCAL_BROADCAST_ACTION);</div><div class="line">      instance.sendBroadcast(intent);</div><div class="line">  &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>在应用程序内部使用本地广播来广播消息和状态也非常方便. 本地广播比标准的全局广播更高效和安全, 因为它不会把数据泄露给其他应用程序. 切记要和正常的接收器一样, 在对应的方法中要移除注册, 否则可能会有内存泄漏.</p>
+<h3 id="普通广播和粘性广播"><a href="#普通广播和粘性广播" class="headerlink" title="普通广播和粘性广播"></a>普通广播和粘性广播</h3><p>广播分为两种类型: <strong>普通广播</strong>和<strong>有序广播</strong>.</p>
+<ul>
+<li><strong>普通广播</strong>会以异步方式发送给所有的接收者, 并且没有指定的接收顺序. 该方式更加高效, 但是缺少有序广播额一些高级功能, 比如不能发送结果反馈.</li>
+<li><strong>有序广播</strong>按照特定的顺序分发, 每次只发给一个接收者, 开发者可以在清单文件中设置接收者的<code>intent-filter</code>标签的<code>android:priority</code>属性来控制广播的接收顺序. 有序广播还有另外一个特性: 通过使用<code>abortBroadcast()</code>, <code>setResultCode()</code>和<code>setResultData()</code>方法, 接收者可以把结果回传给广播, 或者终止广播的分发, 这样<code>Intent</code>就不会传递给下一个广播接收者.</li>
+</ul>
+<p>有序广播由<code>Context.sendOrderedBroadcast()</code>发起, 在接收者的<code>onReceive()</code>回调中, 通过<code>isOrderedBroadcast()</code>来判断该广播是否是有序广播. 如果是, 可以通过上面<code>setXxxx()</code>方法设置要传递下去的数据.</p>
+<p>日常开发很少需要在自己的应用程序发送有序广播, 但如果要跟其他应用程序通信(比如插件), 有序广播就有用途. 在Android系统中, 有序广播最常见的场景就是监听传入的短信(隐藏API)的一部分. 后面篇幅会说.</p>
+<h3 id="粘性广播"><a href="#粘性广播" class="headerlink" title="粘性广播"></a>粘性广播</h3><p><code>粘性广播(sticky broadcast)</code> 是一个普通广播的变体, 它和普通广播有细微的区别. 粘性广播在使用<code>Context.sendStickyBroadcast()</code>发送<code>Intent</code>之后, 该<code>Intent</code>还会”继续保留”, 允许之后匹配由该<code>Intent</code>新注册的广播接收者, 并发送<code>Intent</code>.(<a href="https://github.com/suzeyu1992/AndroidProgrammingPushingTheLimits/commit/ec42e2e44877f5b4b3c5363600646c4e808929e3" target="_blank" rel="external">查看验证代码</a>)</p>
+<p>粘性广播的一个例子是<code>Intent.ACTION_BATTERY_CHANGED</code>, 它用来指示设备中电池电量的变化. 另一个列子是<code>Intent.ACTION_DOCK_EVENT</code>, 用来只是设备是否放在了底座. 更多的粘性广播请参考google文档. 下面的代码展示如何</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line">private void myRegisterBattery()&#123;</div><div class="line">   // 构建广播接收者要接收的action</div><div class="line">   IntentFilter intent = new IntentFilter();</div><div class="line">   intent.addAction(Intent.ACTION_BATTERY_CHANGED);</div><div class="line">   intent.addAction(Intent.ACTION_BATTERY_OKAY);</div><div class="line">   intent.addAction(Intent.ACTION_BATTERY_LOW);</div><div class="line">   </div><div class="line">   // 创建监听</div><div class="line">   BroadcastReceiver broadcastReceiver = new BroadcastReceiver() &#123;</div><div class="line">       @Override</div><div class="line">       public void onReceive(Context context, Intent intent) &#123;</div><div class="line">           if (isInitialStickyBroadcast()) &#123;</div><div class="line">               Log.e(&quot;sususu&quot;, &quot;这是一个粘性广播&quot;);</div><div class="line">           &#125; else &#123;</div><div class="line">               Log.e(&quot;sususu&quot;, &quot;这是不是粘性广播&quot;);</div><div class="line">           &#125;</div><div class="line">       &#125;</div><div class="line">   &#125;;</div><div class="line">   // 注册接收者</div><div class="line">   registerReceiver(broadcastReceiver, intent);</div><div class="line">&#125;</div><div class="line">​``` </div><div class="line"></div><div class="line">该方法在广播全系统的状态时特别有用, 如果你需要发送粘性广播, 那么**请添加权限**在清单文件中`&lt;uses-permission android:name=&quot;android.permission.BROADCAST_STICKY&quot;/&gt;`权限, 并使用`Context.sendStickyBroadcast()`发送粘性广播. </div><div class="line"></div><div class="line">&gt; 对于粘性广播一定要慎用, 因为它比普通广播更消耗资源.</div><div class="line"></div><div class="line"></div><div class="line">### 定向广播</div><div class="line"></div><div class="line">普通广播的另一个变体是`定向广播(directed broadcast)`. 定向广播使用过了`intent-filter`的一个特性, 通过在`Intent`设置`ComponentName`来显示指定接收者. 它把注册接收者的类名和包名结合在了一起. 如下:</div><div class="line"></div><div class="line"></div><div class="line">​```java</div><div class="line">Intent intent = new Intent();</div><div class="line">intent.setComponent(new Component(packName, className));</div><div class="line">sendBroadcast(intent);</div></pre></td></tr></table></figure>
+<p>这个例子只会指定的class类的广播接收者才可以收到广播, 即便其他接收器也注册了相同的<code>Intent</code>操作. <strong>注意:使用定向广播需要同时知道接收者的包名和类名.</strong>. 使用场景很少.</p>
+<h3 id="启动和禁用广播接收器"><a href="#启动和禁用广播接收器" class="headerlink" title="启动和禁用广播接收器"></a>启动和禁用广播接收器</h3><p>如果广播接收者在清单文件中注册的, 还有另外一种减少对系统负载的影响的方法. 通过<code>PackageManager</code>, 开发者可以启动和禁用应用程序的组件, 这在用户比如在应用设置更改后使用此方法即可. 代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">* 设置组件</div><div class="line">* @param setClass 要设置改变的组件</div><div class="line">* @param isEnable true为启用, false为禁用</div><div class="line">*/</div><div class="line">public void setComponentEnable(boolean isEnable, Class setClass)&#123;</div><div class="line">   PackageManager pm = getPackageManager();</div><div class="line">   // 构建要改变组件的Component</div><div class="line">   ComponentName componentName = new ComponentName(getApplicationContext(), setClass);</div><div class="line">   pm.setComponentEnabledSetting(componentName,</div><div class="line">           isEnable ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED : PackageManager.COMPONENT_ENABLED_STATE_DISABLED,</div><div class="line">           PackageManager.DONT_KILL_APP);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>记住, 这里仅适用静态注册就是清单文件上注册, 不支持动态注册的会抛出异常, 并且这里接收的class同样适用于Activity, Service, ContentProvider</code>. 其本质就是改变在清单文件中组件标签的<code>&lt;android:enable=&#39;true/false&#39;&gt;</code>.</p>
+<p>关于<code>setComponentEnabledSetting()</code>方法的最后一个参数<code>PackageManager.DONT_KILL_APP</code>的使用. 这回防止平台杀死应用, 如果不设置该值平台默认会杀死应用.</p>
+<blockquote>
+<p>可以用在应用程序启动图标的切换, 比如,开发者可以在安装应用程序后只显示设置Activity界面, 在设置完成之后使用该方法把启动图标隐藏</p>
+</blockquote>
+<h3 id="系统广播Intent"><a href="#系统广播Intent" class="headerlink" title="系统广播Intent"></a>系统广播Intent</h3><p><code>Android API</code>定义了许多不同的系统广播事件. 例如电池电量变化, 是否连接了设备电源. 并且还有一些可能会用到的广播, 但是action并没有在API中公开, 所以后面的篇幅也会对一些隐藏的API进行一定记录.这里说一下常用的系统事件</p>
+<hr>
+<p><strong>自动启动应用程序</strong></p>
+<p>关于自启动这个问题在国内比较蛋疼, 由于各种厂商对<code>ROM</code>的修改, 各式各样. 目前为我自己的实验是只有<code>Google Nexus4</code>可以直接声明<code>BOOT_complete</code>重启的广播, <code>魅族4</code>,<code>三星S6</code>都无法做到重启可以监听到重启广播. 需要对应用通过手机提供的应用管理, 把<code>自启动开启才可以达到预期的效果</code>. 这里尝试的做法是<code>注册监听重启广播的接收</code>, <code>添加权限&lt;uses-permission android:name=&quot;android.permission.RECEIVE_BOOT_COMPLETED&quot;/&gt;</code>, <code>添加&lt;manifest&gt;标签的内属性android:installLocation=&quot;internalOnly&quot;</code>确保应用正确安装到内存储位置.</p>
+<p>广播的监听的对应action:<code>android.intent.action.BOOT_COMPLETED</code></p>
+<p>还有一个应用程序包替换的时候的广播, 例如升级<code>android.intent.action.MY_PACKAGE_REPLACED</code></p>
+<hr>
+<p><strong>用户状态和屏幕状态</strong></p>
+<p>虽然当按下关机键和锁屏键会触发屏幕熄灭, <code>Activity</code>会调用对应的焦点失去或者获取的回调. 但是如果服务<code>Service</code>需要注意此动作的时候, 我们通过屏幕的状态广播来监听这是很方便的.</p>
+<p>相关广播<code>action</code></p>
+<ul>
+<li><code>action.intent.action.SCREEN_OFF</code></li>
+<li><code>action.intent.action.SCREEN_ON</code></li>
+<li><code>action.intent.action.SCREEN_PRESENT</code></li>
+</ul>
+<p>开启和关闭设备屏幕时, 系统会分别发送<code>Intent.ACTION_SCREEN_ON</code>和<code>Intent.ACTION_OFF</code>广播事件. 当用户解锁屏幕时系统会发送<code>Intent.ACTION_USER_PRESENT</code>广播事件.</p>
+<hr>
+<p><strong>网络和连接变化</strong></p>
+<p>大多数<code>Android</code>设备都支持两种类型的网络: <strong>蜂窝网络</strong>和<strong>Wi-Fi网络</strong>. 如果应用程序过度依赖网络操作, 开发者可能要在蜂窝网络中推迟数据的传输, 知道设备连接到<code>Wi-Fi网络</code>; 否则, 如果使用<code>3G</code>, <code>LTE</code>之类的移动网络传输可能会产生相当可观的流量.</p>
+<p>连接的相关广播和网络相关的广播分别由不同的API负责. 每当有通用的网络连接变化发生时, 比如从<code>Wi-Fi</code>切换到移动数据, 系统就会发送<code>ConnectivityManager.CONNECTIVITY_ACTION</code>广播, 接下来可以使用<code>Context.getService()</code>方法来检索<code>ConnectivityManager</code>服务, 它允许开发者获取当前网络的更多信息.</p>
+<p>然而, 要获取当前网络更细粒度的信息, 开发者还需要监听来自<code>TelephonyManager</code>和<code>WifiManager</code>的广播事件. <code>TelephonyManager</code>允许查询移动数据连接的类型, <code>WiFiManager</code>允许检索<code>WiFi</code>连接状态并访问和<code>WiFi</code>相关的不同<code>ID(SSID是wifi名称和BSSID对应mac地址)</code></p>
+<p>以下代码会检测设备是否连接到了预先设置的某一个<code>WiFi</code>. 使用此方法可以有效地和服务器或者只是支持特定的<code>Wi-Fi</code>的媒体进行通信.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&lt;!-- 检查wifi广播--&gt;</div><div class="line">&lt;receiver</div><div class="line">  android:name=&quot;broadcast.CheckForHomeWifi&quot;&gt;</div><div class="line"></div><div class="line">  &lt;intent-filter&gt;</div><div class="line">      &lt;!--监听wifi的连接状态是否连接上一个有效无线路由--&gt;</div><div class="line">      &lt;action android:name=&quot;android.net.wifi.WIFI_STATE_CHANGED&quot; /&gt;</div><div class="line">      &lt;!--监听wifi的打开和关闭, 和wifi具体的连接不关心--&gt;</div><div class="line">      &lt;action android:name=&quot;android.net.wifi.STATE_CHANGE&quot; /&gt;</div><div class="line">  &lt;/intent-filter&gt;</div><div class="line"></div><div class="line">&lt;/receiver&gt;</div></pre></td></tr></table></figure>
+<p>如果只需要关心wifi的开启, 和wifi连接到某一个路由, 那么这两个广播监听足够了.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public void onReceive(Context context, Intent intent) &#123;</div><div class="line"></div><div class="line">   // 需要判断的路由名字 对应ssid </div><div class="line">   String name = &quot;\&quot;ziroom502\&quot;&quot;;</div><div class="line"></div><div class="line">   // 1.首先判断wifi是否开启, 并连接</div><div class="line">   NetworkInfo networkInfo = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);</div><div class="line">   if (networkInfo != null &amp;&amp; networkInfo.getState().equals(NetworkInfo.State.CONNECTED)) &#123;</div><div class="line"></div><div class="line">       // 2.再判断连接的wifi的具体信息</div><div class="line">       WifiInfo WifiInfo = intent.getParcelableExtra(WifiManager.EXTRA_WIFI_INFO);</div><div class="line">       if (WifiInfo != null &amp;&amp; name.equals(WifiInfo.getSSID())) &#123;</div><div class="line">           Log.d(&quot;sususu&quot;, &quot;连接到指定wifi&quot;);</div><div class="line">       &#125; else &#123;</div><div class="line">           Log.d(&quot;sususu&quot;, &quot;连接到其他wifi&quot;);</div><div class="line">       &#125;</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这是一个简单的初步判断, 如果需要结合手机连接判断, 结合下面的另一个监听, 整合起来就差不多了.</p>
+<hr>
+<p>这个监听来自<code>ConnectivityManager</code>的变化, 并确定当前连接的是否为移动数据网络. 如果收到移动数据, 接下来在使用<code>TelephonyManager</code>检查是否在使用<code>3G</code>或者<code>LTE</code>网络.</p>
+<p>监听广播的清单文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"> &lt;!--判断手机连接--&gt;</div><div class="line">&lt;receiver</div><div class="line">  android:name=&quot;broadcast.WhenOn3GorLTE&quot;&gt;</div><div class="line">  &lt;intent-filter&gt;</div><div class="line">      &lt;!--此广播监听, 网络连接的设置包括wifi和数据的打开和关闭--&gt;</div><div class="line">      &lt;action android:name=&quot;android.net.conn.CONNECTIVITY_CHANGE&quot; /&gt;</div><div class="line">  &lt;/intent-filter&gt;</div><div class="line">&lt;/receiver&gt;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div></pre></td><td class="code"><pre><div class="line">public class WhenOn3GorLTE extends BroadcastReceiver &#123;</div><div class="line">    private static final String TAG = WhenOn3GorLTE.class.getSimpleName();</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void onReceive(Context context, Intent intent) &#123;</div><div class="line">        String action = intent.getAction();</div><div class="line">        if (ConnectivityManager.CONNECTIVITY_ACTION.equals(action))&#123;</div><div class="line">            boolean noConnectivity = intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);</div><div class="line">            </div><div class="line">            if (noConnectivity)&#123;</div><div class="line">                Log.e(TAG, &quot;没有连接&quot; );</div><div class="line">            &#125;else&#123;</div><div class="line">                int networkType = intent.getIntExtra(ConnectivityManager.EXTRA_NETWORK_TYPE, ConnectivityManager.TYPE_DUMMY);</div><div class="line">                </div><div class="line">                if (networkType == ConnectivityManager.TYPE_MOBILE)&#123;</div><div class="line">                    checkfor3GorLte(context);</div><div class="line">                &#125;else&#123;</div><div class="line">                    Log.i(TAG, &quot;不是移动连接&quot;);</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    /**</div><div class="line">     *  当前如果移动数据开启, 那么显示出移动数据的连接类型</div><div class="line">     */</div><div class="line">    private void checkfor3GorLte(Context context)&#123;</div><div class="line"></div><div class="line">        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);</div><div class="line"></div><div class="line">        switch (telephonyManager.getNetworkType())&#123;</div><div class="line">            case TelephonyManager.NETWORK_TYPE_HSDPA:</div><div class="line">                Log.d(TAG, &quot;连接类型: NETWORK_TYPE_HSDPA&quot;);</div><div class="line">                break;</div><div class="line"></div><div class="line">            case TelephonyManager.NETWORK_TYPE_HSPA:</div><div class="line">                Log.d(TAG, &quot;连接类型: NETWORK_TYPE_HSPA&quot;);</div><div class="line">                break;</div><div class="line"></div><div class="line">            case TelephonyManager.NETWORK_TYPE_HSPAP:</div><div class="line">                Log.d(TAG, &quot;连接类型: NETWORK_TYPE_HSPAP&quot;);</div><div class="line">                break;</div><div class="line"></div><div class="line">            case TelephonyManager.NETWORK_TYPE_HSUPA:</div><div class="line">                Log.d(TAG, &quot;连接类型: NETWORK_TYPE_HSUPA&quot;);</div><div class="line">                break;</div><div class="line"></div><div class="line">            case TelephonyManager.NETWORK_TYPE_LTE:</div><div class="line">                Log.d(TAG, &quot;连接类型: NETWORK_TYPE_LTE&quot;);</div><div class="line">                break;</div><div class="line"></div><div class="line">            default:</div><div class="line">                Log.d(TAG, &quot;连接类型: 未知类型, 可能传输速度会慢&quot;);</div><div class="line">                break;</div><div class="line"></div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>此广播稍微有2秒左右延迟, 当wifi开关,和移动数据开关变化的时候不会立即响应</strong></p>
+<p>一下记录一下测试的结果广播接收情况,以上判断条件是获取的<code>intent中的ConnectivityManager.EXTRA_NO_CONNECTIVITY</code>(测试手机三星S6), 可能会因为不同的条件产生不同的结果. 这里只说明代码中的条件说明:</p>
+<ul>
+<li><code>当wifi连接开启</code>: 这时打开或者关闭移动数据, 不会发送广播.</li>
+<li><code>当移动数据开启</code>: 这时操作wifi开关会接收到两个广播.</li>
+<li><ul>
+<li>如果从<code>wifi关闭</code>-&gt;<code>wifi开启</code>那么首先会发送一个<code>移动数据的状态info广播</code>,紧接着会发送一个<code>wifi连接</code>相关的广播(总共两个有效连接)</li>
+</ul>
+</li>
+<li><ul>
+<li>如果<code>wifi开启</code> -&gt; <code>wifi关闭</code>那么首先会收到一个<code>无连接</code>的广播, 然后会接收到一个<code>移动数据</code>连接类型的广播.</li>
+</ul>
+</li>
+<li><code>如果当都关闭的时候</code>: 开启任意一个只能接收到一个广播.</li>
+</ul>
+<p>这种方式也可以获取<code>wifi</code>连接的信息, 但是<strong>延迟性</strong>是这个方式的特点.</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/09/12/android/books/《Android 编程实战》Chap6_重识BroadcastReceiver/" data-id="cj7hnifdw00176opj1wh47t2d" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/09/12/android/books/《Android 编程实战》Chap6_重识BroadcastReceiver/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/09/12/android/books/《Android 编程实战》Chap7_序列化说明/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    《Android 编程实战》Chap7_序列化说明
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2017/09/12/android/books/《Android 编程实战》Chap5_重识IPC/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">《Android 编程实战》Chap5_重识IPC</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="uyan_frame"></div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">recent</h3>
+        <div class="widget">
+            <ul id="recent-post" class="no-thumbnail">
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/09/12/android/github/Glide解析1/" class="title"></a></p>
+                            <p class="item-date"><time datetime="2017-09-12T10:13:13.000Z" itemprop="datePublished">2017-09-12</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/vim/">vim</a></p>
+                            <p class="item-title"><a href="/2017/09/12/linux/Vim入门/" class="title">Vim入门</a></p>
+                            <p class="item-date"><time datetime="2017-09-12T02:19:50.000Z" itemprop="datePublished">2017-09-12</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/shell/">shell</a></p>
+                            <p class="item-title"><a href="/2017/09/12/linux/Shell常用手册/" class="title">Shell常用手册</a></p>
+                            <p class="item-date"><time datetime="2017-09-12T01:26:25.000Z" itemprop="datePublished">2017-09-12</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/java/">java</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/java/设计模式/">设计模式</a></p>
+                            <p class="item-title"><a href="/2017/09/12/java/设计模式六大原则解析/" class="title">设计模式六大原则解析</a></p>
+                            <p class="item-date"><time datetime="2017-09-12T01:24:10.000Z" itemprop="datePublished">2017-09-12</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/java/">java</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/java/设计模式/">设计模式</a></p>
+                            <p class="item-title"><a href="/2017/09/12/java/设计模式之路/" class="title">设计模式之路</a></p>
+                            <p class="item-date"><time datetime="2017-09-12T01:23:31.000Z" itemprop="datePublished">2017-09-12</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">categories</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">37</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/linux/vim/">vim</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">archives</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">46</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tags</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">36</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tag cloud</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 15px;">code</a> <a href="/tags/git/" style="font-size: 11.67px;">git</a> <a href="/tags/github/" style="font-size: 11.67px;">github</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 13.33px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 10px;">markdown</a> <a href="/tags/mysql/" style="font-size: 16.67px;">mysql</a> <a href="/tags/node/" style="font-size: 18.33px;">node</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.67px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.67px;">设计模式</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">links</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 Ernest Chang<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2142274"></script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

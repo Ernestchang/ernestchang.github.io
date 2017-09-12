@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <meta charset="utf-8">
+    
+    <title>《Android 编程实战》Chap10_隐藏的Android API | The Old Man and the Sea</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="阅读《Android 编程实战》一书的随记笔记注：本文主要参考http://szysky.com  官方API和隐藏APISDK文档中的所有类, 接口, 方法以及常量都属于官方API. 虽然这些API通常能满足大多数应用的需求, 但开发者有时候需要访问更多的东西, 但却不知道如何在官方API中找到它们. Android SDK中包含了一个JAR文件(android.jar), 在编译代码的时候会">
+<meta name="keywords" content="android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Android 编程实战》Chap10_隐藏的Android API">
+<meta property="og:url" content="http://yoursite.com/2017/09/12/android/books/《Android 编程实战》Chap10_隐藏的Android API/index.html">
+<meta property="og:site_name" content="The Old Man and the Sea">
+<meta property="og:description" content="阅读《Android 编程实战》一书的随记笔记注：本文主要参考http://szysky.com  官方API和隐藏APISDK文档中的所有类, 接口, 方法以及常量都属于官方API. 虽然这些API通常能满足大多数应用的需求, 但开发者有时候需要访问更多的东西, 但却不知道如何在官方API中找到它们. Android SDK中包含了一个JAR文件(android.jar), 在编译代码的时候会">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://szysky.com/2016/10/04/%E3%80%8AAndroid-%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98%E3%80%8B10-%E9%9A%90%E8%97%8F%E7%9A%84Android-API/devicespull.png">
+<meta property="og:updated_time" content="2017-09-12T02:27:08.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="《Android 编程实战》Chap10_隐藏的Android API">
+<meta name="twitter:description" content="阅读《Android 编程实战》一书的随记笔记注：本文主要参考http://szysky.com  官方API和隐藏APISDK文档中的所有类, 接口, 方法以及常量都属于官方API. 虽然这些API通常能满足大多数应用的需求, 但开发者有时候需要访问更多的东西, 但却不知道如何在官方API中找到它们. Android SDK中包含了一个JAR文件(android.jar), 在编译代码的时候会">
+<meta name="twitter:image" content="http://szysky.com/2016/10/04/%E3%80%8AAndroid-%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98%E3%80%8B10-%E9%9A%90%E8%97%8F%E7%9A%84Android-API/devicespull.png">
+    
+
+    
+        <link rel="alternate" href="/" title="The Old Man and the Sea" type="application/atom+xml" />
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">The Old Man and the Sea</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/uploads/images/avert.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/uploads/images/avert.png" />
+            <h2 id="name">Ernest Chang</h2>
+            <h3 id="title">Developer &amp; Designer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Hangzhou, China</span>
+            <a id="follow" target="_blank" href="https://github.com/Ernestchang/">FOLLOW</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                67
+                <span>posts</span>
+            </div>
+            <div class="article-info-block">
+                18
+                <span>tags</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/Ernestchang/" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="facebook" class=tooltip>
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="dribbble" class=tooltip>
+                            <i class="fa fa-dribbble"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-android/books/《Android 编程实战》Chap10_隐藏的Android API" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            《Android 编程实战》Chap10_隐藏的Android API
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/09/12/android/books/《Android 编程实战》Chap10_隐藏的Android API/">
+            <time datetime="2017-09-11T23:59:03.000Z" itemprop="datePublished">2017-09-12</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/android/">android</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <blockquote>
+<p>阅读《Android 编程实战》一书的随记笔记<br>注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a></p>
+</blockquote>
+<h2 id="官方API和隐藏API"><a href="#官方API和隐藏API" class="headerlink" title="官方API和隐藏API"></a>官方API和隐藏API</h2><p>SDK文档中的所有类, 接口, 方法以及常量都属于官方API. 虽然这些API通常能满足大多数应用的需求, 但开发者有时候需要访问更多的东西, 但却不知道如何在官方API中找到它们.</p>
+<p><code>Android SDK</code>中包含了一个<code>JAR</code>文件(android.jar), 在编译代码的时候会引用它, 该文件位于<code>&lt;sdk root&gt;/platforms/android-&lt;API Level&gt;/目录</code>. 不过这里面全是空类, 方法中所有的代码都被移除了, 只声明了<code>public</code>和<code>protected</code>的类. 构建Android平台时, SDK会包含该JAR文件.</p>
+<p>通过检查每一个源文件, 并移除所有被<code>@hide</code>注解的域(常量), 方法和类, 在构建SDK时会生成方法体为空的<code>android.jar</code>文件. 这意味着仍然可以在运行的设备上方法这些符号, 但是在编译时却找不到.</p>
+<p>Android会自动隐藏某些API, 而不需要使用<code>@hide</code>注解. 这些API位于<code>com.android.internal</code>包中, 不属于<code>android.jar</code>文件, 但却包含大量供android平台使用的内部代码. android系统应用还包含一些其他隐藏API, 这些API通常提供没有包含在官方SDK中的系统<code>ContentProvider</code>信息.</p>
+<h2 id="发现隐藏API"><a href="#发现隐藏API" class="headerlink" title="发现隐藏API"></a>发现隐藏API</h2><p>寻找API最简单的方法是在<code>Android</code>源码中搜索他们. 但是<code>Android</code>源码非常多, 还好有几个在线网站已经对这些代码进行了索引, 并提供了搜索功能. <a href="http://androidxref.com/" target="_blank" rel="external">AndroidXRef</a>就是其中的一个.</p>
+<p>大部分隐藏的API都位于<code>frameworks</code>项目, 所有<code>android</code>包中的API都可以在frameworks项目中找到, 该项目还包含大部分<code>com.android.internal</code>包中的API.</p>
+<h2 id="安全地调用隐藏API"><a href="#安全地调用隐藏API" class="headerlink" title="安全地调用隐藏API"></a>安全地调用隐藏API</h2><p>对于需要编译时链接的API, 也就是接口, 类, 或者方法, 开发者有两个选择. 第一种修改SDK的JAR文件, 使之包含所有需要的类和接口, 并使用该SDK来编译应用程序. 另一种解决方案是使用<code>Java</code>反射API来动态查找要调用的类和方法. 两种方法都可以利弊.</p>
+<h3 id="从设备中提取隐藏API"><a href="#从设备中提取隐藏API" class="headerlink" title="从设备中提取隐藏API"></a>从设备中提取隐藏API</h3><p>要做到编译时链接隐藏API, 开发者首先要提取和处理设备中的库文件. 即可以从模拟器提取库文件, 也可以从设备中提取这些文件, 因为它们只是用来编译代码. 由于这个过程需要提取出大量文件, 建议单独创建一个空的工作目录. 另外可能要提取多个版本的库文件, 所以开发者还应为每个API级别创建一个工作目录.</p>
+<p><img src="http://szysky.com/2016/10/04/%E3%80%8AAndroid-%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98%E3%80%8B10-%E9%9A%90%E8%97%8F%E7%9A%84Android-API/devicespull.png" alt="img"></p>
+<p>这里会把设备的<code>/system/framework</code>目录全部拉取出来, 这些文件都是Android设备上基于Java的系统库, 他们是由<code>Dalvik</code>虚拟机加载的Dex优化文件. 下一步决定哪些文件包含隐藏API, 以便把它们转成可以在编译时使用的Java类文件. 大部分隐藏API都位于<code>framework.odex</code>文件, <code>bouncycastle.odex</code>文件包含了加密的库.</p>
+<blockquote>
+<p>从Android 4.2开始, 原来位于<code>framework.odex</code>的几个隐藏API都放在了其他文件中. 例如<code>Telephony</code>类现在是可选的了(因为并不是所有的Android设备都支持电话), 可以在<code>telephony-common.odex</code>文件中找到它.</p>
+</blockquote>
+<p>一旦知道需要转换的文件, 就可以下载<code>Smali</code>工具, 它能把优化后的Dex文件(.odex)转换为中间格式(.smali). 接下来使用<code>dex2Jar</code>工具再把这种中间格式转换回Java类文件.</p>
+<hr>
+<p><strong>修改SDK的错误处理</strong></p>
+<p>当使用前面介绍的隐藏API方法时, 很难确定抽取类的方法签名是否和用户设备中相应的方法签名匹配. 虽然修改后的SDK可能在开发用的设备上正常工作, 但是用户的设备制造商可能修改了这些隐藏API. 当这种情况发生时, 应用程序会抛出<code>NoSuchMethodException</code>或者<code>ClassNotFoundException</code>异常.</p>
+<p>有几种方法可以处理种种情况. 可以结合使用反射来检测是否存在隐藏API. 推荐使用这种方式, 因为它结合了两种方法的优点. 另一种方法是简单地捕获异常, 防止应用程序崩溃.</p>
+<p>不管使用哪一种方法, 都是要确保调用隐藏API的时候发生错误的处理. 最起码可以确保应用程序在测试过的设备上能正常工作.</p>
+<h3 id="使用反射调用隐藏API"><a href="#使用反射调用隐藏API" class="headerlink" title="使用反射调用隐藏API"></a>使用反射调用隐藏API</h3><p>使用Java中的反射API比修改<code>Android SDK</code>更安全, 因为它可以在调用<code>隐藏API</code>前检测它们是否存在. 但是, 由于所有隐藏API的绑定和调用都发生在运行时, 反射会比前面介绍的方法更慢.</p>
+<p>使用反射调用隐藏API需要两步. 首先, 需要查找要调用的类和方法, 并把他们的引用存到<code>Method</code>对象中. 当持有了引用后, 接下来就可以调用对象的方法.</p>
+<p>后面会演示了查找Wi-Fi网络共享的例子.</p>
+<h2 id="隐藏API的使用"><a href="#隐藏API的使用" class="headerlink" title="隐藏API的使用"></a>隐藏API的使用</h2><h3 id="接收和阅读SMS"><a href="#接收和阅读SMS" class="headerlink" title="接收和阅读SMS"></a>接收和阅读SMS</h3><p><code>Android</code>中使用隐藏API最常见的例子是接收和阅读<code>SMS</code>, 虽然官方API包含了<code>RECEIVE_SMS</code>和<code>READ_SMS</code>这两个权限, 但实际执行的API却是隐藏的.</p>
+<p>应用程序要想接收<code>SMS</code>必须声明使用<code>RECEIVE_SMS</code>权限, 并且实现<code>BroadcastReceiver</code>, 已处理收到的短信.</p>
+<p>如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">// 清单文件</div><div class="line">&lt;uses-permission android:name=&quot;android.permission.RECEIVE_SMS&quot;/&gt;</div><div class="line"></div><div class="line">&lt;receiver android:name=&quot;.hideapi.SmsReceiver&quot;&gt;</div><div class="line">  &lt;intent-filter&gt;</div><div class="line">      &lt;action android:name=&quot;android.provider.Telephony.SMS_RECEIVED&quot;/&gt;</div><div class="line">  &lt;/intent-filter&gt;</div><div class="line">&lt;/receiver&gt;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line">public class SmsReceiver extends BroadcastReceiver &#123;</div><div class="line">    // Telephony.java 中隐藏的常量</div><div class="line">    public static final String SMS_RECEIVED_ACTION</div><div class="line">            = &quot;android.provider.Telephony.SMS_RECEIVED&quot;;</div><div class="line"></div><div class="line">    public static final String MESSAGE_SERVICE_NUMBER = &quot;+461234567890&quot;;</div><div class="line">    private static final String MESSAGE_SERVICE_PREFIX = &quot;MYSERVICE&quot;;</div><div class="line"></div><div class="line">    public void onReceive(Context context, Intent intent) &#123;</div><div class="line">        String action = intent.getAction();</div><div class="line">        if (SMS_RECEIVED_ACTION.equals(action)) &#123;</div><div class="line">            // 通过 pdus 获取SMS数据的隐藏键</div><div class="line">            Object[] messages =</div><div class="line">                    (Object[]) intent.getSerializableExtra(&quot;pdus&quot;);</div><div class="line">            for (Object message : messages) &#123;</div><div class="line">                byte[] messageData = (byte[]) message;</div><div class="line">                SmsMessage smsMessage =</div><div class="line">                        SmsMessage.createFromPdu(messageData);</div><div class="line">                Log.e(&quot;haha&quot;, &quot;收到消息来自: &quot;+smsMessage.getOriginatingAddress()+ &quot;   内容:&quot;+smsMessage.getMessageBody());</div><div class="line"></div><div class="line">                processSms(smsMessage);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    // 只关心指定的电话号码</div><div class="line">    private void processSms(SmsMessage smsMessage) &#123;</div><div class="line">        String from = smsMessage.getOriginatingAddress();</div><div class="line">        if (MESSAGE_SERVICE_NUMBER.equals(from)) &#123;</div><div class="line">            String messageBody = smsMessage.getMessageBody();</div><div class="line">            if (messageBody.startsWith(MESSAGE_SERVICE_PREFIX)) &#123;</div><div class="line">                // TODO: 数据验证通过开始处理</div><div class="line">                Log.e(&quot;haha&quot;, &quot;processSms: &quot;+messageBody);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上面利用广播监听<code>Intent</code>操作<code>android.provider.Telephony.SMS_RECEIVED</code>. 这个例子中唯一隐藏的部分就是<code>Intent</code>的action. 以及用来从<code>Intent(&quot;pdus&quot;)</code>检索SMS数据的字符串.</p>
+<p>要读取已经收到的<code>SMS</code>, 需要查询一个隐藏的<code>ContentProvider</code>, 并声明使用<code>READ_SMS</code>权限. <code>android.provider</code>包中的<code>Telephony</code>类提供了所有需要的信息. 使用该类最佳的方式是把它复制到自己的项目中, 并修改类的包结构. 由于<code>Telephony</code>类还包含其他隐藏类和方法的调用, 所以还必须删除或者重构这些调用, 以便能够编译代码. 取决于使用<code>隐藏API</code>的数量, 有时候简单复制一些常量声明而不是整个类就足够了.</p>
+<p>阅读的部分就省略了, 除了某些特定方向的应用, 基本上应用是不会去读入用户的短信.</p>
+<h3 id="隐藏设置"><a href="#隐藏设置" class="headerlink" title="隐藏设置"></a>隐藏设置</h3><p><code>Android</code>设备有数百种不同的设置, 都可以通过<code>Settings</code>类访问, 除了为每个设置提供访问的值, <code>Android</code>还提供给了一些类<code>Intent</code>操作, 使他们可以打开特定的设置UI. 例如, 要启动飞行模式设置, 在创建Intent时可以使用<code>Settings.ACTION_AIRPLANE_MODE_SETTINGS</code></p>
+<p><code>Settings</code>类包含了一些隐藏的设置键和Intent操作, 当应用程序需要弄清楚设备的细节或者呈现一个特定系统设置的快捷方式时, 启动的一些常量值是非常方便的.</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/09/12/android/books/《Android 编程实战》Chap10_隐藏的Android API/" data-id="cj7hnifdn000z6opjbxygt8n1" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/09/12/android/books/《Android 编程实战》Chap10_隐藏的Android API/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/09/12/android/books/《Android 编程实战》Chap11_网络 Web服务/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    《Android 编程实战》Chap11_网络 Web服务
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2017/09/12/android/books/《Android 编程实战》Chap9_Android应用安全问题/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">《Android 编程实战》Chap9_Android应用安全问题</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="uyan_frame"></div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">recent</h3>
+        <div class="widget">
+            <ul id="recent-post" class="no-thumbnail">
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/09/12/android/github/Glide解析1/" class="title"></a></p>
+                            <p class="item-date"><time datetime="2017-09-12T10:13:13.000Z" itemprop="datePublished">2017-09-12</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/vim/">vim</a></p>
+                            <p class="item-title"><a href="/2017/09/12/linux/Vim入门/" class="title">Vim入门</a></p>
+                            <p class="item-date"><time datetime="2017-09-12T02:19:50.000Z" itemprop="datePublished">2017-09-12</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/shell/">shell</a></p>
+                            <p class="item-title"><a href="/2017/09/12/linux/Shell常用手册/" class="title">Shell常用手册</a></p>
+                            <p class="item-date"><time datetime="2017-09-12T01:26:25.000Z" itemprop="datePublished">2017-09-12</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/java/">java</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/java/设计模式/">设计模式</a></p>
+                            <p class="item-title"><a href="/2017/09/12/java/设计模式六大原则解析/" class="title">设计模式六大原则解析</a></p>
+                            <p class="item-date"><time datetime="2017-09-12T01:24:10.000Z" itemprop="datePublished">2017-09-12</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/java/">java</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/java/设计模式/">设计模式</a></p>
+                            <p class="item-title"><a href="/2017/09/12/java/设计模式之路/" class="title">设计模式之路</a></p>
+                            <p class="item-date"><time datetime="2017-09-12T01:23:31.000Z" itemprop="datePublished">2017-09-12</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">categories</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">37</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/linux/vim/">vim</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">archives</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">46</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tags</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">36</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tag cloud</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 15px;">code</a> <a href="/tags/git/" style="font-size: 11.67px;">git</a> <a href="/tags/github/" style="font-size: 11.67px;">github</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 13.33px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 10px;">markdown</a> <a href="/tags/mysql/" style="font-size: 16.67px;">mysql</a> <a href="/tags/node/" style="font-size: 18.33px;">node</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.67px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.67px;">设计模式</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">links</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 Ernest Chang<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2142274"></script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <meta charset="utf-8">
+    
+    <title>《Android 编程实战》Chap11_网络 Web服务 | The Old Man and the Sea</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="阅读《Android 编程实战》一书的随记笔记注：本文主要参考http://szysky.com  Android上的网络调用虽然Android同时支持TCP和UDP通信, 但应用程序的大部分网络调用都是建立在TCP之上的HTTP请求完成的. 网络操作的两个比较重要的规则:  永远不要在主线程做耗时操作 在Service而不是Activity中执行网络操作. 因为有很多情况下, 在Activit">
+<meta name="keywords" content="android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Android 编程实战》Chap11_网络 Web服务">
+<meta property="og:url" content="http://yoursite.com/2017/09/12/android/books/《Android 编程实战》Chap11_网络 Web服务/index.html">
+<meta property="og:site_name" content="The Old Man and the Sea">
+<meta property="og:description" content="阅读《Android 编程实战》一书的随记笔记注：本文主要参考http://szysky.com  Android上的网络调用虽然Android同时支持TCP和UDP通信, 但应用程序的大部分网络调用都是建立在TCP之上的HTTP请求完成的. 网络操作的两个比较重要的规则:  永远不要在主线程做耗时操作 在Service而不是Activity中执行网络操作. 因为有很多情况下, 在Activit">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2017-09-12T02:27:26.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="《Android 编程实战》Chap11_网络 Web服务">
+<meta name="twitter:description" content="阅读《Android 编程实战》一书的随记笔记注：本文主要参考http://szysky.com  Android上的网络调用虽然Android同时支持TCP和UDP通信, 但应用程序的大部分网络调用都是建立在TCP之上的HTTP请求完成的. 网络操作的两个比较重要的规则:  永远不要在主线程做耗时操作 在Service而不是Activity中执行网络操作. 因为有很多情况下, 在Activit">
+    
+
+    
+        <link rel="alternate" href="/" title="The Old Man and the Sea" type="application/atom+xml" />
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">The Old Man and the Sea</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/uploads/images/avert.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/uploads/images/avert.png" />
+            <h2 id="name">Ernest Chang</h2>
+            <h3 id="title">Developer &amp; Designer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Hangzhou, China</span>
+            <a id="follow" target="_blank" href="https://github.com/Ernestchang/">FOLLOW</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                67
+                <span>posts</span>
+            </div>
+            <div class="article-info-block">
+                18
+                <span>tags</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/Ernestchang/" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="facebook" class=tooltip>
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="dribbble" class=tooltip>
+                            <i class="fa fa-dribbble"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-android/books/《Android 编程实战》Chap11_网络 Web服务" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            《Android 编程实战》Chap11_网络 Web服务
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/09/12/android/books/《Android 编程实战》Chap11_网络 Web服务/">
+            <time datetime="2017-09-11T23:59:43.000Z" itemprop="datePublished">2017-09-12</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/android/">android</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <blockquote>
+<p>阅读《Android 编程实战》一书的随记笔记<br>注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a></p>
+</blockquote>
+<h2 id="Android上的网络调用"><a href="#Android上的网络调用" class="headerlink" title="Android上的网络调用"></a>Android上的网络调用</h2><p>虽然<code>Android</code>同时支持<code>TCP</code>和<code>UDP</code>通信, 但应用程序的大部分网络调用都是建立在<code>TCP</code>之上的<code>HTTP</code>请求完成的.</p>
+<p>网络操作的两个比较重要的规则:</p>
+<ol>
+<li>永远不要在主线程做耗时操作</li>
+<li>在<code>Service</code>而不是<code>Activity</code>中执行网络操作. 因为有很多情况下, 在<code>Activity</code>中执行网络操作, 很多时候需要考虑<code>Activity</code>快速切换的状态. 比如用户按了主屏幕键, 然后1秒后又回到了应用程序.</li>
+</ol>
+<h3 id="HttpUrlConnection"><a href="#HttpUrlConnection" class="headerlink" title="HttpUrlConnection"></a>HttpUrlConnection</h3><p><code>Android</code>提供了两个用于<code>HTTP</code>通信的API. <code>Apache</code>的<code>HttpClient</code>和<code>HttpUrlConnection</code>. 两者都能提供相同的功能. 但是推荐<code>HttpUrlConnection</code>, 因为谷歌一直在对其维护. 比如透明的响应压缩, 响应缓存.</p>
+<p><code>Android 4.0(ICS)</code>提供响应缓存功能, 所以如果要支持早期的版本, 开发者需要使用手动实现通过反射来初始化缓存. 如果应用最低支持4.0, 那么使用以下代码开启.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">HttpResponseCache httpResponseCache = HttpResponseCache.install(new File(getCacheDir, &quot;http&quot;), CACHE_SIZE);</div></pre></td></tr></table></figure>
+<p>为应用选择一个合适的缓存大小. 如果只获取少量的数据, 可以选择几兆大小的缓存. 缓存对应用程序是私有的, 所以相对来说是比较安全的.</p>
+<p>比如说<code>HTTP GET</code>请求, <a href="https://github.com/suzeyu1992/AndroidProgrammingPushingTheLimits/blob/0d16eb99528aa7ed7bfc238e881222879ab7d95f/Network/app/src/main/java/com/szysky/note/network/HTTPGet.java" target="_blank" rel="external">可以看事例代码</a></p>
+<p><strong>或者说上传文件</strong></p>
+<p>比如说传送图片或者其他文件到服务器, 由于Java API并没有提供一个可以直接上传文件的的方法. 使用HTTP发送数据涉及使用<code>HTTP POST</code>发送<code>body</code>中的数据. 而body需要设置一些特殊的格式, 并且还要正确地设置<code>header</code>字段. 如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div></pre></td><td class="code"><pre><div class="line">private static final long MAX_FIXED_SIZE = 5 * 1024 * 1024;</div><div class="line">private static final String CRLF = &quot;\r\n&quot;;</div><div class="line">/**</div><div class="line">*  使用HTTP POST往服务器发送文件</div><div class="line">*/</div><div class="line">public int postFileToURL(File file, String mimeType, URL url) throws IOException &#123;</div><div class="line"></div><div class="line">   DataOutputStream requestData = null;</div><div class="line">   try &#123;</div><div class="line">       long fileSize = file.length();</div><div class="line">       String fileName = file.getName();</div><div class="line"></div><div class="line">       // 创建一个随机边界符字符串</div><div class="line">       Random random = new Random();</div><div class="line">       byte[] randomBytes = new byte[16];</div><div class="line">       random.nextBytes(randomBytes);</div><div class="line">       String boundary = Base64.encodeToString(randomBytes, Base64.NO_WRAP);</div><div class="line"></div><div class="line">       // 配置请求设置</div><div class="line">       HttpURLConnection uc = (HttpURLConnection) url.openConnection();</div><div class="line">       uc.setUseCaches(false);</div><div class="line">       uc.setDoOutput(true);           // 设置可以发送数据</div><div class="line">       uc.setRequestMethod(&quot;POST&quot;);</div><div class="line"></div><div class="line">       // 设置HTTP header</div><div class="line">       uc.setRequestProperty(&quot;Connection&quot;, &quot;Keep-Alive&quot;);</div><div class="line">       uc.setRequestProperty(&quot;Cache-Control&quot;, &quot;no-cache&quot;);</div><div class="line">       uc.setRequestProperty(&quot;Content-Type&quot;, &quot;multipart/form-data;boundary=&quot;+boundary);</div><div class="line"></div><div class="line">       // 如果文件大于max_fixed_size, 使用分块流模式</div><div class="line">       if (fileSize &gt; MAX_FIXED_SIZE)&#123;</div><div class="line">           uc.setChunkedStreamingMode(0);</div><div class="line">       &#125;else&#123;</div><div class="line">           uc.setFixedLengthStreamingMode((int)fileSize);</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       // 打开文件方便读取</div><div class="line">       FileInputStream fileIn = new FileInputStream(file);</div><div class="line">       // 打开服务器连接</div><div class="line">       OutputStream out = uc.getOutputStream();</div><div class="line">       requestData = new DataOutputStream(out);</div><div class="line"></div><div class="line">       // 开始写数据</div><div class="line">       // 首先写入第一个边界符</div><div class="line">       requestData.writeBytes(&quot;--&quot; +boundary + CRLF);</div><div class="line">       // 让服务器知道文件名</div><div class="line">       requestData.writeBytes(&quot;Content-Disposition: form-data; name=\&quot;&quot;+ fileName + &quot;\&quot;; filename=\&quot;&quot;+fileName + CRLF);</div><div class="line">       // 文件的MIME类型</div><div class="line">       requestData.writeBytes(&quot;Content-Type: &quot;+mimeType + CRLF);</div><div class="line"></div><div class="line">       // 循环读取本地文件, 并写入服务器</div><div class="line">       int bytesRead;</div><div class="line">       byte[] buffer = new byte[8 * 1024];</div><div class="line">       while((bytesRead = fileIn.read(buffer)) != -1)&#123;</div><div class="line">           requestData.write(buffer, 0, bytesRead);</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       // 写入边界字符串, 表明已到文件结尾</div><div class="line">       requestData.writeBytes(CRLF);</div><div class="line">       requestData.writeBytes(&quot;--&quot; +boundary +&quot;--&quot;+ CRLF);</div><div class="line">       requestData.flush();</div><div class="line"></div><div class="line">       return uc.getResponseCode();</div><div class="line"></div><div class="line">   &#125; catch (IOException e) &#123;</div><div class="line">       e.printStackTrace();</div><div class="line">   &#125;finally &#123;</div><div class="line">       if (requestData != null)&#123;</div><div class="line">           requestData.close();</div><div class="line">       &#125;</div><div class="line">       return -1;</div><div class="line">   &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上面代码, 需要要知道如何使用边界字符串告诉服务器文件的开始和结束位置. 另外上面还通过检查文件的大小而决定是<code>使用分块流模式(chunked streaming mode)</code>,还是<code>使用固定长度流模式</code> . 对于<code>分块流模式</code>参数0表示系统的默认大小, 这是大多数程序在该模式下的大小. 分块基本上意味着数据分部分发送数据, 每一部分都附有该块大小. 分块能更有效地使用内存, 并较少oom异常的分享, 然而, 使用固定长度的数据流模式通常更快, 但它需要更多的内存.</p>
+<h3 id="OkHttp和SPDY"><a href="#OkHttp和SPDY" class="headerlink" title="OkHttp和SPDY"></a>OkHttp和SPDY</h3><p><code>HTTP</code>的一个大问题就是每个连接只允许一个请求和响应, 这迫使浏览器和其他客户端为了并行请求必须生成多个<code>套接字socket</code>连接. 虽然对于客户端连接问题就不那么大了, 但是如果是服务器端那么面临的状态就不同而语了. 在2009年, 谷歌开始着手更新<code>HTTP协议</code>来解决这些问题. 其结果就是<code>SPDY协议</code>, 它允许在一个套接字连接上发送多个<code>HTTP请求</code>. 该协议已成为下一代<code>HTTP</code>事实上的开放标准, 但它不会取代<code>HTTP</code>, 而是改良了如何通过网络请求和响应. 而<code>HTTP IETF</code>工作组日前已宣布即将开始<code>HTTP 2.0</code>的工作, 并使用<code>SPDY协议</code>作为起点.</p>
+<p>如果同时开始客户端和服务端代码, 研究一下使用<code>SPDY</code>来代替常规的<code>HTTP/1.1</code>还是不错的, 因为<code>SPDY</code>能显著降低网络负载, 并能提高性能. 主流浏览器目前已经很好地支持<code>SPDY</code>, 并且已经有很多平台的实现版本, 启动就包括<code>Android</code>.</p>
+<p>如果选择<code>SPDY</code>作为通信协议, 建议使用<code>OkHttp</code>, 它是<code>Square</code>公司开发的, 该库只是一个支持<code>SPDY</code>的新改进的<code>HTTP</code>客户端. 内部使用<code>HttpUrlConnection</code>接口.</p>
+<p>当初始化<code>OkHttpClient</code>实例时, 它会初始化所有的东西, 比如连接池和响应缓存. 即使是普通的HTTP请求, 该实现也非常快, 使用OkHttp进行SPDY通信能显著提升网络调用的性能.</p>
+<h3 id="Web-Socket"><a href="#Web-Socket" class="headerlink" title="Web Socket"></a>Web Socket</h3><p>运行标准的HTTP之上, 是HTTP的扩展. <code>Web Socket</code>允许在客户端和服务器端之前进行基于消息的异步通信. 首先客户端发送一个常规的<code>HTTP GET</code>请求, 该请求包含特殊的<code>HTTP请求头</code>, 表明客户端希望把连接升级为<code>Web Socket</code>连接.</p>
+<p>如下当使用<code>Web Socket</code>时,客户端发送的请求示例:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">GET /websocket HTTP/1.1</div><div class="line">Host: myserver.com</div><div class="line">Upgrade: websocket</div><div class="line">Connection: Upgrade</div><div class="line">Sec-WebSocket-Key: xxxxxxxxxxxxxxxxxx==</div><div class="line">Sec-WebSocket-Protocol: chat</div><div class="line">Sec-WebSocket-Version: 13</div><div class="line">Origin: http://myserver.com</div></pre></td></tr></table></figure>
+<p>如果接收客户端的请求, 下面是服务器对请求的响应:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">HTTP/1.1 101 Switching Protocols</div><div class="line">Upgrade: websocket</div><div class="line">Connection: Upgrade</div><div class="line">Sec-WebSocket-Accept: xxxxxxxxxxxxxxxxxxx=</div><div class="line">Sec-WebSocket-Protocol: chat</div></pre></td></tr></table></figure>
+<blockquote>
+<p>客户端的请求头中的值并不是对每一种情况都有效, 而应根据Web Socket协议规范来计算. 通常情况下, 如果使用现成的<code>Web Socket</code>通信库, 开发者就不需要考虑这些情况.</p>
+</blockquote>
+<p>当<code>Web socket</code>连接建立后, 双方可以给对方发送异步消息. 通信的消息可以是文本, 或者二进制, 通常数据量是很小的. 如果需要传输大的文件, 最好还是使用标准的<code>Http</code>. <code>Web socket</code>用于发送符合相对较小的通知.</p>
+<p>关于使用, 可以使用<code>Android</code>中标准的<code>Socket</code>类来实现自己的<code>Web Socket</code>客户端, 但也可以使用现有的第三方库. 比如由<code>Nathan Rajlich</code>为Java实现的WebSocket. 可以看<a href="http://java-websocket.org/" target="_blank" rel="external">介绍</a>. 另外, 这个库还包含了一个服务器的实现.</p>
+<h2 id="网络和功耗"><a href="#网络和功耗" class="headerlink" title="网络和功耗"></a>网络和功耗</h2><p>手机功耗, 一般手机中消耗第一应该是屏幕, 然后第二往往和网络流量有关.</p>
+<p>智能手机的无线硬件如WiFi和蜂窝网络芯片都有内置省电功能, 他们能在网络流量不活跃时自动关闭连接, 并能把功耗降到一个非常低的水平. 当应用程序要发送数据或者等待接收输入数据和包时, 网络硬件将禁用省电模式, 以便能尽可能快速和有效地发送数据.</p>
+<h3 id="一般准则"><a href="#一般准则" class="headerlink" title="一般准则"></a>一般准则</h3><p>在请求网络前, 首先考虑用户目前是否确实需要这些数据. 其次考虑是否需要全部数据, 或者只是数据的前十条而已, 如果服务器也可以进行gzip压缩, 要记得打开透明压缩, 并选择数据的数据格式, 例如json.</p>
+<h3 id="高效的网络轮询"><a href="#高效的网络轮询" class="headerlink" title="高效的网络轮询"></a>高效的网络轮询</h3><p>网络轮询有几个缺点, 但是有时只能使用轮询来完成在线服务器的新数据的检查. 这时就别忘了<code>AlarmManager</code>这个API可以方便的进行轮询.</p>
+<h3 id="服务器端推送"><a href="#服务器端推送" class="headerlink" title="服务器端推送"></a>服务器端推送</h3><p>减少网络调用次数最好的解决办法就是使用服务器端推送. 这样可以让服务器主动通知客户端有新的数据需要检索. 服务器端推送可以有很多种方式, 它可以不直接连接互联网(比如监听短信), 也可以是长期保持获取的常规TCP套接字连接.</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/09/12/android/books/《Android 编程实战》Chap11_网络 Web服务/" data-id="cj7hnifdt00126opj74bshbyk" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/09/12/android/books/《Android 编程实战》Chap11_网络 Web服务/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/09/12/android/books/《Android 编程实战》Chap12_远程设备其余通信方式/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    《Android 编程实战》Chap12_远程设备其余通信方式
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2017/09/12/android/books/《Android 编程实战》Chap10_隐藏的Android API/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">《Android 编程实战》Chap10_隐藏的Android API</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="uyan_frame"></div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">recent</h3>
+        <div class="widget">
+            <ul id="recent-post" class="no-thumbnail">
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/09/12/android/github/Glide解析1/" class="title"></a></p>
+                            <p class="item-date"><time datetime="2017-09-12T10:13:13.000Z" itemprop="datePublished">2017-09-12</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/vim/">vim</a></p>
+                            <p class="item-title"><a href="/2017/09/12/linux/Vim入门/" class="title">Vim入门</a></p>
+                            <p class="item-date"><time datetime="2017-09-12T02:19:50.000Z" itemprop="datePublished">2017-09-12</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/shell/">shell</a></p>
+                            <p class="item-title"><a href="/2017/09/12/linux/Shell常用手册/" class="title">Shell常用手册</a></p>
+                            <p class="item-date"><time datetime="2017-09-12T01:26:25.000Z" itemprop="datePublished">2017-09-12</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/java/">java</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/java/设计模式/">设计模式</a></p>
+                            <p class="item-title"><a href="/2017/09/12/java/设计模式六大原则解析/" class="title">设计模式六大原则解析</a></p>
+                            <p class="item-date"><time datetime="2017-09-12T01:24:10.000Z" itemprop="datePublished">2017-09-12</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/java/">java</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/java/设计模式/">设计模式</a></p>
+                            <p class="item-title"><a href="/2017/09/12/java/设计模式之路/" class="title">设计模式之路</a></p>
+                            <p class="item-date"><time datetime="2017-09-12T01:23:31.000Z" itemprop="datePublished">2017-09-12</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">categories</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">37</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/linux/vim/">vim</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">archives</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">46</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tags</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">36</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tag cloud</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 15px;">code</a> <a href="/tags/git/" style="font-size: 11.67px;">git</a> <a href="/tags/github/" style="font-size: 11.67px;">github</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 13.33px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 10px;">markdown</a> <a href="/tags/mysql/" style="font-size: 16.67px;">mysql</a> <a href="/tags/node/" style="font-size: 18.33px;">node</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.67px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.67px;">设计模式</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">links</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 Ernest Chang<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2142274"></script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <meta charset="utf-8">
+    
+    <title>设计模式之路 | The Old Man and the Sea</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="注：本文主要参考http://szysky.com  灵活之路 - 面向对象六大原则如果下面文字描述,不是很明白那么跳转到后面链接有详细代码说明原则解析  1单一职责原则SRP(Single Responsibility Principle)  定义: 就一个类而言, 应该仅有一个引起它的变化的原因. 通俗点就是一个类应该是相关性很高数据封装 举例: 现在有一个图片加载类. 但是这个类内部包含了">
+<meta name="keywords" content="java,设计模式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式之路">
+<meta property="og:url" content="http://yoursite.com/2017/09/12/java/设计模式之路/index.html">
+<meta property="og:site_name" content="The Old Man and the Sea">
+<meta property="og:description" content="注：本文主要参考http://szysky.com  灵活之路 - 面向对象六大原则如果下面文字描述,不是很明白那么跳转到后面链接有详细代码说明原则解析  1单一职责原则SRP(Single Responsibility Principle)  定义: 就一个类而言, 应该仅有一个引起它的变化的原因. 通俗点就是一个类应该是相关性很高数据封装 举例: 现在有一个图片加载类. 但是这个类内部包含了">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_ALL.png">
+<meta property="og:image" content="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_Builder.png">
+<meta property="og:image" content="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_Factory.png">
+<meta property="og:image" content="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_AbsFactory.png">
+<meta property="og:image" content="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/test_absFactory.png">
+<meta property="og:image" content="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_Strategy.png">
+<meta property="og:image" content="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_Animation.png">
+<meta property="og:image" content="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_State.png">
+<meta property="og:image" content="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/elevator_sequence.png">
+<meta property="og:image" content="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_Iterator.png">
+<meta property="og:image" content="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_Command.png">
+<meta property="og:image" content="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_Memento.png">
+<meta property="og:image" content="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_Cursor.png">
+<meta property="og:image" content="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_Template.png">
+<meta property="og:image" content="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_Mediator.png">
+<meta property="og:image" content="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_Proxy.png">
+<meta property="og:image" content="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/proxy-ams.png">
+<meta property="og:image" content="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_Composite.png">
+<meta property="og:image" content="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/composite-view.png">
+<meta property="og:image" content="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_Decorator.png">
+<meta property="og:image" content="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_Flyweight.png">
+<meta property="og:image" content="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/fly-message.png">
+<meta property="og:image" content="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_Facade.png">
+<meta property="og:updated_time" content="2017-09-12T02:32:47.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="设计模式之路">
+<meta name="twitter:description" content="注：本文主要参考http://szysky.com  灵活之路 - 面向对象六大原则如果下面文字描述,不是很明白那么跳转到后面链接有详细代码说明原则解析  1单一职责原则SRP(Single Responsibility Principle)  定义: 就一个类而言, 应该仅有一个引起它的变化的原因. 通俗点就是一个类应该是相关性很高数据封装 举例: 现在有一个图片加载类. 但是这个类内部包含了">
+<meta name="twitter:image" content="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_ALL.png">
+    
+
+    
+        <link rel="alternate" href="/" title="The Old Man and the Sea" type="application/atom+xml" />
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">The Old Man and the Sea</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/uploads/images/avert.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/uploads/images/avert.png" />
+            <h2 id="name">Ernest Chang</h2>
+            <h3 id="title">Developer &amp; Designer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Hangzhou, China</span>
+            <a id="follow" target="_blank" href="https://github.com/Ernestchang/">FOLLOW</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                67
+                <span>posts</span>
+            </div>
+            <div class="article-info-block">
+                18
+                <span>tags</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/Ernestchang/" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="facebook" class=tooltip>
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="dribbble" class=tooltip>
+                            <i class="fa fa-dribbble"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-java/设计模式之路" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            设计模式之路
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/09/12/java/设计模式之路/">
+            <time datetime="2017-09-12T01:23:31.000Z" itemprop="datePublished">2017-09-12</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/java/">java</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/java/设计模式/">设计模式</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/java/">java</a>, <a class="tag-link" href="/tags/设计模式/">设计模式</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <blockquote>
+<p>注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a></p>
+</blockquote>
+<h2 id="灵活之路-面向对象六大原则"><a href="#灵活之路-面向对象六大原则" class="headerlink" title="灵活之路 - 面向对象六大原则"></a>灵活之路 - 面向对象六大原则</h2><p><code>如果下面文字描述,不是很明白那么跳转到后面链接有详细代码说明</code><a href="http://szysky.com/2016/11/28/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%85%AD%E5%A4%A7%E5%8E%9F%E5%88%99%E8%A7%A3%E6%9E%90/" target="_blank" rel="external">原则解析</a></p>
+<ul>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">单一职责原则SRP(Single Responsibility Principle)</div></pre></td></tr></table></figure>
+<ul>
+<li><code>定义</code>: 就一个类而言, 应该仅有一个引起它的变化的原因. <code>通俗点</code>就是一个类应该是相关性很高数据封装</li>
+<li><code>举例</code>: 现在有一个图片加载类. 但是这个类内部包含了<strong>图片下载的逻辑</strong>,<strong>图片缓存的逻辑</strong>这样就使得这个类的职责过多, 随着功能的不断完善, 这个类的代码和逻辑也变得纵横交错混合在了一起. 对于后续的修改维护扩展都是不利的. 所以让两个类组合起来, 一个类内部只负责<strong>图片下载</strong>,另一个类内部负责<strong>图片缓存</strong>. 保持每个类的<strong>单一职责</strong></li>
+</ul>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">开闭原则OCP(Open Close Principle)</div></pre></td></tr></table></figure>
+<ul>
+<li><code>定义</code>: 软件中的对象应该对于<strong>扩展</strong>是<strong>开放</strong>的 但是对于<strong>修改</strong>是<strong>封闭</strong>的. <code>通俗点</code> : 尽量通过<strong>扩展的方式</strong>来实现变化, 而不是通过修改已有的代码来实现.</li>
+<li><code>举例</code>: 此时我们实现了一个<strong>双缓存类</strong>和<strong>单缓存类</strong>. 在<strong>图片加载类</strong>中进行这两个缓存类的实例. 并对外暴露一个布尔值让用户设置是否使用双缓存来决定内部缓存的逻辑. ok. 目前看可能没有问题. 但是如果有一个更好的缓存算法类, 这时候每次都需要在<strong>图片加载类中修改代码</strong>. 这就违反了<code>OCP</code>原则, 利用<strong>继承,接口</strong>的特性可以让此类问题得以解决. 比如: 我们可以定义一个<code>缓存接口</code>, 在<strong>加载类</strong>中使用的个这个接口中的方法. 而这个接口的具体实现通过暴露一个方法让外部调用的时候传入, 以后如果有新的缓存类只需要调用方法传入接口的子类就可以. 这样就对于原始代码修改进行了关闭, 而对于扩展是开放的.</li>
+</ul>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">里氏替换原则LSP(Liskov Substitution Principle)</div></pre></td></tr></table></figure>
+<ul>
+<li><code>定义</code>: 所有引用基类的地方必须能透明地使用其子类. <code>通俗点</code>:是基于继承,多态两大特性. 再简单点<strong>抽象</strong></li>
+<li><code>举例</code>: <code>Window#show(View view)</code>这个方法接收一个<strong>View</strong>, 但是我们可以<code>Button</code>,<code>TextView</code>等等. 其实很简单. 我们常用只不过不知道这个名字而已. 所以<code>LSP</code>的原则的核心就是<strong>抽象</strong>. 抽象又依赖于继承这个特性. <strong>通常开闭原则和里氏替换是不离不弃的</strong>例如上面<code>OCP</code>中举得例子. 在外部调用就是利用了继承的特性, 也就是<strong>里氏替换</strong></li>
+</ul>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">依赖倒置原则DIP(Dependence Inversion Principle)</div></pre></td></tr></table></figure>
+<ul>
+<li><code>定义</code>: 指代了一种特定的解耦形式, 使得高层次的模块不依赖于低层次的模块的实现细节的目的, 依赖模块被颠倒了. <code>通俗点</code>: 在Java中依赖抽象(接口,抽象类), 而不依赖具体实现类. 模块之间的依赖通过<strong>抽象</strong>发生, 实现类之间不发生直接的依赖关系, 其依赖关系是通过接口或抽象类产生.</li>
+<li><code>举例</code>: 还是在<code>OCP</code>中的例子, 内部加载类依赖于也就是成员变量是<code>缓存接口</code>, 而不是具体的某一个<code>单缓存</code>或者<code>双缓存</code>的实现类.</li>
+</ul>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">接口隔离原则ISP(Interface Segregation Principles)</div></pre></td></tr></table></figure>
+<ul>
+<li><code>定义</code>: 接口的依赖关系应该建立在最小的接口上. <code>通俗点</code>:接口隔离原则的目的是系统解开耦合, 从而容易重构, 更改和重新部署.</li>
+<li><code>举例</code>: 在操作一些<strong>IO文件,网络</strong>的时候我们总是伴随着<code>try...catch...finally</code>. 在最终调用块中调用<code>close()</code>确保资源可以正确的释放. 但这样这样的代码不仅可读性差可以每次都是写一些冗余的模板代码. 其实可以提供一个静态方法, 而根据java中的的特性,之上操作的对象都会实现一个<strong>标识接口Closeable</strong>,这个接口标识了一个可关闭的对象有一个<code>close()</code>. 所以这个静态方法的形参接收一个<code>Closeable</code>接口,并在方法内调用<code>close()</code>即可. 仔细想想: 这个方法的形参在调用的时候传入的实参是<strong>里氏替换原则</strong>, 而方法内部调用的是一个接口的<code>close()</code>方法,但传入的可能是某一个实现类,那么这不就是<strong>依赖导致原则</strong>,并且建立在最小化的依赖基础上, 只要知道这个对象是可关闭的, 别的一概不关心, 这就是<strong>接口隔离原则</strong>.</li>
+</ul>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">迪米特原则LOD(Law of Demeter)</div></pre></td></tr></table></figure>
+<ul>
+<li><code>定义</code>: 一个对象应该对其他对象有<strong>最少</strong>的了解. <code>通俗点</code>: 一个类应该对自己需要耦合或调用的类知道的最少, 类的内部如果实现与调用者或者依赖者没有关系, 调用者或者依赖者只需要知道他需要的方法即可, 其他一概不管.</li>
+<li><code>举例</code>: 房间类, 中介类, 上班族类. 可以<strong>上班族</strong>应该只关心<strong>中介类</strong>, 而不需要关注<strong>房间类</strong>. 只需要<strong>中介类</strong>返回房子的地址即可. 而不需要通过调用<strong>中介类</strong>返回一个<strong>房间类</strong> . 这也就是代码中需要注意的. 不要过度耦合, 要降低类之间的关系.</li>
+</ul>
+</li>
+</ul>
+<h2 id="启航之路-UML类图说明"><a href="#启航之路-UML类图说明" class="headerlink" title="启航之路 - UML类图说明"></a>启航之路 - UML类图说明</h2><blockquote>
+<p>对于许多类组成的庞大关系网, 最好的办法是通过图来表示出其关系. 可以直观的看出组合的元素, 元素直接是如何存在的, 元素与哪些元素直接存在着联系等. 表示出来的图就是<code>UML类图</code>.</p>
+</blockquote>
+<p>可以看如下一个稍微完整的一个<code>UML类图</code></p>
+<p><img src="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_ALL.png" alt="img"></p>
+<hr>
+<p><strong>组成元素</strong></p>
+<ul>
+<li><code>类和接口</code>: 通过黄色的矩形框来表示一个类, 例如上面鸟就是一个<strong>普通类</strong>, 如果类名是斜体那么就是<strong>抽象类</strong>, 如果和<strong>飞翔</strong>或者<strong>唐老鸭</strong>的表示法那么就是接口.</li>
+<li><code>访问权限</code>: 通过<code>+ 公共权限</code>, <code>- 私有权限</code>, <code># 保护权限</code></li>
+<li><code>变量和方法</code>: 分别在第二行, 和第三行表示,抽象方法同样斜体表示, 静态属性的用下划线表示.</li>
+</ul>
+<hr>
+<p><strong>关系结构</strong></p>
+<ul>
+<li><code>继承关系</code>: 类与类之间的关系, 通过<strong>空心三角+实线</strong>表示, 通过<strong>箭头的方向指向父类</strong>表述关系.</li>
+<li><code>实现关系</code>: 类与接口直接的关系, 通过<strong>空心三角+虚线</strong>表示, 通过<strong>箭头的方向指向接口</strong>表述关系.</li>
+<li><code>关联关系</code>: 当一个类知道另一个类的时候,可以使用<strong>关联</strong>, 比如企鹅和气候两个类中, <code>企鹅类的变量有气候类的引用</code>, 这个时候就如上图之间的关系. <strong>实线箭头</strong>表示, <strong>箭头指向被知道的类</strong></li>
+<li><code>依赖关系</code>: 例如<strong>动物</strong>是依赖<strong>氧气和水的</strong>, 就如<code>动物类中的方法形参类型依赖这两个类型</code>. 如上图动物和水之间关系. 使用<strong>虚线箭头</strong>, <strong>箭头指向被依赖的类</strong></li>
+<li><code>聚合关系</code>: 表示一种弱拥用, A可以包含B, 但B不可以包含A. 如大雁和雁群两个类. 雁群类中会有一个数组,数组的元素是大雁类型. 这之间就是<code>聚合</code>. 使用<strong>空心菱形+实线箭头</strong></li>
+<li><code>合成关系</code>: 也可以认为是<code>组合</code>. 是一种强拥有关系. 例如鸟类和翅膀类, 鸟类是整体, 翅膀类是部分. 并且其生命周期相同, 对应着就是<strong>在鸟类初始化的时候,翅膀类也会随之初始化</strong>. 并且, 上图中的鸟到翅膀还有<code>1..2</code>的字样. 这称为<strong>基数</strong>. 表明一段会有几个实例, 例如一个鸟会有两个翅膀. 如果一个类有无数个实例那就用<code>n</code>表示. <code>关联关系</code>,<code>聚合关系</code>也是可以有<strong>基数</strong>的. 使用<strong>实心菱形+实线箭头</strong>表示.</li>
+</ul>
+<blockquote>
+<p>编程是门技术, 更加是一门艺术, 不能只满足代码结果运行正确就完事, 时常考虑如果让代码更加简练, 更加容易维护, 更易扩展和复用, 这样才可以真正提高.</p>
+</blockquote>
+<h2 id="发现之路-23种设计模式"><a href="#发现之路-23种设计模式" class="headerlink" title="发现之路 - 23种设计模式"></a>发现之路 - 23种设计模式</h2><h3 id="单例模式-Singleton"><a href="#单例模式-Singleton" class="headerlink" title="单例模式 Singleton"></a>单例模式 Singleton</h3><h4 id="模式介绍"><a href="#模式介绍" class="headerlink" title="模式介绍"></a>模式介绍</h4><ul>
+<li><code>定义</code>: 确保某个类只有一个实例, 而且自行实例化并向整个系统提供这个实例.</li>
+<li><code>场景</code>: 确保一个类只会有一个对象实例, 避免产生多个对象消耗过多的资源, 或者某种类型的对象只应该有且只有一个. 如创建一个对象需要消耗的资源过多, 访问IO和数据库等资源时就可以考虑单例.</li>
+</ul>
+<h4 id="模式范例"><a href="#模式范例" class="headerlink" title="模式范例"></a>模式范例</h4><p>单例模式的实现有5种.</p>
+<ul>
+<li>饿汉式单例 –&gt; <a href="https://github.com/suzeyu1992/AlgorithmTraining/blob/master/src/design/single/HungrySingle.java" target="_blank" rel="external">实现代码</a></li>
+<li>懒汉式单例 –&gt; <a href="https://github.com/suzeyu1992/AlgorithmTraining/blob/master/src/design/single/LazySingle.java" target="_blank" rel="external">实现代码</a></li>
+<li>静态内部类单例 –&gt; <a href="https://github.com/suzeyu1992/AlgorithmTraining/blob/master/src/design/single/InnerStaticSingle.java" target="_blank" rel="external">实现代码</a></li>
+<li>枚举单例 –&gt; <a href="https://github.com/suzeyu1992/AlgorithmTraining/blob/master/src/design/single/EnumSingle.java" target="_blank" rel="external">实现代码</a></li>
+<li>容器实现单例 –&gt; <a href="https://github.com/suzeyu1992/AlgorithmTraining/blob/master/src/design/single/CollectionSingle.java" target="_blank" rel="external">实现代码</a> 这种方式在<code>android</code>源码中存在.</li>
+</ul>
+<hr>
+<p><strong>知识扩展</strong></p>
+<p><code>枚举实现法</code>最大的优点就是实现简单, 但是在<code>android</code>却比较消耗内存. 有一点与其他单例模式不同的是: 默认枚举实例的创建<code>是线程安全的</code>. 为什么? 因为其他的单例在一种特定的场合下会重新创建对象,那就是<code>反序列化</code>.</p>
+<p><code>反序列化</code>是从磁盘读回数据并创建一个新的对象. 即使构造函数是私有的, 反序列化依然可以通过特殊的途径去创建一个实例, 相当于调用了构造函数. 反序列化提供了一个很特别的<code>钩子函数</code>, 类中具有一个私有的, 被实例化的方法<code>readResolver()</code>, 这个方法可以让开发人员控制对象的反序列化. 例如上面的几个单例模式, 如果想杜绝单例对象在被反序列化时重新生成对象, 那么必须加入如下方法:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">private Object readResolve() throws ObjectStreamException()&#123;</div><div class="line">    return sInstent;        // 返回单例中的实例对象</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这样在反序列化的时候就不是默认的重新生成一个新对象. 而对于枚举,并不存在这个问题. 因为即使反序列化它也不会重新生成新的实例.</p>
+<h4 id="Android源码对应模式"><a href="#Android源码对应模式" class="headerlink" title="Android源码对应模式"></a>Android源码对应模式</h4><p>我们经常会在<code>Activity</code>中通过<code>getSystemService(String name)</code>这个函数来获取系统的服务, 比如说<code>WMS</code>,<code>AMS</code>,<code>LayoutInflater</code>等等. 这些服务都会在某一时刻以<code>容器单例</code>的形式保存在应用中.</p>
+<p>以<code>Adapter#getView()</code>中使用布局加载器<code>LayoutInflate.from(context).inflate(layoutId,null)</code>为例</p>
+<p>会调用<code>ContextImpl#getSystemService(String)</code>方法获取服务, 而方法内部只是从一个<code>SYSTEM_SERVICE_MAP</code>名字的集合中获取了一个<code>ServiceFetcher</code>对象, 并从其中获取具体的服务返回.</p>
+<p>那么我们可以缕一下应用的启动, 并定位到何时保存的这些服务到这个集合的.</p>
+<ol>
+<li>首先应用的入口为<code>ActivityThread#main()</code>,在这个函数里面会创建<code>ActivityThread</code>对象, 并启动消息循环(UI)线程, 调用<code>attach(boolean)</code>函数</li>
+<li>在<code>attach(boolean)</code>中通过<code>Binder</code>机制与<code>ActivityManagerService</code>通信, 最终回调本类的<code>handlelaunchActivity()</code>函数.</li>
+<li>然后执行<code>PerformLaunchActivity()</code>函数, 开始创建<code>Application</code>,<code>Context</code>,<code>Activity</code>, 并把上下文关联到<code>Activity</code>中, 最终调用<code>Activity#onCreate()</code></li>
+</ol>
+<p>ok刚才大概流程是这样的, 通过之前的分析我们知道, 各个系统服务是保存在<code>ContextImpl类中的</code>, 这个类是在上面的第3步中被初始化的. 看如下代码, 就是服务被注册的代码, 时机也就是第一个<code>Context</code>被创建的时候.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">class ContextImpl extends Context &#123;</div><div class="line">    // 存储所有系统服务的集合</div><div class="line">    private static final HashMap&lt;String, ServiceFetcher&gt; SYSTEM_SERVICE_MAP =new HashMap&lt;String, ServiceFetcher&gt;();</div><div class="line">    </div><div class="line">    // 一个注册服务的并添加到结合的方法</div><div class="line">    private static void registerService(String serviceName, ServiceFetcher fetcher) &#123;</div><div class="line">       if (!(fetcher instanceof StaticServiceFetcher)) &#123;</div><div class="line">           fetcher.mContextCacheIndex = sNextPerContextServiceCacheIndex++;</div><div class="line">       &#125;</div><div class="line">       SYSTEM_SERVICE_MAP.put(serviceName, fetcher);</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    // 静态语句块, 只在类第一次被加载的时候调用, 保证了服务只被添加一次.</div><div class="line">    static &#123;</div><div class="line">        // 注册了LayoutInflate服务</div><div class="line">        registerService(LAYOUT_INFLATER_SERVICE, new ServiceFetcher() &#123;</div><div class="line">                public Object createService(ContextImpl ctx) &#123;</div><div class="line">                    return PolicyManager.makeNewLayoutInflater(ctx.getOuterContext());</div><div class="line">                &#125;&#125;);</div><div class="line">                </div><div class="line">        registerService(INPUT_SERVICE, new StaticServiceFetcher() &#123;</div><div class="line">                public Object createStaticService() &#123;</div><div class="line">                    return InputManager.getInstance();</div><div class="line">                &#125;&#125;);</div><div class="line"></div><div class="line">        /**</div><div class="line">         *  后面省略一大坨的注册的服务代码</div><div class="line">        **/</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="建造者模式-Builder"><a href="#建造者模式-Builder" class="headerlink" title="建造者模式 Builder"></a>建造者模式 Builder</h3><h4 id="模式介绍-1"><a href="#模式介绍-1" class="headerlink" title="模式介绍"></a>模式介绍</h4><blockquote>
+<p>一个复杂的对象有很多组成成分, 如汽车, 车轮, 方向盘, 发动机,等等. 为了在构建过程中对外部隐藏实现细节, 就可以使用<code>Builder</code>模式将部件和组装过程分离, 使得构建过程和部件都可以自由扩展, 两者之间的耦合也将到了最低.</p>
+</blockquote>
+<ul>
+<li><p><code>定义</code>: 将一个复杂对象的构建与它的表示分离, 使得同样的构建过程可以创建不同的表示.</p>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">场景</div></pre></td></tr></table></figure>
+<p>:</p>
+<ol>
+<li>当初始化一个队形特别复杂, 参数特别多, 且有很多参数都具有默认值时.</li>
+<li>相同的方法, 不同的执行顺序, 产生不同的事件结果时</li>
+<li>多个部件或零件, 都可以装配到一个对象中, 但是产生的运行结果又不相同.</li>
+</ol>
+</li>
+</ul>
+<h4 id="模式范例-1"><a href="#模式范例-1" class="headerlink" title="模式范例"></a>模式范例</h4><p><a href="https://github.com/suzeyu1992/AlgorithmTraining/tree/master/src/design/builder" target="_blank" rel="external">范例代码</a></p>
+<p>范例的UML类图</p>
+<p><img src="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_Builder.png" alt="img"></p>
+<p>上例中通过具体<code>MacbookBuilder</code>类构建<code>Macbook</code>对象, 而<code>Director</code>封装了构建复杂产品对象的过程, 对外隐藏了构建的细节. <code>Builder</code>于<code>Director</code>一起将一个复杂对象的构建与它的表示分离, 是的同样的构建过程可以创建不同的对象.</p>
+<p>可能你会觉得<code>唉? 怎么和我见过的Builder模式不一样呢?</code> ,这是因为<code>Director</code>这个角色经常会被忽略. 而直接使用一个<code>Builder</code>来进行对象的封装, 并且这个<code>Builder</code>通常为<strong>链式调用</strong>, 它的每个<code>setter</code>方法都会返回<code>this</code>自身, 比如我们常用的<code>AlertDialog</code>. 下节介绍.</p>
+<h4 id="Android源码模式实现"><a href="#Android源码模式实现" class="headerlink" title="Android源码模式实现"></a>Android源码模式实现</h4><p>在Android中最经典的<code>Builder</code>实现就是<code>AlertDialog</code>. 看一下开发中的使用:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">// 一个粗略的创建dialog</div><div class="line">// 创建构建者builder角色</div><div class="line">AlertDialog.Builder builder = new AlertDialog.Builder(this);</div><div class="line">builder.setIcon(android.R.drawable.sym_def_app_icon)</div><div class="line">      .setTitle(&quot;标题&quot;)</div><div class="line">      .setMessage(&quot;message&quot;)</div><div class="line">      // 设置点击等..</div><div class="line">      .setPositiveButton(&quot;确定&quot;, null);</div><div class="line"></div><div class="line">// 构建</div><div class="line">AlertDialog alertDialog = builder.create();</div><div class="line"></div><div class="line">// 显示</div><div class="line">alertDialog.show();</div></pre></td></tr></table></figure>
+<p>从类名就可以看出这是一个<code>Builder模式</code>, 通过<code>Builder</code>对象来组装<code>Dialog</code>的各个部分. 将<code>Dialog</code>的构造和表示进行了分离.</p>
+<p>接下来看一下<code>AlertDialog</code>的源码:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div></pre></td><td class="code"><pre><div class="line">public class AlertDialog extends Dialog implements DialogInterface &#123;</div><div class="line">    // AlertController 这个对象会保存Builder对象中的各个参数</div><div class="line">    private AlertController mAlert;</div><div class="line">    </div><div class="line">    // 实际上操作的是上面这个变量中的属性</div><div class="line">    @Override</div><div class="line">    public void setTitle(CharSequence title) &#123;</div><div class="line">        super.setTitle(title);</div><div class="line">        mAlert.setTitle(title);</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    public void setMessage(CharSequence message) &#123;</div><div class="line">        mAlert.setMessage(message);</div><div class="line">    &#125;</div><div class="line">    // 省略一坨代码如各种setter等</div><div class="line">    // Builder以内部类的形式存在</div><div class="line">    public static class Builder &#123;</div><div class="line">        // 1.存储AlertDialog的各个参数 如title,icon等</div><div class="line">        private final AlertController.AlertParams P;</div><div class="line">        </div><div class="line">        // 构造函数</div><div class="line">        public Builder(Context context) &#123;</div><div class="line">            this(context, resolveDialogTheme(context, 0));</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        // 2. 设置参数, 我们构建的Builder设置的参数就是这些方法</div><div class="line">        public Builder setTitle(int titleId) &#123;</div><div class="line">            P.mTitle = P.mContext.getText(titleId);</div><div class="line">            return this;</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">        public Builder setTitle(CharSequence title) &#123;</div><div class="line">            P.mTitle = title;</div><div class="line">            return this;</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">        // ....</div><div class="line">        </div><div class="line">        // 3.构建AlertDialog, 传递参数</div><div class="line">        public AlertDialog create() &#123;</div><div class="line">            // 4.因为已经通过builder设置了参数, 接下来就可以创建真正需要的AlertDialog对象</div><div class="line">            final AlertDialog dialog = new AlertDialog(P.mContext, mTheme, false);</div><div class="line">            </div><div class="line">            // 5.将Builder类中的成员变量P应用到AlertDialog类中</div><div class="line">            P.apply(dialog.mAlert);</div><div class="line">            dialog.setCancelable(P.mCancelable);</div><div class="line">            if (P.mCancelable) &#123;</div><div class="line">                dialog.setCanceledOnTouchOutside(true);</div><div class="line">            &#125;</div><div class="line">            dialog.setOnCancelListener(P.mOnCancelListener);</div><div class="line">            dialog.setOnDismissListener(P.mOnDismissListener);</div><div class="line">            if (P.mOnKeyListener != null) &#123;</div><div class="line">                dialog.setOnKeyListener(P.mOnKeyListener);</div><div class="line">            &#125;</div><div class="line">            return dialog;</div><div class="line">        &#125;      </div><div class="line">    &#125;   </div><div class="line">&#125;</div><div class="line">​``` </div><div class="line"> </div><div class="line"> </div><div class="line"> </div><div class="line">对, 最后还调用了`AlertDialog#show()`函数, 这个函数主要做了如下几件事情:</div><div class="line"> </div><div class="line">1. 通过`dispatchOnCreate()`函数来调用`AlertDialog#onCreate()`函数</div><div class="line">2. 然后调用`AlertDialog#onStart()`函数</div><div class="line">3. 最后将`Dialog`的`DecorView`添加到`WindowManager`中.</div><div class="line"></div><div class="line">那么在看一下`onCreate()`函数的源码及后续调用.</div><div class="line"> </div><div class="line"> </div><div class="line"> </div><div class="line">​```java</div><div class="line">// AlertDialog类</div><div class="line">protected void onCreate(Bundle savedInstanceState) &#123;</div><div class="line">   super.onCreate(savedInstanceState);</div><div class="line">   mAlert.installContent();</div><div class="line">&#125;</div><div class="line"></div><div class="line">// AlertController类</div><div class="line">public void installContent() &#123;</div><div class="line">   // 设置窗口, 没有title类型</div><div class="line">   mWindow.requestFeature(Window.FEATURE_NO_TITLE);</div><div class="line">   int contentView = selectContentView();</div><div class="line">   // 设置窗口的内容视图</div><div class="line">   mWindow.setContentView(contentView);</div><div class="line">   // 初始化AlertDialog其他子视图的内容</div><div class="line">   setupView();</div><div class="line">   setupDecor();</div><div class="line">&#125;</div><div class="line">​```  </div><div class="line">     </div><div class="line">这部分比较重要, 通过`Window#setContentView()`和Activity是一样的过程, 设置了内容布局, 通过`AlertController`的构造函数可以发现加载布局资源就是`com.android.internal.R.layout.alert_dialog`这个文件, 之前的Builder中的各种`setter`方法就是把设置的内容传入到这个布局当中. </div><div class="line"></div><div class="line"></div><div class="line">---</div><div class="line"></div><div class="line">可以看到`Android源码中的AlertDialog`并没有遵循`GOF设计模式`中经典的实现方式, 而是进行了变种, 但却使其使用更加的方便. 这里`AlertDialog.Builder`这个类同时扮演了范例中的`builder`,`具体实现builder`,`Director`的角色. 简化了`Builder`设计模式, 因为模块比较稳定不会存在变化, 根据具体场景简化模式, 正是体现了灵活运用设计模式的实例.</div><div class="line"></div><div class="line"></div><div class="line">#### 实战场景</div><div class="line"></div><div class="line">就如`Picasso`,`Glide`等链式的调用, 你可以通过链式设置很多配置属性, 也可以仅调用两三此传入必要参数即可. 是的调用实现更加灵活. </div><div class="line"></div><div class="line"></div><div class="line">### 原型模式 Prototype</div><div class="line"></div><div class="line">#### 模式介绍</div><div class="line"></div><div class="line">&gt; **创建性**模式, 从一个样板对象中复制出一个内部属性一致的对象, 其实就是**克隆**. 而被复制的对象就叫做**原型**, 多用于创建复杂的或者构造耗时的实例</div><div class="line"></div><div class="line">* `定义`: 用原型实例指定创建对象的种类, 并通过拷贝这些原型创建新的对象.</div><div class="line">* `场景`: </div><div class="line">    1. 类初始化需要消耗非常多的资源, 这个资源包括数据,硬件资源等, 可通过原型拷贝避免这些消耗</div><div class="line">    2. 通过`new`产生一个对象需要非常繁琐的数据准备或访问权限, 同样可以使用原型模式</div><div class="line">    3. 一个对象需要提供给其他对象访问, 并且会能会对其修改属性, 可以用原型拷贝多个对象提供使用</div><div class="line"></div><div class="line">其实这个模式很简单, 就是利用`Object#clone()`方法可以复制一份提供使用(clone是一个`native`方法). 但是需要注意, 通过实现`Cloneable`接口的原型模式在调用`clone`函数构造并不一定就比通过`new`方式的快, 只有当通过`new`构造对象较为耗时或者说成本较高时, 通过`clone`方法才能获得效率提升.</div><div class="line"></div><div class="line">**UML类图**</div><div class="line"></div><div class="line">![](UML_Prototype.png)</div><div class="line"></div><div class="line">#### 模式范例</div><div class="line"></div><div class="line">这里模式实现很简单, 实现也比较少, 这里就贴出代码</div><div class="line"></div><div class="line"></div><div class="line">​```java</div><div class="line">public class WordDocument implements Cloneable&#123;</div><div class="line"></div><div class="line">    // 文本</div><div class="line">    public String mText;</div><div class="line"></div><div class="line">    // 图片名列表</div><div class="line">    public ArrayList&lt;String&gt; mImages = new ArrayList&lt;String&gt;();</div><div class="line"></div><div class="line">    public WordDocument()&#123;</div><div class="line">        System.out.println(&quot;-----------WordDocument构造函数-----------&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    protected WordDocument clone() &#123;</div><div class="line">        try &#123;</div><div class="line">            // 通过本地方法特殊途径, 构建一个对象</div><div class="line">            WordDocument doc = (WordDocument) super.clone();</div><div class="line">            doc.mText = this.mText;</div><div class="line"></div><div class="line">            // 因为Image是引用类型, 这样直接赋值属于浅拷贝, 再次对集合进行clone. 实现wordDocument的深拷贝</div><div class="line">            doc.mImages = (ArrayList&lt;String&gt;) this.mImages.clone();</div><div class="line">            return doc;</div><div class="line">        &#125;catch (Exception ex)&#123;&#125;</div><div class="line"></div><div class="line">        return null;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 打印文档内容</div><div class="line">     */</div><div class="line">    public void showDocument()&#123;</div><div class="line">        System.out.println(&quot;------------开始输出内容---------------------&quot;);</div><div class="line">        System.out.println(&quot;Text: &quot;+mText);</div><div class="line">        System.out.println(&quot;List: &quot;+mImages.toString());</div><div class="line">        System.out.println(&quot;------------输出结束------------------------&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>与标准的原型模式相比<code>WordDocument</code>就是一个<strong>具体实现的原型</strong>对象. 而实现的<code>Cloneable</code>接口为<strong>抽象的原型对象</strong>.</p>
+<p>其实<code>Cloneable</code>这个接口内部没有任何方法, 所以其本质就是<code>标识接口</code>,只是表明这个类的对象是<code>可拷贝的</code>, 而<code>clone()</code>这个方法是<code>Objec</code>类中的, 如果没有标识这个接口, 那么调用会抛出异常.</p>
+<hr>
+<p><strong>深拷贝浅拷贝</strong></p>
+<p>例如上面的代码中进行修改一下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">protected WordDocument clone() &#123;</div><div class="line">   try &#123;</div><div class="line">       // 通过本地方法特殊途径, 构建一个对象</div><div class="line">       WordDocument doc = (WordDocument) super.clone();</div><div class="line">       doc.mText = this.mText;</div><div class="line"></div><div class="line">       // 这里进行修改 那么此时属于浅拷贝</div><div class="line">       doc.mImages = this.mImages;</div><div class="line">       return doc;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>你可能应该发现了什么, 其实本质不过就是通过<code>super.clone()</code>构建了一个本类对象的初始状态, 然后把被拷贝的对象的各个属性值进行<strong>赋值</strong>操作而已.</p>
+<p>的确, 就是如此. 就如上面两处不同的代码,</p>
+<ul>
+<li><code>浅拷贝</code>: 也称<code>影子拷贝</code>, 拷贝出来的对象并不是完全一份独立的对象, 新的对象某些属性如<strong>引用传递</strong>可能会<code>引用</code>原始对象的对应属性值, 也就是说, 对浅拷贝的属性可能会影响到原始数据的属性.</li>
+<li><code>深拷贝</code>: 拷贝出一份原始对象, 并对原始对象的属性值, 进行<strong>复制添加</strong>到新拷贝的对象的各个属性上. 这样拷贝出来的对象与原始对象不存在任何关联, 只作为一个数据的副本存在.</li>
+</ul>
+<p>上面因为<code>mImages</code>的类型是<code>ArrayList</code>如果直接进行赋值那么属于引用传递, 共享的一份数据源, 而如果在对<code>ArrayList</code>进行一次<code>clone</code>, 那么相当于又构建了一个集合并进行数据的复制.</p>
+<p>而<code>mText</code>虽然是对象, 但是因为是<code>String</code>类型, 属于安全类型, 由于final类,实例不可更改的特性. 如果对副本进行字符串的修改, 只不过是把原引用删除,重新指向了新的字符串.</p>
+<h4 id="Android源码对应实现"><a href="#Android源码对应实现" class="headerlink" title="Android源码对应实现"></a>Android源码对应实现</h4><p>上面我们说了通过对集合再次调用<code>clone()</code>即可完成深拷贝. 那么看一下<code>ArrayList</code>源码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">public class ArrayList&lt;E&gt; extends AbstractList&lt;E&gt; implements List&lt;E&gt;, RandomAccess, Cloneable, java.io.Serializable&#123;</div><div class="line"></div><div class="line">    transient Object[] elementData; </div><div class="line">    private int size;</div><div class="line">    </div><div class="line">    public Object clone() &#123;</div><div class="line">        try &#123;</div><div class="line">            ArrayList&lt;?&gt; v = (ArrayList&lt;?&gt;) super.clone();</div><div class="line">            v.elementData = Arrays.copyOf(elementData, size);</div><div class="line">            v.modCount = 0;</div><div class="line">            return v;</div><div class="line">        &#125; catch (CloneNotSupportedException e) &#123;</div><div class="line">            throw new InternalError(e);</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p><code>ArrayList</code>的内部克隆实现很简单, 我们都知道<code>ArrayList</code>内部是通过数组的数据结构来实现的. 通过<code>Arrays</code>工具类对原始集合的数据进行赋值并添加到一个新的数组并返回, 而返回的数组挂到了克隆出来对象上的<code>elementData</code>变量上.</p>
+<p>而集合的大小<code>size</code>没有被进行赋值? 因为其类型是整型, 属于<strong>值传递</strong>, 在clone之后原始值通过值传递到了新对象中, 即使修改也不会对原始对象有任何的影响.</p>
+<hr>
+<p>那么<code>Android</code>源码中的实现是什么?</p>
+<p><code>Intent</code>, 我们看如下代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Intent intent = new Intent(&quot;某一个activity的action&quot;);</div><div class="line">intent.putExtra(&quot;result&quot;, &quot;Successful&quot;);</div><div class="line"></div><div class="line">// 调用克隆方法</div><div class="line">Intent clone = (Intent) intent.clone();</div><div class="line">startActivity(clone);</div></pre></td></tr></table></figure>
+<p>这样同样没问题, 一样的效果. 那么看一下<code>Intent#clone()</code>内部是如何实现的.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public Object clone() &#123;</div><div class="line">   return new Intent(this);</div><div class="line">&#125;</div><div class="line"></div><div class="line">/**</div><div class="line">* Copy constructor.</div><div class="line">*/</div><div class="line">public Intent(Intent o) &#123;</div><div class="line">   this.mAction = o.mAction;</div><div class="line">   this.mData = o.mData;</div><div class="line">   this.mType = o.mType;</div><div class="line">   this.mPackage = o.mPackage;</div><div class="line">   this.mComponent = o.mComponent;</div><div class="line">   this.mFlags = o.mFlags;</div><div class="line">   this.mContentUserHint = o.mContentUserHint;</div><div class="line">   if (o.mCategories != null) &#123;</div><div class="line">       this.mCategories = new ArraySet&lt;String&gt;(o.mCategories);</div><div class="line">   &#125;</div><div class="line">   if (o.mExtras != null) &#123;</div><div class="line">       this.mExtras = new Bundle(o.mExtras);</div><div class="line">   &#125;</div><div class="line">   if (o.mSourceBounds != null) &#123;</div><div class="line">       this.mSourceBounds = new Rect(o.mSourceBounds);</div><div class="line">   &#125;</div><div class="line">   if (o.mSelector != null) &#123;</div><div class="line">       this.mSelector = new Intent(o.mSelector);</div><div class="line">   &#125;</div><div class="line">   if (o.mClipData != null) &#123;</div><div class="line">       this.mClipData = new ClipData(o.mClipData);</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>很简单不需要解释了, 手动<code>new</code>的并进行数据复制. 相当于封装了一下复制的细节而已.</p>
+<p>但是为什么没有调用<code>super.clone()</code>来实现拷贝呢? 之前说过使用<code>clone</code>还是<code>new</code>关键字是需要根据构造对象的成本来决定的, 如果对象的构造成本比较复杂或者麻烦, 那么<code>clone</code>则是一种更优的选择, 否则就可以使用<code>new</code>的形式. 这和<code>c++</code>拷贝构造函数是一样的.</p>
+<h4 id="实战场景"><a href="#实战场景" class="headerlink" title="实战场景"></a>实战场景</h4><p>当登录模块登录成功之后, 会把一些个人信息,token等信息在保存类中的某个数据结构上, 并通过一个方法对外暴露出去, 提供其他模块使用. 但是如果你返回的是一个数据结构也就是一个对象, 这个对象包含了很多个人信息, 但是正常来说, 对于外部应该只提供查看数据的能力, 不应该提供修改的能力.</p>
+<p>所以这个使用, 就可以对登录模块对外暴露的方法进行修改, 利用<code>原型模式</code>对外返回的是一个内部数据的<code>深拷贝</code>, 这样就把可能出现的隐患彻底的隔绝了.</p>
+<p><strong>说明</strong></p>
+<p><code>原型模式</code>是通过内存中二进制流的方式拷贝, 要比直接通过<code>new</code>一个对象性能更好, 特别是循环体内产生大量对象是. 但是注意, 因为是<code>二进制流的拷贝</code>, 所以构造函数是不会执行的. 这点要明确记牢.</p>
+<h3 id="工厂方法模式-Factory"><a href="#工厂方法模式-Factory" class="headerlink" title="工厂方法模式 Factory"></a>工厂方法模式 Factory</h3><h4 id="模式介绍-2"><a href="#模式介绍-2" class="headerlink" title="模式介绍"></a>模式介绍</h4><blockquote>
+<p>创建型设计模式, 其实这个模式可能在开发中出现很多回了, 只是并不了解什么是工厂模式的概念.</p>
+</blockquote>
+<ul>
+<li><code>定义</code>: 定义一个用于创建的对象的接口, 让子类决定实例化哪个类</li>
+<li><code>场景</code>: 在任何需要生成复杂对象的地方, 都可以使用工厂方法模式. 复杂对象适合使用工厂模式, 用<code>new</code>就可以完成创建的对象无需使用工厂模式.</li>
+</ul>
+<p>工厂方法模式完全符合设计模式原则, 降低了对象之间的耦合度, 而且, 工厂方法模式依赖于抽象的架构, 将实例化的任务交由了子类实现.</p>
+<h4 id="模式范例-2"><a href="#模式范例-2" class="headerlink" title="模式范例"></a>模式范例</h4><p><a href="https://github.com/suzeyu1992/AlgorithmTraining/tree/master/src/design/factory" target="_blank" rel="external">实现代码</a></p>
+<p>这是范例的UML类图.</p>
+<p><img src="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_Factory.png" alt="img"></p>
+<p>其实这里, 可以去掉抽象的工厂类, 只需要一个工厂即可. 这样会更加简洁直观.</p>
+<h4 id="Android源码对应实现-1"><a href="#Android源码对应实现-1" class="headerlink" title="Android源码对应实现"></a>Android源码对应实现</h4><p><code>List</code>和<code>Set</code>不陌生, 都继承<code>Collection</code>接口, 而<code>Collection</code>接口继承<code>Iterable</code>接口, 而这个接口很简单就一个<code>iterator()</code>方法, 如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div></pre></td><td class="code"><pre><div class="line">public interface Collection&lt;E&gt; extends Iterable&lt;E&gt; &#123;</div><div class="line">    // ....</div><div class="line">&#125;</div><div class="line"></div><div class="line">public interface Iterable&lt;T&gt; &#123;</div><div class="line">    Iterator&lt;T&gt; iterator();</div><div class="line">    </div><div class="line">    // 可能JDK1.8之后添加两个默认方法, 这里我们不需要关心</div><div class="line">&#125;</div><div class="line">​``` </div><div class="line"></div><div class="line">关于`List`和`Set`迭代器的方法遍历元素应该都用过. 那么看一下源码实现.</div><div class="line"></div><div class="line"></div><div class="line">​```java</div><div class="line">public class ArrayList&lt;E&gt; extends AbstractList&lt;E&gt; implements Cloneable, Serializable, RandomAccess &#123;</div><div class="line"></div><div class="line">@Override public Iterator&lt;E&gt; iterator() &#123;</div><div class="line">        return new ArrayListIterator();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private class ArrayListIterator implements Iterator&lt;E&gt; &#123;</div><div class="line">        private int remaining = size;</div><div class="line">        </div><div class="line">        private int removalIndex = -1;</div><div class="line"></div><div class="line">        private int expectedModCount = modCount;</div><div class="line"></div><div class="line">        public boolean hasNext() &#123;</div><div class="line">            return remaining != 0;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        @SuppressWarnings(&quot;unchecked&quot;) public E next() &#123;</div><div class="line">            ArrayList&lt;E&gt; ourList = ArrayList.this;</div><div class="line">            // 返回集合大小元素, 还有几个未遍历</div><div class="line">            int rem = remaining;</div><div class="line">            if (ourList.modCount != expectedModCount) &#123;</div><div class="line">                throw new ConcurrentModificationException();</div><div class="line">            &#125;</div><div class="line">            if (rem == 0) &#123;</div><div class="line">                throw new NoSuchElementException();</div><div class="line">            &#125;</div><div class="line">            remaining = rem - 1;</div><div class="line">            return (E) ourList.array[removalIndex = ourList.size - rem];</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        public void remove() &#123;</div><div class="line">            Object[] a = array;</div><div class="line">            int removalIdx = removalIndex;</div><div class="line">            if (modCount != expectedModCount) &#123;</div><div class="line">                throw new ConcurrentModificationException();</div><div class="line">            &#125;</div><div class="line">            if (removalIdx &lt; 0) &#123;</div><div class="line">                throw new IllegalStateException();</div><div class="line">            &#125;</div><div class="line">            System.arraycopy(a, removalIdx + 1, a, removalIdx, remaining);</div><div class="line">            a[--size] = null;  // Prevent memory leak</div><div class="line">            removalIndex = -1;</div><div class="line">            expectedModCount = ++modCount;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">// hashSet 复写逻辑</div><div class="line">public class HashSet&lt;E&gt; extends AbstractSet&lt;E&gt; implements Set&lt;E&gt;, Cloneable,Serializable &#123;</div><div class="line">    public Iterator&lt;E&gt; iterator() &#123;</div><div class="line">        return backingMap.keySet().iterator();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">// HashMap 复写逻辑</div><div class="line">public class HashMap&lt;K, V&gt; extends AbstractMap&lt;K, V&gt; implements Cloneable, Serializable &#123;</div><div class="line">    Iterator&lt;K&gt; newKeyIterator() &#123; return new KeyIterator();   &#125;</div><div class="line">    </div><div class="line">    private final class KeyIterator extends HashIterator</div><div class="line">            implements Iterator&lt;K&gt; &#123;</div><div class="line">        public K next() &#123; return nextEntry().key; &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li><code>HashSet</code>的<code>iterator</code>方法会返回成员变量<code>backingMap</code>中对应<code>HashSet</code>对象元素的迭代器对象, 最终返回的是<code>KeySet</code>中的一个迭代器对象</li>
+<li><code>ArrayList</code>和<code>HashMap</code>中的<code>iterator()</code>就相当一个工厂方法, <strong>专为new对象而生</strong>!</li>
+</ul>
+<hr>
+<p>而<code>Android</code>中, 看一下如下代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">public class MainActivity extends Activity &#123;</div><div class="line">    protected void onCreate(Bundle savedInstanceState) &#123;</div><div class="line">        super.onCreate(savedInstanceState);</div><div class="line">        setContentView(new FrameLayout(this));   </div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>通过<code>onCreate()</code>这个方法, 我们可以构建出任何样式的根布局, 如<code>LinearLayout</code>,<code>TextView</code>等等. 我们在不同的<code>Activity#onCreate()</code>方法将设置的布局通过<code>setContentView()</code>函数传递给<code>frameworks</code>并显示出来. 这不就是一个工厂模式的结构. 方法内部可以创建不同的对象, 产生不同的实例.</p>
+<h4 id="实战场景-1"><a href="#实战场景-1" class="headerlink" title="实战场景"></a>实战场景</h4><p>例如对数据的持久化, 可以通过的途径有<code>SP</code>,<code>File</code>,<code>SQLite</code>等. 但是对数据的操作无非就是<code>增删改查</code>, 那么我们可以抽象一个抽象类并定义CURD抽象方法. <code>SP</code>, <code>File</code>,<code>SQLite</code>分别继承抽象类, 并在抽象方法实现自己的处理逻辑. 然后就可以创建一个<code>工厂类</code>, 工厂类有一个方法, <strong>形参为产品实现类的字节码</strong>, 返回一个<strong>泛型上限限定是产品的抽象类</strong>对象, 方法内部通过字节码反射具体的产品类实例.</p>
+<p>这样在使用的使用, 我们只需有通过<code>工厂方法</code>传入的不同<code>产品Class</code>就可以构建不同的实例, 而数据的CRUD通过<strong>依赖倒置</strong>抽象特性, 高层不需要依赖底层的类.</p>
+<h3 id="抽象工厂模式-Abstract-Factory"><a href="#抽象工厂模式-Abstract-Factory" class="headerlink" title="抽象工厂模式 Abstract Factory"></a>抽象工厂模式 Abstract Factory</h3><h4 id="模式介绍-3"><a href="#模式介绍-3" class="headerlink" title="模式介绍"></a>模式介绍</h4><blockquote>
+<p>创建型设计模式, 之前工厂模式会生产某一个产品, 但是如果说, 不同的操作系统图形的场景下的两个产品<strong>按钮</strong>和<strong>文本框</strong>. 对于每一个操作系统, 其本身就构成了一个单独的产品. 两种产品两种变化, 这种情况就较之前的普通工厂升级了复杂度, 如: <code>Android</code>中的<code>Button</code>和<code>TextView</code>, <code>iOS</code>中的<code>Button</code>和<code>TextView</code>或者<code>WindowPhone</code>场景…</p>
+</blockquote>
+<ul>
+<li><code>定义</code>: 为创建一组相关或者是相互依赖的的对象提供一个接口, 而不需要指定他们的具体类</li>
+<li><code>场景</code>: 一个对象族有相同的约束时可以使用<strong>抽象工厂</strong>, 如<code>android</code>和<code>iOS</code>都有打电话软件和短信软件, 两者都属于<code>软件的范畴</code>, 但是他们的操作平台不同, 实现逻辑也不会相同. 这个时候就可以使用<code>抽象工厂方法模式</code></li>
+</ul>
+<h4 id="模式范例-3"><a href="#模式范例-3" class="headerlink" title="模式范例"></a>模式范例</h4><p><a href="https://github.com/suzeyu1992/AlgorithmTraining/tree/master/src/design/absfactory" target="_blank" rel="external">实现代码</a></p>
+<p>范例UML图</p>
+<p><img src="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_AbsFactory.png" alt="img"></p>
+<p>看一下运行结果:</p>
+<p><img src="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/test_absFactory.png" alt="img"></p>
+<p>如果这是时候, 如果想创建一种使用<code>普通轮胎</code>, <code>新款发动机</code>的车型. 只需要继承抽象工厂, 并使用原有的普通轮胎类, 并继承<code>IEngfine</code>实现一款新的发动机类. 即可完成扩展. 这就是通过接口扩展.</p>
+<p>上面的范例, 对于每一个造车的工厂, 内部使用的零件不管哪个车场都是具有抽象的轮胎和发送机类. 这样可以达到一种自由组合的状态.</p>
+<p>但是弊端也显示出来了, 不仅需要扩展新的<code>工厂类</code>还要扩展<code>新的组件类</code>.</p>
+<h4 id="Android源码对应实现-2"><a href="#Android源码对应实现-2" class="headerlink" title="Android源码对应实现"></a>Android源码对应实现</h4><p>抽象工厂在<code>Android</code>实现较少, 上一节说<code>onCreate()</code>方法就相当于一个工厂方法. 那么对于另外一个组件<code>Service#onBind()</code>同样也可以看做一个工厂方法.</p>
+<p>如果从<code>frameworks</code>层的角度来看<code>Activity</code>和<code>Service</code>可以看做一个具体的工厂, 这样来看相当于一个抽象方法模式的雏形也没错.</p>
+<p>另一个更像的例子是<code>Android</code>底层对<code>MediaPlayer</code>使用. 这里书上噼里啪啦一堆C语言. 我就不抄了….</p>
+<h3 id="策略模式-Strategy"><a href="#策略模式-Strategy" class="headerlink" title="策略模式 Strategy"></a>策略模式 Strategy</h3><h4 id="模式介绍-4"><a href="#模式介绍-4" class="headerlink" title="模式介绍"></a>模式介绍</h4><blockquote>
+<p>开发中可能有这样的情况: 实现某一个功能可以有多中算法或者策略, 我们根据不同的功能来选择不同的算法. 针对这种情况, 1.可以在一个类中封装多个方法, 每个方法实现不同算法. 2.通过<code>if..else if..else..</code>条件判断来决定使用哪种算法. 但是这两种都是<code>硬编码</code>实现. 并且随着算法的增多类也就变得臃肿, 维护的成本随之变高. 如果需要增加一种新的算法, 必然需要对算法类进行修改. 这就违反了<code>OCP</code>原则和<code>单一职责</code>的原则.</p>
+</blockquote>
+<ul>
+<li><p><code>定义</code>: 策略模式定义了一系列的算法, 并将每一个算法封装起来, 而且使它们还可以相互替换. 策略模式让算法独立于使用它的客户而独立变化.</p>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">场景</div></pre></td></tr></table></figure>
+<p>:</p>
+<ul>
+<li><p>针对同一类型问题的多种处理方式, 仅仅是具体行为有差别时</p>
+</li>
+<li><p>需要安全地封装多种同一类型的操作时</p>
+</li>
+<li><p>出现同一抽象类有多个子类, 而又不需要使用<code>if-else</code>或者<code>switch</code>等来选择具体子类.</p>
+</li>
+<li><h4 id="模式范例-4"><a href="#模式范例-4" class="headerlink" title="模式范例"></a>模式范例</h4></li>
+</ul>
+</li>
+</ul>
+<p>最方便的记忆法就是记住, <code>策略模式</code>可以去掉<code>if-else</code>或者<code>switch</code>. 语句, 即使后续会扩展通过接口来进行扩展, 不会对源代码进行修改. 满足了<code>OCP开闭原则</code>.</p>
+<p>看一下范例代码: –&gt; 对于交通费用的计算, 计算的算法可能会有公交, 地铁等…</p>
+<p><a href="https://github.com/suzeyu1992/AlgorithmTraining/tree/master/src/design/strategy" target="_blank" rel="external">代码地址</a></p>
+<p>范例类图:</p>
+<p><img src="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_Strategy.png" alt="img"></p>
+<p>在看一下代码的使用以及结果–&gt;</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">public static void main (String arg[])&#123;</div><div class="line">   // 创建操作策略的环境类</div><div class="line">   TranficCalculator calculator = new TranficCalculator();</div><div class="line">   // 设置公交车的策略, 并准备计算</div><div class="line">   calculator.setStrategy(new BusStrategy());</div><div class="line">   System.out.println(&quot;公交车--&gt;计算9公里价格: &quot;+calculator.calculatePrice(9));</div><div class="line"></div><div class="line">   // 设置地铁的策略, 并准备计算</div><div class="line">   calculator.setStrategy(new SubwayStrategy());</div><div class="line">   System.out.println(&quot;地铁--&gt;计算9公里价格: &quot;+calculator.calculatePrice(9));</div><div class="line">&#125;</div><div class="line"></div><div class="line">// 结果--&gt;</div><div class="line">公交车--&gt;计算9公里价格: 1</div><div class="line">地铁--&gt;计算9公里价格: 4</div></pre></td></tr></table></figure>
+<p>你应该可以发现, 这种方式在隐藏实现的同时, <strong>可扩展性</strong>变得很强, 如果此时需要增加一个出租车的计算策略, 那么只需要添加一个实现了<code>计算策略接口</code>即可. 对原始代码的修改进行了<code>关闭</code>, 并对扩展<code>开放</code>.</p>
+<h4 id="Android源码对应实现-3"><a href="#Android源码对应实现-3" class="headerlink" title="Android源码对应实现"></a>Android源码对应实现</h4><p>动画里面的<code>插值器Interpolator</code>利用了策略模式, 利用<code>Interpolator</code>策略的抽象, <code>LinearInterpolator</code>,<code>CycleInterpolator</code>等插值器为具体的实现策略, 通过注入不同的插值器实现不同的动态效果.</p>
+<p>看一下大概的类图</p>
+<p><img src="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_Animation.png" alt="img"></p>
+<ul>
+<li><p>动画中的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">TimeInterpolator</div></pre></td></tr></table></figure>
+<p>时间插值器, 它的作用是根据时间流逝的百分比计算出当前属性值改变的百分比, 内置的插值器有如下几种</p>
+<ul>
+<li><code>线性插值器(LinearInterpolator)</code>用于匀速动画</li>
+<li><code>加速减速插值器(AccelerateDecelerateInterpolator)</code>:起始时动画加速, 结尾时动画减速</li>
+<li><code>减速插值器(DecelerateInterpolator)</code>: 用于随着时间的推移动画越来越慢.</li>
+</ul>
+</li>
+<li><p>动画中的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">TypeEvalutor</div></pre></td></tr></table></figure>
+<p>类型估值器: 根据当前属性改变的百分比来计算改变后的属性值. 内置的类型估值器有如下几种</p>
+<ul>
+<li><code>整型估值器(IntEvalutor)</code></li>
+<li><code>浮点型估值器(FloatEvalutor)</code></li>
+<li><code>Color估值器(ArgbEvalutor)</code></li>
+</ul>
+</li>
+</ul>
+<p>接下来就开始回忆一下从一个动画开始后, 代码究竟做了什么?</p>
+<p>对于源码的起始点入口就是调用<code>View的startAnimation()</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">public void startAnimation(Animation animation) &#123;</div><div class="line">    // 1.初始化动画的开始时间</div><div class="line">   animation.setStartTime(Animation.START_ON_FIRST_FRAME);</div><div class="line">   // 2.对View设置动画</div><div class="line">   setAnimation(animation);</div><div class="line">   // 3.刷新父类缓存</div><div class="line">   invalidateParentCaches();</div><div class="line">   // 4.刷新View本身及子View</div><div class="line">   invalidate(true);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里首先设置了动画的起始时间, 然后将该动画设置到<code>View</code>中, 最后再向<code>ViewGroup</code>请求刷新视图, 随后<code>ViewGroup</code>会调用<code>dispatchDraw()</code>方法对这个<code>View</code>所在的区域进行重绘. 其实对于某一个<code>View</code>的重绘最终是调用其<code>ViewGroup</code>的<code>drawChild(...)</code>方法. 跟入一下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">protected boolean drawChild(Canvas canvas, View child, long drawingTime) &#123;</div><div class="line">   // 简单的转发</div><div class="line">   return child.draw(canvas, this, drawingTime);</div><div class="line">&#125;</div><div class="line"></div><div class="line">boolean draw(Canvas canvas, ViewGroup parent, long drawingTime) &#123;</div><div class="line">    // ....</div><div class="line">    // 查看是否需要清除动画信息</div><div class="line">    final int flags = parent.mGroupFlags;</div><div class="line">    // 省略无关代码</div><div class="line">    </div><div class="line">    // 获取设置的动画信息</div><div class="line">    final Animation a = getAnimation();</div><div class="line">        </div><div class="line">    if (a != null) &#123;</div><div class="line">            // 绘制动画</div><div class="line">           more = drawAnimation(parent, drawingTime, a, scalingRequired);</div><div class="line">           //...</div><div class="line">       &#125; </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>父类会调用子类的<code>draw</code>方法, 其中会先判断是否设置了清除动画的标记, 然后再获取该<code>View</code>动画信息, 如果设置了动画, 就会调用<code>View#drawAnimation()</code>方法.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line">private boolean drawAnimation(ViewGroup parent, long drawingTime,</div><div class="line">       Animation a, boolean scalingRequired) &#123;</div><div class="line">   Transformation invalidationTransform;</div><div class="line">   final int flags = parent.mGroupFlags;</div><div class="line">   final boolean initialized = a.isInitialized();</div><div class="line">   // 1. 判断动画是否已经初始化过</div><div class="line">   if (!initialized) &#123;</div><div class="line">       a.initialize(mRight - mLeft, mBottom - mTop, parent.getWidth(), parent.getHeight());</div><div class="line">       a.initializeInvalidateRegion(0, 0, mRight - mLeft, mBottom - mTop);</div><div class="line">       if (mAttachInfo != null) a.setListenerHandler(mAttachInfo.mHandler);</div><div class="line">       // 如果设置了动画的监听, 则触发对应的回调</div><div class="line">       onAnimationStart();</div><div class="line">   &#125;</div><div class="line">   // 获取Transformation对象, 存储动画的信息</div><div class="line">   final Transformation t = parent.getChildTransformation();</div><div class="line">   // 2. 调用Animation#getTransformation, 通过计算获取动画的相关值</div><div class="line">   boolean more = a.getTransformation(drawingTime, t, 1f);</div><div class="line">    </div><div class="line"></div><div class="line">   if (more) &#123;</div><div class="line">        // 3. 根据具体实现, 判断当前动画类型是否需要进行调整位置大小, 然后刷新不同的区域</div><div class="line">       if (!a.willChangeBounds()) &#123;</div><div class="line">           // ...</div><div class="line">       &#125; else &#123;</div><div class="line">           // 获取重绘区域</div><div class="line">           a.getInvalidateRegion(0, 0, mRight - mLeft, mBottom - mTop, region,</div><div class="line">                   invalidationTransform);</div><div class="line">           parent.mPrivateFlags |= PFLAG_DRAW_ANIMATION;</div><div class="line"></div><div class="line">            // 更新计算有效区域</div><div class="line">           final int left = mLeft + (int) region.left;</div><div class="line">           final int top = mTop + (int) region.top;</div><div class="line">           </div><div class="line">           // 进行区域更新</div><div class="line">           parent.invalidate(left, top, left + (int) (region.width() + .5f),</div><div class="line">                   top + (int) (region.height() + .5f));</div><div class="line">       &#125;</div><div class="line">   &#125;</div><div class="line">   return more;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>drawAnimation</code>中主要操作是动画的初始化, 动画操作, 界面刷新. 动画的回调监听<code>onStart()</code>会在动画进行初始化的时候调用, 动画的具体实现是通过<code>Animation#getTransformation()</code>方法.这个方法主要获取了<code>缩放系数</code>和调用<code>Animation.getTransformation(long, Transformation)</code>来计算和应用动画效果.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">public boolean getTransformation(long currentTime, Transformation outTransformation) &#123;</div><div class="line">   //...</div><div class="line">   float normalizedTime;</div><div class="line">   // 1.计算当前时间的流逝百分比</div><div class="line">   if (duration != 0) &#123;</div><div class="line">       normalizedTime = ((float) (currentTime - (mStartTime + startOffset))) /</div><div class="line">               (float) duration;</div><div class="line">   &#125; else &#123;</div><div class="line">       // time is a step-change with a zero duration</div><div class="line">       normalizedTime = currentTime &lt; mStartTime ? 0.0f : 1.0f;</div><div class="line">   &#125;</div><div class="line">   // 动画是否完成标记</div><div class="line">   final boolean expired = normalizedTime &gt;= 1.0f;</div><div class="line">   mMore = !expired;</div><div class="line"></div><div class="line">   if ((normalizedTime &gt;= 0.0f || mFillBefore) &amp;&amp; (normalizedTime &lt;= 1.0f || mFillAfter)) &#123;</div><div class="line">        // 2.通过插值器获取动画执行百分比  , 这里获取的方法就是通过策略模式</div><div class="line">       final float interpolatedTime = mInterpolator.getInterpolation(normalizedTime);</div><div class="line">       // 3.应用动画效果</div><div class="line">       applyTransformation(interpolatedTime, outTransformation);</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   // 4. 如果动画执行完毕, 那么触发动画完成的回调或者执行重复动画等操作</div><div class="line">   // ...</div><div class="line">   if (!mMore &amp;&amp; mOneMoreTime) &#123;</div><div class="line">       mOneMoreTime = false;</div><div class="line">       return true;</div><div class="line">   &#125;</div><div class="line">   return mMore;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这段代码, 先计算已经流逝的的时间百分比, 然后再通过<code>具体的插值器</code>重新计算这个百分比, 也就是上面的第二步. 而具体是哪一个插值器是通过之前说的策略模式来实现的.</p>
+<p>第3步调用了<code>applyTransformation</code>, 这个方法在基类<code>Animation</code>中是空实现, 可以在子类查看实现如<code>ScaleAnimation</code>,<code>AlphaAnimation</code>等查看. 当这个方法内部主要通过<code>矩阵</code>来实现动画. 当这个方法执行完毕之后, View的属性也就发生了变化, 不断地重复这个过程, 动画就随之产生.</p>
+<h4 id="实战场景-2"><a href="#实战场景-2" class="headerlink" title="实战场景"></a>实战场景</h4><p>当我们自己组装了一个队列请求, 对于这个队列的处理方式默认可能是<code>先处理进入队列的</code>, 但是如果想实现一个可以<code>先处理后入队的</code>, 和<code>随机读取队列元素</code>. 那么为了以后的扩展不影响源代码, 那么可以通过<code>策略模式</code>在代码中通过对<code>策略抽象</code>面向接口,抽象编程. 是具体的实现有后续的传入的子类来决定.</p>
+<h3 id="状态模式-State"><a href="#状态模式-State" class="headerlink" title="状态模式 State"></a>状态模式 State</h3><h4 id="模式介绍-5"><a href="#模式介绍-5" class="headerlink" title="模式介绍"></a>模式介绍</h4><blockquote>
+<p>状态模式中的行为是由状态来决定的, 不同的状态有不同的行为, 状态模式和策略模式的结构几乎一模一样, 但他们的目的, 本质却完全不一样. 状态模式的行为是平行的不可替换的. 策略模式的行为是彼此独立, 可相互替换的. 总结一句话表述: 状态模式是把对象的行为包装在不同的状态对象里, 每一个状态对象都有一个共同的抽象状态基类, 状态模式的意图是让一个对象在其内部状态改变的时候, 其行为也随之改变</p>
+</blockquote>
+<ul>
+<li><p><code>定义</code>: 当一个对象的内在状态改变时允许改变其行为, 这个对象看起来像是改变了其类.</p>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">场景</div></pre></td></tr></table></figure>
+<p>:</p>
+<ol>
+<li>一个代码的行为取决于它的装填, 并且必须在运行时根据其状态改变它的行为</li>
+<li>代码中包含大量与对象状态有关的条件语句, 同样可以去除分支语句的效果</li>
+</ol>
+</li>
+</ul>
+<h4 id="模式范例-5"><a href="#模式范例-5" class="headerlink" title="模式范例"></a>模式范例</h4><p>例如电视开关机状态下的<strong>频道切换</strong>或者<strong>音量调节</strong>, 不同的状态下的各种功能行为是不同的. <code>关机</code>: 功能音量频道切换是无效的, <code>开机</code>: 却可以实现. 实现这样一个关系, 如果最简单暴力的方法就是一个类实现, 里面充斥了各种条件判断来实现不同场景的功能.</p>
+<p><a href="https://github.com/suzeyu1992/AlgorithmTraining/tree/master/src/design/state" target="_blank" rel="external">范例代码实现</a></p>
+<p>范例类图:</p>
+<p><img src="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_State.png" alt="img"></p>
+<p>客户端的实现:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">public static void main(String arg[])&#123;</div><div class="line">        TvController tvController = new TvController();</div><div class="line"></div><div class="line">        // 开机</div><div class="line">        tvController.powerOn();</div><div class="line"></div><div class="line">        // 下一个频道</div><div class="line">        tvController.nextChannel();</div><div class="line"></div><div class="line">        // 调高音量</div><div class="line">        tvController.turnUp();</div><div class="line"></div><div class="line">        // 关机</div><div class="line">        tvController.powerOff();</div><div class="line"></div><div class="line">        // 关机状态下调低音量</div><div class="line">        tvController.turnDown();</div><div class="line">&#125;</div><div class="line"></div><div class="line">/** 输出结果--&gt;</div><div class="line"> *  开机了--</div><div class="line"> *  下一个频道</div><div class="line"> *  调高音量</div><div class="line"> *  关机了--</div><div class="line">**/</div></pre></td></tr></table></figure>
+<p>其实有多重行为, 但代码中却不存在了<code>条件分支语句</code></p>
+<h4 id="Android源码对相应实现"><a href="#Android源码对相应实现" class="headerlink" title="Android源码对相应实现"></a>Android源码对相应实现</h4><p><code>WiFi</code>管理 其中的实现就使用了<code>状态模式</code></p>
+<p>在<code>WiFi</code>复杂的调用中, 存在一个<code>State</code>的状态类, 它代表了<code>WiFi</code>的某个状态, 定义如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">public class State implements IState &#123;</div><div class="line">    // 进入当前状态之后调用该函数</div><div class="line">    @Override</div><div class="line">    public void enter() &#123;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    // 退出该状态后改用该函数</div><div class="line">    @Override</div><div class="line">    public void exit() &#123;</div><div class="line">    &#125;  </div><div class="line">    </div><div class="line">    // 处理消息</div><div class="line">    @Override</div><div class="line">    public boolean processMessage(Message msg) &#123;</div><div class="line">        return false;</div><div class="line">    &#125;      </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>状态之间并不是可以随意切换的, 他们有一种层级关系, 这些层级关系<code>StateMachine</code>的构造函数中被定义的, 代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line">// WiFiStateMachine</div><div class="line">public WifiStateMachine(Context context, String wlanInterface,</div><div class="line">            WifiTrafficPoller trafficPoller)&#123;</div><div class="line">        super(&quot;WifiStateMachine&quot;);</div><div class="line">        </div><div class="line">        addState(mDefaultState);</div><div class="line">        addState(mInitialState, mDefaultState);</div><div class="line">        addState(mSupplicantStartingState, mDefaultState);</div><div class="line">        addState(mSupplicantStartedState, mDefaultState);</div><div class="line">        addState(mDriverStartingState, mSupplicantStartedState);</div><div class="line">        addState(mDriverStartedState, mSupplicantStartedState);</div><div class="line">        addState(mScanModeState, mDriverStartedState);</div><div class="line">        addState(mConnectModeState, mDriverStartedState);</div><div class="line">        addState(mL2ConnectedState, mConnectModeState);</div><div class="line">        addState(mObtainingIpState, mL2ConnectedState);</div><div class="line">        addState(mVerifyingLinkState, mL2ConnectedState);</div><div class="line">        addState(mConnectedState, mL2ConnectedState);</div><div class="line">        addState(mRoamingState, mL2ConnectedState);</div><div class="line">        addState(mDisconnectingState, mConnectModeState);</div><div class="line">        addState(mDisconnectedState, mConnectModeState);</div><div class="line">        addState(mWpsRunningState, mConnectModeState);</div><div class="line">        addState(mWaitForP2pDisableState, mSupplicantStartedState);</div><div class="line">        addState(mDriverStoppingState, mSupplicantStartedState);</div><div class="line">        addState(mDriverStoppedState, mSupplicantStartedState);</div><div class="line">        addState(mSupplicantStoppingState, mDefaultState);</div><div class="line">        addState(mSoftApStartingState, mDefaultState);</div><div class="line">        addState(mSoftApStartedState, mDefaultState);</div><div class="line">        addState(mTetheringState, mSoftApStartedState);</div><div class="line">        addState(mTetheredState, mSoftApStartedState);</div><div class="line">        addState(mUntetheringState, mSoftApStartedState);</div><div class="line">        // 初始化模式为mInitialState</div><div class="line">        setInitialState(mInitialState);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在构造函数中调用了<code>addState()</code>函数, 这些函数最终会调用<code>SmHandler#addState()</code>函数. 这个函数就是在状态之间建立一个层级关系, 这是一个树形的层级关系. 状态之间并不是跨越式的转换, 当前状态只能转换到上一个状态或者下一个状态.</p>
+<p>上面说的比较抽象, 列举书中的例子. 一个电梯的状态有<code>停止</code>, <code>运行</code>, <code>开门</code>, <code>关门</code>. 在运行状态只能到停止状态. 不会直接开门状态,这会出人命的, 关门状态也是不合乎常理的. 所以就如下关系图片:</p>
+<p><img src="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/elevator_sequence.png" alt="img"></p>
+<p>正如上图, 不同状态对于不同的指令的反应是完全不一样的, <code>WiFi</code>工作状态机制也是同理, 除了对状态之间的转换进行控制之外, 还通过状态模式来对不同的命令进行不同的处理. <code>State</code>类就是状态的基类, 它与<code>Wifi</code>相关的子类都定义在<code>WifiStateMachine</code>中.</p>
+<p><code>State</code>的类有<code>enter</code>,<code>exit</code>,<code>processMessage</code>三个函数, 进入状态之后会调用<code>enter()</code>, 退出时调用<code>exit()</code>, 处理具体消息时调用<code>processMessage()</code>. 而<code>状态模式的核心就是当一个对象的内在状态改变时允许改变其行为</code>, 所以我们关注<code>processMessage()</code>不同的状态下就是依赖这个函数实现不同行为的.</p>
+<p>例如: 在请求扫描Wifi时, 如果在<code>初始化状态(InitialState)</code>下, 说明Wifi驱动还没有进行加载和启动, 扫描的请求会被会被忽略. 而在<code>驱动加载状态下</code>, 请求会被添加到延迟处理的消息队列中, 等待驱动加载完毕进行扫描请求.</p>
+<p>总结起来: 就是将请求的处理封装到状态类中, 在不同的状态类中对同一个请求进行不同的处理. 它能够消除一些重复的<code>if-else</code>逻辑, 使得程序的结构更加清晰, 可扩展性和稳定性也有了一定的提高</p>
+<h4 id="实战场景-3"><a href="#实战场景-3" class="headerlink" title="实战场景"></a>实战场景</h4><p>例如新浪微博首页, 任何状态下可以看微博, 当点击转发后, 如果是<code>登录状态</code>那么就可以直接调转转发页面, 如果是<code>未登录状态</code>那么需要调转到登录界面. 这就可以使用状态模式进行逻辑的分离.</p>
+<h3 id="责任链模式"><a href="#责任链模式" class="headerlink" title="责任链模式"></a>责任链模式</h3><h4 id="模式介绍-6"><a href="#模式介绍-6" class="headerlink" title="模式介绍"></a>模式介绍</h4><blockquote>
+<p>行为型设计模式, 将每一个对象看做一个节点, 并把所有节点串成一条链式, 从链头开始传递事件, 如果无法处理交给节点的下一个节点位置上, 直到有节点处理了这个事件.</p>
+</blockquote>
+<ul>
+<li><code>定义</code>: 使多个对象都有机会处理请求, 从而避免了请求的发送者和接收者之间的耦合关系. 将这些对象连成一条链, 并沿着这条链传递该请求, 直到对象处理它为止</li>
+<li><code>场景</code>: 多个对象都可以处理一个请求时, 但具体由哪个对象处理是在运行时决定.</li>
+</ul>
+<h4 id="模式范例-6"><a href="#模式范例-6" class="headerlink" title="模式范例"></a>模式范例</h4><p>出差是需要经费的, 那么肯定需要找领导签字才会批下钱, 但是如果经费较多, 你的上一级可能无权签字,这个时候上一级领导就会把这个审批带向他的上级提交.. 直到有可以批准的为止. 从始至终出差人只需要知道自己的上一级即可. 不需要知道其他的审批人.</p>
+<p><a href="https://github.com/suzeyu1992/AlgorithmTraining/tree/master/src/design/iterator" target="_blank" rel="external">范例代码</a></p>
+<p>范例类图</p>
+<p><img src="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_Iterator.png" alt="img"></p>
+<p>看一下客户端的调用–&gt;</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">public static void main(String args[])&#123;</div><div class="line"></div><div class="line">        // 构造3个处理者对象</div><div class="line">        Handler1 handler1 = new Handler1();</div><div class="line">        Handler2 handler2 = new Handler2();</div><div class="line">        Handler3 handler3 = new Handler3();</div><div class="line"></div><div class="line">        // 构造3个请求者对象</div><div class="line">        Request1 re1 = new Request1(&quot;请求1&quot;);</div><div class="line">        Request2 re2 = new Request2(&quot;请求2&quot;);</div><div class="line">        Request3 re3 = new Request3(&quot;请求3&quot;);</div><div class="line"></div><div class="line">        // 设置当前处理者对象下一个节点的处理者对象</div><div class="line">        handler1.nextHandler = handler2;</div><div class="line">        handler2.nextHandler = handler3;</div><div class="line"></div><div class="line">        // 准备开始请求</div><div class="line">        // 总是从链式的首端发起请求</div><div class="line">        handler1.handleRequest(re1);</div><div class="line">        handler1.handleRequest(re2);</div><div class="line">        handler1.handleRequest(re3);</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line">// 执行结果===================&gt; </div><div class="line">处理者 1 处理请求, 请求的等级为: 1</div><div class="line">处理者 2 处理请求, 请求的等级为: 2</div><div class="line">处理者 3 处理请求, 请求的等级为: 3</div></pre></td></tr></table></figure>
+<p>对于每个处理者其内部的逻辑是完全灵活的, 比如可以进行跳级传递等…</p>
+<h4 id="Android源码对应实现-4"><a href="#Android源码对应实现-4" class="headerlink" title="Android源码对应实现"></a>Android源码对应实现</h4><p>责任链模式在<code>Android</code>中比较类似的就是事件的分发处理, 每当用户接触屏幕时, <code>Android</code>就会将对应的事件包装成一个事件对象从<code>ViewTree</code>的顶部之上而下地分发传递.</p>
+<p><code>ViewGroup</code>事件投递的递归调用就类似一条责任链, 一旦其寻到责任者, 那么就由责任者持有并消费掉该次事件 具体的体现在<code>View#onTouchEvent()</code>方法返回值的设置, 如果返回false, 那么就意味着当前<code>View</code>不会是该次事件的责任人, 将不会对其持有, 如果返回<code>true</code>, 则相反, 此时<code>View</code>会持有该事件并不在向外传递.</p>
+<h3 id="解释器模式-Interpreter"><a href="#解释器模式-Interpreter" class="headerlink" title="解释器模式 Interpreter"></a>解释器模式 Interpreter</h3><h4 id="模式介绍-7"><a href="#模式介绍-7" class="headerlink" title="模式介绍"></a>模式介绍</h4><blockquote>
+<p>这是较少使用的行为型模式, 其提供了一种解释语言的语法或表达式的方式, 该模式定义了一个表达式接口, 通过该接口解释一个特定的上下文.</p>
+</blockquote>
+<ul>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">定义</div></pre></td></tr></table></figure>
+<p>: 给定一个语言, 定义它的文法的一种表示, 并定义一个解释器, 该解释器使用该表示来解释语言中的句子.</p>
+<ul>
+<li>文法? 如<code>他很高</code>,<code>他很胖</code>,<code>他很瘦</code>. 这三个语句可以看做一个<code>他很[形容词]</code>这样的结构, 可以看做是一条文法</li>
+</ul>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">场景</div></pre></td></tr></table></figure>
+<p>:</p>
+<ol>
+<li>如果某个简单的语言需要解释执行而且可以将该语言中的语句表示为一个抽象语法树时可以考虑使用解释器模式</li>
+<li>在某些特定的领域出现不断重复的问题时, 可以将该领域的问题转化为一种语法规则下的语句, 然后构建解释器来解释该语句.</li>
+</ol>
+</li>
+</ul>
+<h4 id="模式范例-7"><a href="#模式范例-7" class="headerlink" title="模式范例"></a>模式范例</h4><p>不好理解看看是通过代码形式的表示是否可以清楚一些?</p>
+<p>比如一个场景是算术表达式的解释, 如<code>m + n + p</code>, 如果使用解释器模式对该表达式进行解释, 那么代表数字的<code>mnp</code>3个字母我们可以看成是<code>终结符号</code>, 而<code>+</code>这个算术运算符则可以当做非终结符号.</p>
+<p><a href="https://github.com/suzeyu1992/AlgorithmTraining/tree/master/src/design/interpreter" target="_blank" rel="external">代码范例</a></p>
+<p>如最终调用方式:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">public static void main(String arg[])&#123;</div><div class="line">   Calculator calculator = new Calculator(&quot;12 + 11 + 13 + 14&quot;);</div><div class="line">   System.out.println(calculator.calculate());</div><div class="line">&#125;</div><div class="line"></div><div class="line">// 结果如下:</div><div class="line">50</div></pre></td></tr></table></figure>
+<p>这个例子只是先了对加减法的解释计算, 如果要实现更多的运算规则, 乘除取余, 只需要创建对应解释器即可, 但是混合运算的复杂是要考虑各种符号的优先级的问题,这个就比较麻烦.</p>
+<p>将一个具体的文法通过一个解释器解释, 把复杂的文法规则分离为简单的功能进行解释, 最后将其组合成一颗抽象的语法树解释执行, 至此, 可以看到解释器模式的原理和本质: 将复杂的问题简单化, 模块化, 分离实现, 解释执行</p>
+<h4 id="Android源码对应实现-5"><a href="#Android源码对应实现-5" class="headerlink" title="Android源码对应实现"></a>Android源码对应实现</h4><p><code>Android源码中</code>的解释器模式并不多见, 虽然没有经典实现, 但是可以在一些地方看到对解释器模式原理的应用. <code>AndroidManifest.xml</code>这个清单文件</p>
+<p>整理一下大体过程. 关于读取配置文件, 那么就需要一个很重要的类<code>PackageParser</code>. 该类对<code>AndroidManifest.xml</code>中每一个组件标签创建了对应的类, 用于存储相应的消息.</p>
+<p><code>PackageParser</code>为<code>Activity</code>,<code>Service</code>,<code>Provider</code>,<code>Permission</code>等构件在其内部以内部类的方式创建了对应的类, 按照解释器模式的定义, 这些类其实都对应<code>AndroidManifest.xml</code>中的一个标签, 也就是一条文法, 其在对该配置文件解析时充分运用了解释器模式分离实现, 解释器执行的特性.</p>
+<p>对一个<code>APK</code>文件的解析会调用<code>PackageManagerService#scanPackageLI()</code>方法, 这个方法有两种实现</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">private PackageParser.Package scanPackageLI(File scanFile, int parseFlags, int scanFlags,long currentTime, UserHandle user);</div><div class="line"> </div><div class="line">private PackageParser.Package scanPackageLI(PackageParser.Package pkg, int parseFlags,int scanFlags, long currentTime, UserHandle user)</div></pre></td></tr></table></figure>
+<p>两者的唯一区别是第一个参数, 第一种实现为<code>File</code>第二种为<code>PackageParser.Package</code>. 在具体解析某个文件时会先调用第一种实现解析<code>apk</code>文件, 在调用第二种实现将解析后的信息保存至<code>PMS</code>中. 而这两种方法中同样会调用一个函数名相同但参数不同的函数. <code>ParserPackage(...)</code>. 对于参数1为<code>File</code>类型的其中主要逻辑就是为了第二种<code>参数为Resources</code>实现准备好需要的参数, 然后可以调用第二种<code>ParserPackage(Resource ...)</code>.</p>
+<p>而<code>ParserPackage</code>的第二种实现逻辑比较复杂, 内部主要对整个<code>AndroidManifest.xml</code>配置文件的每个子节点进行具体的解析.</p>
+<p>例如<code>parseApplication</code>方法的会对<code>application</code>节点进行解析, 对于不同的子标签会调用不同的解析方法来对其内部进行解析. 如碰到了<code>activity</code>标签, 那么会调用<code>parseActivity()</code>进行内部解析. 而<code>parseActivity()</code>不仅承担着对<code>Activity</code>的解析, 其同样承担着<code>Broadcast</code>的解析. 并会继续调用方法对内部标签进行解析如<code>parseIntent</code>和<code>parseMetaData</code>等.</p>
+<h3 id="命令模式-Command"><a href="#命令模式-Command" class="headerlink" title="命令模式 Command"></a>命令模式 Command</h3><h4 id="模式介绍-8"><a href="#模式介绍-8" class="headerlink" title="模式介绍"></a>模式介绍</h4><blockquote>
+<p>行为型设计模式, 如当我们点击关机键的时候, 系统就会执行一系列的操作, 保存程序的进度, 结束程序, 调用内核命令关机. 用户不关心命令做了什么, 只需要点击关机即可达到效果.</p>
+</blockquote>
+<ul>
+<li><p><code>定义</code>: 将一个请求封装成一个对象, 从而让用户使用不同的请求把客户端参数化; 对请求排队或者记录请求日志, 以及支持可撤销操作.</p>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">场景</div></pre></td></tr></table></figure>
+<p>:</p>
+<ul>
+<li>需要抽象出待执行的操作, 然后以参数的形式提供出来– 类似于过程设计中的回调机制, 而命令模式正式回调机制的一个面向对象的替代品</li>
+<li>在不同的时刻指定, 排列和执行请求. 一个命令对象可以有与初始请求无关的生存期</li>
+<li>需要支持取消操作</li>
+<li>支持修改日志的功能, 这样当系统崩溃的时候, 这些修改可以重做一遍</li>
+<li>需要支持事务的操作</li>
+</ul>
+</li>
+</ul>
+<h4 id="模式范例-8"><a href="#模式范例-8" class="headerlink" title="模式范例"></a>模式范例</h4><p>把俄罗斯方块的大体逻辑模拟成代码, 向左,向右,变形,加速下落这四个按钮相当于<code>请求者</code>, 执行具体按钮命令的逻辑方法可以看做是命令角色.</p>
+<p><a href="https://github.com/suzeyu1992/AlgorithmTraining/tree/master/src/design/command" target="_blank" rel="external">范例代码</a></p>
+<p>范例类图</p>
+<p><img src="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_Command.png" alt="img"></p>
+<p>代码测试</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">public static void main(String arg[])&#123;</div><div class="line"></div><div class="line">   // 创建游戏</div><div class="line">   TetrisMachine machine = new TetrisMachine();</div><div class="line"></div><div class="line">   // 根据游戏构造四个命令</div><div class="line">   LeftCommand leftCommand = new LeftCommand(machine);</div><div class="line">   RightCommand rightCommand = new RightCommand(machine);</div><div class="line">   FastCommand fastCommand = new FastCommand(machine);</div><div class="line">   TransformCommand transformCommand = new TransformCommand(machine);</div><div class="line"></div><div class="line">   // 按钮可以执行不同的命令</div><div class="line">   Buttons buttons = new Buttons();</div><div class="line">   buttons.setmLeftCom(leftCommand);</div><div class="line">   buttons.setmRightCom(rightCommand);</div><div class="line">   buttons.setmFastCom(fastCommand);</div><div class="line">   buttons.setmTransformCom(transformCommand);</div><div class="line"></div><div class="line">   // 具体按下那个按钮玩家说的算</div><div class="line">   buttons.toLeft();</div><div class="line">   buttons.toRight();</div><div class="line">   buttons.fast();</div><div class="line">   buttons.transform();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>其实调用逻辑做的很复杂, 完全可以直接创建<code>TetrisMachine</code>类直接调用的. 这样做的主要原因是后续开发方便, 比如如果需要增加或修改游戏功能只需要修改<code>TetrisMachine</code>类就可以. 然后修改一下<code>Player</code>类. 但是事物是相对的对开发者方便了, 但是如果别人负责了这个项目看到这个功能可能会花更多时间去理解,反而简单的事情没有很直接的表达.</p>
+<p>除此之外, 使用命令模式的另一个好处是可以实现命令记录的功能, 如上面代码中, 如果要<code>Button</code>请求者角色中使用一个数据结构来存储执行过的命令对象, 以此可以很方便地知道刚刚执行过哪些命令动作, 并可以在需要时恢复</p>
+<h4 id="Android源码对应实现-6"><a href="#Android源码对应实现-6" class="headerlink" title="Android源码对应实现"></a>Android源码对应实现</h4><p><code>Android</code>中关于命令模式的使用虽然不少, 但都不是典型, 很多方面的应用与其他大多数设计模式一样都有一定的变种, 一个比较经典的例子是<code>Android的事件机制中底层逻辑对事件的转发处理</code>, <code>Android</code>的每一种事件在屏幕上产生后都会经过底层逻辑将其封装转换为一个<code>NotifiArgs</code>对象.</p>
+<h4 id="实战场景-4"><a href="#实战场景-4" class="headerlink" title="实战场景"></a>实战场景</h4><p>很好的一个场景就是, 对画板模块的使用, 可以很方便的实现重画,撤销等功能.</p>
+<h3 id="观察者模式-Observer"><a href="#观察者模式-Observer" class="headerlink" title="观察者模式 Observer"></a>观察者模式 Observer</h3><h4 id="模式介绍-9"><a href="#模式介绍-9" class="headerlink" title="模式介绍"></a>模式介绍</h4><blockquote>
+<p>一个使用率非常高的模式, 常用的地方GUI系统, 订阅–发布系统. 最明显的特点就是解耦, 将被观察者和观察者进行解耦, 使得依赖性更小.</p>
+</blockquote>
+<ul>
+<li><p><code>定义</code>: 定义对象间一种一对多的依赖关系,使得每当一个对象改变状态, 则所有依赖于它的对象都会得到通知并被自动更新.</p>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">场景</div></pre></td></tr></table></figure>
+<p>:</p>
+<ul>
+<li>关联行为场景, 需要注意的是, 关联行为是可拆分的, 而不是<code>组合</code>的关系</li>
+<li>事件多级触发场景</li>
+<li>跨系统的消息交换场景, 如消息队列,事件总线的处理机制</li>
+</ul>
+</li>
+</ul>
+<h4 id="模式范例-9"><a href="#模式范例-9" class="headerlink" title="模式范例"></a>模式范例</h4><p>例如一个简单的订阅, 订阅者可以在被观察者更新的时候收到通知.</p>
+<p><a href="https://github.com/suzeyu1992/AlgorithmTraining/tree/master/src/design/observer" target="_blank" rel="external">范例源码</a></p>
+<p>类图就不需要了, 因为<code>JDK</code>已经内置了此模式的实现, 看一下范例的调用方式和结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">public  static void main(String arg[])&#123;</div><div class="line">   // 创建被观察对象</div><div class="line">   DecTechFrontier decTechFrontier = new DecTechFrontier();</div><div class="line"></div><div class="line">   // 创建几个观察者</div><div class="line">   Coder co1 = new Coder(&quot;张飞&quot;);</div><div class="line">   Coder co2 = new Coder(&quot;李逵&quot;);</div><div class="line">   Coder co3 = new Coder(&quot;关羽&quot;);</div><div class="line">   Coder co4 = new Coder(&quot;孙悟空&quot;);</div><div class="line"></div><div class="line">   // 将观察者注册到被观察的对象</div><div class="line">   decTechFrontier.addObserver(co1);</div><div class="line">   decTechFrontier.addObserver(co2);</div><div class="line">   decTechFrontier.addObserver(co4);</div><div class="line">   decTechFrontier.addObserver(co3);</div><div class="line"></div><div class="line">   // 发布消息</div><div class="line">   decTechFrontier.postNewPublication(&quot;葵花宝典&quot;);</div><div class="line">&#125;</div><div class="line">// =====&gt; 输出结果</div><div class="line">你好, 关羽, 你订阅的东西有更新了: 葵花宝典 </div><div class="line">你好, 孙悟空, 你订阅的东西有更新了: 葵花宝典 </div><div class="line">你好, 李逵, 你订阅的东西有更新了: 葵花宝典 </div><div class="line">你好, 张飞, 你订阅的东西有更新了: 葵花宝典</div></pre></td></tr></table></figure>
+<p><code>Observer</code>和<code>Observable</code>是<code>JDK</code>中的内置类型, 可见观察者模式是非常重要的, 这里<code>Observer</code>是抽象观察者角色, <code>范例Coder</code>类扮演的是具体观察者角色; <code>Observable</code>对应的是抽象主题角色, <code>范例DecTechFrontier</code>是具体的主题角色. <code>主题角色</code>通过<code>setChange()</code>标识主题发生改变,并通过<code>notifyObservable()</code>通知所有的<code>观察者角色</code>. 而<code>观察者</code>都过复写<code>update()</code>方法来实现主题更新时需要做的事情 . 至此这两个角色并没有耦合.</p>
+<h4 id="Android源码对应实现-7"><a href="#Android源码对应实现-7" class="headerlink" title="Android源码对应实现"></a>Android源码对应实现</h4><p><code>ListView</code>中的<code>Adapter#notifyDataSetChange()</code>就是通过观察者模式实现的子View的更新.</p>
+<p>首先是<code>notifyDataSetChange()</code>方法为入口. 这个方法定义在<code>BaseAdapter</code>中.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">public abstract class BaseAdapter implements ListAdapter, SpinnerAdapter &#123;</div><div class="line">    // 数据集观察者</div><div class="line">    private final DataSetObservable mDataSetObservable = new DataSetObservable();</div><div class="line">    public void registerDataSetObserver(DataSetObserver observer) &#123;</div><div class="line">        mDataSetObservable.registerObserver(observer);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void unregisterDataSetObserver(DataSetObserver observer) &#123;</div><div class="line">        mDataSetObservable.unregisterObserver(observer);</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    /**</div><div class="line">     * 数据发生改变是, 调用所有观察者</div><div class="line">    **/</div><div class="line">    public void notifyDataSetChanged() &#123;</div><div class="line">        mDataSetObservable.notifyChanged();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>很明显的<code>BaseAdapter</code>是一个观察者模式, 那么接着看一下如何运作, 以及这个观察者是什么.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">public class DataSetObservable extends Observable&lt;DataSetObserver&gt; &#123;</div><div class="line">    // 调用每个观察者的onChange函数来通知他们被观察者发生了改变</div><div class="line">    public void notifyChanged() &#123;</div><div class="line">        synchronized(mObservers) &#123;</div><div class="line">            // 调用所有的观察者onChange()</div><div class="line">            for (int i = mObservers.size() - 1; i &gt;= 0; i--) &#123;</div><div class="line">                mObservers.get(i).onChanged();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看到我们调用的<code>notifyDataSetChanged()</code>会遍历所有的观察者中的<code>onChange()</code>.</p>
+<p>这些观察者就是在<code>ListView</code>通过<code>setAdapter()</code>方法设置<code>Adapter</code>产生的.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public void setAdapter(ListAdapter adapter) &#123;</div><div class="line">   // 如果已经有了一个Adapter, 那么先注销该Adapter对应的观察者</div><div class="line">   if (mAdapter != null &amp;&amp; mDataSetObserver != null) &#123;</div><div class="line">           mAdapter.unregisterDataSetObserver(mDataSetObserver);</div><div class="line">       &#125;</div><div class="line">   super.setAdapter(adapter);</div><div class="line"></div><div class="line">   if (mAdapter != null) &#123;</div><div class="line">       mAreAllItemsSelectable = mAdapter.areAllItemsEnabled();</div><div class="line">       mOldItemCount = mItemCount;</div><div class="line">       // 获取数据的数量</div><div class="line">       mItemCount = mAdapter.getCount();</div><div class="line">       checkFocus();</div><div class="line">       // *** 创建一个数据集观察者</div><div class="line">       mDataSetObserver = new AdapterDataSetObserver();</div><div class="line">       // 将这个观察者注册到Adapter中, 实际上注册到了 DataSetObservable中</div><div class="line">       mAdapter.registerDataSetObserver(mDataSetObserver);</div><div class="line"></div><div class="line">   &#125;</div><div class="line">   </div><div class="line">   requestLayout();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看出, 在设置<code>Adapter</code>时会构建一个<code>AdapterDataSetObserver</code>, 这就是之前说的观察者, 最后将这个观察者注册到<code>Adapter</code>中</p>
+<p>那么<code>AdapterDataSetObserver</code>是什么? 是如何运作的? 首先这个这个类定义在了<code>ListView</code>的父类<code>AbsListView</code>中, 而这个类又继承了<code>AbsListView</code>的父类<code>AdapterView的AdapterDataSetObserver</code>.如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">class AdapterDataSetObserver extends DataSetObserver &#123;</div><div class="line"></div><div class="line">   private Parcelable mInstanceState = null;</div><div class="line"></div><div class="line">   // 核心方法</div><div class="line">   @Override</div><div class="line">   public void onChanged() &#123;</div><div class="line">       mDataChanged = true;</div><div class="line">       mOldItemCount = mItemCount;</div><div class="line">       // 获取adapter的数量</div><div class="line">       mItemCount = getAdapter().getCount();</div><div class="line"></div><div class="line">       if (AdapterView.this.getAdapter().hasStableIds() &amp;&amp; mInstanceState != null</div><div class="line">               &amp;&amp; mOldItemCount == 0 &amp;&amp; mItemCount &gt; 0) &#123;</div><div class="line">           AdapterView.this.onRestoreInstanceState(mInstanceState);</div><div class="line">           mInstanceState = null;</div><div class="line">       &#125; else &#123;</div><div class="line">           rememberSyncState();</div><div class="line">       &#125;</div><div class="line">       checkFocus();</div><div class="line">       // 重新布局</div><div class="line">       requestLayout();</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这回应该很清楚了, 当<code>ListView</code>的数据发生变化时, 调用了<code>Adapter#notifyDataSetChanged()</code>函数, 这个函数又会调用<code>DataSetObserver#notifyChange()</code>函数, 这个函数会遍历所有的观察者<code>AdapterDataSetObserver#onChange()</code> 在<code>onChange()</code>方法中又会调用<code>ListView</code>重新布局, 使得<code>ListView</code>刷新界面</p>
+<h4 id="实战场景-5"><a href="#实战场景-5" class="headerlink" title="实战场景"></a>实战场景</h4><p>事件总线!</p>
+<h3 id="备忘录模式-Memento"><a href="#备忘录模式-Memento" class="headerlink" title="备忘录模式 Memento"></a>备忘录模式 Memento</h3><h4 id="模式介绍-10"><a href="#模式介绍-10" class="headerlink" title="模式介绍"></a>模式介绍</h4><blockquote>
+<p>一种行为模式, 该模式用于保存对象, 并且在之后可以再次恢复到此状态</p>
+</blockquote>
+<ul>
+<li><p><code>定义</code>: 在不破坏封闭的前提下, 捕获一个对象的内部状态,并在该对象之外保存这个状态, 以后就可将该对象恢复到原先保存的状态.</p>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">场景</div></pre></td></tr></table></figure>
+<p>:</p>
+<ol>
+<li>需要保存一个对象在某一个时刻的状态或部分状态</li>
+<li>如果用一个接口来让其他对象得到这些状态, 将会暴露对象的实现细节并破坏对象的封装性, 一个对象不希望外界直接访问其内部状态, 通过中间对象可以间接访问其内部状态.</li>
+</ol>
+</li>
+</ul>
+<h4 id="模式范例-10"><a href="#模式范例-10" class="headerlink" title="模式范例"></a>模式范例</h4><p>比如一个游戏, 在退出时候保存进度, 在进入的时候恢复进度的场景</p>
+<p><a href="https://github.com/suzeyu1992/AlgorithmTraining/tree/master/src/design/memento" target="_blank" rel="external">范例源码</a></p>
+<p>范例类图</p>
+<p><img src="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_Memento.png" alt="img"></p>
+<p>范例的使用–&gt;</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">public static void main(String arg[])&#123;</div><div class="line"></div><div class="line">   // 构建游戏对象</div><div class="line">   CallOfDuty game = new CallOfDuty();</div><div class="line"></div><div class="line">   // 1 打游戏</div><div class="line">   game.play();</div><div class="line"></div><div class="line">   Caretaker caretaker = new Caretaker();</div><div class="line">   // 2 游戏存档</div><div class="line">   caretaker.archive(game.createMemo());</div><div class="line"></div><div class="line">   // 3 退出游戏</div><div class="line">   game.quit();</div><div class="line"></div><div class="line">   // 4 恢复游戏</div><div class="line">   CallOfDuty newGame = new CallOfDuty();</div><div class="line">   newGame.restore(caretaker.getMemo());</div><div class="line">&#125;</div><div class="line"></div><div class="line">// =======&gt; 运行结果</div><div class="line">玩游戏: 第1关 奋战杀敌中</div><div class="line">进度升级中</div><div class="line">到达 第2关</div><div class="line">-----</div><div class="line">退出前的游戏属性: 当前游戏信息: checkpoint=2 ,mLifeValue=90 ,mWeapon=沙漠之鹰</div><div class="line">退出游戏</div><div class="line">-----</div><div class="line">恢复后的游戏属性--&gt; 当前游戏信息: checkpoint=2 ,mLifeValue=90 ,mWeapon=沙漠之鹰</div></pre></td></tr></table></figure>
+<p>可以看到<code>CallOfDuty</code>在这里为<code>Originator</code>角色, 也就是需要存储的对象, 在这里并没有直接存储对象, 而是通过<code>Memo</code>对<code>CallOfDuty</code>对象的数据进行存储, 然后在存储<code>Memo</code>对象, 最终对<code>Memo</code>的存储操作交给<code>Caretaker</code>对象. 在这个过程中, 各个角色职责清晰, 单一, 即对外屏蔽了对<code>CallOfDuty</code>角色的直接访问, 在满足了对象状态存取功能的同时也使得该模块的结构清晰, 整洁.</p>
+<h4 id="Android源码对应实现-8"><a href="#Android源码对应实现-8" class="headerlink" title="Android源码对应实现"></a>Android源码对应实现</h4><p>在<code>Android</code>源码中的状态模式应用是<code>Activity</code>中的状态保存.</p>
+<p>在这里, <code>Activity</code>扮演了<code>Caretaker</code>角色, 负责存储和恢复UI的状态信息; <code>Activity</code>,<code>Fragment</code>,<code>View</code>,<code>ViewGroup</code>等对象为<code>Originator</code>角色, 也就是需要存储状态的角色. <code>Memo</code>则由<code>Bundle</code>类扮演.</p>
+<h3 id="迭代器模式-Iterator"><a href="#迭代器模式-Iterator" class="headerlink" title="迭代器模式 Iterator"></a>迭代器模式 Iterator</h3><h4 id="模式介绍-11"><a href="#模式介绍-11" class="headerlink" title="模式介绍"></a>模式介绍</h4><blockquote>
+<p>也成为游标模式, 行为性设计模式. 源于对容器的访问.</p>
+</blockquote>
+<ul>
+<li><code>定义</code>: 提供了一种方法顺序访问一个容器对象中的各个元素, 而不需要暴露该对象的内部表示</li>
+<li><code>场景</code>: 遍历一个容器对象</li>
+</ul>
+<h4 id="模式实现"><a href="#模式实现" class="headerlink" title="模式实现"></a>模式实现</h4><p>场景: 如两个部门, 老板想要对两个部门的统计数据, 但是如果两个部门的内部实现存储如果是一个用数组, 一个集合, 那么老板访问就需要了解其内部的数据结构. 使得老板的职责过多, 这个时候如果用迭代器模式实现,统一遍历方式, 那么就会很方便,也不会对外暴露内部的实现细节. 如下:</p>
+<p><a href="https://github.com/suzeyu1992/AlgorithmTraining/tree/master/src/design/cursor" target="_blank" rel="external">范例代码</a></p>
+<p><img src="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_Cursor.png" alt="img"></p>
+<p>使用情况:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">public static void main(String args[])&#123;</div><div class="line">   CompanSu companSu = new CompanSu();</div><div class="line">   check(companSu.iterator());</div><div class="line"></div><div class="line">   CompanLi companLi = new CompanLi();</div><div class="line">   check(companLi.iterator());</div><div class="line">&#125;</div><div class="line"></div><div class="line">private static void check(Iterator iterator) &#123;</div><div class="line">   while (iterator.hasNext())&#123;</div><div class="line">       System.out.println(iterator.next().toString());</div><div class="line">   &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">// ======&gt; 结果</div><div class="line">Employee&#123;name=&apos;小敏&apos;, age=99, sex=&apos;男&apos;, position=&apos;程序员&apos;&#125;</div><div class="line">Employee&#123;name=&apos;小李&apos;, age=98, sex=&apos;男&apos;, position=&apos;程序员&apos;&#125;</div><div class="line">Employee&#123;name=&apos;小往&apos;, age=11, sex=&apos;女&apos;, position=&apos;程序员&apos;&#125;</div><div class="line">Employee&#123;name=&apos;小爱&apos;, age=9, sex=&apos;女&apos;, position=&apos;程序员&apos;&#125;</div><div class="line">Employee&#123;name=&apos;大敏&apos;, age=66, sex=&apos;妖&apos;, position=&apos;未知&apos;&#125;</div><div class="line">Employee&#123;name=&apos;大李&apos;, age=66, sex=&apos;妖&apos;, position=&apos;未知&apos;&#125;</div></pre></td></tr></table></figure>
+<p>这个例子只是列举个思想, 可以看到通过迭代器实现, 就可以对外通过一个统一的接口, 来对不同的内部细节不一样的容器进行访问. 这也是<code>List</code>,<code>Map</code>都实现迭代器的意义.</p>
+<h4 id="Android源码对应实现-9"><a href="#Android源码对应实现-9" class="headerlink" title="Android源码对应实现"></a>Android源码对应实现</h4><p>几乎开发者不会自己去实现一个迭代器, 例如<code>Android</code>中, 除了各种数据结构体, 最典型的就是数据库查询使用了<code>Cursor</code>. 当使用<code>SQLiteDatabase#query()</code>方法查询数据时, 会返回一个<code>Cursor</code>对象. 该对象实质就是一个迭代器.</p>
+<p>所以可以看出迭代器模式, 特点很明显也很单一, 支持以不同的方式去遍历一个容器对象, 也可以有多个遍历, 弱化了容器与遍历算法之间的关系. 几乎每一种高级语言都有对应的内置迭代器实现.</p>
+<h3 id="模板模式-Template"><a href="#模板模式-Template" class="headerlink" title="模板模式 Template"></a>模板模式 Template</h3><h4 id="模式介绍-12"><a href="#模式介绍-12" class="headerlink" title="模式介绍"></a>模式介绍</h4><blockquote>
+<p>某一个算法所需要的关键步骤是已知的, 但是某一步的具体实现是未知的需要子类去实现</p>
+</blockquote>
+<ul>
+<li><p><code>定义</code>: 定义一个操作中的算法框架, 而将一些步骤延迟到子类中, 使得子类可以不改变一个算法的结构即可重定义该算法的某些步骤.</p>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">场景</div></pre></td></tr></table></figure>
+<p>:</p>
+<ul>
+<li>多个子类有共有的方法, 并且逻辑基本相同</li>
+<li>重要, 复杂的算法, 可以把核心算法设计为模板方法, 周边的相关细节由子类去实现</li>
+<li>重构时, 模板方法模式是一个经常使用的模式, 把相同的代码抽取到父类, 然后通过钩子函数约束其行为</li>
+</ul>
+</li>
+</ul>
+<h4 id="模式范例-11"><a href="#模式范例-11" class="headerlink" title="模式范例"></a>模式范例</h4><p>模板方式实际上是封装一个固定流程, 然后暴露某一个步骤方法, 这里以计算机开机为例子,</p>
+<p><a href="https://github.com/suzeyu1992/AlgorithmTraining/tree/master/src/design/template" target="_blank" rel="external">范例代码</a></p>
+<p><img src="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_Template.png" alt="img"></p>
+<p>代码使用:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">public static void main(String arg[])&#123;</div><div class="line"></div><div class="line">   CodeComputer codeComputer = new CodeComputer();</div><div class="line">   codeComputer.startUp();</div><div class="line"></div><div class="line">   MilitaryComputer militaryComputer = new MilitaryComputer();</div><div class="line">   militaryComputer.startUp();</div><div class="line">&#125;</div><div class="line"></div><div class="line">// ========&gt; 运行结果</div><div class="line">--------- 开机 start -----------</div><div class="line">开启电源</div><div class="line">硬件检测</div><div class="line">载入操作系统</div><div class="line">需要密码</div><div class="line">---------- 关机 end ---------------</div><div class="line">--------- 开机 start -----------</div><div class="line">开启电源</div><div class="line">硬件检测</div><div class="line">&gt;&gt; 需要检测防火墙</div><div class="line">载入操作系统</div><div class="line">需要进行眼膜验证</div><div class="line">---------- 关机 end ---------------</div></pre></td></tr></table></figure>
+<p>上面代码不管什么情况四个步骤是必须的, 开启电源是刚需,不需要子类实现, <code>startUp()</code>设置方法是<code>final</code>因为调用流程是必须的. 而其余的方法根据不同的需求来进行改造.</p>
+<h4 id="Android源码对应实现-10"><a href="#Android源码对应实现-10" class="headerlink" title="Android源码对应实现"></a>Android源码对应实现</h4><p><code>Android</code>中<code>AsyncTask</code>就是一个比较明显的模板方法模式.</p>
+<p>其内部调用顺序就是 <code>execute</code>–&gt;<code>onPreExecute</code>–&gt;<code>doInBackground</code>–&gt;<code>onPostExecute</code></p>
+<p>或者比如<code>Activity</code>的声明周期方法.</p>
+<h3 id="访问者模式-Visitor"><a href="#访问者模式-Visitor" class="headerlink" title="访问者模式 Visitor"></a>访问者模式 Visitor</h3><h4 id="模式介绍-13"><a href="#模式介绍-13" class="headerlink" title="模式介绍"></a>模式介绍</h4><blockquote>
+<p>访问者模式是一种将数据操作与数据结构分离的设计模式,它是23种设计模式最复杂的一个, 但使用率不高. 大体思想, 软件系统中拥有一个由许多对象构成的, 比较稳定的对象结构, 这些对象的类都拥有一个<code>accept</code>方法用来接收访问者对象的访问. 访问者是一个接口, 他拥有<code>visit</code>方法, 这个方法对访问到的对象结构中不同的类型元素做出不同的处理.</p>
+</blockquote>
+<ul>
+<li><p><code>定义</code>: 封装一些作用于某种数据结构中的各个元素的操作, 它可以在不改变这个数据结构的前提下定义作用于这些元素的新的操作</p>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">场景</div></pre></td></tr></table></figure>
+<p>:</p>
+<ul>
+<li>对象结构比较稳定, 但经常需要在此对象结构上定义新的操作</li>
+<li>需要对一个对象结构中的对象进行很多不同的并且不相关的操作, 而需要避免这些操作污染这些对象的类, 也不希望在增加新操作时修改这些类</li>
+</ul>
+</li>
+</ul>
+<h4 id="模式范例-12"><a href="#模式范例-12" class="headerlink" title="模式范例"></a>模式范例</h4><p>场景: 公司的年度考核, 评定员工分别是<code>CEO</code>和<code>CTO</code>, 而<code>CEO</code>只关注工程师的代码量和经理的新产品数; <code>CTO</code>关注的是工程师的<code>KPI</code>和经理的<code>KPI</code>. 这时<code>CEO</code>和<code>CTO</code>对于不同员工的关注点是不一样的. 这就需要对不同的员工类型进行不同的处理. 访问者模式此时可以派上用场了.</p>
+<p><a href="https://github.com/suzeyu1992/AlgorithmTraining/tree/master/src/design/visitor" target="_blank" rel="external">范例代码</a></p>
+<p>代码使用结果:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">public static void main(String args[])&#123;</div><div class="line">   // 构建报表</div><div class="line">   BusinessReport report = new BusinessReport();</div><div class="line"></div><div class="line">   System.out.println(&quot;----------给CEO看的报表----------&quot;);</div><div class="line">   // 设置访问者, 这里是CEO</div><div class="line">   report.showReport(new CEOVisitor());</div><div class="line"></div><div class="line">   System.out.println(&quot;----------给CTO看的报表----------&quot;);</div><div class="line">   // 注入另一访问者CTO</div><div class="line">   report.showReport(new CTOVisitor());</div><div class="line">&#125;</div><div class="line">// ======&gt; 结果</div><div class="line">----------给CEO看的报表----------</div><div class="line">CEO访问--&gt; 经理王经理 . KPI : 9 , 新产品数量: 0</div><div class="line">CEO访问--&gt; 工程师工程师-jake . KPI : 2</div><div class="line">CEO访问--&gt; 工程师工程师-小李 . KPI : 5</div><div class="line">CEO访问--&gt; 工程师工程师-小张 . KPI : 0</div><div class="line">----------给CTO看的报表----------</div><div class="line">CTO访问--&gt; 经理 王经理 , 新产品数量: 0</div><div class="line">CTO访问--&gt; 工程师 工程师-jake . 代码行数 : 14290</div><div class="line">CTO访问--&gt; 工程师 工程师-小李 . 代码行数 : 2183</div><div class="line">CTO访问--&gt; 工程师 工程师-小张 . 代码行数 : 83422</div></pre></td></tr></table></figure>
+<p>范例中<code>Staff</code>扮演了<code>Element</code>角色, 而<code>Enginner</code>和<code>Manager</code>都是<code>ConcreteElement</code>; <code>CEOVisitor</code>和<code>CTOVistor</code>都是具体的<code>Vistor</code>对象, 而<code>BusinessReport</code>就是<code>ObjectStructure</code>; <code>Client</code>就是客户端</p>
+<p>访问者最大的优点就是增加访问者非常容易, 如果要增加一个访问者, 只需要创建一个实现了<code>Visitor</code>接口的类, 然后实现两个<code>visi</code>函数来对不同的元素进行不同的操作, 从而达到数据对象与数据操作相分离的效果.</p>
+<h4 id="Android源码对应实现-11"><a href="#Android源码对应实现-11" class="headerlink" title="Android源码对应实现"></a>Android源码对应实现</h4><p><code>APT</code>的注解. 简单记录一下. 首先编译器将代码抽象成一个代码元素的树, 然后在编译时对整棵树进行遍历访问, 每个元素都有一个<code>accept()</code>接收访问者的访问, 每个访问者中都有对应的<code>visit()</code>函数, 例如<code>visitType()</code>函数就是对类型元素的访问, 在每个<code>visit</code>函数中对不同的类型进行不同的处理, 这样就达到了差异处理效果, 同时将数据结构与数据操作分离, 使得每个类型的职责单一, 易于升级维护. <code>JDK</code>还特意预留了<code>visitUnknown()</code>接口应对<code>Java</code>语言后续发展可能添加的元素类型问题, 灵活的将访问者模式的缺点化解.</p>
+<h3 id="中介者模式-Mediator"><a href="#中介者模式-Mediator" class="headerlink" title="中介者模式 Mediator"></a>中介者模式 Mediator</h3><h4 id="模式介绍-14"><a href="#模式介绍-14" class="headerlink" title="模式介绍"></a>模式介绍</h4><blockquote>
+<p>也称为调节者模式或者调停者模式</p>
+</blockquote>
+<ul>
+<li><code>定义</code>: 包装了一系列对象互相作用的方式, 使得这些对象不必互相明显作用. 从而使他们可以松散耦合. 当某些对象之间的作用发生改变时, 不会立即影响其他的一些对象之间的作用. 保证这些作用可以彼此独立的变化. 中介者模式将多对多的关系转化为一对多的相互作用. 中介者模式将对象的行为和协作抽象化, 把对象在小尺度的行为上与其他对象的相互作用分开处理.</li>
+<li><code>场景</code>: 当对象之间的交互操作很多且每个对象的行为都依赖彼此时, 为防止在修改一个对象的行为会涉及修改很多其他对象的行为, 可采用中介者模式, 来解决紧耦合问题. 该模式将对象之间的多对多关系变成了一对多关系, 中介者对象将系统从网状结构变成以调停者为中心的星形结构, 达到降低系统的复杂性, 提高可扩展的作用.</li>
+</ul>
+<h4 id="模式范例-13"><a href="#模式范例-13" class="headerlink" title="模式范例"></a>模式范例</h4><p>场景: 以电脑为例, 电脑主要部分为:CPU, 内存, 显卡, IO设备. 通常需要一个东西把这些组件连接起来共同工作,这就是主板的工作. 任何的两块模块之间的通信都会经过主板去协调. 这里以读取光盘为例.看主板是如何充当这个中介者角色的.</p>
+<p><a href="https://github.com/suzeyu1992/AlgorithmTraining/tree/master/src/design/mediator" target="_blank" rel="external">范例代码</a></p>
+<p><img src="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_Mediator.png" alt="img"></p>
+<p>代码使用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">public static void main(String arg[])&#123;</div><div class="line"></div><div class="line">   // 构造主板对象</div><div class="line">   MainBoard mainBoard = new MainBoard();</div><div class="line"></div><div class="line">   // 构造各个零件同事</div><div class="line">   CDDevice cdDevice = new CDDevice(mainBoard);</div><div class="line">   CPU cpu = new CPU(mainBoard);</div><div class="line">   GraphicsCard graphicsCard = new GraphicsCard(mainBoard);</div><div class="line">   SoundCard soundCard = new SoundCard(mainBoard);</div><div class="line"></div><div class="line">   // 将各个部件安装到主板</div><div class="line">   mainBoard.setCdDevice(cdDevice);</div><div class="line">   mainBoard.setCpu(cpu);</div><div class="line">   mainBoard.setGraphicsCard(graphicsCard);</div><div class="line">   mainBoard.setSoundCard(soundCard);</div><div class="line"></div><div class="line">   // 完成后开始放片</div><div class="line">   cdDevice.load();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>从图片可以看出, 虽然彼此间会互相交互, 但是通过中介者模式, 会让一个网状的关系, 转成一个以<code>中介者</code>为中心的星状图.</p>
+<h4 id="Android源码对应实现-12"><a href="#Android源码对应实现-12" class="headerlink" title="Android源码对应实现"></a>Android源码对应实现</h4><p>中介者模式在<code>Android</code>源码中比较好的例子是<code>Keyguard</code>锁屏的实现.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">public class KeyguardViewMediator extends SystemUI &#123;</div><div class="line">    private AlarmManager mAlarmManager;</div><div class="line">    private AudioManager mAudioManager;</div><div class="line">    private StatusBarManager mStatusBarManager;</div><div class="line">    private boolean mSwitchingUser;</div><div class="line"></div><div class="line">    private boolean mSystemReady;</div><div class="line">    private boolean mBootCompleted;</div><div class="line">    private boolean mBootSendUserPresent;</div><div class="line">    // ....</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看到类中存在很多<code>XXManager</code>的变量, 这些各种各样的管理器就是各个具体的实现类, <code>Android</code>使用<code>KeyguardViewMediator</code>充当这个中介者协调这些管理器的状态改变, 同样也会定义很多方法来处理这些管理器的状态, 以解锁或锁屏时声音的播放为例, 对应的方法<code>playSounds()</code>来协调音频这一状态.</p>
+<p>而其他管理器的协调同样可以在此类找到.</p>
+<hr>
+<p>而另一个中介者模式的例子就是<code>Binder</code>机制, 在<code>Binder</code>机制中有3个非常重要的组件<code>ServiceManager</code>,<code>Binder Driver</code>和<code>Bp Binder</code>. 其中<code>Bp Binder</code>是<code>Binder</code>的一个代理角色, 其提供了<code>IBinder</code>接口给各个客户端服务使用, 这三者就扮演了一个中介者角色</p>
+<p>当手机启动后, <code>ServiceManager</code>会先向<code>Binder Driver</code>进行注册, 同样<code>ServiceManager</code>也是一个服务, 但特殊性在于, 它在<code>Binder Driver</code>中是最先被注册的, 其注册<code>ID</code>为0, 当其他的服务想要注册到<code>Binder Driver</code>时, 会先通过这个<code>0号ID获取到ServiceManager</code>所对应的<code>IBinder</code>接口, 该接口实质上的实现逻辑是由<code>Bp Binder</code>实现的, 获取到对应的接口后就回调其中的<code>transact()</code>方法, 此后就会在<code>Binder Driver</code>中注册一个<code>ID 1</code>来对应这个服务, 如果客户端想要使用这个服务, 那么他会先获取<code>ID 0</code>的接口, 也就是<code>ServiceManager</code>所对应的接口, 并调用其<code>transact()</code>要求连接到刚才的服务, 这个时候<code>Binder Driver</code>就会将<code>ID 1</code>的服务回传给客户端并将相关信息反馈给<code>ServiceManager</code>完成连接. 这里<code>ServiceManger</code>和<code>Binder Driver</code>就相当于一个中介者, 协调各个服务器和客户端.</p>
+<h3 id="代理模式-Proxy"><a href="#代理模式-Proxy" class="headerlink" title="代理模式 Proxy"></a>代理模式 Proxy</h3><h4 id="模式介绍-15"><a href="#模式介绍-15" class="headerlink" title="模式介绍"></a>模式介绍</h4><blockquote>
+<p>也称委托模式, 结构性设计模式. 生活中也是有很多常见的代理例子, 代理上网, 叫外卖, 通过律师打官司都是一种代理</p>
+</blockquote>
+<ul>
+<li><code>定义</code>: 为其他对象提供一种代理以控制对这个对象的访问</li>
+<li><code>场景</code>: 当无法或不想直接访问某个对象或访问某个对象存在困难时可以通过一个代理对象来间接访问, 为了保证客户端使用的透明性, 委托对象与代理对象需要实现相同的接口.</li>
+</ul>
+<h4 id="模式范例-14"><a href="#模式范例-14" class="headerlink" title="模式范例"></a>模式范例</h4><p>场景: 公司拖欠工资, 员工通过律师来间接的和公司要钱.</p>
+<p><a href="https://github.com/suzeyu1992/AlgorithmTraining/tree/master/src/design/proxy" target="_blank" rel="external">范例源码</a></p>
+<p><img src="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_Proxy.png" alt="img"></p>
+<p>使用时代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">public static void main(String args[])&#123;</div><div class="line">   // 构造一个起诉者</div><div class="line">   ConcreteLawsuit concreteLawsuit = new ConcreteLawsuit();</div><div class="line"></div><div class="line">   // 构造一个律师, 被代理者</div><div class="line">   Lawyer lawyer = new Lawyer(concreteLawsuit);</div><div class="line"></div><div class="line">   // 律师代理</div><div class="line">   lawyer.submit();</div><div class="line">   lawyer.burden();</div><div class="line">   lawyer.defend();</div><div class="line">   lawyer.finish();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>代理模式大致分为两个部分, 一个是<code>静态代理</code>,还有一个是<code>动态代理</code>.</p>
+<ul>
+<li><code>静态代理</code>如上述示例那样, 代理者的代码由程序员自己或者通过自动化工具生成固定的代码再对其进行编译, 也就是说在我们的代码运行前<code>代理类class</code>编译文件就已经存在</li>
+<li><code>动态代理</code>则与静态代理相反, 通过反射机制动态生成代理者对象, 也就是说我们在<code>code阶段</code>压根就不需要知道代理谁, 代理谁将会在执行阶段决定, 而<code>Java</code>也给我们提供了一个便捷的动态代理接口<code>InvocationHandler</code>, 并复写<code>invoke()</code></li>
+</ul>
+<p>动态代理最终的调用方式:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">// 构造一个动态代理</div><div class="line">DynamicProxy dynamicProxy = new DynamicProxy(concreteLawsuit);</div><div class="line"></div><div class="line">// 获取被代理者的ClassLoader</div><div class="line">ClassLoader classLoader = concreteLawsuit.getClass().getClassLoader();</div><div class="line"></div><div class="line">// 动态构造一个代理者律师</div><div class="line">ILawsuit law = (ILawsuit) Proxy.newProxyInstance(classLoader, new Class[]&#123;ILawsuit.class&#125;, dynamicProxy);</div><div class="line"></div><div class="line">// 动态调用</div><div class="line">law.submit();</div><div class="line">law.burden();</div><div class="line">law.defend();</div><div class="line">law.finish();</div></pre></td></tr></table></figure>
+<h4 id="Android源码对应实现-13"><a href="#Android源码对应实现-13" class="headerlink" title="Android源码对应实现"></a>Android源码对应实现</h4><p><code>Android</code>源码中的代理模式实现有很多, 如源码中的<code>ActivityManagerProxy</code>代理类, 其具体代理的是<code>ActivityManagerNative</code>的子类<code>ActivityManagerService</code>. <code>ActivityManagerProxy</code>与<code>ActivityManagerNative</code>处于同一个文件.</p>
+<p>而<code>ActivityManagerProxy</code>和<code>ActivityManagerNative</code>都继承了<code>IActivityManager</code></p>
+<p><img src="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/proxy-ams.png" alt="img"></p>
+<p>可以很明显的看出这三个类构成的<code>代理模式</code>, 但是由于<code>AMN</code>是抽象类, 所以具体的实现交由了子类<code>AMS</code>去实现. 而<code>AMS</code>是系统级的<code>Service</code>并且运行于独立的进程空间中, 可以通过<code>ServiceManager</code>来获取它. 而<code>AMP</code>也运行于自己所处的进程空间中, 两者并不相同, 因此<code>AMS</code>和<code>AMP</code>的通信必定是通过跨进程来进行的, 所以此处源码中所实现的实质为远程代理.</p>
+<p><code>AMP</code>在实际的逻辑处理中并未过多地被外部类使用, 因为在<code>Android</code>中管理与维护<code>Activity</code>相关信息的是另一个叫做<code>ActivityManager</code>的类, <code>ActivityManager</code>虽说管理着相关信息, 但是实质上其大多数逻辑都是由<code>AMP</code>承担的.</p>
+<h3 id="组合模式-Composite"><a href="#组合模式-Composite" class="headerlink" title="组合模式 Composite"></a>组合模式 Composite</h3><h4 id="模式介绍-16"><a href="#模式介绍-16" class="headerlink" title="模式介绍"></a>模式介绍</h4><blockquote>
+<p>结构性设计模式, 比较简单, 把一组相似的对象看做一个对象来处理, 并根据一个树状结构来组合对象, 然后提供一个统一的方法去访问相应的对象, 以此忽略掉对象与对象集合之间的差别.</p>
+</blockquote>
+<ul>
+<li><p><code>定义</code>: 将对象组合成树形结构以表示<code>整体-部分</code>的层次结构, 使得用户对单个对象和组合对象的使用一致性</p>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">场景</div></pre></td></tr></table></figure>
+<p>:</p>
+<ul>
+<li>表示对象的部分-整体层次结构</li>
+<li>从一个整体中能够独立出部分模块或功能的场景</li>
+</ul>
+</li>
+</ul>
+<h4 id="模式范例-15"><a href="#模式范例-15" class="headerlink" title="模式范例"></a>模式范例</h4><p>一个很好的组合例子就是文件夹和文件之间的关系. 以此为例, 看看一个简单文件系统是如何构成的.</p>
+<p><a href="https://github.com/suzeyu1992/AlgorithmTraining/tree/master/src/design/composite" target="_blank" rel="external">范例源码</a></p>
+<p><img src="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_Composite.png" alt="img"></p>
+<p>使用代码和结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">public static void main(String arg[])&#123;</div><div class="line">   // 构造一个目录对象表示c盘目录</div><div class="line">   Folder diskC = new Folder(&quot;C&quot;);</div><div class="line"></div><div class="line">   // C盘根目录下有一个文件 Log.txt</div><div class="line">   diskC.addDir(new File(&quot;Lag.txt&quot;));</div><div class="line"></div><div class="line">   // C盘下还有3个子目录</div><div class="line">   diskC.addDir(new Folder(&quot;目录1&quot;));</div><div class="line"></div><div class="line">   Folder dirs = new Folder(&quot;目录2&quot;);</div><div class="line">   dirs.addDir(new File(&quot;null.txt&quot;));</div><div class="line">   diskC.addDir(dirs);</div><div class="line"></div><div class="line">   diskC.addDir(new Folder(&quot;目录3&quot;));</div><div class="line"></div><div class="line">   // 打印文件结构</div><div class="line">   diskC.print();</div><div class="line">&#125;</div><div class="line"></div><div class="line">// =========&gt; 结果</div><div class="line">C (Lag.txt,目录1 (),目录2 (null.txt),目录3 ())</div></pre></td></tr></table></figure>
+<p>从根节点依次延伸可以很明显看出这是一个树状的嵌套结构. 这就是组合模式</p>
+<h4 id="Android源码对应实现-14"><a href="#Android源码对应实现-14" class="headerlink" title="Android源码对应实现"></a>Android源码对应实现</h4><p>这个模式在<code>Android</code>有一个很经典的表示, 我们一直再使用, 就是<code>View</code>和<code>ViewGroup</code>结构.</p>
+<p><img src="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/composite-view.png" alt="img"></p>
+<p>由于<code>View</code>的视图层级中使用的是<code>安全的设计模式</code>, 所以只能是<code>ViewGroup</code>才可以包含<code>View</code>,反之则不可以, 而上面的范例使用的是<code>透明的组合模式</code>. 可以观察一下具体有哪些不同.</p>
+<h3 id="适配器模式-Adapter"><a href="#适配器模式-Adapter" class="headerlink" title="适配器模式 Adapter"></a>适配器模式 Adapter</h3><h4 id="模式介绍-17"><a href="#模式介绍-17" class="headerlink" title="模式介绍"></a>模式介绍</h4><blockquote>
+<p>这也是一个我们从始至终都在使用的模式, <code>ListView</code>,<code>GridView</code>,<code>RecycleView</code>. 适器就是将两个不兼容的类融合在一起, 有点像粘合剂.</p>
+</blockquote>
+<ul>
+<li><p><code>定义</code>: 把一个类的接口转换成客户端所期待的另一个接口, 从而使原本因接口不匹配而无法在一起工作的两个类能够在一起工作.</p>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">场景</div></pre></td></tr></table></figure>
+<p>:</p>
+<ul>
+<li>系统需要使用现有的类, 而此类的接口不符合系统的需要, 即接口不兼容</li>
+<li>想要建立一个可以重复使用的类, 用于与一些比起之间没有太大关联的一些类, 包括一些可能在将来引进的类一起工作</li>
+<li>需要一个统一的输出接口, 而输入端的类型不可预知</li>
+</ul>
+</li>
+</ul>
+<h4 id="模式范例-16"><a href="#模式范例-16" class="headerlink" title="模式范例"></a>模式范例</h4><p>软件开发有一句话: <code>任何问题都可以加一个中间层来解决</code>. 正式对适配器模式的描述, 最常见的就是笔记本电脑一般用的5V电压, 但是生活中的电压都是标准的220V. 所以我们笔记本都通过一个电源适配器来解决此问题.</p>
+<p><a href="https://github.com/suzeyu1992/AlgorithmTraining/tree/master/src/design/adapter" target="_blank" rel="external">范例代码</a></p>
+<p>类图关系很简单就不贴出来了</p>
+<p>代码中有两种实现:</p>
+<ul>
+<li><code>类适配器模式</code> : 主要是<code>Adapter</code>角色是<strong>继承需要适配</strong>的角色.</li>
+<li><code>对象适配器模式</code>: 通过在构造适配器的时候<strong>传入适配对象</strong>. 使用组合的形式实现接口兼容.</li>
+</ul>
+<p>相比较, 使用<code>对象适配器</code>更加的灵活, 另一个好处就是被适配对象的方法不会暴露出来, 而<code>类适配器</code>由于继承了被适配的对象, 因此被适配对象类在<code>Adapter</code>类中同样存在, 这就使得<code>Adapter</code>出现了一些奇怪的方法, 用户的使用成本也较高.</p>
+<h4 id="Android源码对应实现-15"><a href="#Android源码对应实现-15" class="headerlink" title="Android源码对应实现"></a>Android源码对应实现</h4><p>不用说<code>Adapter</code>大家都知道. <code>Android</code>的做法增加了个<code>Adapter</code>层来隔离变化, 将<code>ListView</code>需要的关于<code>Item View</code>接口抽象到<code>Adapter</code>对象中, 并且在<code>ListView</code>内部调用了<code>Adapter</code>这些接口完成布局等操作. 这样只要用户实现了<code>Adapter</code>的接口, 并且将该<code>Adapter</code>设置给<code>ListView</code>, <code>ListView</code>就可以按照用户设定的<code>UI</code>效果, 数量, 数据来显示每一项数据.</p>
+<h3 id="装饰模式-Decorator"><a href="#装饰模式-Decorator" class="headerlink" title="装饰模式 Decorator"></a>装饰模式 Decorator</h3><h4 id="模式介绍-18"><a href="#模式介绍-18" class="headerlink" title="模式介绍"></a>模式介绍</h4><blockquote>
+<p>也称包装模式, 结构性设计模式, 使用一种对客户端透明的方式来动态的扩展对象的功能, 同时他也是继承关系的一种替代方案之一</p>
+</blockquote>
+<ul>
+<li><code>定义</code>: 动态地给一个对象添加一些额外的职责. 就增加功能来说, 装饰模式相比生成子类更加灵活.</li>
+<li><code>场景</code>: 需要透明且动态地扩展类的功能时</li>
+</ul>
+<h4 id="模式范例-17"><a href="#模式范例-17" class="headerlink" title="模式范例"></a>模式范例</h4><p>人穿衣服的例子</p>
+<p><a href="https://github.com/suzeyu1992/AlgorithmTraining/tree/master/src/design/decorator" target="_blank" rel="external">范例源码</a></p>
+<p><img src="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_Decorator.png" alt="img"></p>
+<p>其实可以这种扩展并非是直接修改原有方法逻辑或者结构, 更恰当的说, 仅仅是在另一个类中将原有方法和逻辑进行封装整合.</p>
+<p><code>装饰模式</code>和<code>代理模式</code>有点类似, 比较容易混淆的是会把装饰模式当成代理模式. <code>装饰模式</code>是以对客户端透明的方式扩展对象的功能, 是继承关系的一个替代方案. 而<code>代理模式</code>则是给一个对象提供一个对象代理, 并由代理对象来控制对原有对象的引用. <code>装饰模式</code>应该为所装饰的对象增强功能; <code>代理模式</code>对代理的对象施加控制, 但不对对象本身的功能增强.</p>
+<h4 id="Android源码对应实现-16"><a href="#Android源码对应实现-16" class="headerlink" title="Android源码对应实现"></a>Android源码对应实现</h4><p><code>Context</code>, 是不是熟悉的不能再熟悉了. 它的本质就是一个抽象类. 在装饰模式中相当于<code>抽象组件</code>. 虽然<code>Activity</code>继承了<code>Context</code>但是其中的<code>startActivity()</code>,<code>startService()</code>这些都是由另一个继承者来处理的的. 这个<code>Context</code>的另一个继承者就是<code>ContextImpl</code>.</p>
+<p><code>ContextImpl</code>内部实现了<code>Context</code>的抽象方法. 而<code>Activity</code>等组件只是将其中的方法进行了转发调用.</p>
+<h3 id="享元模式-Flyweight"><a href="#享元模式-Flyweight" class="headerlink" title="享元模式 Flyweight"></a>享元模式 Flyweight</h3><h4 id="模式介绍-19"><a href="#模式介绍-19" class="headerlink" title="模式介绍"></a>模式介绍</h4><blockquote>
+<p>用尽可能减少内存使用量, 它适合用于可能存在大量重复对象的场景, 来缓存可共享的对象, 达到对象共享, 避免创建过多对象的效果. 就可以提升性能, 避免内存抖动</p>
+</blockquote>
+<ul>
+<li><p><code>定义</code>: 使用共享对象可有效地支持大量的相似对象</p>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">场景</div></pre></td></tr></table></figure>
+<p>:</p>
+<ul>
+<li>系统中存在大量的相似对象</li>
+<li>细粒度的对象都具备比较接近的外部状态, 而且内部状态与环境无关, 也就是说对象没有特定身份</li>
+<li>需要缓冲池的场景</li>
+</ul>
+</li>
+</ul>
+<h4 id="模式范例-18"><a href="#模式范例-18" class="headerlink" title="模式范例"></a>模式范例</h4><p>通过售票口的出票来为例</p>
+<p><a href="https://github.com/suzeyu1992/AlgorithmTraining/tree/master/src/design/flyweight" target="_blank" rel="external">范例代码</a></p>
+<p><img src="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_Flyweight.png" alt="img"></p>
+<p>代码使用和结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">public class Client &#123;</div><div class="line"></div><div class="line">    public static void main(String arg[])&#123;</div><div class="line">        Ticket ticket = TicketFactory.getTicket(&quot;青岛&quot;, &quot;北京&quot;);</div><div class="line">        ticket.showTicketInfo(&quot;上铺&quot;);</div><div class="line"></div><div class="line">        Ticket ticket1 = TicketFactory.getTicket(&quot;青岛&quot;, &quot;上海&quot;);</div><div class="line">        ticket1.showTicketInfo(&quot;上铺&quot;);</div><div class="line"></div><div class="line">        Ticket ticket2 = TicketFactory.getTicket(&quot;青岛&quot;, &quot;北京&quot;);</div><div class="line">        ticket2.showTicketInfo(&quot;上铺&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">// ========&gt; </div><div class="line">创建对象--&gt; 青岛-北京</div><div class="line">购买 从青岛 到 上铺 的北京火车票, 价格: 293</div><div class="line">创建对象--&gt; 青岛-上海</div><div class="line">购买 从青岛 到 上铺 的上海火车票, 价格: 20</div><div class="line">使用缓存--&gt; 青岛-北京</div><div class="line">购买 从青岛 到 上铺 的北京火车票, 价格: 141</div></pre></td></tr></table></figure>
+<p>其实主要思想就是: 让可复用的对象实现复用, 减少无用的重复创建的步骤.</p>
+<h4 id="Android源码对应实现-17"><a href="#Android源码对应实现-17" class="headerlink" title="Android源码对应实现"></a>Android源码对应实现</h4><p><code>Message</code>对象. 在使用<code>Handler</code>传递数据的时候. 不可避免的需要使用<code>Message</code>. 即使你通过<code>Handler.post(Runnable)</code>传递一个接口, 在源码内部同样会通过<code>Message</code>为载体挂到<code>callback</code>变量上传递. 看一下. 源码中是如何维护一个频繁需要使用对象的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div></pre></td><td class="code"><pre><div class="line">private static Message sPool;  // 静态!</div><div class="line"></div><div class="line">// 获取一个Message</div><div class="line">public static Message obtain() &#123;</div><div class="line">   synchronized (sPoolSync) &#123;</div><div class="line">       if (sPool != null) &#123;</div><div class="line">           Message m = sPool;</div><div class="line">           sPool = m.next;</div><div class="line">           m.next = null;</div><div class="line">           m.flags = 0; // clear in-use flag</div><div class="line">           sPoolSize--;</div><div class="line">           return m;</div><div class="line">       &#125;</div><div class="line">   &#125;</div><div class="line">   return new Message();</div><div class="line">&#125;</div><div class="line"></div><div class="line">// 回收, 实现缓存的方法</div><div class="line">public void recycle() &#123;</div><div class="line">   if (isInUse()) &#123;</div><div class="line">       if (gCheckRecycle) &#123;</div><div class="line">           throw new IllegalStateException(&quot;This message cannot be recycled because it &quot;</div><div class="line">                   + &quot;is still in use.&quot;);</div><div class="line">       &#125;</div><div class="line">       return;</div><div class="line">   &#125;</div><div class="line">   recycleUnchecked();</div><div class="line">&#125;</div><div class="line"></div><div class="line">void recycleUnchecked() &#123;</div><div class="line">   flags = FLAG_IN_USE;</div><div class="line">   what = 0;</div><div class="line">   arg1 = 0;</div><div class="line">   arg2 = 0;</div><div class="line">   obj = null;</div><div class="line">   replyTo = null;</div><div class="line">   sendingUid = -1;</div><div class="line">   when = 0;</div><div class="line">   target = null;</div><div class="line">   callback = null;</div><div class="line">   data = null;</div><div class="line"></div><div class="line">   synchronized (sPoolSync) &#123;</div><div class="line">       if (sPoolSize &lt; MAX_POOL_SIZE) &#123;</div><div class="line">           next = sPool;</div><div class="line">           sPool = this;</div><div class="line">           sPoolSize++;</div><div class="line">       &#125;</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>Android</code>是在调用了<code>recycle()</code>方法的时候实现了缓存, 在<code>obtain()</code>的时候取缓存如果没有, 那么就会创建新的对象. 缓存实现的方式是一个<code>单向链表</code>, 每次调用<code>recycle()</code>会把这个对象挂在<code>链表头</code>.看一下如下的图.</p>
+<p><img src="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/fly-message.png" alt="img"></p>
+<h3 id="外观模式-Facade"><a href="#外观模式-Facade" class="headerlink" title="外观模式 Facade"></a>外观模式 Facade</h3><h4 id="模式介绍-20"><a href="#模式介绍-20" class="headerlink" title="模式介绍"></a>模式介绍</h4><blockquote>
+<p>使用频率很高, 也可以说是第三方SDK都会使用, 本质就是加上一个中间层的传递, 既可以做到统一一个高层类, 降低用户的使用成本, 也能屏蔽一些实现细节. 可能你不经意间使用很多次此模式, 只是没有在理论层面认知它的存在.</p>
+</blockquote>
+<ul>
+<li><p><code>定义</code>: 要求一个子系统的外部与其内部的通信必须通过一个统一的对象进行. 门面模式也就是<code>Facade模式</code>提供了一个高层次的接口.</p>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">场景</div></pre></td></tr></table></figure>
+<p>:</p>
+<ul>
+<li>为一个复杂子系统提供一个简单接口.</li>
+<li>当需要构建一个层次结构的子系统时. 使用外观模式定义子系统的每层的入口点. 如果子系统相互依赖可以仅通过<code>facade</code>进行通信.</li>
+</ul>
+</li>
+</ul>
+<h4 id="模式范例-19"><a href="#模式范例-19" class="headerlink" title="模式范例"></a>模式范例</h4><p>以手机的外观模式为例</p>
+<p><a href="https://github.com/suzeyu1992/AlgorithmTraining/tree/master/src/design/facade" target="_blank" rel="external">范例代码</a></p>
+<p><img src="http://szysky.com/2016/11/16/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%B7%AF/UML_Facade.png" alt="img"></p>
+<h4 id="Android源码对应实现-18"><a href="#Android源码对应实现-18" class="headerlink" title="Android源码对应实现"></a>Android源码对应实现</h4><p>还是<code>Context</code>, <code>Context</code>对于开发者来说是最重要的高层接口. <code>Context</code>只是定义了很多接口的抽象类, 这些接口的功能实现并不是在<code>Context</code>以及子类中, 而是通过其他的子系统来完成的, 例如<code>startActivity()</code>的真正实现是通过<code>AMS</code>, 获取应用包信息是通过<code>PMS</code>. 而<code>Centext</code>只是做了一个高层次的统一封装.</p>
+<p>好处显而易见, 对于开发者, 你只要知道这个高层类即可. 不需要知道太多的子系统就能完成开发.</p>
+<h3 id="桥接模式"><a href="#桥接模式" class="headerlink" title="桥接模式"></a>桥接模式</h3><h4 id="模式介绍-21"><a href="#模式介绍-21" class="headerlink" title="模式介绍"></a>模式介绍</h4><blockquote>
+<p>结构性设计模式</p>
+</blockquote>
+<ul>
+<li><p><code>定义</code>: 将抽象部分与实际部分分离, 使他们都可以独立地进行变化</p>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">场景</div></pre></td></tr></table></figure>
+<p>:</p>
+<ul>
+<li>一个类存在两个独立变化的维度, 且这两个维度都需要进行扩展</li>
+<li>对于那些不想使用继承或者因为多层次继承导致系统类的个数的急剧增加的系统, 也可以考虑使用此模式</li>
+<li>如果一个系统需要在构件的抽象化角色和具体化角色之间更加灵活, 避免在两个层次之间建立静态的继承联系, 可以通过桥接模式使他们在抽象层建立一个关联关系</li>
+</ul>
+</li>
+</ul>
+<h4 id="模式范例-20"><a href="#模式范例-20" class="headerlink" title="模式范例"></a>模式范例</h4><p>以喝咖啡为例子, 一个咖啡馆中咖啡有四种, 分别是大杯加糖, 小杯加糖, 大杯无糖, 小杯无糖. 但是对于一杯咖啡来说这4种状态中实际上就是<code>两种变化</code>. 糖的状态和杯的状态.</p>
+<p><a href="https://github.com/suzeyu1992/AlgorithmTraining/tree/master/src/design/bridge" target="_blank" rel="external">范例代码</a></p>
+<p>代码使用以及结果:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">public static void main(String args[])&#123;</div><div class="line"></div><div class="line">   // 原汁原味</div><div class="line">   Ordinary ordinary = new Ordinary();</div><div class="line"></div><div class="line">   // 准备糖类</div><div class="line">   Sugar sugar = new Sugar();</div><div class="line"></div><div class="line">   // 大杯咖啡原味</div><div class="line">   LargeCoffee largeCoffee = new LargeCoffee(ordinary);</div><div class="line">   largeCoffee.makeCoffee();</div><div class="line"></div><div class="line">   // 小杯咖啡 原味</div><div class="line">   SmallCoffee smallCoffee = new SmallCoffee(ordinary);</div><div class="line">   smallCoffee.makeCoffee();</div><div class="line"></div><div class="line">   // 大杯咖啡 加糖</div><div class="line">   LargeCoffee larSugar = new LargeCoffee(sugar);</div><div class="line">   larSugar.makeCoffee();</div><div class="line"></div><div class="line">   // 小杯咖啡 加糖</div><div class="line">   LargeCoffee smallSugar = new LargeCoffee(sugar);</div><div class="line">   smallSugar.makeCoffee();</div><div class="line">&#125;</div><div class="line">//=========&gt;结果</div><div class="line">大杯的 原味 咖啡</div><div class="line">小杯的 原味 咖啡</div><div class="line">大杯的 加糖 咖啡</div><div class="line">大杯的 加糖 咖啡</div></pre></td></tr></table></figure>
+<p>这里<code>CoffeeAdditives</code>相当于作为了<code>实现部分</code>, 而<code>Coffee</code>则对应抽象部分, 模式中定义所谓的<code>抽象</code>和<code>实现</code>实质上对应的是两个独立变化的维度. 也就是说<strong>任何多维度变化或者说多个树状类之间的耦合都可以使用桥接模式来解耦</strong>. 范例中的这两个基类, 并不一定就是所谓的对应的角色, 两者各自为一维度,独立变化.</p>
+<p>如果需要增加口味的种类, 只需要继承<code>CoffeeAdditives</code>实现不同的子类即可完成加奶,加盐的新功能的添加. 不管是这两个角色谁变化了, 相对于对方而言都是独立的没有过多的交际.</p>
+<h4 id="Android源码对应实现-19"><a href="#Android源码对应实现-19" class="headerlink" title="Android源码对应实现"></a>Android源码对应实现</h4><p><code>桥接模式</code>在<code>Android</code>中应用的比较广泛. 一般都是作用于大范围.</p>
+<ul>
+<li><code>View</code>的具体控件都定义了不同类型控件的所拥有的基本属性和行为, 但是将它们绘制到屏幕上的部分是与<code>View</code>相关的功能类<code>DisplayList</code>,<code>Hardwarelayer</code>,<code>Canvas</code>负责. 这俩个部分可以看做桥接</li>
+<li><code>Adapter</code>与<code>AdapterView</code>之间也可以看做是桥接</li>
+<li><code>Window</code>和<code>WindowManager</code>之间的关系. <code>Window</code>和<code>PhoneWindow</code>构成窗口的抽象部分; <code>WindowManager</code>和<code>WindowManagerImpl</code>为实现部分; 实现部分的具体实现类<code>WMI</code>使用<code>WindowManagerGlobal</code>通过<code>IWindowManager</code>接口与<code>WMS</code>进行交互. 并由<code>WMS</code>完成具体的窗口工作.</li>
+</ul>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/09/12/java/设计模式之路/" data-id="cj7hnifcz000p6opj7qoqbsfj" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/09/12/java/设计模式之路/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/09/12/java/设计模式六大原则解析/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    设计模式六大原则解析
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2017/09/12/java/面试之Java篇/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">面试之Java篇</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="uyan_frame"></div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">recent</h3>
+        <div class="widget">
+            <ul id="recent-post" class="no-thumbnail">
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/09/12/android/github/Glide解析1/" class="title"></a></p>
+                            <p class="item-date"><time datetime="2017-09-12T10:13:13.000Z" itemprop="datePublished">2017-09-12</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/vim/">vim</a></p>
+                            <p class="item-title"><a href="/2017/09/12/linux/Vim入门/" class="title">Vim入门</a></p>
+                            <p class="item-date"><time datetime="2017-09-12T02:19:50.000Z" itemprop="datePublished">2017-09-12</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/shell/">shell</a></p>
+                            <p class="item-title"><a href="/2017/09/12/linux/Shell常用手册/" class="title">Shell常用手册</a></p>
+                            <p class="item-date"><time datetime="2017-09-12T01:26:25.000Z" itemprop="datePublished">2017-09-12</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/java/">java</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/java/设计模式/">设计模式</a></p>
+                            <p class="item-title"><a href="/2017/09/12/java/设计模式六大原则解析/" class="title">设计模式六大原则解析</a></p>
+                            <p class="item-date"><time datetime="2017-09-12T01:24:10.000Z" itemprop="datePublished">2017-09-12</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/java/">java</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/java/设计模式/">设计模式</a></p>
+                            <p class="item-title"><a href="/2017/09/12/java/设计模式之路/" class="title">设计模式之路</a></p>
+                            <p class="item-date"><time datetime="2017-09-12T01:23:31.000Z" itemprop="datePublished">2017-09-12</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">categories</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">37</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/linux/vim/">vim</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">archives</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">46</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tags</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">36</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tag cloud</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 15px;">code</a> <a href="/tags/git/" style="font-size: 11.67px;">git</a> <a href="/tags/github/" style="font-size: 11.67px;">github</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 13.33px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 10px;">markdown</a> <a href="/tags/mysql/" style="font-size: 16.67px;">mysql</a> <a href="/tags/node/" style="font-size: 18.33px;">node</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.67px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.67px;">设计模式</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">links</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 Ernest Chang<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2142274"></script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>
