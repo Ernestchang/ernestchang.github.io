@@ -1,3 +1,15 @@
+title: Glide解析3_缓存流程
+date: 
+
+categories: 
+- android
+- github
+
+tags: 
+- github
+- glide
+
+---
 >  本文出自[郭霖博客](http://blog.csdn.net/guolin_blog/article/details/54895665)
 
 在本系列的上一篇文章中，我带着大家一起阅读了一遍Glide的源码，初步了解了这个强大的图片加载框架的基本执行流程。

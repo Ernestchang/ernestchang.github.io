@@ -2,10 +2,7 @@ title: android indicator解析
 date: 
 
 categories: 
-
 - android
-
-
 - github
 
 tags: 
