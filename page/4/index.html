@@ -157,7 +157,7 @@
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                72
+                73
                 <span>posts</span>
             </div>
             <div class="article-info-block">
@@ -210,6 +210,460 @@
 
             
             <section id="main">
+    <article id="post-android/books/《Android编程权威指南》Chap1_ 零散整理" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/09/07/android/books/《Android编程权威指南》Chap1_ 零散整理/">《Android编程权威指南》Chap1_ 零散整理</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/09/07/android/books/《Android编程权威指南》Chap1_ 零散整理/">
+            <time datetime="2017-09-07T09:44:18.000Z" itemprop="datePublished">2017-09-07</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/android/">android</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <blockquote>
+<p>这本书属于入门, 有很多内容可以当做扩展来了解一些API, 并且有的时候可以适当的利用Google提供好的API来做一些高效开发节约时间成本. 原理东西本书偏少. 不过可以学习本书中的代码的编写风格, 书中代码都是采用<strong>MVC</strong>模型来编写的. 就写这么多, 下面开始整理一些小知识点.<br>注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a></p>
+</blockquote>
+<h2 id="Activity的生命周期"><a href="#Activity的生命周期" class="headerlink" title="Activity的生命周期"></a>Activity的生命周期</h2><p>有7种分别为: 除去<code>onRestart()</code>比较特殊一点的生命周期. 可以把<code>activity</code>认为分别在<strong>3种状态</strong>切换, 分别是<code>运行, 暂停, 停止</code>.</p>
+<h2 id="配置文件改变导致Activity重建-如屏幕旋转"><a href="#配置文件改变导致Activity重建-如屏幕旋转" class="headerlink" title="配置文件改变导致Activity重建,如屏幕旋转"></a>配置文件改变导致Activity重建,如屏幕旋转</h2><p><strong>设备配置(device configuration)</strong>是用来描述设备当前状态的一系列特征. 这些特征包括<strong>屏幕的方向, 手机语言, 屏幕的密度, 屏幕的尺寸, 键盘类型, 底座模式等</strong></p>
+<p>在开发中有时候需要为了匹配不同的设备配置, 我们会提供多套副本文件. 比如说:</p>
+<ul>
+<li>图片放在不同的<code>dpi</code>密度的文件夹下;</li>
+<li>适应手机的横竖屏创建不同的文件夹并编写不同展示风格的xml布局放入.</li>
+<li>创建不同语言的<code>strings</code>文件. 来实现语言国际化</li>
+<li>…..</li>
+</ul>
+<p>这里列举一下创建<strong>水平模式下加载另一个布局文件</strong>, 在<code>res/</code>资源文件夹下创建一个<code>layout-land</code>目录, 创建一个与<code>layout</code>文件夹中布局文件<code>名称相同</code>的xml. 然后编写想在横屏时候需要显示的布局.</p>
+<p>其实当手机处于<strong>横屏的时候</strong>需要加载资源文件. 这个时候系统首先查找开发者是否创建对应横屏的文件夹就是<code>layout-land</code>,如果有. 那么继续查找资源ID所对应的文件是否存在. 如果存在那么就加载这个文件. 如果没有就从<code>layout</code>文件夹中加载默认的文件(layout文件夹优先级基本上是最低的)</p>
+<h2 id="异常重建时Activity的数据保存"><a href="#异常重建时Activity的数据保存" class="headerlink" title="异常重建时Activity的数据保存"></a>异常重建时Activity的数据保存</h2><p>由于本地手机的配置文件的改变, 如屏幕旋转造成了<code>Activity</code>的重建. 这个时候就会导致已经实例对象或者属性赋值全部丢失.</p>
+<p>利用<code>onSaveInstanceState(Bundle)</code>一般会在<code>onPause()</code>之后被调用. 把要存储的数据添加到<code>onSaveInstanceState()</code>的参数类型为<code>Bundle</code>的参数中. 然后当销毁后的重建时, 会在<code>onCreate()</code>方法中会传回一个<code>Bundle</code>类型的对象. 可以取出. 如果不是异常销毁重建那么默认情况下<code>onCreate()</code>回调方法带回的<code>Bundle</code>类型的参数是为<code>null</code>的.</p>
+<h2 id="SDK版本小解和兼容处理"><a href="#SDK版本小解和兼容处理" class="headerlink" title="SDK版本小解和兼容处理"></a>SDK版本小解和兼容处理</h2><ul>
+<li><strong>SDK最低版本:</strong> 当应用安装的时候, 手机会检测如果本身系统等级如果低于应用指定的最低版本那么应用无法安装.</li>
+<li><strong>SDK目标版本</strong> 应用是设计给哪个API级别去运行的. 大多数情况下, 目标版本即最新发步的Android版本.</li>
+<li><strong>SDK编译版本</strong> <code>Compile</code>. 前两个是通知手机设备的. 而这个属性是告知<code>Android Studio</code>编译器使用哪一个SDK版本进行代码编译.</li>
+</ul>
+<hr>
+<p>有时候我们可能会使用高版本的API. 但是有可能手机的版本会低于这个API的出现版本. 这个时候就需要在代码中进行逻辑判断分支.</p>
+<ul>
+<li><code>Build.VERSION.SDK_INT:</code>代表了当前运行的Android手机的版本号.</li>
+</ul>
+<p>通过判断当前手机的版本号, 这样就可以针对不同的场景进行分支处理.</p>
+<h2 id="XML布局属性"><a href="#XML布局属性" class="headerlink" title="XML布局属性"></a>XML布局属性</h2><p><strong>样式,主题, 主题属性</strong></p>
+<p><strong>样式(style)</strong>是xml资源文件, 含有用来描述组件行为和外观的属性定义的集合. 例如在<code>res/valus/styles.xml</code>中声明如下样式.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;style name=&quot;BigTextStyle&quot; &gt;</div><div class="line">   &lt;item name=&quot;android:textSize&quot;&gt;20sp&lt;/item&gt;</div><div class="line">   &lt;item name=&quot;android:layout_margin&quot;&gt;5dp&lt;/item&gt;</div><div class="line">&lt;/style&gt;</div></pre></td></tr></table></figure>
+<p>在以后的所有大的文字控件<code>textView</code>,<code>button</code>.都可以直接引入一个<code>style</code>属性. 当重复的属性越多, 使用的控件也越多, 这种好处是不言而喻的.</p>
+<hr>
+<p><strong>主题(theme)</strong></p>
+<p>Android自带了一些供应使用的预定义平台主题. 例如:<code>android:theme=&quot;@style/Theme.AppCompat.Light&quot;</code>.</p>
+<p>引用主题属性:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;TextView</div><div class="line">  android:layout_width=&quot;match_parent&quot;</div><div class="line">  android:layout_height=&quot;wrap_content&quot;</div><div class="line">  style=&quot;?android:listSeparatorTextViewStyle&quot;/&gt;</div></pre></td></tr></table></figure>
+<p>例如这样后, 你会发现<code>textView</code>会带有<strong>margin</strong>,<strong>字体颜色</strong>,<strong>加粗</strong>等一些属性. 这就在一些场合很方便的设置了一些属性. 并且也能达到我们看着不那么丑的需求.</p>
+<hr>
+<p><strong>dp, sp</strong></p>
+<ul>
+<li><code>dp (density-independent):</code>一般用于设置控件宽高和<code>margin</code>,<code>padding</code>. dp值代表的实际长度与手机的<strong>屏幕分辨率</strong>和<strong>屏幕尺寸</strong>没有直接关系,但是有间接关系. 是这样. 根据<strong>屏幕的分辨率</strong>和<strong>屏幕尺寸</strong>会得到一个<strong>屏幕的像素密度</strong>. 根据这个屏幕像素密度来决定1dp在当前设备代表着几个像素点.</li>
+<li><code>sp (scale-independent pixel):</code>. 主要用于字体. 和dp相似会根据手机的密度来动态的选择对应的大小. 但是有一点不同. 这种像素会受<strong>手机字体的偏好设置而改变</strong></li>
+</ul>
+<hr>
+<p><strong>布局参数</strong></p>
+<p>对于资源文件xml中标签的属性<code>android:layout_width</code>,<code>android:layout_margin</code>,<code>android:text</code>等等, 为什么有的属性前面有<strong>layout</strong>开头, 而有的没有呢.</p>
+<p>其实名称<strong>以layout_</strong>来头的属性是作用于组件的<strong>父组件</strong>. 我们将这些属性统称为<strong>布局参数</strong>. 它们会告知父布局如何在内部安排自己的子元素.</p>
+<p>而<strong>不以layout_开头</strong>的属性是作用于组件的. 组件生成时, 会调用某个方法按照属性即属性值进行自我配置.</p>
+<hr>
+<p><strong>外边距于内边距</strong></p>
+<p>根据上面的结论, 应该就可以看出<code>layout_margin</code>,<code>padding</code>这两个属性. 一个是作用父布局一个是作用在自己身上的. 所以在自定义<strong>ViewGroup</strong>的时候不仅要获取子孩子的宽高还要获取<code>margin</code>这样才能正确的布局. 而在自定义<code>View</code>的时候我们往往要兼顾到padding这个属性. 不然设置<code>padding</code>的属性就会无效果.</p>
+<h2 id="ViewPager简单介绍"><a href="#ViewPager简单介绍" class="headerlink" title="ViewPager简单介绍"></a>ViewPager简单介绍</h2><p><code>ViewPager</code>在某种程度上有点类似于<code>AdapterView(ListView的超类)</code>. <code>AdapterView</code>需借助于Adapter才能提供视图. 所以同样的<code>ViewPager</code>也需要<code>PagerAdapter</code>的支持.</p>
+<p><code>ViewPager</code>可能开发中用的很多. 在使用<code>ViewPager</code>作为一个<code>fragment</code>容器的时候. <code>FragmentManager</code>要求其容器视图必须<strong>具备id属性</strong>. 所以如果是代码中动态的创建ViewPager.那么别忘了设置id属性, 如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">protected void onCreate(@Nullable Bundle savedInstanceState) &#123;</div><div class="line">        super.onCreate(savedInstanceState);</div><div class="line">        //  动态创建ViewPager并设置到setContent</div><div class="line">        mViewPager = new ViewPager(getApplicationContext());</div><div class="line">        // 如果需要对Fragment进行托管, 那么要求其容器视图必须具备资源ID</div><div class="line">        mViewPager.setId(R.id.vp_main);</div><div class="line">        setContentView(mViewPager);</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">// 在res/values/ids.xml 没有可以新建一个,为了创建独立资源id</div><div class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</div><div class="line">&lt;resources&gt;</div><div class="line">    &lt;item name=&quot;vp_main&quot; type=&quot;id&quot;/&gt;</div><div class="line">&lt;/resources&gt;</div></pre></td></tr></table></figure>
+<p>这样就可以实现动态添加<code>ViewPager</code>并作为<code>Fragment</code>的容器了.</p>
+<hr>
+<p>由于直接通过<code>PagerAdapter</code>派生出子类有很多场景步骤过于复杂. 我们可以根据具体作用场景来选择其子类来作为ViewPager的适配器.比如说<code>FragmentStatePagerAdapter</code></p>
+<p>实现很简单如下: 复写两个方法就可以</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">// 在fragment中的onCreate()中直接设置就可以</div><div class="line">// 利用ViewPager的子类 FragmentStatesPagerAdapter可以简单的处理并是实现</div><div class="line">// 当使用fragment 还有一个选择FragmentPagerAdapter 两者的区别是在卸载不再需要的fragment的时候有所不同</div><div class="line">// FragmentPagerAdapter创建的fragment只是有销毁视图的动作, 没有将其从FragmentManager里面删除</div><div class="line">FragmentManager fm = getSupportFragmentManager();</div><div class="line">mViewPager.setAdapter(new FragmentStatePagerAdapter(fm) &#123;</div><div class="line">            @Override</div><div class="line">            public Fragment getItem(int position) &#123;</div><div class="line">                //...相当于每个pager要展示的fragment.</div><div class="line"></div><div class="line">                return crimeFragment;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            @Override</div><div class="line">            public int getCount() &#123;</div><div class="line">                // 返回Pager页的大小</div><div class="line">                return mCrimes.size();</div><div class="line">            &#125;</div><div class="line">        &#125;);</div></pre></td></tr></table></figure>
+<p>可以看到当创建了<code>FragmentStatePagerAdapter(..)</code>传入了一个<code>FragmentManager</code>给其构造方法. 因为实际上<code>FragmentStatePagerAdapter</code>是我们的代理, 负责管理与<code>ViewPager</code>的对话并协同工作.代理需首先将<code>getItem()</code>方法返回的<code>Fragment</code>添加到<code>Activity</code>. 然后才能使用fragment完成自己的工作. 这也是需要传递<code>fm</code>的原因.</p>
+<p><strong>如果需要监听ViewPager的滑动事件</strong></p>
+<p>给ViewPager设置<code>setOnPageChangeListener()</code>注册一个回调监听, 里面有三个状态回调:</p>
+<ol>
+<li><code>onPageScrollStateChange</code>: 告知当前页面所处的行为是什么.</li>
+<li><code>onPageScrolled</code>: 告知当前显示的页面是哪个, 并且现在已经滑动导致的偏移距离是多少.</li>
+<li><code>onPageSelected</code>: 告知页面滑向了哪里.可以得知是在数据集合中的第几个Pager被显示出来了</li>
+</ol>
+<p><strong>关于FragmentStatePagerAdapter与FragmentPagerAdapter</strong></p>
+<p>主要区别就是: <strong>二者在卸载不再需要的fragment时,所采用的处理方式有所不同</strong></p>
+<ul>
+<li><code>FragmentStatePagerAdapter</code>: 会销毁不需要的<code>fragment</code>. 事务提交后, 可将<code>fragment</code>从<code>activity#FragmentManager</code>中彻底移除. 而类名中的<code>state</code>表明: 在销毁<code>Fragment</code>时, 他会将其<code>onSaveInstanceState()</code>方法中的<code>bundle</code>信息保存下来. 当用户切换回来的时候, 保存实例状态可用于恢复生成新的<code>fragment</code></li>
+<li><code>FragmentPagerAdapter</code>: 对于不再需要的<code>fragment</code>, 其对应的<code>FragmentManager</code>则选择调用事务的<code>detach(Fragment)</code>方法. 而非<code>remove(Fragment)</code>方法. 也就是说,<code>FragmentPagerAdapter</code>只是销毁了fragment的视图, 但仍将<code>fragment</code>实例保留在<code>FragmentManager</code>中</li>
+</ul>
+<p>而如何取决需要按场景来使用: <code>FragmentStatePagerAdapter</code>更节省内存. 如果需要展示的数据很多,如果使用<code>FragmentPageAdapter</code>那么会保存大量的信息, 并且占用很多空间就不是很合适.</p>
+<p>所以如果用户界面只需要<strong>少量固定</strong>的fragment. 那么使用<code>FragmentPagerAdapter</code>比较合适. 否则就反之使用<code>FragmentStatePagerAdapter</code>.</p>
+<h2 id="资源文件的配置与匹配"><a href="#资源文件的配置与匹配" class="headerlink" title="资源文件的配置与匹配"></a>资源文件的配置与匹配</h2><p>先看一下以下项目结构目录截图:</p>
+<p><img src="http://szysky.com/2016/09/07/%E3%80%8AAndroid%E7%BC%96%E7%A8%8B%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E3%80%8B%E9%9A%8F%E8%AE%B0%E4%B8%80/local_1.png" alt="img"></p>
+<p>有三个<code>value</code>文件夹, 第一个为我们的默认加载的<code>value</code>, 第二个为使用了<strong>横屏修饰符修饰声明</strong>, 第三个使用了<strong>指定语言修饰符声明</strong>. 里面都有一个<code>strings</code>文件夹看一下内容. 这里只拿<code>app_name</code>属性来说明测试, 三个文件都有此属性.</p>
+<p><img src="http://szysky.com/2016/09/07/%E3%80%8AAndroid%E7%BC%96%E7%A8%8B%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E3%80%8B%E9%9A%8F%E8%AE%B0%E4%B8%80/local_2.png" alt="img"></p>
+<p>具有不同的修饰符的<strong>同种功能的文件夹是具有不同优先级的</strong>. 还是以上面的图片为例子. 如果说在首页<code>Activity</code>引用了<code>app_name</code>这个字符串. 那么根据不同的场景会去加载不同的资源文件.</p>
+<ul>
+<li><strong>如果本地语言指定了中文:</strong> 那么就会加载<code>values-zh</code>文件中的资源(此文件夹的配置修饰符优先级在上面的三种场景最高).</li>
+<li><strong>如果本地语言非中文, 并且是横屏状态下:</strong> 那么会加载<code>values-land</code>文件中的资源</li>
+<li><strong>如果即没有指定为中文,也不是横屏状态下, 那么就加载默认的资源文件</strong> <code>values</code>文件夹</li>
+</ul>
+<p>可以看出来app加载资源文件的时候是按照一定优先级去加载的, 首先会先排除掉不兼容当前设备配置的资源目录. 如果有多个文件匹配那么高优先级的文件夹首先会检查当前手机环境对应的配置是否匹配(比如是否横屏,是否设置某种本地语言). 匹配成功之后就会加载对应的文件夹下的内容. 而低优先级的对应功能的文件夹不会再去加载. 但是如果发现匹配不成功或者成功之后没有找到对应的属性那么还会继续往低优先级的查找. 直到找到为止.</p>
+<p>所以可以看出一个属性值,最少要保证在资源文件中存在一份. 否则会出现加载错误, 并且需要处理好场景之间无值可选的问题.</p>
+<p>下面列出大部分具有配置修饰符的设备特征. 他们的优先级从高到低排列的</p>
+<table>
+<thead>
+<tr>
+<th>优先级(数值越低越高)</th>
+<th>特征说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>移动国家码, 通常附有移动网络码</td>
+</tr>
+<tr>
+<td>2</td>
+<td>语言代码, 通常附有地区代码</td>
+</tr>
+<tr>
+<td>3</td>
+<td>布局方向</td>
+</tr>
+<tr>
+<td>4</td>
+<td>最小宽度</td>
+</tr>
+<tr>
+<td>5</td>
+<td>可用宽度</td>
+</tr>
+<tr>
+<td>6</td>
+<td>可用高度</td>
+</tr>
+<tr>
+<td>7</td>
+<td>屏幕尺寸</td>
+</tr>
+<tr>
+<td>8</td>
+<td>屏幕纵横比</td>
+</tr>
+<tr>
+<td>9</td>
+<td>屏幕方位</td>
+</tr>
+<tr>
+<td>10</td>
+<td>UI模式</td>
+</tr>
+<tr>
+<td>11</td>
+<td>夜间模式</td>
+</tr>
+<tr>
+<td>12</td>
+<td>屏幕显示密度</td>
+</tr>
+<tr>
+<td>13</td>
+<td>触摸屏类型</td>
+</tr>
+<tr>
+<td>14</td>
+<td>键盘可用性</td>
+</tr>
+<tr>
+<td>15</td>
+<td>首选输入法</td>
+</tr>
+<tr>
+<td>16</td>
+<td>导航键可用性</td>
+</tr>
+<tr>
+<td>17</td>
+<td>非文本导航方法</td>
+</tr>
+<tr>
+<td>18</td>
+<td>API级别</td>
+</tr>
+</tbody>
+</table>
+<p>资源文件夹也可以使用<strong>多重配置修饰符</strong>, 例如<code>values-zh-land</code>, 各修饰符必须按照优先级高低排序.否则无效. 例如<code>values-land-zh</code>就是无效的目录. 这里就不细说. 可在官网<strong>guide/topics/resources/providing-resources</strong>查看.</p>
+<hr>
+<p><strong>资源命名</strong></p>
+<p>资源的文件只能有小写字母组成并且不能包含空格.</p>
+<p>无论是在XML中还是在代码中引入资源, 引用都不包括文件的扩展名. 所以<strong>在同级目录下不能以文件的扩展名作为依据来区分命名相同的文件. 也不允许同级下名称相同扩展名不同的文件存在,在编译时候会报错</strong></p>
+<p><strong>布局文件命名</strong></p>
+<p>最好按文件名排序的声明文件名. 通常以其定义的视图类型名为前缀. 如<code>activity_</code>,<code>dialog_</code>,<code>list_item_</code>.这样查找分类就容易多了.</p>
+<p><strong>资源目录结构</strong></p>
+<p>所有的资源都应该保存在<code>res/</code>目录的子目录下, 常见的子目录有<code>drawable/</code>,<code>mipmap/</code>,<code>layout/</code>,<code>values/</code>,<code>raw/</code>, <code>menu/</code>等.</p>
+<p><code>Android</code>会无视<code>res/</code>目录下的其他子目录.</p>
+<h2 id="操作栏"><a href="#操作栏" class="headerlink" title="操作栏"></a>操作栏</h2><p>也可以认为是title bar. 说法很多. 如下</p>
+<p><img src="http://szysky.com/2016/09/07/%E3%80%8AAndroid%E7%BC%96%E7%A8%8B%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E3%80%8B%E9%9A%8F%E8%AE%B0%E4%B8%80/titlebar.png" alt="img"></p>
+<p>可显示在操作栏上的菜单被称作<strong>选项菜单</strong>, 选项菜单类似于<code>popupWind</code>.可以作为用户的扩展操作.</p>
+<p><strong>1.首先在XML文件中定义选项菜单</strong></p>
+<p><code>res/menu/</code>目录下创建一个xml. 根标签为<code>&lt;menu&gt;</code>如下</p>
+<p><img src="http://szysky.com/2016/09/07/%E3%80%8AAndroid%E7%BC%96%E7%A8%8B%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E3%80%8B%E9%9A%8F%E8%AE%B0%E4%B8%80/menu_1.png" alt="img"></p>
+<p>或者你可以这样</p>
+<p><img src="http://szysky.com/2016/09/07/%E3%80%8AAndroid%E7%BC%96%E7%A8%8B%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E3%80%8B%E9%9A%8F%E8%AE%B0%E4%B8%80/menu_2.png" alt="img"></p>
+<ul>
+<li><code>showAsAction</code>属性用于指定菜单选项是显示在操作栏上, 还是隐藏到<strong>溢出菜单</strong>中. 比如上图中的<code>app:showAsAction=&quot;ifRoom|withText&quot;</code>是一个组合属性. 代表着只要操作栏可用的控件足够,菜单项图标和文字描述都会显示在操作栏中. 这个属性值不设定的情况下默认是<strong>溢出菜单</strong>模式显示的. 如果空间仅够显示图片那么文字不会显示, 如果剩余空间即不够显示文字也不够显示图标, 那么菜单项会被转移隐藏到菜单中.</li>
+<li>上面这个属性值还有两个可设置项<code>always</code>和<code>never</code>. 不推荐使用<code>always</code>, 应尽量使用更方便的<code>ifRoom</code>属性值, 让操作系统系统决定如何显示菜单项. 对于那些很少用到的菜单项, 使用<code>never</code>是个不错的选择.</li>
+<li><code>icon:</code> 属性使用了系统的图标资源. 这个资源只存在于设备上.</li>
+</ul>
+<p><strong>2. 菜单文件创建完之后,就该代码设置了</strong></p>
+<p>首先<code>Activity</code>提供了管理选项菜单的回调函数. 在需要选项菜单的时候, <code>Android</code>会调用其<code>onCreateOptionsMenu()</code>方法.</p>
+<p>如果你使用的是<code>Fragment</code>那么也没关系因为<code>Fragment</code>也有同名的函数为你使用. 接下来以在<code>Fragment</code>为例说明.</p>
+<p>复写<code>onCreateOptionsMenu()</code>函数. 通过<code>inflate</code>进行填充布局到<code>menu</code>对象中. 如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) &#123;</div><div class="line">   // 为操作栏创建浮动的上下文菜单</div><div class="line">   mActivity.getMenuInflater().inflate(R.menu.crime_list_item_context, menu);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>然后在<code>Fragment#onCreate()</code>方法中添加一段代码 <code>setHasOptionsMenu(true);</code></p>
+<p><strong>说明:</strong> <code>Fragment#onCreateOptionsMenu()</code>方法是由<code>FragmentManager</code>负责调用的. 因此当<code>activity</code>接收到来自操作系统的<code>onCreateOptionsMenu()</code>方法回调请求时, 我们需要明确的告诉<code>FragmentManager</code>需接收选项菜单的方法回调.就是<code>setHasOptionsMenu()</code>.</p>
+<p>现在我们的选项菜单就已经可以显示出来.</p>
+<p><strong>3. 响应菜单选项选择的事件</strong></p>
+<p>既然添加了扩展功能的选项, 那么必定需要实现某些点击事件. 通过复写<code>onOptionsItemSelected()</code>来进行处理. 有于我们可能在<code>menu.xml</code>中声明了多个item. 为了区分点击的是哪一个. 可以通过id来识别不同的点击触发. 如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">    public boolean onOptionsItemSelected(MenuItem item) &#123;</div><div class="line">        switch (item.getItemId())&#123;</div><div class="line">            case R.id.menu_item_new_crime:</div><div class="line">                // 做一些想做的事情</div><div class="line">                return true;</div><div class="line"></div><div class="line">            case R.id.menu_item_show_subtitle:</div><div class="line">                //  设置操作栏的子标题</div><div class="line">                ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();</div><div class="line"></div><div class="line">                if (supportActionBar.getSubtitle() == null)&#123;</div><div class="line">                    supportActionBar.setSubtitle(sub_description);</div><div class="line">                    item.setTitle(R.string.hide_subtitle);</div><div class="line">                &#125;else&#123;</div><div class="line">                    supportActionBar.setSubtitle(null);</div><div class="line">                    item.setTitle(R.string.show_subtitle);</div><div class="line">                &#125;</div><div class="line"></div><div class="line">                return true;</div><div class="line"></div><div class="line">            default:</div><div class="line">                return super.onOptionsItemSelected(item);</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>你可能看到上面有一行注释写的设置<strong>操作栏的子标题</strong>这个的效果如下图.</p>
+<p><img src="http://szysky.com/2016/09/07/%E3%80%8AAndroid%E7%BC%96%E7%A8%8B%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E3%80%8B%E9%9A%8F%E8%AE%B0%E4%B8%80/subtitle.png" alt="img"></p>
+<p><strong>4. 层级式导航,向左后退箭头</strong></p>
+<p>虽然大多数都是自定义的<code>titlebar</code>, 但是对于系统的默认后退也应该了解.</p>
+<p>通过<code>Activity#getSupportActionBar().setDisplayHomeAsUpEnable()</code>. <strong>(通过测试发现当在二级界面的时候默认都会出现向左的后退箭头但是默认的是没有处理的, 需要在onOptionsItemSelected()做对应的处理,我这里测试的环境为sdk为24,使用的AppCompatActivity派生的子类)</strong></p>
+<p>所以如果是<code>fragment</code>开发为基础, 那么别忘了<code>setHasOptionsMenu(true)</code>, 允许<code>FragmentManager</code>对自己的<code>fragment</code>队列进行菜单选项的事件分发回调. 如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public boolean onOptionsItemSelected(MenuItem item) &#123;</div><div class="line">   switch (item.getItemId())&#123;</div><div class="line">       // android.R.id.home 就是默认的向左箭头组件的id</div><div class="line">       case android.R.id.home:</div><div class="line">           getActivity().finish();</div><div class="line">           return true;</div><div class="line"></div><div class="line">       default:</div><div class="line">           return super.onOptionsItemSelected(item);</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>还有一个问题!</strong></p>
+<p>Android编程, 有时候你以为已经丝入扣, 天衣无缝, 可以高枕无忧的时候上线, 总是会被人提醒到好像还有一个问题!</p>
+<p>上面的二级标题是否还记得. 有这么一个场景如果二级标题显示了, 但是发生了设备旋转! ok 那么重建后你会发现二级标题不存在了. 这时就可以使用<code>setRetaionInstance(true)</code>来保存成员属性. 并利用一个布尔值来控制在创建菜单选项的时候二级标题是否需要显示.</p>
+<h2 id="Android的文件系统与Java-I-O"><a href="#Android的文件系统与Java-I-O" class="headerlink" title="Android的文件系统与Java I/O"></a>Android的文件系统与Java I/O</h2><p>在操作系统级别, <code>Android</code>运行在<code>Linux</code>内核之中, 因此,它的文件系统类似于其他一些Linux或Unix系统. 目录名称已正斜杠<code>/</code>分隔. 文件名可由各类字符组成, 且区分大小写. 受益于<code>Linux</code>的安全模式, 应用都是以特定的用户ID运行的.</p>
+<p><code>Android</code>利用应用的java包名, 来决定应用在文件系统中的存放位置. 用于发布与安装, 应用本身被打包成APK文件格式. 被放置在<code>/data/app</code>目录. 当然这是需要进行<code>root</code>权限才可以的.</p>
+<p><strong>访问文件和目录</strong></p>
+<p>应用访问文件和目录最便捷的方式是使用<code>Content</code>类提供的方法. <code>Content</code>类是所有关键应用组件的超类.</p>
+<p>下面是Content提供的基本文件或目录的便捷方法</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>使用目的</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>File getFilesDir()</td>
+<td>获取<code>data/data/&lt;packname&gt;/files</code>目录</td>
+</tr>
+<tr>
+<td>FileInputStream openFileInput(String name)</td>
+<td>打开<code>data/data/&lt;packname&gt;/files/</code>目录下的name文件名的文件获得输入流</td>
+</tr>
+<tr>
+<td>FileOutputStream openFileOutput(String name, int mode)</td>
+<td>同上, 这个是获得输出流, 不同之处如果没有这个文件那就会自动创建</td>
+</tr>
+<tr>
+<td>File getDir(String name, int mode)</td>
+<td>获取<code>data/data/&lt;packname&gt;/name名称的文件夹</code>目录(没有就会先创建)</td>
+</tr>
+<tr>
+<td>String[] fileList()</td>
+<td>获取<code>data/data/&lt;packname&gt;/files</code>目录下的所有文件名称列表.</td>
+</tr>
+<tr>
+<td>File getCacheDir()</td>
+<td>获取<code>data/data/&lt;packname&gt;/cache</code>目录</td>
+</tr>
+</tbody>
+</table>
+<h2 id="系统的多选模式"><a href="#系统的多选模式" class="headerlink" title="系统的多选模式"></a>系统的多选模式</h2><p>如下效果:</p>
+<p><img src="http://szysky.com/2016/09/07/%E3%80%8AAndroid%E7%BC%96%E7%A8%8B%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E3%80%8B%E9%9A%8F%E8%AE%B0%E4%B8%80/multidex.gif" alt="img"></p>
+<p>开始实现步骤:</p>
+<p><strong>1. 首先定义多选菜单的资源文件</strong></p>
+<p>例如上面的垃圾桶图标需要手动去设置, 在<code>res/menu/</code>目录下创建一个xml</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</div><div class="line">&lt;menu xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;&gt;</div><div class="line">    &lt;item</div><div class="line">        android:id=&quot;@+id/menu_item_delete_crime&quot;</div><div class="line">        android:icon=&quot;@android:drawable/ic_menu_delete&quot;</div><div class="line">        android:title=&quot;@string/delete_crime&quot;/&gt;</div><div class="line">&lt;/menu&gt;</div></pre></td></tr></table></figure>
+<p>同样使用系统的资源图片, 就是右上角的垃圾桶.</p>
+<p><strong>2. 实现Content菜单(进入编辑模式)</strong></p>
+<p><strong>这里面有两种,在旧版本11之前上编辑模式是单项操作模式, 后续版本是多选模式, 下面简单说一下旧版本的模式然后在回到上面图中的多选模式, 可以直接跳过直接看多选模式, 毕竟11版本已经很旧了</strong></p>
+<p>于之前的<code>操作栏里面的步骤大致相同</code>. 这里复写的方法是有两个(fragment类中)</p>
+<ul>
+<li><code>onCreateContextMenu(...)</code>: 实例化一个Content多选菜单</li>
+<li><code>onContextItemSelected(...)</code>: 响应菜单选择按钮</li>
+</ul>
+<p>这里还是以在<code>fragment</code>中的代码举例.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) &#123;</div><div class="line">   // 为操作栏创建浮动的上下文菜单</div><div class="line">   mActivity.getMenuInflater().inflate(R.menu.crime_list_item_context, menu);</div><div class="line">&#125;</div><div class="line">    </div><div class="line">   // 浮动上下文的点击监听回调</div><div class="line">@Override</div><div class="line">public boolean onContextItemSelected(MenuItem item) &#123;</div><div class="line">   switch (item.getItemId())&#123;</div><div class="line">       //  显示删除的浮动上下文</div><div class="line">       case R.id.menu_item_delete_crime:</div><div class="line">           // 获得点击的具体listview的item位置, 并得到对象</div><div class="line">           AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();</div><div class="line">           // 获得点击的item信息得到posion</div><div class="line">           int position = menuInfo.position;</div><div class="line">           CrimeBean clickItemBean = ((MyCrimeAdapter) getListAdapter()).getItem(position);</div><div class="line"></div><div class="line">           //</div><div class="line">           mCrimes.remove(clickItemBean);</div><div class="line">           ((MyCrimeAdapter) getListAdapter()).notifyDataSetChanged();</div><div class="line">           return true;</div><div class="line">       default:</div><div class="line">           return super.onContextItemSelected(item);</div><div class="line"></div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>最后一步为<code>ContextMenu</code>登记一个<code>ListView</code>如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">// 在低版本使用浮动上下文菜单</div><div class="line">registerForContextMenu(lv_main);</div></pre></td></tr></table></figure>
+<hr>
+<p><strong>回到多选模式, 还是多选好</strong></p>
+<p>接着第二大步开始. 如果要想实现多选模式的<code>ContextMenu</code>. 那么需要设置列表视图的选择模式为<code>ListView.CHOICE_MODE_MULTIPLE_MODAL</code>, 然后并添加个监听响应即可,其实很简单.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line">lv_main.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);</div><div class="line">//  设置列表视图操作模式回调</div><div class="line">lv_main.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() &#123;</div><div class="line">    // 视图中的选项在选中或者撤销的时候会触发</div><div class="line">    @Override</div><div class="line">    public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) &#123;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    // 在ActionMode对象创建后调用, 也是实例化上下文菜单资源, 并显示在上下文操作栏上的任务完成的地方        </div><div class="line">    @Override</div><div class="line">    public boolean onCreateActionMode(ActionMode mode, Menu menu) &#123;</div><div class="line">    MenuInflater menuInflater = mode.getMenuInflater();</div><div class="line">    menuInflater.inflate(R.menu.crime_list_item_context, menu);</div><div class="line">    return true;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    // 在onCreateActionMode()回调之后调用, 以及当前上下文操作栏需要刷新显示新数据时调用</div><div class="line">    @Override</div><div class="line">    public boolean onPrepareActionMode(ActionMode mode, Menu menu) &#123;</div><div class="line">    return false;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    // 在用户选中某个菜单项操作时调用(这里就是垃圾桶图标按钮). 是相应上下文菜单项操作的地方</div><div class="line">    @Override</div><div class="line">    public boolean onActionItemClicked(ActionMode mode, MenuItem item) &#123;</div><div class="line">    switch (item.getItemId())&#123;</div><div class="line">        case R.id.menu_item_delete_crime:</div><div class="line">            for (int i = myCrimeAdapter.getCount()-1; i &gt;= 0; i--) &#123;</div><div class="line">                if (getListView().isItemChecked(i))&#123;</div><div class="line">                    mCrimes.remove(myCrimeAdapter.getItem(i));</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">            mode.finish();</div><div class="line">            myCrimeAdapter.notifyDataSetChanged();</div><div class="line">            return true;</div><div class="line">    &#125;</div><div class="line">    return false;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    // 在用户退出上下文操作模式或所选菜单项操作已被响应, 从而导致ActionMode对象将要销毁时调用.</div><div class="line">    // 默认的实现会导致已选视图被反选, 也可以完成上下文操作模式下, 响应菜单项操作而引起的响应fragment刷新</div><div class="line">    @Override</div><div class="line">    public void onDestroyActionMode(ActionMode mode) &#123;</div><div class="line">    &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p><strong>3. 最后一步</strong></p>
+<p>这个最后一步是针对<strong>多选模式下的</strong>, 上面两步已经在逻辑功能上完成了之前的需求, 但是有一点, 当进入多选的时候点击或不点击发现没有区别, 我们无法得知哪一个<strong>item</strong>是否已经被点击激活状态, 哪一个没有没点击激活. <strong>所有我们需要给Item添加一个背景, 设置一下item的激活或者非激活的背景色</strong>, 代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">// 在drawable/文件夹下创建一个文件</div><div class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</div><div class="line">&lt;selector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;&gt;</div><div class="line">    &lt;!--当引用控件处于激活状态时, 则使用指定的资源文件, 反之不采取任何操作--&gt;</div><div class="line">    &lt;item android:state_activated=&quot;true&quot;</div><div class="line">        android:drawable=&quot;@android:color/darker_gray&quot;/&gt;</div><div class="line">&lt;/selector&gt;</div></pre></td></tr></table></figure>
+<p>把这个<code>StateListDrawable</code>状态<code>drawable</code>设置到<code>ListView的item背景属性上</code>.</p>
+<p>ok 关于多选的<code>ContentMenu</code>操作就实现完成.</p>
+<p><strong>扩展一下:</strong></p>
+<p>这里实现的方法可以完全作用在<code>ListView</code>和<code>GridView</code>中(GridView和ListView都是AdapterView的子类). 但是如果不是这两个类型的控件应该如何实现这种多选方式.</p>
+<ol>
+<li>首先给一个控件实现<strong>长按监听</strong></li>
+<li>在长按回调中调用<code>Activity.startActivityMode(..)</code>并创建一个<code>ActionMode.Callback</code>的接口作为参数传入. 这个接口里面的回调很熟悉就是上面<code>ListView</code>设置了<code>setMultiChoiceModeListener</code>里面创建的匿名类里面对应的回调.</li>
+</ol>
+<h2 id="设备屏幕尺寸的确定"><a href="#设备屏幕尺寸的确定" class="headerlink" title="设备屏幕尺寸的确定"></a>设备屏幕尺寸的确定</h2><p>你可能会发现你的项目目录中存在如下这个文件, 但具体什么意思却不是很清楚</p>
+<p><img src="http://szysky.com/2016/09/07/%E3%80%8AAndroid%E7%BC%96%E7%A8%8B%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E3%80%8B%E9%9A%8F%E8%AE%B0%E4%B8%80/screen_1.png" alt="img"></p>
+<p>这是在<code>Android 3.2之后引入的新修饰符</code>, 在3.2之前是使用<code>small, normal, large, xlarge</code>来讲设备分为不同的屏幕大小类别.</p>
+<p>现在新引入的屏幕尺寸修饰符如下表:</p>
+<table>
+<thead>
+<tr>
+<th>修饰符格式</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>wXXXdp</td>
+<td>有效宽度: 宽度大于或等于 XXX dp</td>
+</tr>
+<tr>
+<td>hXXXdp</td>
+<td>有效高度: 高度大于或等于 XXX dp</td>
+</tr>
+<tr>
+<td>swXXXdp</td>
+<td>最小宽度: 宽度或者高度(两者中最小的那个) 大于或等于 xxx dp</td>
+</tr>
+</tbody>
+</table>
+<p>如果要指定某一个布局仅适用于屏幕宽度至少<strong>300dp</strong>的设备, 这种情况下, 可以使用宽度修饰符, 并将布局文件放入<code>res/layout-w300dp</code>目录下, (w代表宽度width). 同样道理如果是高度那么使用<code>hxxxdp</code></p>
+<p>有时候设备方向变换, 也会导致设备的宽高发生变化. 为了确定某个具体的屏幕尺寸可是使用<code>sw</code>, 如果不管是横屏<code>1280*720</code>还是竖屏的<code>720*1280</code>, 其对应的sw的值都是800.</p>
+<h2 id="以命令行的方式运行activity"><a href="#以命令行的方式运行activity" class="headerlink" title="以命令行的方式运行activity"></a>以命令行的方式运行activity</h2><p>要用<code>adb</code>命令启动首先需要满足<code>activity</code>组件可以被外部启动. 需要在清单文件中配置要被启动的<code>activity</code>的属性如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&lt;activity android:name=&quot;.activity.CrimeCameraActivity&quot;</div><div class="line">            android:exported=&quot;true&quot;/&gt;</div></pre></td></tr></table></figure>
+<p>设置<code>exported</code>属性. 这个属性默认是<strong>false</strong>. 表示只能从自己的应用中启动. <strong>如果将intent过滤器添加到activity的声明中, 那么该activity的exported将被自动设置为true</strong></p>
+<p>然后使用<code>adb</code>命令, 如果你没有设置全局环境那么就到<code>Android SDK</code>安装目录<code>platform-tools</code>子目录下执行adb命令.</p>
+<p><code>adb shell am start -n 应用包名/.activity类名</code></p>
+<p>/ 后面接的和清单文件中<code>activity</code>的name属性对应的是一样的. 如果你如上代码在多层包中. 那么实际上是这样的. 我的包名<code>com.szysky.note.criminal</code></p>
+<p>演示代码:</p>
+<p><code>adb shell am start -n com.szysky.note.criminal/.activity.CrimeCameraActivity</code></p>
+<p><code>am(Activity Manager)</code>是一个在设备上运行的命令行程序. 它支持启动和停止Android组件(component)并从命令行发送intent. 可以运行adb shell am指令. 查看am工具能够完成的所有任务.</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/09/07/android/books/《Android编程权威指南》Chap1_ 零散整理/" data-id="cj7aafudx00025fpjnct5hz1n" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/09/07/android/books/《Android编程权威指南》Chap1_ 零散整理/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
     <article id="post-android/books/《Android编程权威指南》Chap4_ 组件等" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
@@ -2603,206 +3057,6 @@
 
 
 
-    <article id="post-android/books/《Android开发艺术探索》Chap10_Android消息机制" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2017/09/06/android/books/《Android开发艺术探索》Chap10_Android消息机制/">《Android开发艺术探索》Chap10_Android消息机制</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2017/09/06/android/books/《Android开发艺术探索》Chap10_Android消息机制/">
-            <time datetime="2017-09-06T09:37:30.000Z" itemprop="datePublished">2017-09-06</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a>
-    </div>
-
-                        
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/android/">android</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <blockquote>
-<p>Handler究竟是如何运行的.<br>注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a></p>
-</blockquote>
-<p><a href="https://github.com/suzeyu1992/Notes_AndroidDevSeek" target="_blank" rel="external">blog相关代码</a></p>
-<p>Android的消息机制主要指<code>Handler</code>的运行机制, <code>Handler</code>的运行需要底层的<code>MessageQueue</code>和<code>Lopper</code>的支撑. <strong>MessageQueue消息机制</strong>, 内部存储了一组消息, 以队列的形式对外提供插入和删除工作. 虽然叫消息队列,但是其内部存储结构并不是真正的队列,而是采用单链表的数据结构来存储消息列表. <strong>Looper消息循环</strong>, 因为<code>MessageQueue</code>本质只是一个消息的存储单元, 它不能去处理消息, 而<code>Looper</code>就是为实现处理而产生的. <code>Looper</code>会以无限循环的形式去查找是否有新消息, 如果有的话就处理消息, 否在就一直等待.</p>
-<p><code>Looper</code>中有一个特殊的概念<code>ThreadLocal</code>, <code>ThreadLocal</code>并不是一个线程, 它可以在每个线程中进行数据的存储. 我们使用的Handler创建的时候都会采用当前线程的<code>Looper</code>来构造消息循环系统, 而这个<strong>当前线程</strong>就是通过<code>ThreadLocal</code>来进行操作的.</p>
-<p>有一点需要记住: 一个新的线程默认是没有<code>Looper</code>的, 如果要使用<code>Handler</code>就必为线程创建<code>Looper</code>, 而我们使用主线程的时候之所以不需要创建<code>Looper</code>是因为. <code>UI线程也就是ActivityThread</code>在被创建的时候就会初始化<code>Looper</code>, 所以我们在主线程也就可以直接使用Handler的原因.</p>
-<h2 id="Android-的消息机制描述"><a href="#Android-的消息机制描述" class="headerlink" title="Android 的消息机制描述"></a>Android 的消息机制描述</h2><p>在日常开发中如果不小心在子线程更新了UI那么就会抛出异常, 这一步骤是在<code>ViewRootImpl#checkThread()</code>方法完成的.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">void checkThread() &#123;</div><div class="line">   if (mThread != Thread.currentThread()) &#123;</div><div class="line">       throw new CalledFromWrongThreadException(</div><div class="line">               &quot;Only the original thread that created a view hierarchy can touch its views.&quot;);</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>那Handler可以认为是为了在子线程处理完操作可以切回到主线程进行UI操作的用途. 那为什么不能再子线程进行UI处理呢?</p>
-<p>这是因为Android的<strong>UI线程控件</strong>不是线程安全, 如果在多线程中并发的访问可能会导致UI控件处于不可预期的状态, 虽然可以用加锁的形式让上述问题消失, 但是有两个弊端:</p>
-<ol>
-<li>加锁机制会让UI访问的逻辑变得复杂</li>
-<li>锁机制会降低UI的访问的效率, 因为锁机制会阻塞某些线程的执行.</li>
-</ol>
-<p>因为这样, 最简单且高效的方法就是采用单线程模型来处理UI操作.</p>
-<p>当<code>Handler</code>, <code>Looper</code>, <code>MessageQueue</code>都准备好之后. 就可以通过<code>Handler#post()</code>方法将一个<code>Runnable</code>投递到<code>Handler内部的Looper</code>中去处理, 也可以通过<code>send()</code>方法来发送一个消息, 这个消息同样会在<code>Looper</code>中处理. 而post()内部也是通过send()来发送的.</p>
-<h2 id="Android消息机制分析"><a href="#Android消息机制分析" class="headerlink" title="Android消息机制分析"></a>Android消息机制分析</h2><h3 id="ThreadLocal的工作原理"><a href="#ThreadLocal的工作原理" class="headerlink" title="ThreadLocal的工作原理"></a>ThreadLocal的工作原理</h3><p><code>ThreadLocal</code>是一个线程内部的数据存储类, 通过他可以在指定的线程中存储数据. 数据存储以后, 只能在指定线程中可以获取到存储的数据. 而其他线程无法获取.</p>
-<p>而Android中的<code>Looper</code> ,<code>ActivityThread</code>, <code>AMS</code>都用到了<strong>ThreadLocal</strong>. 可以这样来说: 当某些数据是以线程为作用域并且不同线程具有不同的数据副本的时候, 可以采用<code>ThreadLocal</code>.</p>
-<p>可以自己用三个线程分别对一个<code>ThreadLocal</code>对象进行操作, 虽然操作的是一个对象, 但是每个线程在获取值的时候却不相同. 这是因为: 不同的线程访问同一个<code>ThreadLocal#get()</code>方法的时候, <code>ThreadLocal</code>内部会从各自的线程中取出一个数组, 然后再从数组中根据当前<code>ThreadLocal</code>的索引去查找出对应的value值. 可以看出不同的线程中的数组是不相同的. 所以也就是为什么使用<code>ThreadLocal</code>可以在不同的线程中维护一套数据的副本并且彼此互不影响.</p>
-<p><strong>还是用源码来梳理流程</strong></p>
-<p><code>ThreadLocal</code>是一个泛型类, 它的定义为<code>public class ThreadLocal&lt;T&gt;</code>, 看一下set()或者get()就明白了.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">public void set(T value) &#123;</div><div class="line">   Thread currentThread = Thread.currentThread();</div><div class="line">   Values values = values(currentThread);</div><div class="line">   if (values == null) &#123;</div><div class="line">       values = initializeValues(currentThread);</div><div class="line">   &#125;</div><div class="line">   values.put(this, value);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>首先会通过<code>value()</code>方法来获取当前线程中的<code>ThreadLocal</code>数据. 就是在<code>Thread</code>类的内部有一个成员专门用于存储线程的<code>ThreadLocal</code>的数据<code>ThreadLocal.Values localValues</code>. 如果value的值为null那么就会进行初始化, 初始化结束之后再将<code>ThreadLocal</code>的值进行存储. 具体看一下是如何在<code>localValues</code>中进行存储的.</p>
-<p>在<code>localValues</code>中有一个数组<code>private Object[] table</code>, <code>ThreadLocal</code>的值就存在在这个table数组中. 看一下<code>put()</code>方法.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">void put(ThreadLocal&lt;?&gt; key, Object value) &#123;</div><div class="line">  cleanUp();</div><div class="line"></div><div class="line">  // Keep track of first tombstone. That&apos;s where we want to go back</div><div class="line">  // and add an entry if necessary.</div><div class="line">  int firstTombstone = -1;</div><div class="line"></div><div class="line">  for (int index = key.hash &amp; mask;; index = next(index)) &#123;</div><div class="line">      Object k = table[index];</div><div class="line"></div><div class="line">      if (k == key.reference) &#123;</div><div class="line">          // Replace existing entry.</div><div class="line">          table[index + 1] = value;</div><div class="line">          return;</div><div class="line">      &#125;</div><div class="line"></div><div class="line">      if (k == null) &#123;</div><div class="line">          if (firstTombstone == -1) &#123;</div><div class="line">              // Fill in null slot.</div><div class="line">              table[index] = key.reference;</div><div class="line">              table[index + 1] = value;</div><div class="line">              size++;</div><div class="line">              return;</div><div class="line">          &#125;</div><div class="line"></div><div class="line">          // Go back and replace first tombstone.</div><div class="line">          table[firstTombstone] = key.reference;</div><div class="line">          table[firstTombstone + 1] = value;</div><div class="line">          tombstones--;</div><div class="line">          size++;</div><div class="line">          return;</div><div class="line">      &#125;</div><div class="line"></div><div class="line">      // Remember first tombstone.</div><div class="line">      if (firstTombstone == -1 &amp;&amp; k == TOMBSTONE) &#123;</div><div class="line">          firstTombstone = index;</div><div class="line">      &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>这里只说看得出的规则, 不需要具体看实现的算法. 规则就是<code>ThreadLocal</code>的值在<code>table</code>数组中的存储位置总是为<code>ThreadLocal</code>的<strong>reference</strong>字段所标示的对象的下一个位置. 例如如果<code>ThreadLocal的reference</code>对象在table中的索引为<code>index</code>, 那么<code>ThreadLocal</code>的值在table数组中的索引就是<code>index+1</code>.</p>
-<p>接着看<code>get()</code>方法</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">public T get() &#123;</div><div class="line">       // Optimized for the fast path.</div><div class="line">       Thread currentThread = Thread.currentThread();</div><div class="line">       Values values = values(currentThread);</div><div class="line">       if (values != null) &#123;</div><div class="line">           Object[] table = values.table;</div><div class="line">           int index = hash &amp; values.mask;</div><div class="line">           if (this.reference == table[index]) &#123;</div><div class="line">               return (T) table[index + 1];</div><div class="line">           &#125;</div><div class="line">       &#125; else &#123;</div><div class="line">           values = initializeValues(currentThread);</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       return (T) values.getAfterMiss(this);</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
-<p>而<code>ThreadLocal#get()</code>方法, 同样是取出当前线程的<code>Values</code>对象, 同样的通过reference的角标+1来获取. 如果取出的<code>Values</code>对象为null那么就返回初始值, 初始值由<code>ThreadLocal#initialValue()</code>方法来描述, 默认情况下为null(在Android 6.0的源码已经不直接返回null, 而是创建一个Values来返回). 也可以重写这个方法.</p>
-<p>从上面这两个方法也可以看出, 他们所操作的对象都是当前线程的<code>localValues</code>对象的<code>table</code>数组. 因为不同的线程中访问同一个<code>ThreadLocal#set() get()</code>他们对<code>ThreadLocal</code>所做的读写操作仅限于各自线程的对应数据.</p>
-<h3 id="消息队列的工作原理"><a href="#消息队列的工作原理" class="headerlink" title="消息队列的工作原理"></a>消息队列的工作原理</h3><p>消息队列在android中指的是<code>MessageQueue</code>, <code>MessageQueue</code>主要包含两个操作: 插入和读取. 读取操作本身会伴随着删除的操作, 插入和读取对应的方法分别为<code>enqueueMessage()</code>,<code>next()</code>. 前者就是往消息队列中插入一条消息, 而后者就是取出一条消息并将其从消息队列中消除. 上面说过虽然<code>MessageQueue</code>称为消息队列, 但是内部实现使用的是单链表的数据结构来维护的消息列表. 单链表在插入和删除上比较有优势.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line">boolean enqueueMessage(Message msg, long when) &#123;</div><div class="line">// 省略...</div><div class="line">synchronized (this) &#123;</div><div class="line">  if (mQuitting) &#123;</div><div class="line">      IllegalStateException e = new IllegalStateException(</div><div class="line">              msg.target + &quot; sending message to a Handler on a dead thread&quot;);</div><div class="line">      Log.w(TAG, e.getMessage(), e);</div><div class="line">      msg.recycle();</div><div class="line">      return false;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  msg.markInUse();</div><div class="line">  msg.when = when;</div><div class="line">  Message p = mMessages;</div><div class="line">  boolean needWake;</div><div class="line">  if (p == null || when == 0 || when &lt; p.when) &#123;</div><div class="line">      // New head, wake up the event queue if blocked.</div><div class="line">      msg.next = p;</div><div class="line">      mMessages = msg;</div><div class="line">      needWake = mBlocked;</div><div class="line">  &#125; else &#123;</div><div class="line">      needWake = mBlocked &amp;&amp; p.target == null &amp;&amp; msg.isAsynchronous();</div><div class="line">      Message prev;</div><div class="line">      for (;;) &#123;</div><div class="line">          prev = p;</div><div class="line">          p = p.next;</div><div class="line">          if (p == null || when &lt; p.when) &#123;</div><div class="line">              break;</div><div class="line">          &#125;</div><div class="line">          if (needWake &amp;&amp; p.isAsynchronous()) &#123;</div><div class="line">              needWake = false;</div><div class="line">          &#125;</div><div class="line">      &#125;</div><div class="line">      msg.next = p; // invariant: p == prev.next</div><div class="line">      prev.next = msg;</div><div class="line">  &#125;</div><div class="line">  if (needWake) &#123;</div><div class="line">      nativeWake(mPtr);</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">return true;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>可以看到<code>enqueueMessage</code>的实现主要操作就是单链表的插入操作. 继续看一下<code>next()</code>方法.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div></pre></td><td class="code"><pre><div class="line">Message next() &#123;</div><div class="line">   final long ptr = mPtr;</div><div class="line">   int pendingIdleHandlerCount = -1; // -1 only during first iteration</div><div class="line">   int nextPollTimeoutMillis = 0;</div><div class="line">   for (;;) &#123;</div><div class="line">       if (nextPollTimeoutMillis != 0) &#123;</div><div class="line">           Binder.flushPendingCommands();</div><div class="line">       &#125;</div><div class="line">       nativePollOnce(ptr, nextPollTimeoutMillis);</div><div class="line">       synchronized (this) &#123;</div><div class="line">           // Try to retrieve the next message.  Return if found.</div><div class="line">           final long now = SystemClock.uptimeMillis();</div><div class="line">           Message prevMsg = null;</div><div class="line">           Message msg = mMessages;</div><div class="line">           if (msg != null &amp;&amp; msg.target == null) &#123;</div><div class="line">             do &#123;</div><div class="line">                   prevMsg = msg;</div><div class="line">                   msg = msg.next;</div><div class="line">               &#125; while (msg != null &amp;&amp; !msg.isAsynchronous());</div><div class="line">           &#125;</div><div class="line">           if (msg != null) &#123;</div><div class="line">               if (now &lt; msg.when) &#123;</div><div class="line">                   // Next message is not ready.  Set a timeout to wake up when it is ready.</div><div class="line">                   nextPollTimeoutMillis = (int) Math.min(msg.when - now, Integer.MAX_VALUE);</div><div class="line">               &#125; else &#123;</div><div class="line">                   // Got a message.</div><div class="line">                   mBlocked = false;</div><div class="line">                   if (prevMsg != null) &#123;</div><div class="line">                       prevMsg.next = msg.next;</div><div class="line">                   &#125; else &#123;</div><div class="line">                       mMessages = msg.next;</div><div class="line">                   &#125;</div><div class="line">                   msg.next = null;</div><div class="line">                   if (DEBUG) Log.v(TAG, &quot;Returning message: &quot; + msg);</div><div class="line">                   msg.markInUse();</div><div class="line">                   return msg;</div><div class="line">               &#125;</div><div class="line">           &#125; else &#123;</div><div class="line">               // No more messages.</div><div class="line">               nextPollTimeoutMillis = -1;</div><div class="line">           &#125;</div><div class="line"></div><div class="line">           // Process the quit message now that all pending messages have been handled.</div><div class="line">           if (mQuitting) &#123;</div><div class="line">               dispose();</div><div class="line">               return null;</div><div class="line">           &#125;</div><div class="line">           if (pendingIdleHandlerCount &lt; 0</div><div class="line">                   &amp;&amp; (mMessages == null || now &lt; mMessages.when)) &#123;</div><div class="line">               pendingIdleHandlerCount = mIdleHandlers.size();</div><div class="line">           &#125;</div><div class="line">           if (pendingIdleHandlerCount &lt;= 0) &#123;</div><div class="line">               // No idle handlers to run.  Loop and wait some more.</div><div class="line">               mBlocked = true;</div><div class="line">               continue;</div><div class="line">           &#125;</div><div class="line"></div><div class="line">           if (mPendingIdleHandlers == null) &#123;</div><div class="line">               mPendingIdleHandlers = new IdleHandler[Math.max(pendingIdleHandlerCount, 4)];</div><div class="line">           &#125;</div><div class="line">           mPendingIdleHandlers = mIdleHandlers.toArray(mPendingIdleHandlers);</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       // Run the idle handlers.</div><div class="line">       // We only ever reach this code block during the first iteration.</div><div class="line">       for (int i = 0; i &lt; pendingIdleHandlerCount; i++) &#123;</div><div class="line">           final IdleHandler idler = mPendingIdleHandlers[i];</div><div class="line">           mPendingIdleHandlers[i] = null; // release the reference to the handler</div><div class="line"></div><div class="line">           boolean keep = false;</div><div class="line">           try &#123;</div><div class="line">               keep = idler.queueIdle();</div><div class="line">           &#125; catch (Throwable t) &#123;</div><div class="line">               Log.wtf(TAG, &quot;IdleHandler threw exception&quot;, t);</div><div class="line">           &#125;</div><div class="line"></div><div class="line">           if (!keep) &#123;</div><div class="line">               synchronized (this) &#123;</div><div class="line">                   mIdleHandlers.remove(idler);</div><div class="line">               &#125;</div><div class="line">           &#125;</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       // Reset the idle handler count to 0 so we do not run them again.</div><div class="line">       pendingIdleHandlerCount = 0;</div><div class="line"></div><div class="line">       // While calling an idle handler, a new message could have been delivered</div><div class="line">       // so go back and look again for a pending message without waiting.</div><div class="line">       nextPollTimeoutMillis = 0;</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p><code>next()</code>是一个无限循环的方法, 如果消息队列中没有消息, 那么next方法会一直阻塞在这里. 当有新消息到来时, next方法会返回这条消息并将其从单链表中移除.</p>
-<h3 id="Looper的工作原理"><a href="#Looper的工作原理" class="headerlink" title="Looper的工作原理"></a>Looper的工作原理</h3><p><code>Looper</code>在Android的消息机制中扮演者消息循环的角色, 具体来说就是他会不停地从<code>MessageQueue</code>中查看是否有新消息. 如果有新消息就会处理. 否则就一直阻塞在那里. 先从构造方法开始, 在构造方法中他会创建一个<code>MessageQueue</code>即消息队列, 然后将当前线程的对象保存起来.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">private Looper(boolean quitAllowed) &#123;</div><div class="line">   mQueue = new MessageQueue(quitAllowed);</div><div class="line">   mThread = Thread.currentThread();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>构造函数是<strong>私有权限</strong>, 而内部使用的地方就是<code>Looper#prepare()</code>方法.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">private static void prepare(boolean quitAllowed) &#123;</div><div class="line">   if (sThreadLocal.get() != null) &#123;</div><div class="line">       throw new RuntimeException(&quot;Only one Looper may be created per thread&quot;);</div><div class="line">   &#125;</div><div class="line">   sThreadLocal.set(new Looper(quitAllowed));</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>这也就是为什么在使用<code>Handler</code>之前要有<code>Looper</code>的节奏, 而当调用了<code>Looper.prepare()</code>. 就不会出现异常的原因.</p>
-<p><code>Looper</code>除了<code>prepare()</code>方法外, 还提供了<code>prepareMainLooper()</code>方法, 这个方法主要是给主线程也就是<code>ActivityThread</code>创建Looper使用的. 本质也是通过<code>prepare()</code>来实现的. 由于主线程的Looper比较特殊, 所以<code>Looper</code>提供了一个<code>getMainLooper()</code>方法, 通过它可以在任何地方获取到主线程的Looper.</p>
-<p><strong>Looper的退出:</strong></p>
-<ul>
-<li><code>quit()</code>: 这个方法会直接退出<code>Looper</code></li>
-<li><code>quitSafely()</code>: 设定一个退出标记, 然后把消息队列中的已有消息处理完毕后才安全的退出.</li>
-</ul>
-<p>如果<code>Looper</code>退出, 通过<code>Handler</code>发送的消息会失败, 这个时候<code>Handler</code>发送的消息会失败, 而<code>Handler#send()</code>方法这个时候回返回<strong>false</strong>. 在子线程中, 如果手动为其创建了<code>Looper</code>, 那么在所有的事情完成以后应该调用<code>quit()</code>方法来终止消息循环. 否则这个线程会一直处于等待的状态, 而如果退出了<code>Looper</code>以后, 这个线程就会立刻终止.</p>
-<p><strong>Looper最重要的一个方法loop()方法, 只有调用了loop后, 消息循环系统才会真正的起作用,如下</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div></pre></td><td class="code"><pre><div class="line">public static void loop() &#123;</div><div class="line">   final Looper me = myLooper();</div><div class="line">   if (me == null) &#123;</div><div class="line">       throw new RuntimeException(&quot;No Looper; Looper.prepare() wasn&apos;t called on this thread.&quot;);</div><div class="line">   &#125;</div><div class="line">   final MessageQueue queue = me.mQueue;</div><div class="line"></div><div class="line">   // Make sure the identity of this thread is that of the local process,</div><div class="line">   // and keep track of what that identity token actually is.</div><div class="line">   Binder.clearCallingIdentity();</div><div class="line">   final long ident = Binder.clearCallingIdentity();</div><div class="line"></div><div class="line">   for (;;) &#123;</div><div class="line">       Message msg = queue.next(); // might block</div><div class="line">       if (msg == null) &#123;</div><div class="line">           // No message indicates that the message queue is quitting.</div><div class="line">           return;</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       // This must be in a local variable, in case a UI event sets the logger</div><div class="line">       Printer logging = me.mLogging;</div><div class="line">       if (logging != null) &#123;</div><div class="line">           logging.println(&quot;&gt;&gt;&gt;&gt;&gt; Dispatching to &quot; + msg.target + &quot; &quot; +</div><div class="line">                   msg.callback + &quot;: &quot; + msg.what);</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       msg.target.dispatchMessage(msg);</div><div class="line"></div><div class="line">       if (logging != null) &#123;</div><div class="line">           logging.println(&quot;&lt;&lt;&lt;&lt;&lt; Finished to &quot; + msg.target + &quot; &quot; + msg.callback);</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       // Make sure that during the course of dispatching the</div><div class="line">       // identity of the thread wasn&apos;t corrupted.</div><div class="line">       final long newIdent = Binder.clearCallingIdentity();</div><div class="line">       if (ident != newIdent) &#123;</div><div class="line">           Log.wtf(TAG, &quot;Thread identity changed from 0x&quot;</div><div class="line">                   + Long.toHexString(ident) + &quot; to 0x&quot;</div><div class="line">                   + Long.toHexString(newIdent) + &quot; while dispatching to &quot;</div><div class="line">                   + msg.target.getClass().getName() + &quot; &quot;</div><div class="line">                   + msg.callback + &quot; what=&quot; + msg.what);</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       msg.recycleUnchecked();</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>首先这个<code>loop()</code>方法是一个死循环, 唯一跳出循环的方式就是<code>MessageQueue#next()</code>方法返回<strong>null</strong>. 当<code>Looper#quit()</code>被调用时, <code>Looper</code>就会调用<code>MessageQueue#quit()或者quitSafely()</code>方法来通知消息队列退出, 当消息队列被标识为退出状态时, 它的<code>next()</code>方法就会返回null. 也就是说<code>Looper</code>必须退出, 否则<code>loop</code>方法就会无限循环下去. <code>loop()</code>会调用<code>MessageQueue#next()</code>方法来获取新消息. 而next是一个阻塞操作, 当没有消息时, next方法就会一直阻塞在那里. 这也导致<code>loop()</code>会一直阻塞在那里. 如果<code>MessageQueue#next()</code>返回了新消息, <code>Looper</code>就会处理这条消息: <code>msg.target.dispatchMessage(msg)</code>, 这里的msg.target是发送这条消息的<code>Handler</code>对象, 这样<code>Handler</code>发送的消息最终又交给它的<code>dispatcherMessage()</code>来处理. 但是这里不同的是, <code>Handler#dispatcherMessage()</code>方法是在创建Handler时所使用的<code>Looper</code>中执行的. 这样就成功的将代码逻辑切换到指定的线程中去执行了.</p>
-<h3 id="Handler的工作原理"><a href="#Handler的工作原理" class="headerlink" title="Handler的工作原理"></a>Handler的工作原理</h3><p><code>Handler</code>主要包含消息的发送和接收过程. 消息的发送可以通过post的一系列方法以及send的一系列方法来实现. post的一系列方法最终就是还是通过send方法来实现的.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">public boolean sendMessageAtTime(Message msg, long uptimeMillis) &#123;</div><div class="line">   MessageQueue queue = mQueue;</div><div class="line">   if (queue == null) &#123;</div><div class="line">       RuntimeException e = new RuntimeException(</div><div class="line">               this + &quot; sendMessageAtTime() called with no mQueue&quot;);</div><div class="line">       Log.w(&quot;Looper&quot;, e.getMessage(), e);</div><div class="line">       return false;</div><div class="line">   &#125;</div><div class="line">   return enqueueMessage(queue, msg, uptimeMillis);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>上面这段代码是<code>Handler#send()</code>系列的最终调用. 可以看出, <code>Handler</code>发送消息的过程仅仅是向消息队列中插入了一条消息, <code>MessageQueue#next()</code>方法就是返回这条消息给<code>Looper</code>, Looper收到消息后就开始处理. 最终消息有<code>Looper</code>交由<code>Handler</code>处理, 即<code>Handler#dispatchMessage()</code>方法会被调用, 这个时候<code>Handler</code>就会进入了处理消息的阶段.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">public void dispatchMessage(Message msg) &#123;</div><div class="line">   if (msg.callback != null) &#123;</div><div class="line">       handleCallback(msg);</div><div class="line">   &#125; else &#123;</div><div class="line">       if (mCallback != null) &#123;</div><div class="line">           if (mCallback.handleMessage(msg)) &#123;</div><div class="line">               return;</div><div class="line">           &#125;</div><div class="line">       &#125;</div><div class="line">       handleMessage(msg);</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>整理一下: 先检查<code>msg.callback</code>属性是否为null, 不为null就通过<code>handleCallback()</code>来处理消息. <code>msg.callback</code>是一个Runnable接口, 实际上就是<code>post()</code>中传递的Runnable参数.</p>
-<p><code>handleCallback()</code>实现如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">private static void handleCallback(Message message) &#123;</div><div class="line">   message.callback.run();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>其次检查<code>mCallback</code>是否为null, 不为null就调用<code>mCallback.handleMessage(msg)</code>方法来处理消息. <code>Callback</code>是一个接口, 定义如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">public interface Callback &#123;</div><div class="line">   public boolean handleMessage(Message msg);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>通过<code>Callback</code>可以采用如下方式来创建Handler对象: <code>Handler handler = new Handler(callback)</code>. 通过源码注释了解: 这个接口可以用来创建一个Handler的实例但并不需要派生<code>Handler</code>的子类并重写其handleMessage方法来处理具体的消息, 而<code>CallBack</code>给我们提供了另外一种方式使用Handler. 当我们不想派生子类时, 就可以通过<code>Callback</code>来实现.</p>
-<p>最后, 调用<code>Handler#handleMessage()</code>方法来处理消息.</p>
-<p><code>Handler</code>还有一个特殊的构造方法, 那就是通过一个特定的<code>Looper</code>来构造Handler,</p>
-<p>最常用的就是直接new 出一个<code>Handler</code>, 这个构造方法会调用下面的构造函数. 很明显这就是为什么当前线程没有<code>Looper</code>的话, 就会抛出<code>Can&#39;t create handler inside thread that has not called Looper.prepare()</code>这个异常.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">public Handler(Callback callback, boolean async) &#123;</div><div class="line">   //....</div><div class="line"></div><div class="line">   mLooper = Looper.myLooper();</div><div class="line">   if (mLooper == null) &#123;</div><div class="line">       throw new RuntimeException(</div><div class="line">           &quot;Can&apos;t create handler inside thread that has not called Looper.prepare()&quot;);</div><div class="line">   &#125;</div><div class="line">   mQueue = mLooper.mQueue;</div><div class="line">   mCallback = callback;</div><div class="line">   mAsynchronous = async;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h2 id="主线程的消息循环"><a href="#主线程的消息循环" class="headerlink" title="主线程的消息循环"></a>主线程的消息循环</h2><p>Android的主线程就是<code>ActivityThread</code>, 主程序的入口方法为<code>main()</code>, 在<code>main()</code>中系统通过<code>Looper.prepareMainLooper()</code>来创建主线程的Looper以及<code>MessageQueue</code>, 并通过<code>Looper.loop()</code>来开启主线程的消息循环.</p>
-<p>当主线程的消息循环开始以后, <code>ActivityThread</code>还需要一个<code>Handler</code>来和消息队列进行交互, 这个<code>Handler</code>就是<code>ActivityThread.H</code>, 它的内部定义了一组消息类型, 主要包含了四大组件的启动和停止等过程.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">private class H extends Handler &#123;</div><div class="line">   public static final int LAUNCH_ACTIVITY         = 100;</div><div class="line">   public static final int PAUSE_ACTIVITY          = 101;</div><div class="line">   public static final int PAUSE_ACTIVITY_FINISHING= 102;</div><div class="line">   public static final int STOP_ACTIVITY_SHOW      = 103;</div><div class="line">   public static final int STOP_ACTIVITY_HIDE      = 104;</div><div class="line">   public static final int SHOW_WINDOW             = 105;</div><div class="line">   public static final int HIDE_WINDOW             = 106;</div><div class="line">   public static final int RESUME_ACTIVITY         = 107;</div><div class="line">   public static final int SEND_RESULT             = 108;</div><div class="line">   public static final int DESTROY_ACTIVITY        = 109;</div><div class="line">   public static final int BIND_APPLICATION        = 110;</div><div class="line">   public static final int EXIT_APPLICATION        = 111;</div><div class="line">   public static final int NEW_INTENT              = 112;</div><div class="line">   public static final int RECEIVER                = 113;</div><div class="line">   public static final int CREATE_SERVICE          = 114;</div><div class="line">   public static final int SERVICE_ARGS            = 115;</div><div class="line">   public static final int STOP_SERVICE            = 116;</div><div class="line"></div><div class="line">   public static final int CONFIGURATION_CHANGED   = 118;</div><div class="line">   public static final int CLEAN_UP_CONTEXT        = 119;</div><div class="line">   public static final int GC_WHEN_IDLE            = 120;</div><div class="line">   public static final int BIND_SERVICE            = 121;</div><div class="line">   public static final int UNBIND_SERVICE          = 122;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p><code>ActivityThread</code>通过<code>ApplicationThread</code>和<code>AMS</code>进行进程间通信, <code>AMS</code>以进程间通信的方式完成<code>ActivityThread</code>的请求后回调<code>ApplicationThread</code>中的<code>Binder()</code>方法, 然后<code>Application</code>会向<code>H</code>发送消息, <code>H</code>收到消息后会将<code>ApplicationThread</code>中的逻辑切换到<code>ActivityThread</code>中去执行, 即切换到主线程去执行, 这个过程就是主线程的消息循环模型.</p>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="http://yoursite.com/2017/09/06/android/books/《Android开发艺术探索》Chap10_Android消息机制/" data-id="cj78uk36o0000kbpj967nntwf" class="article-share-link"><i class="fa fa-share"></i>Share</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-        <a href="http://yoursite.com/2017/09/06/android/books/《Android开发艺术探索》Chap10_Android消息机制/#comments" class="article-comment-link">Comments</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
     <nav id="page-nav">
         <a class="extend prev" rel="prev" href="/page/3/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/5/">Next &raquo;</a>
     </nav>
@@ -2847,8 +3101,8 @@
                     <li>
                         
                         <div class="item-inner">
-                            <p class="item-category"></p>
-                            <p class="item-title"><a href="/2017/09/20/android/github/glide解析2_执行流程/" class="title"></a></p>
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/glide/">glide</a></p>
+                            <p class="item-title"><a href="/2017/09/20/android/github/glide解析2_执行流程/" class="title">Glide解析2_执行流程</a></p>
                             <p class="item-date"><time datetime="2017-09-20T08:40:45.000Z" itemprop="datePublished">2017-09-20</time></p>
                         </div>
                     </li>
@@ -2871,7 +3125,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">categories</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">41</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/glide/">glide</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">2</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">43</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/glide/">glide</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -2880,7 +3134,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">archives</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">51</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">52</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
         </div>
     </div>
 
@@ -2889,7 +3143,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">tags</h3>
         <div class="widget">
-            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">36</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">37</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -2898,7 +3152,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">tag cloud</h3>
         <div class="widget tagcloud">
-            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 14.29px;">code</a> <a href="/tags/git/" style="font-size: 11.43px;">git</a> <a href="/tags/github/" style="font-size: 17.14px;">github</a> <a href="/tags/glide/" style="font-size: 12.86px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 12.86px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.43px;">markdown</a> <a href="/tags/mysql/" style="font-size: 15.71px;">mysql</a> <a href="/tags/node/" style="font-size: 18.57px;">node</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.43px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.43px;">设计模式</a>
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 16.67px;">code</a> <a href="/tags/git/" style="font-size: 11.67px;">git</a> <a href="/tags/github/" style="font-size: 18.33px;">github</a> <a href="/tags/glide/" style="font-size: 15px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 13.33px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.67px;">markdown</a> <a href="/tags/mysql/" style="font-size: 16.67px;">mysql</a> <a href="/tags/node/" style="font-size: 18.33px;">node</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.67px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.67px;">设计模式</a>
         </div>
     </div>
 

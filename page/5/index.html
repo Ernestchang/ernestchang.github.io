@@ -157,7 +157,7 @@
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                72
+                73
                 <span>posts</span>
             </div>
             <div class="article-info-block">
@@ -210,6 +210,206 @@
 
             
             <section id="main">
+    <article id="post-android/books/《Android开发艺术探索》Chap10_Android消息机制" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/09/06/android/books/《Android开发艺术探索》Chap10_Android消息机制/">《Android开发艺术探索》Chap10_Android消息机制</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/09/06/android/books/《Android开发艺术探索》Chap10_Android消息机制/">
+            <time datetime="2017-09-06T09:37:30.000Z" itemprop="datePublished">2017-09-06</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/android/">android</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <blockquote>
+<p>Handler究竟是如何运行的.<br>注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a></p>
+</blockquote>
+<p><a href="https://github.com/suzeyu1992/Notes_AndroidDevSeek" target="_blank" rel="external">blog相关代码</a></p>
+<p>Android的消息机制主要指<code>Handler</code>的运行机制, <code>Handler</code>的运行需要底层的<code>MessageQueue</code>和<code>Lopper</code>的支撑. <strong>MessageQueue消息机制</strong>, 内部存储了一组消息, 以队列的形式对外提供插入和删除工作. 虽然叫消息队列,但是其内部存储结构并不是真正的队列,而是采用单链表的数据结构来存储消息列表. <strong>Looper消息循环</strong>, 因为<code>MessageQueue</code>本质只是一个消息的存储单元, 它不能去处理消息, 而<code>Looper</code>就是为实现处理而产生的. <code>Looper</code>会以无限循环的形式去查找是否有新消息, 如果有的话就处理消息, 否在就一直等待.</p>
+<p><code>Looper</code>中有一个特殊的概念<code>ThreadLocal</code>, <code>ThreadLocal</code>并不是一个线程, 它可以在每个线程中进行数据的存储. 我们使用的Handler创建的时候都会采用当前线程的<code>Looper</code>来构造消息循环系统, 而这个<strong>当前线程</strong>就是通过<code>ThreadLocal</code>来进行操作的.</p>
+<p>有一点需要记住: 一个新的线程默认是没有<code>Looper</code>的, 如果要使用<code>Handler</code>就必为线程创建<code>Looper</code>, 而我们使用主线程的时候之所以不需要创建<code>Looper</code>是因为. <code>UI线程也就是ActivityThread</code>在被创建的时候就会初始化<code>Looper</code>, 所以我们在主线程也就可以直接使用Handler的原因.</p>
+<h2 id="Android-的消息机制描述"><a href="#Android-的消息机制描述" class="headerlink" title="Android 的消息机制描述"></a>Android 的消息机制描述</h2><p>在日常开发中如果不小心在子线程更新了UI那么就会抛出异常, 这一步骤是在<code>ViewRootImpl#checkThread()</code>方法完成的.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">void checkThread() &#123;</div><div class="line">   if (mThread != Thread.currentThread()) &#123;</div><div class="line">       throw new CalledFromWrongThreadException(</div><div class="line">               &quot;Only the original thread that created a view hierarchy can touch its views.&quot;);</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>那Handler可以认为是为了在子线程处理完操作可以切回到主线程进行UI操作的用途. 那为什么不能再子线程进行UI处理呢?</p>
+<p>这是因为Android的<strong>UI线程控件</strong>不是线程安全, 如果在多线程中并发的访问可能会导致UI控件处于不可预期的状态, 虽然可以用加锁的形式让上述问题消失, 但是有两个弊端:</p>
+<ol>
+<li>加锁机制会让UI访问的逻辑变得复杂</li>
+<li>锁机制会降低UI的访问的效率, 因为锁机制会阻塞某些线程的执行.</li>
+</ol>
+<p>因为这样, 最简单且高效的方法就是采用单线程模型来处理UI操作.</p>
+<p>当<code>Handler</code>, <code>Looper</code>, <code>MessageQueue</code>都准备好之后. 就可以通过<code>Handler#post()</code>方法将一个<code>Runnable</code>投递到<code>Handler内部的Looper</code>中去处理, 也可以通过<code>send()</code>方法来发送一个消息, 这个消息同样会在<code>Looper</code>中处理. 而post()内部也是通过send()来发送的.</p>
+<h2 id="Android消息机制分析"><a href="#Android消息机制分析" class="headerlink" title="Android消息机制分析"></a>Android消息机制分析</h2><h3 id="ThreadLocal的工作原理"><a href="#ThreadLocal的工作原理" class="headerlink" title="ThreadLocal的工作原理"></a>ThreadLocal的工作原理</h3><p><code>ThreadLocal</code>是一个线程内部的数据存储类, 通过他可以在指定的线程中存储数据. 数据存储以后, 只能在指定线程中可以获取到存储的数据. 而其他线程无法获取.</p>
+<p>而Android中的<code>Looper</code> ,<code>ActivityThread</code>, <code>AMS</code>都用到了<strong>ThreadLocal</strong>. 可以这样来说: 当某些数据是以线程为作用域并且不同线程具有不同的数据副本的时候, 可以采用<code>ThreadLocal</code>.</p>
+<p>可以自己用三个线程分别对一个<code>ThreadLocal</code>对象进行操作, 虽然操作的是一个对象, 但是每个线程在获取值的时候却不相同. 这是因为: 不同的线程访问同一个<code>ThreadLocal#get()</code>方法的时候, <code>ThreadLocal</code>内部会从各自的线程中取出一个数组, 然后再从数组中根据当前<code>ThreadLocal</code>的索引去查找出对应的value值. 可以看出不同的线程中的数组是不相同的. 所以也就是为什么使用<code>ThreadLocal</code>可以在不同的线程中维护一套数据的副本并且彼此互不影响.</p>
+<p><strong>还是用源码来梳理流程</strong></p>
+<p><code>ThreadLocal</code>是一个泛型类, 它的定义为<code>public class ThreadLocal&lt;T&gt;</code>, 看一下set()或者get()就明白了.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">public void set(T value) &#123;</div><div class="line">   Thread currentThread = Thread.currentThread();</div><div class="line">   Values values = values(currentThread);</div><div class="line">   if (values == null) &#123;</div><div class="line">       values = initializeValues(currentThread);</div><div class="line">   &#125;</div><div class="line">   values.put(this, value);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>首先会通过<code>value()</code>方法来获取当前线程中的<code>ThreadLocal</code>数据. 就是在<code>Thread</code>类的内部有一个成员专门用于存储线程的<code>ThreadLocal</code>的数据<code>ThreadLocal.Values localValues</code>. 如果value的值为null那么就会进行初始化, 初始化结束之后再将<code>ThreadLocal</code>的值进行存储. 具体看一下是如何在<code>localValues</code>中进行存储的.</p>
+<p>在<code>localValues</code>中有一个数组<code>private Object[] table</code>, <code>ThreadLocal</code>的值就存在在这个table数组中. 看一下<code>put()</code>方法.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">void put(ThreadLocal&lt;?&gt; key, Object value) &#123;</div><div class="line">  cleanUp();</div><div class="line"></div><div class="line">  // Keep track of first tombstone. That&apos;s where we want to go back</div><div class="line">  // and add an entry if necessary.</div><div class="line">  int firstTombstone = -1;</div><div class="line"></div><div class="line">  for (int index = key.hash &amp; mask;; index = next(index)) &#123;</div><div class="line">      Object k = table[index];</div><div class="line"></div><div class="line">      if (k == key.reference) &#123;</div><div class="line">          // Replace existing entry.</div><div class="line">          table[index + 1] = value;</div><div class="line">          return;</div><div class="line">      &#125;</div><div class="line"></div><div class="line">      if (k == null) &#123;</div><div class="line">          if (firstTombstone == -1) &#123;</div><div class="line">              // Fill in null slot.</div><div class="line">              table[index] = key.reference;</div><div class="line">              table[index + 1] = value;</div><div class="line">              size++;</div><div class="line">              return;</div><div class="line">          &#125;</div><div class="line"></div><div class="line">          // Go back and replace first tombstone.</div><div class="line">          table[firstTombstone] = key.reference;</div><div class="line">          table[firstTombstone + 1] = value;</div><div class="line">          tombstones--;</div><div class="line">          size++;</div><div class="line">          return;</div><div class="line">      &#125;</div><div class="line"></div><div class="line">      // Remember first tombstone.</div><div class="line">      if (firstTombstone == -1 &amp;&amp; k == TOMBSTONE) &#123;</div><div class="line">          firstTombstone = index;</div><div class="line">      &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里只说看得出的规则, 不需要具体看实现的算法. 规则就是<code>ThreadLocal</code>的值在<code>table</code>数组中的存储位置总是为<code>ThreadLocal</code>的<strong>reference</strong>字段所标示的对象的下一个位置. 例如如果<code>ThreadLocal的reference</code>对象在table中的索引为<code>index</code>, 那么<code>ThreadLocal</code>的值在table数组中的索引就是<code>index+1</code>.</p>
+<p>接着看<code>get()</code>方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">public T get() &#123;</div><div class="line">       // Optimized for the fast path.</div><div class="line">       Thread currentThread = Thread.currentThread();</div><div class="line">       Values values = values(currentThread);</div><div class="line">       if (values != null) &#123;</div><div class="line">           Object[] table = values.table;</div><div class="line">           int index = hash &amp; values.mask;</div><div class="line">           if (this.reference == table[index]) &#123;</div><div class="line">               return (T) table[index + 1];</div><div class="line">           &#125;</div><div class="line">       &#125; else &#123;</div><div class="line">           values = initializeValues(currentThread);</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       return (T) values.getAfterMiss(this);</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<p>而<code>ThreadLocal#get()</code>方法, 同样是取出当前线程的<code>Values</code>对象, 同样的通过reference的角标+1来获取. 如果取出的<code>Values</code>对象为null那么就返回初始值, 初始值由<code>ThreadLocal#initialValue()</code>方法来描述, 默认情况下为null(在Android 6.0的源码已经不直接返回null, 而是创建一个Values来返回). 也可以重写这个方法.</p>
+<p>从上面这两个方法也可以看出, 他们所操作的对象都是当前线程的<code>localValues</code>对象的<code>table</code>数组. 因为不同的线程中访问同一个<code>ThreadLocal#set() get()</code>他们对<code>ThreadLocal</code>所做的读写操作仅限于各自线程的对应数据.</p>
+<h3 id="消息队列的工作原理"><a href="#消息队列的工作原理" class="headerlink" title="消息队列的工作原理"></a>消息队列的工作原理</h3><p>消息队列在android中指的是<code>MessageQueue</code>, <code>MessageQueue</code>主要包含两个操作: 插入和读取. 读取操作本身会伴随着删除的操作, 插入和读取对应的方法分别为<code>enqueueMessage()</code>,<code>next()</code>. 前者就是往消息队列中插入一条消息, 而后者就是取出一条消息并将其从消息队列中消除. 上面说过虽然<code>MessageQueue</code>称为消息队列, 但是内部实现使用的是单链表的数据结构来维护的消息列表. 单链表在插入和删除上比较有优势.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line">boolean enqueueMessage(Message msg, long when) &#123;</div><div class="line">// 省略...</div><div class="line">synchronized (this) &#123;</div><div class="line">  if (mQuitting) &#123;</div><div class="line">      IllegalStateException e = new IllegalStateException(</div><div class="line">              msg.target + &quot; sending message to a Handler on a dead thread&quot;);</div><div class="line">      Log.w(TAG, e.getMessage(), e);</div><div class="line">      msg.recycle();</div><div class="line">      return false;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  msg.markInUse();</div><div class="line">  msg.when = when;</div><div class="line">  Message p = mMessages;</div><div class="line">  boolean needWake;</div><div class="line">  if (p == null || when == 0 || when &lt; p.when) &#123;</div><div class="line">      // New head, wake up the event queue if blocked.</div><div class="line">      msg.next = p;</div><div class="line">      mMessages = msg;</div><div class="line">      needWake = mBlocked;</div><div class="line">  &#125; else &#123;</div><div class="line">      needWake = mBlocked &amp;&amp; p.target == null &amp;&amp; msg.isAsynchronous();</div><div class="line">      Message prev;</div><div class="line">      for (;;) &#123;</div><div class="line">          prev = p;</div><div class="line">          p = p.next;</div><div class="line">          if (p == null || when &lt; p.when) &#123;</div><div class="line">              break;</div><div class="line">          &#125;</div><div class="line">          if (needWake &amp;&amp; p.isAsynchronous()) &#123;</div><div class="line">              needWake = false;</div><div class="line">          &#125;</div><div class="line">      &#125;</div><div class="line">      msg.next = p; // invariant: p == prev.next</div><div class="line">      prev.next = msg;</div><div class="line">  &#125;</div><div class="line">  if (needWake) &#123;</div><div class="line">      nativeWake(mPtr);</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">return true;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看到<code>enqueueMessage</code>的实现主要操作就是单链表的插入操作. 继续看一下<code>next()</code>方法.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div></pre></td><td class="code"><pre><div class="line">Message next() &#123;</div><div class="line">   final long ptr = mPtr;</div><div class="line">   int pendingIdleHandlerCount = -1; // -1 only during first iteration</div><div class="line">   int nextPollTimeoutMillis = 0;</div><div class="line">   for (;;) &#123;</div><div class="line">       if (nextPollTimeoutMillis != 0) &#123;</div><div class="line">           Binder.flushPendingCommands();</div><div class="line">       &#125;</div><div class="line">       nativePollOnce(ptr, nextPollTimeoutMillis);</div><div class="line">       synchronized (this) &#123;</div><div class="line">           // Try to retrieve the next message.  Return if found.</div><div class="line">           final long now = SystemClock.uptimeMillis();</div><div class="line">           Message prevMsg = null;</div><div class="line">           Message msg = mMessages;</div><div class="line">           if (msg != null &amp;&amp; msg.target == null) &#123;</div><div class="line">             do &#123;</div><div class="line">                   prevMsg = msg;</div><div class="line">                   msg = msg.next;</div><div class="line">               &#125; while (msg != null &amp;&amp; !msg.isAsynchronous());</div><div class="line">           &#125;</div><div class="line">           if (msg != null) &#123;</div><div class="line">               if (now &lt; msg.when) &#123;</div><div class="line">                   // Next message is not ready.  Set a timeout to wake up when it is ready.</div><div class="line">                   nextPollTimeoutMillis = (int) Math.min(msg.when - now, Integer.MAX_VALUE);</div><div class="line">               &#125; else &#123;</div><div class="line">                   // Got a message.</div><div class="line">                   mBlocked = false;</div><div class="line">                   if (prevMsg != null) &#123;</div><div class="line">                       prevMsg.next = msg.next;</div><div class="line">                   &#125; else &#123;</div><div class="line">                       mMessages = msg.next;</div><div class="line">                   &#125;</div><div class="line">                   msg.next = null;</div><div class="line">                   if (DEBUG) Log.v(TAG, &quot;Returning message: &quot; + msg);</div><div class="line">                   msg.markInUse();</div><div class="line">                   return msg;</div><div class="line">               &#125;</div><div class="line">           &#125; else &#123;</div><div class="line">               // No more messages.</div><div class="line">               nextPollTimeoutMillis = -1;</div><div class="line">           &#125;</div><div class="line"></div><div class="line">           // Process the quit message now that all pending messages have been handled.</div><div class="line">           if (mQuitting) &#123;</div><div class="line">               dispose();</div><div class="line">               return null;</div><div class="line">           &#125;</div><div class="line">           if (pendingIdleHandlerCount &lt; 0</div><div class="line">                   &amp;&amp; (mMessages == null || now &lt; mMessages.when)) &#123;</div><div class="line">               pendingIdleHandlerCount = mIdleHandlers.size();</div><div class="line">           &#125;</div><div class="line">           if (pendingIdleHandlerCount &lt;= 0) &#123;</div><div class="line">               // No idle handlers to run.  Loop and wait some more.</div><div class="line">               mBlocked = true;</div><div class="line">               continue;</div><div class="line">           &#125;</div><div class="line"></div><div class="line">           if (mPendingIdleHandlers == null) &#123;</div><div class="line">               mPendingIdleHandlers = new IdleHandler[Math.max(pendingIdleHandlerCount, 4)];</div><div class="line">           &#125;</div><div class="line">           mPendingIdleHandlers = mIdleHandlers.toArray(mPendingIdleHandlers);</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       // Run the idle handlers.</div><div class="line">       // We only ever reach this code block during the first iteration.</div><div class="line">       for (int i = 0; i &lt; pendingIdleHandlerCount; i++) &#123;</div><div class="line">           final IdleHandler idler = mPendingIdleHandlers[i];</div><div class="line">           mPendingIdleHandlers[i] = null; // release the reference to the handler</div><div class="line"></div><div class="line">           boolean keep = false;</div><div class="line">           try &#123;</div><div class="line">               keep = idler.queueIdle();</div><div class="line">           &#125; catch (Throwable t) &#123;</div><div class="line">               Log.wtf(TAG, &quot;IdleHandler threw exception&quot;, t);</div><div class="line">           &#125;</div><div class="line"></div><div class="line">           if (!keep) &#123;</div><div class="line">               synchronized (this) &#123;</div><div class="line">                   mIdleHandlers.remove(idler);</div><div class="line">               &#125;</div><div class="line">           &#125;</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       // Reset the idle handler count to 0 so we do not run them again.</div><div class="line">       pendingIdleHandlerCount = 0;</div><div class="line"></div><div class="line">       // While calling an idle handler, a new message could have been delivered</div><div class="line">       // so go back and look again for a pending message without waiting.</div><div class="line">       nextPollTimeoutMillis = 0;</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>next()</code>是一个无限循环的方法, 如果消息队列中没有消息, 那么next方法会一直阻塞在这里. 当有新消息到来时, next方法会返回这条消息并将其从单链表中移除.</p>
+<h3 id="Looper的工作原理"><a href="#Looper的工作原理" class="headerlink" title="Looper的工作原理"></a>Looper的工作原理</h3><p><code>Looper</code>在Android的消息机制中扮演者消息循环的角色, 具体来说就是他会不停地从<code>MessageQueue</code>中查看是否有新消息. 如果有新消息就会处理. 否则就一直阻塞在那里. 先从构造方法开始, 在构造方法中他会创建一个<code>MessageQueue</code>即消息队列, 然后将当前线程的对象保存起来.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">private Looper(boolean quitAllowed) &#123;</div><div class="line">   mQueue = new MessageQueue(quitAllowed);</div><div class="line">   mThread = Thread.currentThread();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>构造函数是<strong>私有权限</strong>, 而内部使用的地方就是<code>Looper#prepare()</code>方法.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">private static void prepare(boolean quitAllowed) &#123;</div><div class="line">   if (sThreadLocal.get() != null) &#123;</div><div class="line">       throw new RuntimeException(&quot;Only one Looper may be created per thread&quot;);</div><div class="line">   &#125;</div><div class="line">   sThreadLocal.set(new Looper(quitAllowed));</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这也就是为什么在使用<code>Handler</code>之前要有<code>Looper</code>的节奏, 而当调用了<code>Looper.prepare()</code>. 就不会出现异常的原因.</p>
+<p><code>Looper</code>除了<code>prepare()</code>方法外, 还提供了<code>prepareMainLooper()</code>方法, 这个方法主要是给主线程也就是<code>ActivityThread</code>创建Looper使用的. 本质也是通过<code>prepare()</code>来实现的. 由于主线程的Looper比较特殊, 所以<code>Looper</code>提供了一个<code>getMainLooper()</code>方法, 通过它可以在任何地方获取到主线程的Looper.</p>
+<p><strong>Looper的退出:</strong></p>
+<ul>
+<li><code>quit()</code>: 这个方法会直接退出<code>Looper</code></li>
+<li><code>quitSafely()</code>: 设定一个退出标记, 然后把消息队列中的已有消息处理完毕后才安全的退出.</li>
+</ul>
+<p>如果<code>Looper</code>退出, 通过<code>Handler</code>发送的消息会失败, 这个时候<code>Handler</code>发送的消息会失败, 而<code>Handler#send()</code>方法这个时候回返回<strong>false</strong>. 在子线程中, 如果手动为其创建了<code>Looper</code>, 那么在所有的事情完成以后应该调用<code>quit()</code>方法来终止消息循环. 否则这个线程会一直处于等待的状态, 而如果退出了<code>Looper</code>以后, 这个线程就会立刻终止.</p>
+<p><strong>Looper最重要的一个方法loop()方法, 只有调用了loop后, 消息循环系统才会真正的起作用,如下</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div></pre></td><td class="code"><pre><div class="line">public static void loop() &#123;</div><div class="line">   final Looper me = myLooper();</div><div class="line">   if (me == null) &#123;</div><div class="line">       throw new RuntimeException(&quot;No Looper; Looper.prepare() wasn&apos;t called on this thread.&quot;);</div><div class="line">   &#125;</div><div class="line">   final MessageQueue queue = me.mQueue;</div><div class="line"></div><div class="line">   // Make sure the identity of this thread is that of the local process,</div><div class="line">   // and keep track of what that identity token actually is.</div><div class="line">   Binder.clearCallingIdentity();</div><div class="line">   final long ident = Binder.clearCallingIdentity();</div><div class="line"></div><div class="line">   for (;;) &#123;</div><div class="line">       Message msg = queue.next(); // might block</div><div class="line">       if (msg == null) &#123;</div><div class="line">           // No message indicates that the message queue is quitting.</div><div class="line">           return;</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       // This must be in a local variable, in case a UI event sets the logger</div><div class="line">       Printer logging = me.mLogging;</div><div class="line">       if (logging != null) &#123;</div><div class="line">           logging.println(&quot;&gt;&gt;&gt;&gt;&gt; Dispatching to &quot; + msg.target + &quot; &quot; +</div><div class="line">                   msg.callback + &quot;: &quot; + msg.what);</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       msg.target.dispatchMessage(msg);</div><div class="line"></div><div class="line">       if (logging != null) &#123;</div><div class="line">           logging.println(&quot;&lt;&lt;&lt;&lt;&lt; Finished to &quot; + msg.target + &quot; &quot; + msg.callback);</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       // Make sure that during the course of dispatching the</div><div class="line">       // identity of the thread wasn&apos;t corrupted.</div><div class="line">       final long newIdent = Binder.clearCallingIdentity();</div><div class="line">       if (ident != newIdent) &#123;</div><div class="line">           Log.wtf(TAG, &quot;Thread identity changed from 0x&quot;</div><div class="line">                   + Long.toHexString(ident) + &quot; to 0x&quot;</div><div class="line">                   + Long.toHexString(newIdent) + &quot; while dispatching to &quot;</div><div class="line">                   + msg.target.getClass().getName() + &quot; &quot;</div><div class="line">                   + msg.callback + &quot; what=&quot; + msg.what);</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       msg.recycleUnchecked();</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>首先这个<code>loop()</code>方法是一个死循环, 唯一跳出循环的方式就是<code>MessageQueue#next()</code>方法返回<strong>null</strong>. 当<code>Looper#quit()</code>被调用时, <code>Looper</code>就会调用<code>MessageQueue#quit()或者quitSafely()</code>方法来通知消息队列退出, 当消息队列被标识为退出状态时, 它的<code>next()</code>方法就会返回null. 也就是说<code>Looper</code>必须退出, 否则<code>loop</code>方法就会无限循环下去. <code>loop()</code>会调用<code>MessageQueue#next()</code>方法来获取新消息. 而next是一个阻塞操作, 当没有消息时, next方法就会一直阻塞在那里. 这也导致<code>loop()</code>会一直阻塞在那里. 如果<code>MessageQueue#next()</code>返回了新消息, <code>Looper</code>就会处理这条消息: <code>msg.target.dispatchMessage(msg)</code>, 这里的msg.target是发送这条消息的<code>Handler</code>对象, 这样<code>Handler</code>发送的消息最终又交给它的<code>dispatcherMessage()</code>来处理. 但是这里不同的是, <code>Handler#dispatcherMessage()</code>方法是在创建Handler时所使用的<code>Looper</code>中执行的. 这样就成功的将代码逻辑切换到指定的线程中去执行了.</p>
+<h3 id="Handler的工作原理"><a href="#Handler的工作原理" class="headerlink" title="Handler的工作原理"></a>Handler的工作原理</h3><p><code>Handler</code>主要包含消息的发送和接收过程. 消息的发送可以通过post的一系列方法以及send的一系列方法来实现. post的一系列方法最终就是还是通过send方法来实现的.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">public boolean sendMessageAtTime(Message msg, long uptimeMillis) &#123;</div><div class="line">   MessageQueue queue = mQueue;</div><div class="line">   if (queue == null) &#123;</div><div class="line">       RuntimeException e = new RuntimeException(</div><div class="line">               this + &quot; sendMessageAtTime() called with no mQueue&quot;);</div><div class="line">       Log.w(&quot;Looper&quot;, e.getMessage(), e);</div><div class="line">       return false;</div><div class="line">   &#125;</div><div class="line">   return enqueueMessage(queue, msg, uptimeMillis);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上面这段代码是<code>Handler#send()</code>系列的最终调用. 可以看出, <code>Handler</code>发送消息的过程仅仅是向消息队列中插入了一条消息, <code>MessageQueue#next()</code>方法就是返回这条消息给<code>Looper</code>, Looper收到消息后就开始处理. 最终消息有<code>Looper</code>交由<code>Handler</code>处理, 即<code>Handler#dispatchMessage()</code>方法会被调用, 这个时候<code>Handler</code>就会进入了处理消息的阶段.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">public void dispatchMessage(Message msg) &#123;</div><div class="line">   if (msg.callback != null) &#123;</div><div class="line">       handleCallback(msg);</div><div class="line">   &#125; else &#123;</div><div class="line">       if (mCallback != null) &#123;</div><div class="line">           if (mCallback.handleMessage(msg)) &#123;</div><div class="line">               return;</div><div class="line">           &#125;</div><div class="line">       &#125;</div><div class="line">       handleMessage(msg);</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>整理一下: 先检查<code>msg.callback</code>属性是否为null, 不为null就通过<code>handleCallback()</code>来处理消息. <code>msg.callback</code>是一个Runnable接口, 实际上就是<code>post()</code>中传递的Runnable参数.</p>
+<p><code>handleCallback()</code>实现如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">private static void handleCallback(Message message) &#123;</div><div class="line">   message.callback.run();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>其次检查<code>mCallback</code>是否为null, 不为null就调用<code>mCallback.handleMessage(msg)</code>方法来处理消息. <code>Callback</code>是一个接口, 定义如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">public interface Callback &#123;</div><div class="line">   public boolean handleMessage(Message msg);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>通过<code>Callback</code>可以采用如下方式来创建Handler对象: <code>Handler handler = new Handler(callback)</code>. 通过源码注释了解: 这个接口可以用来创建一个Handler的实例但并不需要派生<code>Handler</code>的子类并重写其handleMessage方法来处理具体的消息, 而<code>CallBack</code>给我们提供了另外一种方式使用Handler. 当我们不想派生子类时, 就可以通过<code>Callback</code>来实现.</p>
+<p>最后, 调用<code>Handler#handleMessage()</code>方法来处理消息.</p>
+<p><code>Handler</code>还有一个特殊的构造方法, 那就是通过一个特定的<code>Looper</code>来构造Handler,</p>
+<p>最常用的就是直接new 出一个<code>Handler</code>, 这个构造方法会调用下面的构造函数. 很明显这就是为什么当前线程没有<code>Looper</code>的话, 就会抛出<code>Can&#39;t create handler inside thread that has not called Looper.prepare()</code>这个异常.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">public Handler(Callback callback, boolean async) &#123;</div><div class="line">   //....</div><div class="line"></div><div class="line">   mLooper = Looper.myLooper();</div><div class="line">   if (mLooper == null) &#123;</div><div class="line">       throw new RuntimeException(</div><div class="line">           &quot;Can&apos;t create handler inside thread that has not called Looper.prepare()&quot;);</div><div class="line">   &#125;</div><div class="line">   mQueue = mLooper.mQueue;</div><div class="line">   mCallback = callback;</div><div class="line">   mAsynchronous = async;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="主线程的消息循环"><a href="#主线程的消息循环" class="headerlink" title="主线程的消息循环"></a>主线程的消息循环</h2><p>Android的主线程就是<code>ActivityThread</code>, 主程序的入口方法为<code>main()</code>, 在<code>main()</code>中系统通过<code>Looper.prepareMainLooper()</code>来创建主线程的Looper以及<code>MessageQueue</code>, 并通过<code>Looper.loop()</code>来开启主线程的消息循环.</p>
+<p>当主线程的消息循环开始以后, <code>ActivityThread</code>还需要一个<code>Handler</code>来和消息队列进行交互, 这个<code>Handler</code>就是<code>ActivityThread.H</code>, 它的内部定义了一组消息类型, 主要包含了四大组件的启动和停止等过程.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">private class H extends Handler &#123;</div><div class="line">   public static final int LAUNCH_ACTIVITY         = 100;</div><div class="line">   public static final int PAUSE_ACTIVITY          = 101;</div><div class="line">   public static final int PAUSE_ACTIVITY_FINISHING= 102;</div><div class="line">   public static final int STOP_ACTIVITY_SHOW      = 103;</div><div class="line">   public static final int STOP_ACTIVITY_HIDE      = 104;</div><div class="line">   public static final int SHOW_WINDOW             = 105;</div><div class="line">   public static final int HIDE_WINDOW             = 106;</div><div class="line">   public static final int RESUME_ACTIVITY         = 107;</div><div class="line">   public static final int SEND_RESULT             = 108;</div><div class="line">   public static final int DESTROY_ACTIVITY        = 109;</div><div class="line">   public static final int BIND_APPLICATION        = 110;</div><div class="line">   public static final int EXIT_APPLICATION        = 111;</div><div class="line">   public static final int NEW_INTENT              = 112;</div><div class="line">   public static final int RECEIVER                = 113;</div><div class="line">   public static final int CREATE_SERVICE          = 114;</div><div class="line">   public static final int SERVICE_ARGS            = 115;</div><div class="line">   public static final int STOP_SERVICE            = 116;</div><div class="line"></div><div class="line">   public static final int CONFIGURATION_CHANGED   = 118;</div><div class="line">   public static final int CLEAN_UP_CONTEXT        = 119;</div><div class="line">   public static final int GC_WHEN_IDLE            = 120;</div><div class="line">   public static final int BIND_SERVICE            = 121;</div><div class="line">   public static final int UNBIND_SERVICE          = 122;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>ActivityThread</code>通过<code>ApplicationThread</code>和<code>AMS</code>进行进程间通信, <code>AMS</code>以进程间通信的方式完成<code>ActivityThread</code>的请求后回调<code>ApplicationThread</code>中的<code>Binder()</code>方法, 然后<code>Application</code>会向<code>H</code>发送消息, <code>H</code>收到消息后会将<code>ApplicationThread</code>中的逻辑切换到<code>ActivityThread</code>中去执行, 即切换到主线程去执行, 这个过程就是主线程的消息循环模型.</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/09/06/android/books/《Android开发艺术探索》Chap10_Android消息机制/" data-id="cj78uk36o0000kbpj967nntwf" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/09/06/android/books/《Android开发艺术探索》Chap10_Android消息机制/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
     <article id="post-android/books/《Android开发艺术探索》Chap9_四大组件的工作过程" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
@@ -3047,256 +3247,6 @@
 
 
 
-    <article id="post-android/books/《Android开发艺术探索》Chap1_Activity生命周期和启动模式" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2017/09/05/android/books/《Android开发艺术探索》Chap1_Activity生命周期和启动模式/">《Android开发艺术探索》Chap1_Activity生命周期和启动模式</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2017/09/05/android/books/《Android开发艺术探索》Chap1_Activity生命周期和启动模式/">
-            <time datetime="2017-09-05T01:05:15.000Z" itemprop="datePublished">2017-09-05</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a>
-    </div>
-
-                        
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/android/">android</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <blockquote>
-<p>第一章: Activity的启动模式详解,与Intent-filter的匹配</p>
-<p>注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a></p>
-</blockquote>
-<p>blog相关代码(<a href="https://github.com/suzeyu1992/Notes_AndroidDevSeek" target="_blank" rel="external">https://github.com/suzeyu1992/Notes_AndroidDevSeek</a>)</p>
-<h2 id="Activity的生命周期"><a href="#Activity的生命周期" class="headerlink" title="Activity的生命周期"></a>Activity的生命周期</h2><p><img src="http://szysky.com/2016/08/01/Android%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%94%E8%AE%B001-Activity%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8C%E6%A8%A1%E5%BC%8F/activity_lifecycle.png" alt="img"></p>
-<ul>
-<li><strong>onCreate</strong>: 声明周期的第一个方法.做一些初始化的动作,例如setContentView</li>
-<li><strong>onRestart</strong>: 表示Activity重新启动.当界面从不可见变为可见时调用,场景Home键切换,从任务栈返回</li>
-<li><strong>onStart</strong>: 表示Activity正在被启动.Activity为理论可见(取决上层界面是否透明),但不是前台无法操作.</li>
-<li><strong>onResume</strong>: 表示Activity已经可见,并且为前台. 与onStart主要是前台后台,有无焦点的区别</li>
-<li><strong>onPause</strong>: 表示Activity正在停止. 做一些存储数据,停止动画操作.不能太耗时,这会影响新的Activity启动,onPause()必须先执行完,新Activity的onResume()才会执行.</li>
-<li><strong>onStop</strong>: 表示Activity即将停止,可以做稍微重量级的回收工作,同样不能太耗时.</li>
-<li><strong>onDestroy</strong>: 表示Activity即将被销毁. 可以做一些最终的资源释放</li>
-</ul>
-<p><strong>场景</strong> 当界面A打开界面B时的生命周期调用顺序: A的onPause()-&gt; B的onCreate() -&gt; B的onStart() -&gt; B的onResume() -&gt; A的onStop().</p>
-<ul>
-<li><code>onStart()</code>和<code>onStop()</code> 是针对Activity是否可见的角度回调</li>
-<li><code>onResume()</code>和<code>onPause()</code> 是针对Activity是否位于前台的角度回调的</li>
-</ul>
-<h2 id="异常情况下的生命周期"><a href="#异常情况下的生命周期" class="headerlink" title="异常情况下的生命周期"></a>异常情况下的生命周期</h2><h3 id="当系统配置发生改变的时候"><a href="#当系统配置发生改变的时候" class="headerlink" title="当系统配置发生改变的时候"></a>当系统配置发生改变的时候</h3><p><strong>Activity就会因为异常情况被销毁并重新创建.例如横竖屏切换,语言切换等.</strong></p>
-<p>当异常状态发生的时候. 在界面销毁前会调用<code>onSaveInstanceState()</code>进行当前界面的数据保存,如文本输入的数据,listView滚动的位置等. 在重建后会调用<code>onRestoreInstanceState()</code>进行因为异常重建的原始数据的恢复.</p>
-<p>准确的说<code>onSaveInstanceState</code>() 会在<code>onStop</code>()之前执行, 而onRestoreInstanceState会在onStart之后执行.</p>
-<p>当屏幕发生旋转时,声明周期调用过程如下:</p>
-<p><img src="http://szysky.com/2016/08/01/Android%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%94%E8%AE%B001-Activity%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8C%E6%A8%A1%E5%BC%8F/exceptionLife.png" alt="img"></p>
-<p>这里我们要清楚,当发生了异常情况下,系统会帮我们自动恢复大部分的数据,但是如果我们想要自己从异常中恢复.那么我们可以通过<code>onCreate()</code>和<code>onRestoreInstanceState()</code>中的参数<code>Bundle</code>来进行值得保存.</p>
-<ul>
-<li>当正常情况下onCreate中的<code>Bundle</code>类型参数是为<strong>null</strong>的. 而onRestoreInstanceState是不会被调用的.</li>
-<li>当异常发生后的重建,onCreate,onRestoreInstanceState都会被触发,并且其中的Bundle类型参数都不为<strong>null</strong></li>
-</ul>
-<h3 id="资源内存不足时低优先级的Activity被杀死"><a href="#资源内存不足时低优先级的Activity被杀死" class="headerlink" title="资源内存不足时低优先级的Activity被杀死"></a>资源内存不足时低优先级的Activity被杀死</h3><p>这种场景不好模拟,但是在存储和恢复的过程是与上面的过程一致的.</p>
-<p>关于Activity的优先级的高低</p>
-<ul>
-<li>前台Activity–正在和用户交互的Activity,优先级最高</li>
-<li>可见但是非前台Activity–比如Activity中弹出了一个对话框,导致Activity可见但是无法操作.</li>
-<li>后台Activity–已经被暂停的Activity,比如执行了onStop,优先级最低.</li>
-</ul>
-<h3 id="禁止异常重建Activity"><a href="#禁止异常重建Activity" class="headerlink" title="禁止异常重建Activity"></a>禁止异常重建Activity</h3><p>如果不想Activity重建.可以通过清单文件中对activity标签进行配置.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">android:configChanges=&quot;orientation|screenSize&quot;</div></pre></td></tr></table></figure>
-<p>当给一个Activity声明了上述的属性之后,当手机旋转的时候,activity不会重建,也就没有任何声明周期方法的回调, 但是会调用<code>onConfigurationChanged()</code>方法.</p>
-<ul>
-<li>orientation: 屏幕方向发生了改变,手机旋转</li>
-<li>screenSize: 屏幕的尺寸信息发生改变,此属性和编译版本有关系,当minSdkVersion和targetSdkVersion均低于13,此选项不会导致界面重启.如果高于那么会重启.</li>
-</ul>
-<p>所以这两个最好成对出现.</p>
-<p>日常开发中我们比较常用的<code>local</code>,<code>orientation</code>,<code>keyboardHidden</code>,<code>uiMode</code>. local为本地语言切换. uiMode界面模式发生切换,如夜间模式(API8中增加)</p>
-<h2 id="Activity的启动模式"><a href="#Activity的启动模式" class="headerlink" title="Activity的启动模式"></a>Activity的启动模式</h2><p>当我们打开的activity会被系统以任务栈的形式来存储起来.后进先出.当每一个任务栈为空的时候这个栈就会被回收</p>
-<ul>
-<li><strong>standard</strong>: 默认模式,就是新进入的压在已存在的界面之上.</li>
-<li><strong>singleTop</strong>: 栈顶复用模式.</li>
-<li><strong>singleTask</strong>: 栈内复用模式</li>
-<li><strong>singleInstance</strong>: 栈内单例模式</li>
-</ul>
-<p><strong>singleTop</strong></p>
-<p>如果新Activity已经位于任务栈的栈顶,那么此Activity不会被重新创建,同时<code>onNewIntent()</code>会被回调.</p>
-<p>如果使用此模式,那么在任务栈中栈顶到栈低为CBA的情况下,再次打开C,那么C界面的<code>onCreate()</code>和<code>onStart()</code>不会被调用,真正的调用时<code>onPause()</code>–&gt;<code>onNewIntent()</code>–&gt;<code>onResume()</code></p>
-<p><strong>singleTask</strong></p>
-<p>如果用栈内复用,当打开C时候,会查询所有的任务栈,如果有任务栈包含C,那么把这个任务栈移动到所有栈的首位,并清除掉这个栈内C到栈顶的其他Activity,最后调用C的<code>onNewIntent()</code>方法. 如果没有那就直接在<strong>所需任务栈</strong>的栈顶创建C的实例.</p>
-<p>这里由于singleTask默认具有clearTop的效果,所以会清除C以上activity的出栈. 这里和具体的启动模式有关.</p>
-<p><strong>所需任务栈</strong>: 和一个参数有关系,<code>TaskAffinity</code>.这个参数标识了一个Activity所需要的任务栈的名字,默认情况下所有的Activity的所需的任务栈的名字都为应用包名.</p>
-<p>这里我们可以通过命令<code>adb shell dumpsys activity</code>测试一下,打开顺序为<strong>MainActivity</strong>–&gt;<strong>ModeSingleTopArc</strong></p>
-<p>当我们不指定<code>taskAffinity</code>的所需栈的时候,查看任务栈的结果为:</p>
-<p><img src="http://szysky.com/2016/08/01/Android%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%94%E8%AE%B001-Activity%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8C%E6%A8%A1%E5%BC%8F/singletop_1.png" alt="img"></p>
-<p>如果指定了<code>taskAffinity</code> 这个时候任务栈的状况为:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;activity android:name=&quot;.launchmode.ModeSingleTaskAct&quot;</div><div class="line">          android:launchMode=&quot;singleTask&quot;</div><div class="line">          android:taskAffinity=&quot;.nishibendan&quot;/&gt;</div></pre></td></tr></table></figure>
-<p><img src="http://szysky.com/2016/08/01/Android%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%94%E8%AE%B001-Activity%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8C%E6%A8%A1%E5%BC%8F/singletop_2.png" alt="img"></p>
-<p>一般情况下<code>TaskAffinity</code>属性一般和<strong>singleTask</strong>启动模式或者<strong>allowTaskReparenting</strong>属性配对使用,其他情况下使用没有意义. 另外任务栈分为前台任务栈和后台任务栈,后台任务栈中的activity属于暂停状态,用户可以切换将后台调到前台.</p>
-<p><strong>singleInstance</strong></p>
-<p>这个模式是加强版的<strong>singleTask</strong>,除了<strong>singleTask</strong>具有的属性之外,还具有创建新栈的能力,这个栈只有这一个实例. 就是说如果假设EActivity没有被创建过,那么创建时,首先会创建一个新的任务栈,然后创建实例放入这个新的栈内,然后下一个实例不会和这个EActivity所属栈共存,会创建一个新的栈继续存放.</p>
-<h3 id="给Activity添加启动模式"><a href="#给Activity添加启动模式" class="headerlink" title="给Activity添加启动模式"></a>给Activity添加启动模式</h3><ol>
-<li>通过清单文件中<code>activity标签</code>添加<code>android:launchMode=&quot;singleTask|singleTop|singleInstance&quot;</code></li>
-<li>通过代码中startActivity(Intent)中的intent通过<code>addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)</code></li>
-</ol>
-<p><strong>优先级</strong> 代码设置优先于xml布局中的设置.</p>
-<p><strong>限定范围不同</strong></p>
-<ul>
-<li>xml无法直接为其设置<code>FLAG_ACTIVITY_CLEAR_TOP</code>.</li>
-<li>代码添加flag无法添加<code>singleInstance</code>模式.</li>
-</ul>
-<p>注意: 如果通过代码添加添加<code>Intent.FLAG_ACTIVITY_NEW_TASK</code>和xml中设置<code>singleTask</code>是不一样的.代码动态添加是没有<strong>clean_top</strong>的效果,看图:</p>
-<p><img src="http://szysky.com/2016/08/01/Android%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%94%E8%AE%B001-Activity%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8C%E6%A8%A1%E5%BC%8F/singleTask_3.png" alt="img"></p>
-<h3 id="Activity的Flags"><a href="#Activity的Flags" class="headerlink" title="Activity的Flags"></a>Activity的Flags</h3><ul>
-<li>影响启动模式的标识位: 可以设定Activity的启动模式</li>
-<li>影响运行时的标识位: 可以影响运行的Activity的运行状态</li>
-<li><code>FLAG_ACTIVITY_NEW_TASK</code>相对于xml中的<strong>singleTask</strong>,但是动态的时候需要给intent添加两个标志位,否则无法达到效果,如下</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">intent3.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);</div><div class="line">intent3.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);</div></pre></td></tr></table></figure>
-<ul>
-<li><code>FLAG_ACTIVITY_SINGLE_TOP</code>相对于xml中的<strong>singleTop</strong></li>
-<li><code>FLAG_ACTIVITY_CLEAR_TOP</code>在同一个任务栈中所有位于它上面的Activity都要出栈,此标志一般和singleTask一起出现. 如果启动模式为<code>standard</code>它连同上面的都要出栈,之后系统会创建一个新的实例放入栈顶.</li>
-</ul>
-<h2 id="IntentFilter匹配规则"><a href="#IntentFilter匹配规则" class="headerlink" title="IntentFilter匹配规则"></a>IntentFilter匹配规则</h2><ul>
-<li>显示调用: 需要指定组件信息如包名,类名.</li>
-<li>隐式调用: 不需要指定组件信息, Intent需要匹配目标组件IntentFilter中所设置的过滤信息即可.</li>
-</ul>
-<p>IntentFilter的过滤信息有<strong>action</strong>,<strong>category</strong>,<strong>data</strong>. 一个Activity可以有多个Intentfilter,只要intent能匹配任意一组intent-filter即可成功启动.</p>
-<p>关于每一项的具体匹配规则</p>
-<ul>
-<li><strong>action</strong>: 本身是字符串. Intent匹配中存在action且必须和过滤规则中的其中一个action相同,那么action就算匹配ok. <strong>xml中必须有一个action声明</strong>.</li>
-<li><strong>category</strong>: 本身是字符串.Intent匹配中intent可以不存在category,但是如果添加了category那么必须要和定义的<code>intent-filter</code>中的category一致,否则失败. 如果我们在Intent不添加的时候,那么系统会自动为我们添加一个预定义的属性<code>android.intent.category.DEFAULT</code>. <strong>xml中需添加这个默认的category属性</strong>.</li>
-<li><strong>data</strong>: <strong>xml过滤规则中可以不声明</strong>,如果声明只要匹配了一个就可以.一般情况下data有两部分组成mimeType和URI. mimeType指媒体类型,URI规则如下:</li>
-</ul>
-<p><code>&lt;scheme&gt;://&lt;host&gt;:&lt;port&gt;/[path]</code></p>
-<p>如下实例: scheme:表示URI的模式,例如http, file, content.</p>
-<p><code>http://www.baidu.com:80/search/info</code></p>
-<p>最简单的隐式打开</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">//代码中</div><div class="line">Intent intent = new Intent();</div><div class="line">intent.setAction(&quot;com.test1&quot;);</div><div class="line">startActivity(intent);</div><div class="line"></div><div class="line">//xml中</div><div class="line">&lt;activity android:name=&quot;.intentfilter.FilterAct&quot;&gt;</div><div class="line">  &lt;intent-filter&gt;</div><div class="line">      &lt;action android:name=&quot;com.test1&quot;/&gt;</div><div class="line">      &lt;category android:name=&quot;android.intent.category.DEFAULT&quot;/&gt;</div><div class="line">  &lt;/intent-filter&gt;</div><div class="line">&lt;/activity&gt;</div></pre></td></tr></table></figure>
-<p>一个比较完整的匹配代码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">//代码中</div><div class="line">  Intent intent = new Intent();</div><div class="line">  intent.setAction(&quot;com.test1&quot;);</div><div class="line">  intent.addCategory(&quot;com.category1&quot;);</div><div class="line">//intent.setDataAndType(Uri.parse(&quot;content://&quot;),&quot;audio/plain&quot;);//如果过滤规则中没有声明URI的属性,那么会有默认值content和file的属性</div><div class="line">  intent.setDataAndType(Uri.parse(&quot;http://&quot;),&quot;audio/plain&quot;);</div><div class="line">  startActivity(intent);</div><div class="line"></div><div class="line">//xml中</div><div class="line">&lt;activity android:name=&quot;.intentfilter.FilterAct&quot;&gt;</div><div class="line">  &lt;intent-filter&gt;</div><div class="line">      &lt;action android:name=&quot;com.test1&quot;/&gt;</div><div class="line">      &lt;action android:name=&quot;com.test2&quot;/&gt;</div><div class="line"></div><div class="line">      &lt;category android:name=&quot;com.category1&quot;/&gt;</div><div class="line">      &lt;category android:name=&quot;com.category2&quot;/&gt;</div><div class="line">      &lt;category android:name=&quot;android.intent.category.DEFAULT&quot;/&gt;</div><div class="line"></div><div class="line">      &lt;data android:mimeType=&quot;text/plain&quot;/&gt;</div><div class="line">      &lt;data android:mimeType=&quot;audio/plain&quot; android:scheme=&quot;http&quot;/&gt;</div><div class="line">  &lt;/intent-filter&gt;</div><div class="line">&lt;/activity&gt;</div></pre></td></tr></table></figure>
-<p>在进行data属性匹配的时候尽量使用<code>setDataAndType</code>, 因为源码中<code>setData</code>和<code>setType</code>会把彼此属性置为null.</p>
-<p>Intent-filter匹配规则对于Service和BroadcastReceiver也是同样. 不过建议Service的使用尽量使用显示调用服务.</p>
-<h3 id="判断是否有匹配的Intent"><a href="#判断是否有匹配的Intent" class="headerlink" title="判断是否有匹配的Intent"></a>判断是否有匹配的Intent</h3><ul>
-<li>PackageManager的<code>resolveActivity()</code>方法</li>
-<li>Intent的<code>resolveActivity()</code>方法</li>
-</ul>
-<p>使用演示:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ResolveInfo resolveInfo = getPackageManager().resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);</div></pre></td></tr></table></figure>
-<p>参数二使用<code>PackageManager.MATCH_DEFAULT_ONLY</code>,意义在仅仅匹配哪些在<code>intent-filter</code>中声明<code>&lt;category android:name=&quot;android.intent.category.DEFAULT&quot;/&gt;</code>,只要使用这个标记不返回null,那么startActivity就一定可以打开. 如果不用这个标记就会把没有设置default的匹配出来.从而导致判断失败.<strong>因为不含有DEFAULT这个category的Activity是无法接收隐式Intent的</strong></p>
-<p>这样如果返回的为null,那就是没有匹配到,如果不为null那就是可以匹配.</p>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="http://yoursite.com/2017/09/05/android/books/《Android开发艺术探索》Chap1_Activity生命周期和启动模式/" data-id="cj76wq8o10000i9pj6gk3y6o0" class="article-share-link"><i class="fa fa-share"></i>Share</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-        <a href="http://yoursite.com/2017/09/05/android/books/《Android开发艺术探索》Chap1_Activity生命周期和启动模式/#comments" class="article-comment-link">Comments</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
     <nav id="page-nav">
         <a class="extend prev" rel="prev" href="/page/4/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/6/">Next &raquo;</a>
     </nav>
@@ -3341,8 +3291,8 @@
                     <li>
                         
                         <div class="item-inner">
-                            <p class="item-category"></p>
-                            <p class="item-title"><a href="/2017/09/20/android/github/glide解析2_执行流程/" class="title"></a></p>
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/glide/">glide</a></p>
+                            <p class="item-title"><a href="/2017/09/20/android/github/glide解析2_执行流程/" class="title">Glide解析2_执行流程</a></p>
                             <p class="item-date"><time datetime="2017-09-20T08:40:45.000Z" itemprop="datePublished">2017-09-20</time></p>
                         </div>
                     </li>
@@ -3365,7 +3315,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">categories</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">41</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/glide/">glide</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">2</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">43</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/glide/">glide</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -3374,7 +3324,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">archives</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">51</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">52</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
         </div>
     </div>
 
@@ -3383,7 +3333,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">tags</h3>
         <div class="widget">
-            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">36</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">37</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -3392,7 +3342,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">tag cloud</h3>
         <div class="widget tagcloud">
-            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 14.29px;">code</a> <a href="/tags/git/" style="font-size: 11.43px;">git</a> <a href="/tags/github/" style="font-size: 17.14px;">github</a> <a href="/tags/glide/" style="font-size: 12.86px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 12.86px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.43px;">markdown</a> <a href="/tags/mysql/" style="font-size: 15.71px;">mysql</a> <a href="/tags/node/" style="font-size: 18.57px;">node</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.43px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.43px;">设计模式</a>
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 16.67px;">code</a> <a href="/tags/git/" style="font-size: 11.67px;">git</a> <a href="/tags/github/" style="font-size: 18.33px;">github</a> <a href="/tags/glide/" style="font-size: 15px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 13.33px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.67px;">markdown</a> <a href="/tags/mysql/" style="font-size: 16.67px;">mysql</a> <a href="/tags/node/" style="font-size: 18.33px;">node</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.67px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.67px;">设计模式</a>
         </div>
     </div>
 

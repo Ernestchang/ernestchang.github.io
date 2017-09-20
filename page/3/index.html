@@ -157,7 +157,7 @@
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                72
+                73
                 <span>posts</span>
             </div>
             <div class="article-info-block">
@@ -210,6 +210,190 @@
 
             
             <section id="main">
+    <article id="post-android/books/《Android 编程实战》Chap5_重识IPC" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/09/12/android/books/《Android 编程实战》Chap5_重识IPC/">《Android 编程实战》Chap5_重识IPC</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/09/12/android/books/《Android 编程实战》Chap5_重识IPC/">
+            <time datetime="2017-09-11T23:54:53.000Z" itemprop="datePublished">2017-09-12</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/android/">android</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <blockquote>
+<p>阅读《Android 编程实战》一书的随记笔记<br>注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a></p>
+</blockquote>
+<h2 id="Binder简介"><a href="#Binder简介" class="headerlink" title="Binder简介"></a>Binder简介</h2><p><code>Android</code>有一个强大的功能, 就是能够在不同应用程序之间进行通信. 绝大部分的实现都是由<code>Binder IPC(Inter-Process Communication)</code>进行处理的.</p>
+<p><code>Android</code>中的<code>Binder</code>有着悠久的历史. 最终它的名字叫做<code>OpenBinder</code>, 是Be公司开发的Be操作系统(BeOS). 后来被移植到<code>Android</code>平台, 并且进行了重写以支持应用程序间的IPC. 基本上<code>Binder</code>提供了在不同执行环境间绑定功能和数据的特性. <code>Binder</code>非常适合在<code>Android</code>应用程序间进行通信, 因为每个<code>Android</code>应用程序都运行在自己的<code>Dalvik</code>虚拟机里, 而每个虚拟机又是独立的运行环境.</p>
+<blockquote>
+<p>在2009年, <code>Linux</code>社区就谷歌选择<code>Binder</code>而非选择<code>dbus</code>的原因有过很长时间的争论, 因为在此之前<code>Linux</code>内核一直使用<code>dbus</code>来实现IPC机制. 最开始开发<code>Android</code>时, <code>Binder</code>成了IPC的最佳选择, 如今它已成为<code>Android</code>系统的一个组成成分. <code>Linux</code>中的<code>dbus</code>机制也用在许多的<code>Android</code>设备上, 特别是为无线接口层(Radio Interface Layer, RIL)通信以及<code>Android 4.3</code>以后的蓝牙通信. 但大部分IPC还是<code>Binder</code>.</p>
+</blockquote>
+<p>使用<code>Binder IPC</code>进行通信时, 两个应用程序使用内核驱动来传递消息(如下图), 除了发送消息, <code>Binder</code>还提供了其他功能, 比如识别远程调用者(进程ID和用户ID), 以及当远程进程被烧死(<code>link-to-death</code>)时发送通知.</p>
+<p><img src="http://szysky.com/2016/09/28/%E3%80%8AAndroid-%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98%E3%80%8B05-%E9%87%8D%E8%AF%86-IPC/BinderIPC.png" alt="img"></p>
+<p>例如, 当<code>系统Service</code>(通过WindowManager管理Android所有窗口)为每个应用保持一个<code>Binder</code>引用时会调用这些附加函数, 当应用窗口关闭时会收到link-to-death通知.</p>
+<p><code>Binder</code>通信遵循<strong>客户端-服务端模式</strong>, 客户端使用客户端代理来处理与内核驱动程序的通信. 在服务器端, <code>Binder</code>框架维护了一系列<code>Binder线程</code>. 内核驱动会使用服务端的<code>Binder</code>线程把消息从客户端代理分发个接收对象. 这一点需要特别注意, 因为当通过Binder接收<code>Service</code>调用时, 他们并不会运行在应用程序的主线程上, 这样一来, 客户端连接远程Service的连接就不会阻塞应用的主线程.</p>
+<h3 id="Binder地址"><a href="#Binder地址" class="headerlink" title="Binder地址"></a>Binder地址</h3><p>使用<code>Binder</code>通信时, 客户端需要知道远程<code>Binder</code>对象的地址. 然而, <code>Binder</code>的设计要求只有实现类(比如要调用的Service)才知道该地址. 开发者使用<code>Intent</code>解析来进行寻址. 客户端使用<code>action</code><br>字符串或者组件名(componentName)来构造<code>Intent</code>对象, 然后使用它初始化于远程应用程序的通信. <code>Intent</code>只是实际<code>Binder</code>地址的抽象描述, 为了能够建立通信, 还需要翻译成实际的地址.</p>
+<p><code>ServiceManager</code>是一个特殊的<code>Binder</code>节点, 它运行在<code>Android</code>系统服务内, 管理所有的地址解析, 是唯一一个有全局地址的<code>Binder</code>节点. 因为所有的<code>Android组件</code>都是用<code>Binder</code>进行通信, 所以它们需要使用<code>ServiceManager</code>进行注册.</p>
+<p>客户端要想和<code>Service</code>或者其他组件进行通信, 需隐式地通过<code>Intent</code>查询<code>ServiceManager</code>来接收<code>Binder</code>地址.</p>
+<h3 id="Binder事务"><a href="#Binder事务" class="headerlink" title="Binder事务"></a>Binder事务</h3><p>在<code>Android</code>中, <strong>事务(transaction)</strong>是指一个进程发送数据到另一个进程. 在<code>Binder</code>上开启事务首先会在客户端调用<code>IBinder,transact()</code>, 然后<code>Service</code>收到<code>Binder.onTranscat()</code>方法回调.</p>
+<p>如下演示了在客户端如何使用<code>IBinder</code>引用向服务端执行自定义的<code>Binder</code>事务</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">public String performCustomBinderTransaction(IBinder binder, String arg0, int arg1) throws RemoteException &#123;</div><div class="line"></div><div class="line">   Parcel request = Parcel.obtain();</div><div class="line">   Parcel response = Parcel.obtain();</div><div class="line"></div><div class="line">   // 组装请求数据, 要发送到服务端的</div><div class="line">   request.writeString(arg0);</div><div class="line">   request.writeInt(arg1);</div><div class="line"></div><div class="line">   // 执行事务</div><div class="line">   binder.transact(IBinder.FIRST_CALL_TRANSACTION, request, response, 0);</div><div class="line"></div><div class="line">   // 从响应中读取结果</div><div class="line">   String result = response.readString();</div><div class="line"></div><div class="line">   // 释放资源, 以便循环利用</div><div class="line">   request.recycle();</div><div class="line">   response.recycle();</div><div class="line"></div><div class="line">   return result;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>而服务端会实现一个继承<code>Binder</code>类, 通过<code>onTransact()</code>来接收客户端的数据, 如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">public class ServerBinder extends Binder &#123;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    protected boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException &#123;</div><div class="line">//        return super.onTransact(code, data, reply, flags);</div><div class="line"></div><div class="line">        // 开始读取客户端发送的请求数据</div><div class="line">        String arg0 = data.readString();</div><div class="line">        int arg1 = data.readInt();</div><div class="line"></div><div class="line">        // 处理接收结果, 并生成返回的数据</div><div class="line">        String result = buildResult(arg0, arg1);</div><div class="line"></div><div class="line">        // 把结果写入想用Parcel</div><div class="line">        reply.writeString(result);</div><div class="line"></div><div class="line">        // 成功后返回true</div><div class="line">        return true;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private String buildResult(String arg0, int arg1)&#123;</div><div class="line">        String result = null;</div><div class="line"></div><div class="line">        // ...这里省略业务逻辑, 以后可自行添加</div><div class="line"></div><div class="line">        return result;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>如上, 因为属于作为远程服务端中实现自定义的<code>Binder</code>对象时没有使用<code>AIDL</code>. 所以这里需要自己处理<code>onTransact()</code>方法.</p>
+<p>上面两个代码通过<code>Binder IPC</code>进行的同步双向调用. 也可在客户端执行单项的调用, 只需在客户端发送事务的方法进行相应更改即可, 如<code>IBinder.transact()</code>方法调用中把标识位设置为<code>FLAG_ONEWAY</code>, 这样就可以把第二个<code>Parcel</code>参数设置为null. 单项调用会提供更好的性能, 因为只需对一个<code>Parcel</code>对象进行编解码操作.</p>
+<p>当然这里只是让其了解一下流程, 当真正实现进程间通信, 或者提供其他应用调用的API的时候不会直接操作这种底层的方式在两个程序之间执行事务, 而是使用对这种事务进行进一步封装的<code>AIDL</code>或者<code>Messenger</code>等.<br>而对于更细粒度地控制数据如何应用间发送, 使用底层binder操作事务这是正确的.</p>
+<h3 id="Parcel"><a href="#Parcel" class="headerlink" title="Parcel"></a>Parcel</h3><p><code>Binder</code>事务通常会传递事务数据, 这种数据被称为<code>Parcel</code>(包裹).</p>
+<p><code>Android</code>中的<code>Parcel</code>和<code>Java SE</code>中序列化对象类似, 不同之处在于, 开发者需要使用<code>Parcelable</code>接口实现对象的编解码工作. 该接口定义了两个编写<code>Parcel</code>对象的方法, 以及一个静态的不可被复写的<code>Creator</code>对象, 该对象用来从<code>Parcel</code>中读取相应的对象.</p>
+<h3 id="link-to-death"><a href="#link-to-death" class="headerlink" title="link to death"></a>link to death</h3><p><code>Binder</code>的另一个特点, 允许客户端在<code>Service</code>终止的时候收到通知. 这就被称为<code>link to death</code>.</p>
+<p><code>Binder</code>的<code>IBinder.linkToDeath()</code>方法实现了该机制. 当客户端在<code>onServiceConnected()</code>方法中收到<code>IBinder</code>对象, 它可以用实现了<code>IBinder.DeathRecipient</code>接口的参数调用<code>linkToDeath()</code>方法. 因为<code>Android</code>可能在资源不足的(RAM)时被系统杀死, 在客户端注册远程被终止的监听通知会很有用.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"> /*</div><div class="line">  * ClassDescription: 无实际意义, 只为演示如何使用IBinder注册link-to-death</div><div class="line">  */</div><div class="line">public class LinkToDeathSample extends Service &#123;</div><div class="line"></div><div class="line">    private static final String TAG = LinkToDeathSample.class.getSimpleName();</div><div class="line"></div><div class="line"></div><div class="line">    /**</div><div class="line">     *  对客户端提供注册方法</div><div class="line">     */</div><div class="line">    private void notifyRemoteServiceDeath(IBinder iBinder )&#123;</div><div class="line">        try &#123;</div><div class="line">            iBinder.linkToDeath(new MyLinkToDeath(), 0);</div><div class="line">        &#125; catch (RemoteException e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    class MyLinkToDeath implements IBinder.DeathRecipient&#123;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public void binderDied() &#123;</div><div class="line">            // 处理远端binder被杀死的情况</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Nullable</div><div class="line">    @Override</div><div class="line">    public IBinder onBind(Intent intent) &#123;</div><div class="line">        return null;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>也可以调用<code>IBinder.pingBinder()</code>检查远端的<code>Binder</code>进程是否处于活动状态. 如果结果为true, 表明远端的进程处于活跃可用的状态.</p>
+<p>如果绑定到的是<code>Service</code>那么就不需要监听了, 因为断开连接时总会是伴随着<code>ServiceConnection.onServiceDisconnected()</code>函数被回调. 但是, 如果使用其他方式接受<code>Binder</code>对象, 该方法可能就有用处了.</p>
+<h2 id="设计API"><a href="#设计API" class="headerlink" title="设计API"></a>设计API</h2><p>虽然大多数的应用都不需要为第三方应用提供API, 但是说不定哪一天领导就突发奇想的想要这个结果.</p>
+<p>可以使用<code>Service</code>或者<code>ContentProvider</code>为第三方应用开发API. 这里先介绍使用<code>Service</code>提供API. 在后续的篇幅会展示如何使用<code>ContentProvider</code>. 当实现API是, 开发者还需要考虑的因素: 是否需要处理并发请求? 每次只处理一个客户端请求是否足够? API是否只包含一个或是很少的操作? 或者是一组更加复杂的方法? 这些问题的答案将决定实现远程API最合适的方法.</p>
+<p>另一个问题考虑的细节是否与其他开发者分享该API? 或者只是用于自己的应用? 如果是第一种情况 , 可以考虑构建一个库工程, 使用易于使用的Java API包装客户端的实现. 如果只是自己使用API, 那么可以使用<code>Messenger</code>或者<code>AIDL</code>, 下面我们将针对这两个使用展开.</p>
+<h3 id="AIDL"><a href="#AIDL" class="headerlink" title="AIDL"></a>AIDL</h3><p>在软件工程中, <strong>接口定义语言</strong>(Interface Definition Language,IDL)已经成为通用的术语. 是用来描述软件组件接口的特定语言. 在<code>Android</code>中, 该<code>IDL</code>被称为<code>Android接口定义语言(AIDL)</code>. 它是纯文本文件, 使用Java类似语法编写. 但是, 编写Java接口和编写AIDL文件还有所有不同:</p>
+<ul>
+<li>首先, 对所有的非原始数据类型参数, 需要指定如下三种类型方向指示符之一:<code>in</code>, <code>out</code>, <code>inout</code>.<code>in</code>类型方向指示符只用于输入, 客户端不会看到<code>Service</code>对对象的修改. <code>out</code>类型表明输入对象不包含相关的数据, 但会由<code>Service</code>生成相关的数据. <code>inout</code>类型是上面两种类型的结合. 切记只使用需要的类型, 因为每种类型都有相应的消耗.</li>
+<li>所有用于通信的自定义都需要创建一个<code>AIDL</code>文件, 用来声明该类实现了<code>Parcelable</code>接口.</li>
+</ul>
+<p>整理一下步骤:</p>
+<ol>
+<li>首先创建<code>AIDL</code>文件, 为了客户端和服务端后续的使用. <a href="https://github.com/suzeyu1992/AndroidProgrammingPushingTheLimits/commit/592cd9ef1db38fc768e5defe87be6bc7c50f1801" target="_blank" rel="external">参考链接</a> 注意: 在<code>IMyApiInterfaceV1.aidl</code>文件中对<code>CustomData</code>进行了手动的<code>import</code>导入, 并且当作为参数传递的时候使用了<strong>方向指示符</strong>,因为只有原始数据类型才不需要<strong>方向指示符</strong>,因只调用其值.(有一个<code>CustomData</code>在下次参考链接中可以看到, 应该属于这一个步骤的)</li>
+<li>然后对客户端服务端进行代码实现. <a href="https://github.com/suzeyu1992/AndroidProgrammingPushingTheLimits/commit/2aa6da78376f33ac4aa3ad2f386c388ade0d6e0c" target="_blank" rel="external">参考链接</a>. 现在客户端就可以利用<code>Binder</code>调用远程的服务实现的<code>IBinder</code>方法. <strong>注意:</strong>一旦客户端实现了代码, 那么就不要在修改或者移除AIDL文件中的方法. 可以在文件末尾添加新的方法, 因为AIDL编译器会为每一个方法生成标识符, 所以不能修改现存的方法, 否则不能向后兼容老版本. 这个方法使用AIDL的缺点就是如上. 解决方案中的一种方法就是提供Java包装类, 并以库工程或者.jar文件的形式发布一遍使用. 后续会说道.</li>
+<li>现在可以考虑是否需要对客户端进行回调. 如果需要,那么相同的步骤创建<code>AIDL</code>接口文件. 并在客户端实现接口文件. 在服务端使用的<code>AIDL</code>文件中添加新的方法, 这个方法用来在服务端注册一个客户端回调. 客户端的回调通过方法的参数传入, 并在客户端获取远程服务端的<code>Binder</code>对象进行注册方法调用.<a href="https://github.com/suzeyu1992/AndroidProgrammingPushingTheLimits/commit/7e75d4d7b8aa27521952dac87b5fe3d951b5e5b1" target="_blank" rel="external">参考链接</a></li>
+</ol>
+<p>关于客户端实现AIDL文件的时候, 在使用了<code>oneway</code>关键字, 这会告诉AIDL编译器该接口只是单向通信. 对调用者(本类中的Service)的响应不是必须的. 这样做会轻微的性能提升. 例如:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">package com.szysky.note.ipc.aidl;</div><div class="line"></div><div class="line">import com.szysky.note.ipc.aidl.CustomData;</div><div class="line"></div><div class="line">oneway interface IMyAidlCallback &#123;</div><div class="line">  void onDataUpdated(in CustomData[] data);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>到这里, 说明了两个应用之间传输Binder对象, 而不需要使用<code>ServiceManager</code>注册它. 由于只有客户端和<code>Service</code>知道<code>Binder</code>的地址, 因此它可以作为一种高效的IPC安全机制.</p>
+<h3 id="Messenger"><a href="#Messenger" class="headerlink" title="Messenger"></a>Messenger</h3><p>使用<code>Messenger</code>进行远程通信, 有时会更简单, 当然使用场景是<strong>Service不需要支持并发操作时就可以选择使用Messenger信使来跨进程通信</strong>. <code>Messenger</code>使用<code>Handler</code>执行每个传入的消息, 所有的客户端的调用按顺序运行在同一个线程上.</p>
+<ul>
+<li><strong>服务端的实现</strong>: 在<code>onCreate()</code>中构建<code>Messenger</code>, 然后在<code>onBind()</code>中返回<code>Binder</code>对象. 当<code>Messenger</code>接收到消息的时候, 它可以使用在<code>replyTo</code>成员变量里的Messenger对象响应客户端都请求.<a href="https://github.com/suzeyu1992/AndroidProgrammingPushingTheLimits/commit/8833697273dc9bb0cda6850d76c82b1ffcc2d47b" target="_blank" rel="external">参考链接</a></li>
+<li><strong>客户端的实现</strong>: 为了可以在服务端响应回来数据, 在<code>onCreate()</code>方法中, 同样构建一个<code>Messenger</code>作为客户端的信使. 然后在<code>onResume()</code>进行服务绑定, 在<code>ServiceConnection#onServiceConnected()</code>回调中通过获取的<code>IBinder</code>来还原出服务端的<code>Messenger</code>. 然后就可以调用其<code>send(Message)</code>方法向远程发送消息. 当然参数中的<code>Message</code>需要新建一个. 如果要做到回应客户端那么使用<code>Message.replyTo=本地Messenger实例</code>, 这样就可以在客户端构建的Messenger时传入的<code>Handler.callback()</code>接收处理.<a href="https://github.com/suzeyu1992/AndroidProgrammingPushingTheLimits/commit/4b0f94b6a39a09e0a67784f8476ac839c13d1ed7" target="_blank" rel="external">参考链接</a></li>
+</ul>
+<p>这种方法和<code>IntentServiec</code>很相似, 但本例没有使用<code>Intent</code>, 而是使用<code>Message</code>触发<code>Handler</code>的操作. 此外, <code>Messenger</code>实现异步通信很方便, 并且也不需要使用<code>BroadcastReceiver</code>.</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/09/12/android/books/《Android 编程实战》Chap5_重识IPC/" data-id="cj7hnife1001d6opjiaoxcjhq" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/09/12/android/books/《Android 编程实战》Chap5_重识IPC/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
     <article id="post-android/books/《Android 编程实战》Chap4_手势操作进阶, 重识Service" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
@@ -2381,460 +2565,6 @@
 
 
 
-    <article id="post-android/books/《Android编程权威指南》Chap1_ 零散整理" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2017/09/07/android/books/《Android编程权威指南》Chap1_ 零散整理/">《Android编程权威指南》Chap1_ 零散整理</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2017/09/07/android/books/《Android编程权威指南》Chap1_ 零散整理/">
-            <time datetime="2017-09-07T09:44:18.000Z" itemprop="datePublished">2017-09-07</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a>
-    </div>
-
-                        
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/android/">android</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <blockquote>
-<p>这本书属于入门, 有很多内容可以当做扩展来了解一些API, 并且有的时候可以适当的利用Google提供好的API来做一些高效开发节约时间成本. 原理东西本书偏少. 不过可以学习本书中的代码的编写风格, 书中代码都是采用<strong>MVC</strong>模型来编写的. 就写这么多, 下面开始整理一些小知识点.<br>注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a></p>
-</blockquote>
-<h2 id="Activity的生命周期"><a href="#Activity的生命周期" class="headerlink" title="Activity的生命周期"></a>Activity的生命周期</h2><p>有7种分别为: 除去<code>onRestart()</code>比较特殊一点的生命周期. 可以把<code>activity</code>认为分别在<strong>3种状态</strong>切换, 分别是<code>运行, 暂停, 停止</code>.</p>
-<h2 id="配置文件改变导致Activity重建-如屏幕旋转"><a href="#配置文件改变导致Activity重建-如屏幕旋转" class="headerlink" title="配置文件改变导致Activity重建,如屏幕旋转"></a>配置文件改变导致Activity重建,如屏幕旋转</h2><p><strong>设备配置(device configuration)</strong>是用来描述设备当前状态的一系列特征. 这些特征包括<strong>屏幕的方向, 手机语言, 屏幕的密度, 屏幕的尺寸, 键盘类型, 底座模式等</strong></p>
-<p>在开发中有时候需要为了匹配不同的设备配置, 我们会提供多套副本文件. 比如说:</p>
-<ul>
-<li>图片放在不同的<code>dpi</code>密度的文件夹下;</li>
-<li>适应手机的横竖屏创建不同的文件夹并编写不同展示风格的xml布局放入.</li>
-<li>创建不同语言的<code>strings</code>文件. 来实现语言国际化</li>
-<li>…..</li>
-</ul>
-<p>这里列举一下创建<strong>水平模式下加载另一个布局文件</strong>, 在<code>res/</code>资源文件夹下创建一个<code>layout-land</code>目录, 创建一个与<code>layout</code>文件夹中布局文件<code>名称相同</code>的xml. 然后编写想在横屏时候需要显示的布局.</p>
-<p>其实当手机处于<strong>横屏的时候</strong>需要加载资源文件. 这个时候系统首先查找开发者是否创建对应横屏的文件夹就是<code>layout-land</code>,如果有. 那么继续查找资源ID所对应的文件是否存在. 如果存在那么就加载这个文件. 如果没有就从<code>layout</code>文件夹中加载默认的文件(layout文件夹优先级基本上是最低的)</p>
-<h2 id="异常重建时Activity的数据保存"><a href="#异常重建时Activity的数据保存" class="headerlink" title="异常重建时Activity的数据保存"></a>异常重建时Activity的数据保存</h2><p>由于本地手机的配置文件的改变, 如屏幕旋转造成了<code>Activity</code>的重建. 这个时候就会导致已经实例对象或者属性赋值全部丢失.</p>
-<p>利用<code>onSaveInstanceState(Bundle)</code>一般会在<code>onPause()</code>之后被调用. 把要存储的数据添加到<code>onSaveInstanceState()</code>的参数类型为<code>Bundle</code>的参数中. 然后当销毁后的重建时, 会在<code>onCreate()</code>方法中会传回一个<code>Bundle</code>类型的对象. 可以取出. 如果不是异常销毁重建那么默认情况下<code>onCreate()</code>回调方法带回的<code>Bundle</code>类型的参数是为<code>null</code>的.</p>
-<h2 id="SDK版本小解和兼容处理"><a href="#SDK版本小解和兼容处理" class="headerlink" title="SDK版本小解和兼容处理"></a>SDK版本小解和兼容处理</h2><ul>
-<li><strong>SDK最低版本:</strong> 当应用安装的时候, 手机会检测如果本身系统等级如果低于应用指定的最低版本那么应用无法安装.</li>
-<li><strong>SDK目标版本</strong> 应用是设计给哪个API级别去运行的. 大多数情况下, 目标版本即最新发步的Android版本.</li>
-<li><strong>SDK编译版本</strong> <code>Compile</code>. 前两个是通知手机设备的. 而这个属性是告知<code>Android Studio</code>编译器使用哪一个SDK版本进行代码编译.</li>
-</ul>
-<hr>
-<p>有时候我们可能会使用高版本的API. 但是有可能手机的版本会低于这个API的出现版本. 这个时候就需要在代码中进行逻辑判断分支.</p>
-<ul>
-<li><code>Build.VERSION.SDK_INT:</code>代表了当前运行的Android手机的版本号.</li>
-</ul>
-<p>通过判断当前手机的版本号, 这样就可以针对不同的场景进行分支处理.</p>
-<h2 id="XML布局属性"><a href="#XML布局属性" class="headerlink" title="XML布局属性"></a>XML布局属性</h2><p><strong>样式,主题, 主题属性</strong></p>
-<p><strong>样式(style)</strong>是xml资源文件, 含有用来描述组件行为和外观的属性定义的集合. 例如在<code>res/valus/styles.xml</code>中声明如下样式.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;style name=&quot;BigTextStyle&quot; &gt;</div><div class="line">   &lt;item name=&quot;android:textSize&quot;&gt;20sp&lt;/item&gt;</div><div class="line">   &lt;item name=&quot;android:layout_margin&quot;&gt;5dp&lt;/item&gt;</div><div class="line">&lt;/style&gt;</div></pre></td></tr></table></figure>
-<p>在以后的所有大的文字控件<code>textView</code>,<code>button</code>.都可以直接引入一个<code>style</code>属性. 当重复的属性越多, 使用的控件也越多, 这种好处是不言而喻的.</p>
-<hr>
-<p><strong>主题(theme)</strong></p>
-<p>Android自带了一些供应使用的预定义平台主题. 例如:<code>android:theme=&quot;@style/Theme.AppCompat.Light&quot;</code>.</p>
-<p>引用主题属性:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;TextView</div><div class="line">  android:layout_width=&quot;match_parent&quot;</div><div class="line">  android:layout_height=&quot;wrap_content&quot;</div><div class="line">  style=&quot;?android:listSeparatorTextViewStyle&quot;/&gt;</div></pre></td></tr></table></figure>
-<p>例如这样后, 你会发现<code>textView</code>会带有<strong>margin</strong>,<strong>字体颜色</strong>,<strong>加粗</strong>等一些属性. 这就在一些场合很方便的设置了一些属性. 并且也能达到我们看着不那么丑的需求.</p>
-<hr>
-<p><strong>dp, sp</strong></p>
-<ul>
-<li><code>dp (density-independent):</code>一般用于设置控件宽高和<code>margin</code>,<code>padding</code>. dp值代表的实际长度与手机的<strong>屏幕分辨率</strong>和<strong>屏幕尺寸</strong>没有直接关系,但是有间接关系. 是这样. 根据<strong>屏幕的分辨率</strong>和<strong>屏幕尺寸</strong>会得到一个<strong>屏幕的像素密度</strong>. 根据这个屏幕像素密度来决定1dp在当前设备代表着几个像素点.</li>
-<li><code>sp (scale-independent pixel):</code>. 主要用于字体. 和dp相似会根据手机的密度来动态的选择对应的大小. 但是有一点不同. 这种像素会受<strong>手机字体的偏好设置而改变</strong></li>
-</ul>
-<hr>
-<p><strong>布局参数</strong></p>
-<p>对于资源文件xml中标签的属性<code>android:layout_width</code>,<code>android:layout_margin</code>,<code>android:text</code>等等, 为什么有的属性前面有<strong>layout</strong>开头, 而有的没有呢.</p>
-<p>其实名称<strong>以layout_</strong>来头的属性是作用于组件的<strong>父组件</strong>. 我们将这些属性统称为<strong>布局参数</strong>. 它们会告知父布局如何在内部安排自己的子元素.</p>
-<p>而<strong>不以layout_开头</strong>的属性是作用于组件的. 组件生成时, 会调用某个方法按照属性即属性值进行自我配置.</p>
-<hr>
-<p><strong>外边距于内边距</strong></p>
-<p>根据上面的结论, 应该就可以看出<code>layout_margin</code>,<code>padding</code>这两个属性. 一个是作用父布局一个是作用在自己身上的. 所以在自定义<strong>ViewGroup</strong>的时候不仅要获取子孩子的宽高还要获取<code>margin</code>这样才能正确的布局. 而在自定义<code>View</code>的时候我们往往要兼顾到padding这个属性. 不然设置<code>padding</code>的属性就会无效果.</p>
-<h2 id="ViewPager简单介绍"><a href="#ViewPager简单介绍" class="headerlink" title="ViewPager简单介绍"></a>ViewPager简单介绍</h2><p><code>ViewPager</code>在某种程度上有点类似于<code>AdapterView(ListView的超类)</code>. <code>AdapterView</code>需借助于Adapter才能提供视图. 所以同样的<code>ViewPager</code>也需要<code>PagerAdapter</code>的支持.</p>
-<p><code>ViewPager</code>可能开发中用的很多. 在使用<code>ViewPager</code>作为一个<code>fragment</code>容器的时候. <code>FragmentManager</code>要求其容器视图必须<strong>具备id属性</strong>. 所以如果是代码中动态的创建ViewPager.那么别忘了设置id属性, 如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">protected void onCreate(@Nullable Bundle savedInstanceState) &#123;</div><div class="line">        super.onCreate(savedInstanceState);</div><div class="line">        //  动态创建ViewPager并设置到setContent</div><div class="line">        mViewPager = new ViewPager(getApplicationContext());</div><div class="line">        // 如果需要对Fragment进行托管, 那么要求其容器视图必须具备资源ID</div><div class="line">        mViewPager.setId(R.id.vp_main);</div><div class="line">        setContentView(mViewPager);</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">// 在res/values/ids.xml 没有可以新建一个,为了创建独立资源id</div><div class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</div><div class="line">&lt;resources&gt;</div><div class="line">    &lt;item name=&quot;vp_main&quot; type=&quot;id&quot;/&gt;</div><div class="line">&lt;/resources&gt;</div></pre></td></tr></table></figure>
-<p>这样就可以实现动态添加<code>ViewPager</code>并作为<code>Fragment</code>的容器了.</p>
-<hr>
-<p>由于直接通过<code>PagerAdapter</code>派生出子类有很多场景步骤过于复杂. 我们可以根据具体作用场景来选择其子类来作为ViewPager的适配器.比如说<code>FragmentStatePagerAdapter</code></p>
-<p>实现很简单如下: 复写两个方法就可以</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">// 在fragment中的onCreate()中直接设置就可以</div><div class="line">// 利用ViewPager的子类 FragmentStatesPagerAdapter可以简单的处理并是实现</div><div class="line">// 当使用fragment 还有一个选择FragmentPagerAdapter 两者的区别是在卸载不再需要的fragment的时候有所不同</div><div class="line">// FragmentPagerAdapter创建的fragment只是有销毁视图的动作, 没有将其从FragmentManager里面删除</div><div class="line">FragmentManager fm = getSupportFragmentManager();</div><div class="line">mViewPager.setAdapter(new FragmentStatePagerAdapter(fm) &#123;</div><div class="line">            @Override</div><div class="line">            public Fragment getItem(int position) &#123;</div><div class="line">                //...相当于每个pager要展示的fragment.</div><div class="line"></div><div class="line">                return crimeFragment;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            @Override</div><div class="line">            public int getCount() &#123;</div><div class="line">                // 返回Pager页的大小</div><div class="line">                return mCrimes.size();</div><div class="line">            &#125;</div><div class="line">        &#125;);</div></pre></td></tr></table></figure>
-<p>可以看到当创建了<code>FragmentStatePagerAdapter(..)</code>传入了一个<code>FragmentManager</code>给其构造方法. 因为实际上<code>FragmentStatePagerAdapter</code>是我们的代理, 负责管理与<code>ViewPager</code>的对话并协同工作.代理需首先将<code>getItem()</code>方法返回的<code>Fragment</code>添加到<code>Activity</code>. 然后才能使用fragment完成自己的工作. 这也是需要传递<code>fm</code>的原因.</p>
-<p><strong>如果需要监听ViewPager的滑动事件</strong></p>
-<p>给ViewPager设置<code>setOnPageChangeListener()</code>注册一个回调监听, 里面有三个状态回调:</p>
-<ol>
-<li><code>onPageScrollStateChange</code>: 告知当前页面所处的行为是什么.</li>
-<li><code>onPageScrolled</code>: 告知当前显示的页面是哪个, 并且现在已经滑动导致的偏移距离是多少.</li>
-<li><code>onPageSelected</code>: 告知页面滑向了哪里.可以得知是在数据集合中的第几个Pager被显示出来了</li>
-</ol>
-<p><strong>关于FragmentStatePagerAdapter与FragmentPagerAdapter</strong></p>
-<p>主要区别就是: <strong>二者在卸载不再需要的fragment时,所采用的处理方式有所不同</strong></p>
-<ul>
-<li><code>FragmentStatePagerAdapter</code>: 会销毁不需要的<code>fragment</code>. 事务提交后, 可将<code>fragment</code>从<code>activity#FragmentManager</code>中彻底移除. 而类名中的<code>state</code>表明: 在销毁<code>Fragment</code>时, 他会将其<code>onSaveInstanceState()</code>方法中的<code>bundle</code>信息保存下来. 当用户切换回来的时候, 保存实例状态可用于恢复生成新的<code>fragment</code></li>
-<li><code>FragmentPagerAdapter</code>: 对于不再需要的<code>fragment</code>, 其对应的<code>FragmentManager</code>则选择调用事务的<code>detach(Fragment)</code>方法. 而非<code>remove(Fragment)</code>方法. 也就是说,<code>FragmentPagerAdapter</code>只是销毁了fragment的视图, 但仍将<code>fragment</code>实例保留在<code>FragmentManager</code>中</li>
-</ul>
-<p>而如何取决需要按场景来使用: <code>FragmentStatePagerAdapter</code>更节省内存. 如果需要展示的数据很多,如果使用<code>FragmentPageAdapter</code>那么会保存大量的信息, 并且占用很多空间就不是很合适.</p>
-<p>所以如果用户界面只需要<strong>少量固定</strong>的fragment. 那么使用<code>FragmentPagerAdapter</code>比较合适. 否则就反之使用<code>FragmentStatePagerAdapter</code>.</p>
-<h2 id="资源文件的配置与匹配"><a href="#资源文件的配置与匹配" class="headerlink" title="资源文件的配置与匹配"></a>资源文件的配置与匹配</h2><p>先看一下以下项目结构目录截图:</p>
-<p><img src="http://szysky.com/2016/09/07/%E3%80%8AAndroid%E7%BC%96%E7%A8%8B%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E3%80%8B%E9%9A%8F%E8%AE%B0%E4%B8%80/local_1.png" alt="img"></p>
-<p>有三个<code>value</code>文件夹, 第一个为我们的默认加载的<code>value</code>, 第二个为使用了<strong>横屏修饰符修饰声明</strong>, 第三个使用了<strong>指定语言修饰符声明</strong>. 里面都有一个<code>strings</code>文件夹看一下内容. 这里只拿<code>app_name</code>属性来说明测试, 三个文件都有此属性.</p>
-<p><img src="http://szysky.com/2016/09/07/%E3%80%8AAndroid%E7%BC%96%E7%A8%8B%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E3%80%8B%E9%9A%8F%E8%AE%B0%E4%B8%80/local_2.png" alt="img"></p>
-<p>具有不同的修饰符的<strong>同种功能的文件夹是具有不同优先级的</strong>. 还是以上面的图片为例子. 如果说在首页<code>Activity</code>引用了<code>app_name</code>这个字符串. 那么根据不同的场景会去加载不同的资源文件.</p>
-<ul>
-<li><strong>如果本地语言指定了中文:</strong> 那么就会加载<code>values-zh</code>文件中的资源(此文件夹的配置修饰符优先级在上面的三种场景最高).</li>
-<li><strong>如果本地语言非中文, 并且是横屏状态下:</strong> 那么会加载<code>values-land</code>文件中的资源</li>
-<li><strong>如果即没有指定为中文,也不是横屏状态下, 那么就加载默认的资源文件</strong> <code>values</code>文件夹</li>
-</ul>
-<p>可以看出来app加载资源文件的时候是按照一定优先级去加载的, 首先会先排除掉不兼容当前设备配置的资源目录. 如果有多个文件匹配那么高优先级的文件夹首先会检查当前手机环境对应的配置是否匹配(比如是否横屏,是否设置某种本地语言). 匹配成功之后就会加载对应的文件夹下的内容. 而低优先级的对应功能的文件夹不会再去加载. 但是如果发现匹配不成功或者成功之后没有找到对应的属性那么还会继续往低优先级的查找. 直到找到为止.</p>
-<p>所以可以看出一个属性值,最少要保证在资源文件中存在一份. 否则会出现加载错误, 并且需要处理好场景之间无值可选的问题.</p>
-<p>下面列出大部分具有配置修饰符的设备特征. 他们的优先级从高到低排列的</p>
-<table>
-<thead>
-<tr>
-<th>优先级(数值越低越高)</th>
-<th>特征说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td>移动国家码, 通常附有移动网络码</td>
-</tr>
-<tr>
-<td>2</td>
-<td>语言代码, 通常附有地区代码</td>
-</tr>
-<tr>
-<td>3</td>
-<td>布局方向</td>
-</tr>
-<tr>
-<td>4</td>
-<td>最小宽度</td>
-</tr>
-<tr>
-<td>5</td>
-<td>可用宽度</td>
-</tr>
-<tr>
-<td>6</td>
-<td>可用高度</td>
-</tr>
-<tr>
-<td>7</td>
-<td>屏幕尺寸</td>
-</tr>
-<tr>
-<td>8</td>
-<td>屏幕纵横比</td>
-</tr>
-<tr>
-<td>9</td>
-<td>屏幕方位</td>
-</tr>
-<tr>
-<td>10</td>
-<td>UI模式</td>
-</tr>
-<tr>
-<td>11</td>
-<td>夜间模式</td>
-</tr>
-<tr>
-<td>12</td>
-<td>屏幕显示密度</td>
-</tr>
-<tr>
-<td>13</td>
-<td>触摸屏类型</td>
-</tr>
-<tr>
-<td>14</td>
-<td>键盘可用性</td>
-</tr>
-<tr>
-<td>15</td>
-<td>首选输入法</td>
-</tr>
-<tr>
-<td>16</td>
-<td>导航键可用性</td>
-</tr>
-<tr>
-<td>17</td>
-<td>非文本导航方法</td>
-</tr>
-<tr>
-<td>18</td>
-<td>API级别</td>
-</tr>
-</tbody>
-</table>
-<p>资源文件夹也可以使用<strong>多重配置修饰符</strong>, 例如<code>values-zh-land</code>, 各修饰符必须按照优先级高低排序.否则无效. 例如<code>values-land-zh</code>就是无效的目录. 这里就不细说. 可在官网<strong>guide/topics/resources/providing-resources</strong>查看.</p>
-<hr>
-<p><strong>资源命名</strong></p>
-<p>资源的文件只能有小写字母组成并且不能包含空格.</p>
-<p>无论是在XML中还是在代码中引入资源, 引用都不包括文件的扩展名. 所以<strong>在同级目录下不能以文件的扩展名作为依据来区分命名相同的文件. 也不允许同级下名称相同扩展名不同的文件存在,在编译时候会报错</strong></p>
-<p><strong>布局文件命名</strong></p>
-<p>最好按文件名排序的声明文件名. 通常以其定义的视图类型名为前缀. 如<code>activity_</code>,<code>dialog_</code>,<code>list_item_</code>.这样查找分类就容易多了.</p>
-<p><strong>资源目录结构</strong></p>
-<p>所有的资源都应该保存在<code>res/</code>目录的子目录下, 常见的子目录有<code>drawable/</code>,<code>mipmap/</code>,<code>layout/</code>,<code>values/</code>,<code>raw/</code>, <code>menu/</code>等.</p>
-<p><code>Android</code>会无视<code>res/</code>目录下的其他子目录.</p>
-<h2 id="操作栏"><a href="#操作栏" class="headerlink" title="操作栏"></a>操作栏</h2><p>也可以认为是title bar. 说法很多. 如下</p>
-<p><img src="http://szysky.com/2016/09/07/%E3%80%8AAndroid%E7%BC%96%E7%A8%8B%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E3%80%8B%E9%9A%8F%E8%AE%B0%E4%B8%80/titlebar.png" alt="img"></p>
-<p>可显示在操作栏上的菜单被称作<strong>选项菜单</strong>, 选项菜单类似于<code>popupWind</code>.可以作为用户的扩展操作.</p>
-<p><strong>1.首先在XML文件中定义选项菜单</strong></p>
-<p><code>res/menu/</code>目录下创建一个xml. 根标签为<code>&lt;menu&gt;</code>如下</p>
-<p><img src="http://szysky.com/2016/09/07/%E3%80%8AAndroid%E7%BC%96%E7%A8%8B%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E3%80%8B%E9%9A%8F%E8%AE%B0%E4%B8%80/menu_1.png" alt="img"></p>
-<p>或者你可以这样</p>
-<p><img src="http://szysky.com/2016/09/07/%E3%80%8AAndroid%E7%BC%96%E7%A8%8B%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E3%80%8B%E9%9A%8F%E8%AE%B0%E4%B8%80/menu_2.png" alt="img"></p>
-<ul>
-<li><code>showAsAction</code>属性用于指定菜单选项是显示在操作栏上, 还是隐藏到<strong>溢出菜单</strong>中. 比如上图中的<code>app:showAsAction=&quot;ifRoom|withText&quot;</code>是一个组合属性. 代表着只要操作栏可用的控件足够,菜单项图标和文字描述都会显示在操作栏中. 这个属性值不设定的情况下默认是<strong>溢出菜单</strong>模式显示的. 如果空间仅够显示图片那么文字不会显示, 如果剩余空间即不够显示文字也不够显示图标, 那么菜单项会被转移隐藏到菜单中.</li>
-<li>上面这个属性值还有两个可设置项<code>always</code>和<code>never</code>. 不推荐使用<code>always</code>, 应尽量使用更方便的<code>ifRoom</code>属性值, 让操作系统系统决定如何显示菜单项. 对于那些很少用到的菜单项, 使用<code>never</code>是个不错的选择.</li>
-<li><code>icon:</code> 属性使用了系统的图标资源. 这个资源只存在于设备上.</li>
-</ul>
-<p><strong>2. 菜单文件创建完之后,就该代码设置了</strong></p>
-<p>首先<code>Activity</code>提供了管理选项菜单的回调函数. 在需要选项菜单的时候, <code>Android</code>会调用其<code>onCreateOptionsMenu()</code>方法.</p>
-<p>如果你使用的是<code>Fragment</code>那么也没关系因为<code>Fragment</code>也有同名的函数为你使用. 接下来以在<code>Fragment</code>为例说明.</p>
-<p>复写<code>onCreateOptionsMenu()</code>函数. 通过<code>inflate</code>进行填充布局到<code>menu</code>对象中. 如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) &#123;</div><div class="line">   // 为操作栏创建浮动的上下文菜单</div><div class="line">   mActivity.getMenuInflater().inflate(R.menu.crime_list_item_context, menu);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>然后在<code>Fragment#onCreate()</code>方法中添加一段代码 <code>setHasOptionsMenu(true);</code></p>
-<p><strong>说明:</strong> <code>Fragment#onCreateOptionsMenu()</code>方法是由<code>FragmentManager</code>负责调用的. 因此当<code>activity</code>接收到来自操作系统的<code>onCreateOptionsMenu()</code>方法回调请求时, 我们需要明确的告诉<code>FragmentManager</code>需接收选项菜单的方法回调.就是<code>setHasOptionsMenu()</code>.</p>
-<p>现在我们的选项菜单就已经可以显示出来.</p>
-<p><strong>3. 响应菜单选项选择的事件</strong></p>
-<p>既然添加了扩展功能的选项, 那么必定需要实现某些点击事件. 通过复写<code>onOptionsItemSelected()</code>来进行处理. 有于我们可能在<code>menu.xml</code>中声明了多个item. 为了区分点击的是哪一个. 可以通过id来识别不同的点击触发. 如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">    public boolean onOptionsItemSelected(MenuItem item) &#123;</div><div class="line">        switch (item.getItemId())&#123;</div><div class="line">            case R.id.menu_item_new_crime:</div><div class="line">                // 做一些想做的事情</div><div class="line">                return true;</div><div class="line"></div><div class="line">            case R.id.menu_item_show_subtitle:</div><div class="line">                //  设置操作栏的子标题</div><div class="line">                ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();</div><div class="line"></div><div class="line">                if (supportActionBar.getSubtitle() == null)&#123;</div><div class="line">                    supportActionBar.setSubtitle(sub_description);</div><div class="line">                    item.setTitle(R.string.hide_subtitle);</div><div class="line">                &#125;else&#123;</div><div class="line">                    supportActionBar.setSubtitle(null);</div><div class="line">                    item.setTitle(R.string.show_subtitle);</div><div class="line">                &#125;</div><div class="line"></div><div class="line">                return true;</div><div class="line"></div><div class="line">            default:</div><div class="line">                return super.onOptionsItemSelected(item);</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p>你可能看到上面有一行注释写的设置<strong>操作栏的子标题</strong>这个的效果如下图.</p>
-<p><img src="http://szysky.com/2016/09/07/%E3%80%8AAndroid%E7%BC%96%E7%A8%8B%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E3%80%8B%E9%9A%8F%E8%AE%B0%E4%B8%80/subtitle.png" alt="img"></p>
-<p><strong>4. 层级式导航,向左后退箭头</strong></p>
-<p>虽然大多数都是自定义的<code>titlebar</code>, 但是对于系统的默认后退也应该了解.</p>
-<p>通过<code>Activity#getSupportActionBar().setDisplayHomeAsUpEnable()</code>. <strong>(通过测试发现当在二级界面的时候默认都会出现向左的后退箭头但是默认的是没有处理的, 需要在onOptionsItemSelected()做对应的处理,我这里测试的环境为sdk为24,使用的AppCompatActivity派生的子类)</strong></p>
-<p>所以如果是<code>fragment</code>开发为基础, 那么别忘了<code>setHasOptionsMenu(true)</code>, 允许<code>FragmentManager</code>对自己的<code>fragment</code>队列进行菜单选项的事件分发回调. 如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public boolean onOptionsItemSelected(MenuItem item) &#123;</div><div class="line">   switch (item.getItemId())&#123;</div><div class="line">       // android.R.id.home 就是默认的向左箭头组件的id</div><div class="line">       case android.R.id.home:</div><div class="line">           getActivity().finish();</div><div class="line">           return true;</div><div class="line"></div><div class="line">       default:</div><div class="line">           return super.onOptionsItemSelected(item);</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p><strong>还有一个问题!</strong></p>
-<p>Android编程, 有时候你以为已经丝入扣, 天衣无缝, 可以高枕无忧的时候上线, 总是会被人提醒到好像还有一个问题!</p>
-<p>上面的二级标题是否还记得. 有这么一个场景如果二级标题显示了, 但是发生了设备旋转! ok 那么重建后你会发现二级标题不存在了. 这时就可以使用<code>setRetaionInstance(true)</code>来保存成员属性. 并利用一个布尔值来控制在创建菜单选项的时候二级标题是否需要显示.</p>
-<h2 id="Android的文件系统与Java-I-O"><a href="#Android的文件系统与Java-I-O" class="headerlink" title="Android的文件系统与Java I/O"></a>Android的文件系统与Java I/O</h2><p>在操作系统级别, <code>Android</code>运行在<code>Linux</code>内核之中, 因此,它的文件系统类似于其他一些Linux或Unix系统. 目录名称已正斜杠<code>/</code>分隔. 文件名可由各类字符组成, 且区分大小写. 受益于<code>Linux</code>的安全模式, 应用都是以特定的用户ID运行的.</p>
-<p><code>Android</code>利用应用的java包名, 来决定应用在文件系统中的存放位置. 用于发布与安装, 应用本身被打包成APK文件格式. 被放置在<code>/data/app</code>目录. 当然这是需要进行<code>root</code>权限才可以的.</p>
-<p><strong>访问文件和目录</strong></p>
-<p>应用访问文件和目录最便捷的方式是使用<code>Content</code>类提供的方法. <code>Content</code>类是所有关键应用组件的超类.</p>
-<p>下面是Content提供的基本文件或目录的便捷方法</p>
-<table>
-<thead>
-<tr>
-<th>方法</th>
-<th>使用目的</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>File getFilesDir()</td>
-<td>获取<code>data/data/&lt;packname&gt;/files</code>目录</td>
-</tr>
-<tr>
-<td>FileInputStream openFileInput(String name)</td>
-<td>打开<code>data/data/&lt;packname&gt;/files/</code>目录下的name文件名的文件获得输入流</td>
-</tr>
-<tr>
-<td>FileOutputStream openFileOutput(String name, int mode)</td>
-<td>同上, 这个是获得输出流, 不同之处如果没有这个文件那就会自动创建</td>
-</tr>
-<tr>
-<td>File getDir(String name, int mode)</td>
-<td>获取<code>data/data/&lt;packname&gt;/name名称的文件夹</code>目录(没有就会先创建)</td>
-</tr>
-<tr>
-<td>String[] fileList()</td>
-<td>获取<code>data/data/&lt;packname&gt;/files</code>目录下的所有文件名称列表.</td>
-</tr>
-<tr>
-<td>File getCacheDir()</td>
-<td>获取<code>data/data/&lt;packname&gt;/cache</code>目录</td>
-</tr>
-</tbody>
-</table>
-<h2 id="系统的多选模式"><a href="#系统的多选模式" class="headerlink" title="系统的多选模式"></a>系统的多选模式</h2><p>如下效果:</p>
-<p><img src="http://szysky.com/2016/09/07/%E3%80%8AAndroid%E7%BC%96%E7%A8%8B%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E3%80%8B%E9%9A%8F%E8%AE%B0%E4%B8%80/multidex.gif" alt="img"></p>
-<p>开始实现步骤:</p>
-<p><strong>1. 首先定义多选菜单的资源文件</strong></p>
-<p>例如上面的垃圾桶图标需要手动去设置, 在<code>res/menu/</code>目录下创建一个xml</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</div><div class="line">&lt;menu xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;&gt;</div><div class="line">    &lt;item</div><div class="line">        android:id=&quot;@+id/menu_item_delete_crime&quot;</div><div class="line">        android:icon=&quot;@android:drawable/ic_menu_delete&quot;</div><div class="line">        android:title=&quot;@string/delete_crime&quot;/&gt;</div><div class="line">&lt;/menu&gt;</div></pre></td></tr></table></figure>
-<p>同样使用系统的资源图片, 就是右上角的垃圾桶.</p>
-<p><strong>2. 实现Content菜单(进入编辑模式)</strong></p>
-<p><strong>这里面有两种,在旧版本11之前上编辑模式是单项操作模式, 后续版本是多选模式, 下面简单说一下旧版本的模式然后在回到上面图中的多选模式, 可以直接跳过直接看多选模式, 毕竟11版本已经很旧了</strong></p>
-<p>于之前的<code>操作栏里面的步骤大致相同</code>. 这里复写的方法是有两个(fragment类中)</p>
-<ul>
-<li><code>onCreateContextMenu(...)</code>: 实例化一个Content多选菜单</li>
-<li><code>onContextItemSelected(...)</code>: 响应菜单选择按钮</li>
-</ul>
-<p>这里还是以在<code>fragment</code>中的代码举例.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) &#123;</div><div class="line">   // 为操作栏创建浮动的上下文菜单</div><div class="line">   mActivity.getMenuInflater().inflate(R.menu.crime_list_item_context, menu);</div><div class="line">&#125;</div><div class="line">    </div><div class="line">   // 浮动上下文的点击监听回调</div><div class="line">@Override</div><div class="line">public boolean onContextItemSelected(MenuItem item) &#123;</div><div class="line">   switch (item.getItemId())&#123;</div><div class="line">       //  显示删除的浮动上下文</div><div class="line">       case R.id.menu_item_delete_crime:</div><div class="line">           // 获得点击的具体listview的item位置, 并得到对象</div><div class="line">           AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();</div><div class="line">           // 获得点击的item信息得到posion</div><div class="line">           int position = menuInfo.position;</div><div class="line">           CrimeBean clickItemBean = ((MyCrimeAdapter) getListAdapter()).getItem(position);</div><div class="line"></div><div class="line">           //</div><div class="line">           mCrimes.remove(clickItemBean);</div><div class="line">           ((MyCrimeAdapter) getListAdapter()).notifyDataSetChanged();</div><div class="line">           return true;</div><div class="line">       default:</div><div class="line">           return super.onContextItemSelected(item);</div><div class="line"></div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>最后一步为<code>ContextMenu</code>登记一个<code>ListView</code>如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">// 在低版本使用浮动上下文菜单</div><div class="line">registerForContextMenu(lv_main);</div></pre></td></tr></table></figure>
-<hr>
-<p><strong>回到多选模式, 还是多选好</strong></p>
-<p>接着第二大步开始. 如果要想实现多选模式的<code>ContextMenu</code>. 那么需要设置列表视图的选择模式为<code>ListView.CHOICE_MODE_MULTIPLE_MODAL</code>, 然后并添加个监听响应即可,其实很简单.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line">lv_main.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);</div><div class="line">//  设置列表视图操作模式回调</div><div class="line">lv_main.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() &#123;</div><div class="line">    // 视图中的选项在选中或者撤销的时候会触发</div><div class="line">    @Override</div><div class="line">    public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) &#123;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    // 在ActionMode对象创建后调用, 也是实例化上下文菜单资源, 并显示在上下文操作栏上的任务完成的地方        </div><div class="line">    @Override</div><div class="line">    public boolean onCreateActionMode(ActionMode mode, Menu menu) &#123;</div><div class="line">    MenuInflater menuInflater = mode.getMenuInflater();</div><div class="line">    menuInflater.inflate(R.menu.crime_list_item_context, menu);</div><div class="line">    return true;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    // 在onCreateActionMode()回调之后调用, 以及当前上下文操作栏需要刷新显示新数据时调用</div><div class="line">    @Override</div><div class="line">    public boolean onPrepareActionMode(ActionMode mode, Menu menu) &#123;</div><div class="line">    return false;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    // 在用户选中某个菜单项操作时调用(这里就是垃圾桶图标按钮). 是相应上下文菜单项操作的地方</div><div class="line">    @Override</div><div class="line">    public boolean onActionItemClicked(ActionMode mode, MenuItem item) &#123;</div><div class="line">    switch (item.getItemId())&#123;</div><div class="line">        case R.id.menu_item_delete_crime:</div><div class="line">            for (int i = myCrimeAdapter.getCount()-1; i &gt;= 0; i--) &#123;</div><div class="line">                if (getListView().isItemChecked(i))&#123;</div><div class="line">                    mCrimes.remove(myCrimeAdapter.getItem(i));</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">            mode.finish();</div><div class="line">            myCrimeAdapter.notifyDataSetChanged();</div><div class="line">            return true;</div><div class="line">    &#125;</div><div class="line">    return false;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    // 在用户退出上下文操作模式或所选菜单项操作已被响应, 从而导致ActionMode对象将要销毁时调用.</div><div class="line">    // 默认的实现会导致已选视图被反选, 也可以完成上下文操作模式下, 响应菜单项操作而引起的响应fragment刷新</div><div class="line">    @Override</div><div class="line">    public void onDestroyActionMode(ActionMode mode) &#123;</div><div class="line">    &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
-<p><strong>3. 最后一步</strong></p>
-<p>这个最后一步是针对<strong>多选模式下的</strong>, 上面两步已经在逻辑功能上完成了之前的需求, 但是有一点, 当进入多选的时候点击或不点击发现没有区别, 我们无法得知哪一个<strong>item</strong>是否已经被点击激活状态, 哪一个没有没点击激活. <strong>所有我们需要给Item添加一个背景, 设置一下item的激活或者非激活的背景色</strong>, 代码如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">// 在drawable/文件夹下创建一个文件</div><div class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</div><div class="line">&lt;selector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;&gt;</div><div class="line">    &lt;!--当引用控件处于激活状态时, 则使用指定的资源文件, 反之不采取任何操作--&gt;</div><div class="line">    &lt;item android:state_activated=&quot;true&quot;</div><div class="line">        android:drawable=&quot;@android:color/darker_gray&quot;/&gt;</div><div class="line">&lt;/selector&gt;</div></pre></td></tr></table></figure>
-<p>把这个<code>StateListDrawable</code>状态<code>drawable</code>设置到<code>ListView的item背景属性上</code>.</p>
-<p>ok 关于多选的<code>ContentMenu</code>操作就实现完成.</p>
-<p><strong>扩展一下:</strong></p>
-<p>这里实现的方法可以完全作用在<code>ListView</code>和<code>GridView</code>中(GridView和ListView都是AdapterView的子类). 但是如果不是这两个类型的控件应该如何实现这种多选方式.</p>
-<ol>
-<li>首先给一个控件实现<strong>长按监听</strong></li>
-<li>在长按回调中调用<code>Activity.startActivityMode(..)</code>并创建一个<code>ActionMode.Callback</code>的接口作为参数传入. 这个接口里面的回调很熟悉就是上面<code>ListView</code>设置了<code>setMultiChoiceModeListener</code>里面创建的匿名类里面对应的回调.</li>
-</ol>
-<h2 id="设备屏幕尺寸的确定"><a href="#设备屏幕尺寸的确定" class="headerlink" title="设备屏幕尺寸的确定"></a>设备屏幕尺寸的确定</h2><p>你可能会发现你的项目目录中存在如下这个文件, 但具体什么意思却不是很清楚</p>
-<p><img src="http://szysky.com/2016/09/07/%E3%80%8AAndroid%E7%BC%96%E7%A8%8B%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E3%80%8B%E9%9A%8F%E8%AE%B0%E4%B8%80/screen_1.png" alt="img"></p>
-<p>这是在<code>Android 3.2之后引入的新修饰符</code>, 在3.2之前是使用<code>small, normal, large, xlarge</code>来讲设备分为不同的屏幕大小类别.</p>
-<p>现在新引入的屏幕尺寸修饰符如下表:</p>
-<table>
-<thead>
-<tr>
-<th>修饰符格式</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>wXXXdp</td>
-<td>有效宽度: 宽度大于或等于 XXX dp</td>
-</tr>
-<tr>
-<td>hXXXdp</td>
-<td>有效高度: 高度大于或等于 XXX dp</td>
-</tr>
-<tr>
-<td>swXXXdp</td>
-<td>最小宽度: 宽度或者高度(两者中最小的那个) 大于或等于 xxx dp</td>
-</tr>
-</tbody>
-</table>
-<p>如果要指定某一个布局仅适用于屏幕宽度至少<strong>300dp</strong>的设备, 这种情况下, 可以使用宽度修饰符, 并将布局文件放入<code>res/layout-w300dp</code>目录下, (w代表宽度width). 同样道理如果是高度那么使用<code>hxxxdp</code></p>
-<p>有时候设备方向变换, 也会导致设备的宽高发生变化. 为了确定某个具体的屏幕尺寸可是使用<code>sw</code>, 如果不管是横屏<code>1280*720</code>还是竖屏的<code>720*1280</code>, 其对应的sw的值都是800.</p>
-<h2 id="以命令行的方式运行activity"><a href="#以命令行的方式运行activity" class="headerlink" title="以命令行的方式运行activity"></a>以命令行的方式运行activity</h2><p>要用<code>adb</code>命令启动首先需要满足<code>activity</code>组件可以被外部启动. 需要在清单文件中配置要被启动的<code>activity</code>的属性如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&lt;activity android:name=&quot;.activity.CrimeCameraActivity&quot;</div><div class="line">            android:exported=&quot;true&quot;/&gt;</div></pre></td></tr></table></figure>
-<p>设置<code>exported</code>属性. 这个属性默认是<strong>false</strong>. 表示只能从自己的应用中启动. <strong>如果将intent过滤器添加到activity的声明中, 那么该activity的exported将被自动设置为true</strong></p>
-<p>然后使用<code>adb</code>命令, 如果你没有设置全局环境那么就到<code>Android SDK</code>安装目录<code>platform-tools</code>子目录下执行adb命令.</p>
-<p><code>adb shell am start -n 应用包名/.activity类名</code></p>
-<p>/ 后面接的和清单文件中<code>activity</code>的name属性对应的是一样的. 如果你如上代码在多层包中. 那么实际上是这样的. 我的包名<code>com.szysky.note.criminal</code></p>
-<p>演示代码:</p>
-<p><code>adb shell am start -n com.szysky.note.criminal/.activity.CrimeCameraActivity</code></p>
-<p><code>am(Activity Manager)</code>是一个在设备上运行的命令行程序. 它支持启动和停止Android组件(component)并从命令行发送intent. 可以运行adb shell am指令. 查看am工具能够完成的所有任务.</p>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="http://yoursite.com/2017/09/07/android/books/《Android编程权威指南》Chap1_ 零散整理/" data-id="cj7aafudx00025fpjnct5hz1n" class="article-share-link"><i class="fa fa-share"></i>Share</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-        <a href="http://yoursite.com/2017/09/07/android/books/《Android编程权威指南》Chap1_ 零散整理/#comments" class="article-comment-link">Comments</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
     <nav id="page-nav">
         <a class="extend prev" rel="prev" href="/page/2/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/4/">Next &raquo;</a>
     </nav>
@@ -2879,8 +2609,8 @@
                     <li>
                         
                         <div class="item-inner">
-                            <p class="item-category"></p>
-                            <p class="item-title"><a href="/2017/09/20/android/github/glide解析2_执行流程/" class="title"></a></p>
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/glide/">glide</a></p>
+                            <p class="item-title"><a href="/2017/09/20/android/github/glide解析2_执行流程/" class="title">Glide解析2_执行流程</a></p>
                             <p class="item-date"><time datetime="2017-09-20T08:40:45.000Z" itemprop="datePublished">2017-09-20</time></p>
                         </div>
                     </li>
@@ -2903,7 +2633,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">categories</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">41</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/glide/">glide</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">2</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">43</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/glide/">glide</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -2912,7 +2642,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">archives</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">51</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">52</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
         </div>
     </div>
 
@@ -2921,7 +2651,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">tags</h3>
         <div class="widget">
-            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">36</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">37</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -2930,7 +2660,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">tag cloud</h3>
         <div class="widget tagcloud">
-            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 14.29px;">code</a> <a href="/tags/git/" style="font-size: 11.43px;">git</a> <a href="/tags/github/" style="font-size: 17.14px;">github</a> <a href="/tags/glide/" style="font-size: 12.86px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 12.86px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.43px;">markdown</a> <a href="/tags/mysql/" style="font-size: 15.71px;">mysql</a> <a href="/tags/node/" style="font-size: 18.57px;">node</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.43px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.43px;">设计模式</a>
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 16.67px;">code</a> <a href="/tags/git/" style="font-size: 11.67px;">git</a> <a href="/tags/github/" style="font-size: 18.33px;">github</a> <a href="/tags/glide/" style="font-size: 15px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 13.33px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.67px;">markdown</a> <a href="/tags/mysql/" style="font-size: 16.67px;">mysql</a> <a href="/tags/node/" style="font-size: 18.33px;">node</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.67px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.67px;">设计模式</a>
         </div>
     </div>
 
