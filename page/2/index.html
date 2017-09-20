@@ -157,7 +157,7 @@
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                74
+                75
                 <span>posts</span>
             </div>
             <div class="article-info-block">
@@ -210,6 +210,745 @@
 
             
             <section id="main">
+    <article id="post-android/code/Android Studio 常用手册" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/09/12/android/code/Android Studio 常用手册/">Android Studio常用手册</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/09/12/android/code/Android Studio 常用手册/">
+            <time datetime="2017-09-12T01:25:38.000Z" itemprop="datePublished">2017-09-12</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/code/">code</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/android/">android</a>, <a class="tag-link" href="/tags/code/">code</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <blockquote>
+<p>整理<code>Android群英传</code>和网上出现的比较完整<code>AS</code>的快捷小技巧. <code>mac</code>版已测, <code>win</code>大部分测试. 最后有一个整理的完整<code>快捷键表格</code>. win也好mac也好, 如果快捷被修改还是错误, 都可以通过提供的<code>Keymap中的关键字</code>来进行重设.<br>图中<code>gif</code>如果看不清, 放大页面即可.</p>
+</blockquote>
+<p>转载标明出处:</p>
+<ul>
+<li><a href="https://github.com/suzeyu1992/repo.git" target="_blank" rel="external">作者GitHub</a></li>
+<li><a href="http://szysky.com/2016/12/17/Android-Studio-%E5%B8%B8%E7%94%A8%E6%89%8B%E5%86%8C/" target="_blank" rel="external">博客地址</a></li>
+</ul>
+<h2 id="常用小操作"><a href="#常用小操作" class="headerlink" title="常用小操作"></a>常用小操作</h2><h3 id="单词选择"><a href="#单词选择" class="headerlink" title="单词选择"></a>单词选择</h3><p>一般<code>IDE</code>通过<code>option + 方向键左右</code>(win为<code>ctrl + 左右方向键</code>)对光标进行单词的跳动, 但是由于我们使用驼峰式命名较多, 默认的会导致由多个单词组成的驼峰式的首尾跳转. 还好<code>AS</code>可以对这种风格进行设定.</p>
+<p><strong>默认效果</strong></p>
+<p><img src="http://szysky.com/2016/12/17/Android-Studio-%E5%B8%B8%E7%94%A8%E6%89%8B%E5%86%8C/smart_old.gif" alt="img"></p>
+<p><strong>修改后的效果</strong></p>
+<p><img src="http://szysky.com/2016/12/17/Android-Studio-%E5%B8%B8%E7%94%A8%E6%89%8B%E5%86%8C/smart_new.gif" alt="img"></p>
+<p><strong>修改步骤</strong></p>
+<p>打开<strong>偏好设置</strong>如图片设置</p>
+<p><img src="http://szysky.com/2016/12/17/Android-Studio-%E5%B8%B8%E7%94%A8%E6%89%8B%E5%86%8C/smart.png" alt="img"></p>
+<blockquote>
+<p>虽然单词跳着爽了, 但是当你想复制这个变量名双击的时候. 只会复制变量名中的某一个单词. 而不是像以前会复制空格分割两边的完整字符串. 反正我是用了不到一天有些不舒服就切换回原来的风格了.<br>但是<code>option + 左右方向键</code>这个小技巧用熟了, 比特意用鼠标点,或者光标一下下移动到目标位置会高效很多.</p>
+</blockquote>
+<h3 id="显示最近操作-修改的文件"><a href="#显示最近操作-修改的文件" class="headerlink" title="显示最近操作, 修改的文件"></a>显示最近操作, 修改的文件</h3><p>例如: 我打开了<code>main_activity.xml</code>布局文件, 然后关闭页面. 这个时候<code>Command + E</code>, 就会如下显示之前的操作文件.</p>
+<p><img src="http://szysky.com/2016/12/17/Android-Studio-%E5%B8%B8%E7%94%A8%E6%89%8B%E5%86%8C/recent_file.png" alt="img"></p>
+<p>那么如果要查看之前修改过的文件, <code>Command + Shift + E</code>即可. 可以配合<code>Control + Tab</code>进行快速界面的切换.</p>
+<p><strong>快捷键</strong></p>
+<ul>
+<li>最近操作<ul>
+<li><code>Command + E</code> <strong>(mac)</strong></li>
+<li><code>ctrl + E</code> <strong>(win)</strong></li>
+</ul>
+</li>
+<li>最近修改<ul>
+<li><code>Command + Shift + E</code> <strong>(mac)</strong></li>
+<li><code>ctrl + shift + E</code> <strong>(win)</strong></li>
+</ul>
+</li>
+</ul>
+<h3 id="文件查找"><a href="#文件查找" class="headerlink" title="文件查找"></a>文件查找</h3><p><code>search Everywhere</code></p>
+<p>项目中的全局查找功能文件功能</p>
+<p><strong>查找类文件</strong></p>
+<ul>
+<li><code>command + o</code> <strong>(mac)</strong></li>
+<li><code>ctrl + n</code> <strong>(win)</strong></li>
+</ul>
+<p>默认只是在项目代码中查找类文件, 如果需要查找<code>sdk</code>或者类库中的相关类. 再按一次快捷键, 或者勾选下图选项搜索全局类文件</p>
+<p><img src="http://szysky.com/2016/12/17/Android-Studio-%E5%B8%B8%E7%94%A8%E6%89%8B%E5%86%8C/find_class.png" alt="img"></p>
+<hr>
+<p><strong>查找文件</strong></p>
+<p>这个级别比上面那个更广. 包括所有文件, 如<code>xml</code>等.</p>
+<ul>
+<li><code>command + shift + o</code> <strong>(mac)</strong></li>
+<li><code>ctrl + shift + n</code> <strong>(win)</strong></li>
+</ul>
+<p>如上如果需要搜索类库或者源码, 请在按一次快捷键, 或者勾选<code>查找类</code>给出图中的选项.</p>
+<h3 id="操作记录"><a href="#操作记录" class="headerlink" title="操作记录"></a>操作记录</h3><p>在浏览代码结构的时候, 很多时候总是会跟进许多类里面, 如果想回到之前浏览调转点. 那么这个快捷键你就必须要记住.</p>
+<ul>
+<li><code>Command + Option + Left\Right</code> 或者 <code>command + [</code>, <code>command + ]</code> <strong>(mac)</strong></li>
+<li><code>ctrl + alt + Left\Right</code><strong>(win)</strong></li>
+</ul>
+<h3 id="移动行"><a href="#移动行" class="headerlink" title="移动行"></a>移动行</h3><p>这个不用太多介绍, 就是<strong>整行</strong>的上下移动.</p>
+<ul>
+<li><code>Option + shift + 方向键上\方向键下</code> <strong>(mac)</strong></li>
+<li><code>alt + shift + 方向键上\方向键下</code> <strong>(win)</strong></li>
+</ul>
+<h3 id="查找方法调用处"><a href="#查找方法调用处" class="headerlink" title="查找方法调用处"></a>查找方法调用处</h3><p>场景: 查找一个方法在何处被调用, 或者一个ID在哪里被引用. 选中这个方法<strong>右键</strong>, 选择<code>Find Usages</code>即可.</p>
+<p>快捷键:</p>
+<ul>
+<li><code>option + F7</code> <strong>(mac)</strong></li>
+<li><code>alt + F7</code> <strong>(win)</strong></li>
+</ul>
+<h3 id="方法的跟进"><a href="#方法的跟进" class="headerlink" title="方法的跟进"></a>方法的跟进</h3><p>方法总是伴随着调转, 我们也总是会对方法的内部查看细节. 常用的办法是<code>按住Command 并点击方法名</code>的方式.</p>
+<p>也可以在光标所在处直接通过<code>Command + B</code>进行方法内部跟进.</p>
+<ul>
+<li><code>Command + B</code> <strong>(mac)</strong></li>
+<li><code>ctrl + alt + B</code> <strong>(win)</strong></li>
+</ul>
+<h3 id="显示方法的参数"><a href="#显示方法的参数" class="headerlink" title="显示方法的参数"></a>显示方法的参数</h3><p>当我们使用一个方法的时候, 会在刚开始的时候显示出所有的参数. 但是过一会可能就不存在了. 这个时候如果你想知道下一个参数是什么类型, 或者看一下所有参数.</p>
+<p><img src="http://szysky.com/2016/12/17/Android-Studio-%E5%B8%B8%E7%94%A8%E6%89%8B%E5%86%8C/params.gif" alt="img"></p>
+<p>快捷键:</p>
+<ul>
+<li><code>command + P</code> <strong>(mac)</strong></li>
+<li><code>ctrl + P</code> <strong>(win)</strong></li>
+</ul>
+<p>如果你还想查看一下方法的文档, 不用跟进源码, 直接<code>F1</code>键即可显示出文档.</p>
+<h3 id="行的快速操作"><a href="#行的快速操作" class="headerlink" title="行的快速操作"></a>行的快速操作</h3><p>快速删除行, 其实使用剪切功能就可以<code>Command + X</code></p>
+<p><strong>快速复制行</strong>, 使用<code>command + D</code><strong>mac</strong>, <code>ctrl + D</code><strong>win</strong></p>
+<h3 id="多行操作"><a href="#多行操作" class="headerlink" title="多行操作"></a>多行操作</h3><p>可能有时候我们会声明做一系列相关的变量为<code>float</code>类型, 但是真实的需要的是<code>int</code>类型. 这个时候就可以进行<code>多重选择</code>进行整体修改. 如下图:</p>
+<p><img src="http://szysky.com/2016/12/17/Android-Studio-%E5%B8%B8%E7%94%A8%E6%89%8B%E5%86%8C/mul_condition.gif" alt="img"></p>
+<p>按住<code>option</code>(win为<code>alt</code>)键, 然后鼠标进行区域的选择. 然后进行对应修改即可.</p>
+<p>你可能认为上面的必须要连续的才可以. 那么如果可以设置<code>多个光标点</code>是否就可以满足你的问题了?</p>
+<p>看下图:</p>
+<p><img src="http://szysky.com/2016/12/17/Android-Studio-%E5%B8%B8%E7%94%A8%E6%89%8B%E5%86%8C/mul_no_condition.gif" alt="img"></p>
+<ul>
+<li><code>option + shift + 鼠标点击</code> <strong>(mac)</strong></li>
+<li><code>alt + shift + 鼠标点击</code><strong>(win)</strong></li>
+</ul>
+<p>即可添加一个<code>编辑光标</code>. 最后如果不需要那么就<code>esc</code>即可关闭多余光标.</p>
+<h3 id="快速补全完成"><a href="#快速补全完成" class="headerlink" title="快速补全完成"></a>快速补全完成</h3><p>创建一个对象. 或者<code>findViewById()</code>有时总需要移动鼠标或者光标到末尾进行<code>分号</code>的补全. 这些都可以快捷键搞定. 当你用习惯之后, 会非常的方便好用.</p>
+<ul>
+<li><code>command + shift + enter</code><strong>(mac)</strong></li>
+<li><code>ctrl + shift + enter</code><strong>(win)</strong></li>
+</ul>
+<p>实现的功能</p>
+<ul>
+<li>方法体大括号的添加</li>
+<li>行尾分号的添加</li>
+<li>自动格式化改行操作等</li>
+</ul>
+<h3 id="代码提示"><a href="#代码提示" class="headerlink" title="代码提示"></a>代码提示</h3><p>任何地方都可以调出的代码提示.</p>
+<p><code>control + option + /</code>(不是默认, mac默认为<code>control + space</code>). 这里要说的是. 代码提示之后一般都会<code>回车键</code>确定. 当按<code>回车键</code>的时候. 会保留光标之后的内容. 当有的时候我们并不需要. 这个时候你就可以使用<code>table</code>键进行选择. 它会将后面的输入内容删掉.</p>
+<p>win的快捷方式<code>ctrl + 空格</code>(win同样大部分和输入法冲突, 请手动在AS设置里面<code>keymap</code>项查找<code>completion basic</code>手动修改快捷键)</p>
+<p><img src="http://szysky.com/2016/12/17/Android-Studio-%E5%B8%B8%E7%94%A8%E6%89%8B%E5%86%8C/tip.gif" alt="img"></p>
+<p><strong>快速生成变量</strong></p>
+<p>比如在方法体中<code>logi</code>直接快速生成一个<code>log</code>日志输出的模板, 但是<code>TAG</code>这个常量还没有声明. 这个时候用光标移动到<code>TAG</code>上. 使用快捷键提示即可快速生成.</p>
+<ul>
+<li><code>option + enter</code><strong>(mac)</strong></li>
+<li><code>alt + enter</code><strong>(win)</strong></li>
+</ul>
+<h3 id="变量的快速操作"><a href="#变量的快速操作" class="headerlink" title="变量的快速操作"></a>变量的快速操作</h3><p><img src="http://szysky.com/2016/12/17/Android-Studio-%E5%B8%B8%E7%94%A8%E6%89%8B%E5%86%8C/filed.gif" alt="img"></p>
+<p>上图使用了两次快捷键,</p>
+<ul>
+<li><p>第一次: 跳转到变量的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">声明处</div></pre></td></tr></table></figure>
+<ul>
+<li><code>command + B</code> <strong>(mac)</strong></li>
+<li><code>ctrl + b</code> <strong>(win)</strong></li>
+</ul>
+</li>
+<li><p>第二次: 跳转到变量类型的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">定义处</div></pre></td></tr></table></figure>
+<ul>
+<li><code>command + shift + B</code> <strong>(mac)</strong></li>
+<li><code>ctrl + shift + b</code> <strong>(win)</strong></li>
+</ul>
+</li>
+</ul>
+<h3 id="代码折叠"><a href="#代码折叠" class="headerlink" title="代码折叠"></a>代码折叠</h3><p>对代码块进行折叠和展开.</p>
+<ul>
+<li><code>command + 加号\减号</code><strong>(mac)</strong></li>
+<li><code>ctrl + 加号\减号</code> <strong>(win)</strong></li>
+</ul>
+<h3 id="预览方法定义"><a href="#预览方法定义" class="headerlink" title="预览方法定义"></a>预览方法定义</h3><p>如果只想大体了解方法的定义, 而不需要进行方法所在源码类的跳转显示. 可以通过<code>Command + Y</code>(win快捷键为<code>ctrl + shift + I</code>)来进行预览</p>
+<p><img src="http://szysky.com/2016/12/17/Android-Studio-%E5%B8%B8%E7%94%A8%E6%89%8B%E5%86%8C/method_pre.png" alt="img"></p>
+<h3 id="粘贴板管理"><a href="#粘贴板管理" class="headerlink" title="粘贴板管理"></a>粘贴板管理</h3><p>对于复制粘贴. 我们习惯只是<code>单次</code>的<code>c+v</code>, 那么如果你想查看之前被覆盖了的<code>复制过的</code>内容. <code>AS</code>同样有<code>复制粘贴板</code>来管理. 展示最近几次的复制内容.</p>
+<p><img src="http://szysky.com/2016/12/17/Android-Studio-%E5%B8%B8%E7%94%A8%E6%89%8B%E5%86%8C/command_copy.png" alt="img"></p>
+<ul>
+<li><code>command + shift + v</code> <strong>(mac)</strong></li>
+<li><code>ctrl + shift + v</code> <strong>(win)</strong></li>
+</ul>
+<h3 id="拆分窗口"><a href="#拆分窗口" class="headerlink" title="拆分窗口"></a>拆分窗口</h3><p><img src="http://szysky.com/2016/12/17/Android-Studio-%E5%B8%B8%E7%94%A8%E6%89%8B%E5%86%8C/split.png" alt="img"></p>
+<p>只需要在标签页上<code>右键</code>. 选择<code>split vertical\horizontal</code>.</p>
+<h3 id="变量命名风格"><a href="#变量命名风格" class="headerlink" title="变量命名风格"></a>变量命名风格</h3><p>对于<code>成员变量</code>应该<code>m</code>开头. 对于<code>静态成员</code>通常是<code>s</code>开头. 可以这样设置这个风格.</p>
+<p><img src="http://szysky.com/2016/12/17/Android-Studio-%E5%B8%B8%E7%94%A8%E6%89%8B%E5%86%8C/set_name.png" alt="img"></p>
+<p>这样在输入一个变量的名字时, 就可以自动补全<code>m</code>或者<code>s</code>. 同时在<code>Extra</code>代码的时候, 生成的代码都可以自动根据这个规则重构.</p>
+<h3 id="查看大纲"><a href="#查看大纲" class="headerlink" title="查看大纲"></a>查看大纲</h3><p>当一个类很大的时候. 可以通过<code>command + F12</code>(win为<code>ctrl + F12</code>) 打开大纲界面. 展示全部的方法和成员变量列表.</p>
+<p><img src="http://szysky.com/2016/12/17/Android-Studio-%E5%B8%B8%E7%94%A8%E6%89%8B%E5%86%8C/all_body.png" alt="img"></p>
+<p>并且支持模糊搜索. 来进行筛选显示. 可以快速的找到要搜索的方法集.</p>
+<h3 id="书签"><a href="#书签" class="headerlink" title="书签"></a>书签</h3><p>在浏览大型代码, 或者调试时. 有时可能会需要记住一些关键的代码或者方法. 这个时候就可以使用<code>书签</code>. 来记录此关键代码. 只需要在点击需要标记的行, 并按<code>F3</code>就会在左侧出现一个<code>小对勾</code>. 这就说明已经打上了一个书签.</p>
+<p>同时在<code>Favorites</code>标签中, 也可以找到对应的<code>Bookmarks</code></p>
+<p>可以通过快捷键<code>command + F3</code> (win为<code>shift + F11</code>)快速调出书签面板, 进行后续的操作.</p>
+<h2 id="快速重构"><a href="#快速重构" class="headerlink" title="快速重构"></a>快速重构</h2><h3 id="重构入口"><a href="#重构入口" class="headerlink" title="重构入口"></a>重构入口</h3><p>当一个代码片段准备重构的时候. 可以使用<code>control + T</code> (win为<code>ctrl + alt + shift + T</code>)打开重构入口. 或者<code>右键单击</code>选择<code>Refactor</code>显示重构界面.</p>
+<p>这里有很多方便的功能. 提成方法等等.</p>
+<h3 id="surround-With"><a href="#surround-With" class="headerlink" title="surround With"></a>surround With</h3><p>当对一个段代码进行, 条件包裹, 捕捉异常, 循环, Runnable等. 可以直接使用快捷的方式, 而不需要手动生成条件在进行代码块的<code>复制-粘贴</code></p>
+<p><img src="http://szysky.com/2016/12/17/Android-Studio-%E5%B8%B8%E7%94%A8%E6%89%8B%E5%86%8C/runnable.gif" alt="img"></p>
+<p>快捷键</p>
+<ul>
+<li><code>command + option + T</code><strong>(mac)</strong></li>
+<li><code>ctrl + alt + T</code><strong>(win)</strong></li>
+</ul>
+<h3 id="Extract"><a href="#Extract" class="headerlink" title="Extract"></a>Extract</h3><p>你可以经常使用它,提取出一个方法.</p>
+<p><img src="http://szysky.com/2016/12/17/Android-Studio-%E5%B8%B8%E7%94%A8%E6%89%8B%E5%86%8C/extract_method.gif" alt="img"></p>
+<p>不仅仅如此, 你还可以对<code>xml</code>中的多个控件相同的属性进行抽取为<code>style</code></p>
+<p><img src="http://szysky.com/2016/12/17/Android-Studio-%E5%B8%B8%E7%94%A8%E6%89%8B%E5%86%8C/extract_xml.gif" alt="img"></p>
+<p>是不是很爽?</p>
+<p>这是其一, 对于<code>xml</code>不仅可以抽取<code>Style</code>, 还可以抽取布局<code>Layout</code></p>
+<p>而代码中, 可以提取各种变量, 参数, 长廊.</p>
+<h2 id="代码模板"><a href="#代码模板" class="headerlink" title="代码模板"></a>代码模板</h2><p><code>AS</code>中已经内置了很多代码模板, 你可以很嗖嗖嗖的就完成之前倒背如流的代码. 如下一小部分</p>
+<p><img src="http://szysky.com/2016/12/17/Android-Studio-%E5%B8%B8%E7%94%A8%E6%89%8B%E5%86%8C/template.gif" alt="img"></p>
+<p>通过快捷键可调出这些代码模板</p>
+<ul>
+<li><code>command + J</code><strong>(mac)</strong></li>
+<li><code>ctrl + J</code><strong>(win)</strong></li>
+</ul>
+<h2 id="代码分析"><a href="#代码分析" class="headerlink" title="代码分析"></a>代码分析</h2><p><code>Google</code>提供了很多代码分析工具, 这些工具都集中在顶部菜单栏的<code>Analyze</code>中.</p>
+<h3 id="Inspect-Code-amp-Code-cleanup"><a href="#Inspect-Code-amp-Code-cleanup" class="headerlink" title="Inspect Code &amp; Code cleanup"></a>Inspect Code &amp; Code cleanup</h3><p><code>Inspect Code</code>可以让<code>IDE</code>分析整个工程. 类似于<code>Lint</code>分析, 并会给出大致修改意见等</p>
+<p><code>Code cleanup</code>功能可以进行自动的代码修复.</p>
+<h3 id="Dependencies"><a href="#Dependencies" class="headerlink" title="Dependencies"></a>Dependencies</h3><p>通过<code>Analyze</code>中的几个<code>Dependencies</code>选项. 可以快速分析项目的依赖.</p>
+<h3 id="方法调用栈"><a href="#方法调用栈" class="headerlink" title="方法调用栈"></a>方法调用栈</h3><p>对于某些方法来说, 查看它被调用的地方和调用的顺序是非常重要的. 可通过<code>control + option + H</code>快速查找方法调用栈.</p>
+<h2 id="断点调试"><a href="#断点调试" class="headerlink" title="断点调试"></a>断点调试</h2><h3 id="快速断点"><a href="#快速断点" class="headerlink" title="快速断点"></a>快速断点</h3><p><code>条件断点</code>. 主要用在循环体内. 一个循环10次的<code>for</code>. 只想在第<code>8</code>次进入断点.</p>
+<p>和<code>普通断点</code>相似, 一样先声明一个断点. 然后在<code>普通断点</code>上<code>单击鼠标右键</code>. 在弹出的菜单填写断点条件即可. 如下:</p>
+<p><img src="http://szysky.com/2016/12/17/Android-Studio-%E5%B8%B8%E7%94%A8%E6%89%8B%E5%86%8C/condition.gif" alt="img"></p>
+<p>上面图中<code>Enable</code>可以控制<code>启用</code>, 还是<code>停用</code>一个断点.</p>
+<hr>
+<p><code>临时断点</code>. 如果需要一个只执行一次的断点. 执行完之后断点自动取消. 那么可以通过快捷点将当前行作为临时断点.</p>
+<p><img src="http://szysky.com/2016/12/17/Android-Studio-%E5%B8%B8%E7%94%A8%E6%89%8B%E5%86%8C/one_debug.png" alt="img"></p>
+<ul>
+<li><code>command + option + shift + F8</code></li>
+<li><code>ctrl + alt + shift + F8</code></li>
+</ul>
+<p>为了篇幅不是很长, 调试的部分贴一个讲解很详细的帖子</p>
+<ul>
+<li><a href="http://blog.csdn.net/dd864140130/article/details/51560664" target="_blank" rel="external">Android Studio代码调试大全</a></li>
+</ul>
+<h2 id="快捷键查找表"><a href="#快捷键查找表" class="headerlink" title="快捷键查找表"></a>快捷键查找表</h2><table>
+<thead>
+<tr>
+<th>功能描述</th>
+<th>keymap对应名字</th>
+<th>Mac</th>
+<th>Win/Linux</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>提示错误解决方案</strong></td>
+<td><strong>Show Intention Actions</strong></td>
+<td><code>option + enter</code></td>
+<td><code>alt + enter</code></td>
+</tr>
+<tr>
+<td><strong>AS配置界面</strong></td>
+<td><strong>Preferences</strong></td>
+<td><code>command + ,</code></td>
+<td><code>control+alt+S</code></td>
+</tr>
+<tr>
+<td><strong>工程项目配置界面</strong></td>
+<td><strong>Project Structure</strong></td>
+<td><code>command + ;</code></td>
+<td><code>Control＋Alt+Shift+S</code></td>
+</tr>
+<tr>
+<td><strong>快速构成代码</strong></td>
+<td><strong>Code Generate</strong></td>
+<td><code>command + N</code></td>
+<td><code>alt + insert</code></td>
+</tr>
+<tr>
+<td><strong>代码提示</strong></td>
+<td><strong>Completion/Basic</strong></td>
+<td><code>control + space</code>(mac会冲突, 手动修改)</td>
+<td><code>ctrl + 空格</code>(win同样大部分和输入法冲突, 手动修改)</td>
+</tr>
+<tr>
+<td><strong>选择视图</strong></td>
+<td><strong>select in any view</strong></td>
+<td><code>option + F1</code></td>
+<td><code>alt + F1</code></td>
+</tr>
+<tr>
+<td><strong>添加书签标识</strong></td>
+<td><strong>Toggle Bookmark</strong></td>
+<td><code>option + F3</code></td>
+<td><code>ctrl + F11</code></td>
+</tr>
+<tr>
+<td><strong>向下移动一行</strong></td>
+<td><strong>Move Line Down</strong></td>
+<td><code>option + shift + Down</code></td>
+<td><code>alt + shift + Down</code></td>
+</tr>
+<tr>
+<td><strong>向上移动一行</strong></td>
+<td><strong>Move Line Up</strong></td>
+<td><code>option + shift + Up</code></td>
+<td><code>alt + shift + Up</code></td>
+</tr>
+<tr>
+<td><strong>注释代码</strong></td>
+<td><strong>Comment with Line Comment</strong></td>
+<td><code>command + /</code></td>
+<td><code>ctrl + /</code></td>
+</tr>
+<tr>
+<td><strong>用代码模板包裹代码</strong></td>
+<td><strong>surround with Live Template</strong></td>
+<td><code>command + option + J</code></td>
+<td><code>ctrl + alt + J</code></td>
+</tr>
+<tr>
+<td><strong>格式化代码</strong></td>
+<td><strong>Reformat Code</strong></td>
+<td><code>command + option + L</code></td>
+<td><code>ctrl + alt + L</code></td>
+</tr>
+<tr>
+<td><strong>Copy Reference</strong></td>
+<td><strong>Copy Reference</strong></td>
+<td><code>command + option + shift + C</code></td>
+<td><code>ctrl + alt + shift + C</code></td>
+</tr>
+<tr>
+<td><strong>if/try等包裹代码</strong></td>
+<td><strong>Surround With..</strong></td>
+<td><code>command + option + T</code></td>
+<td><code>ctrl + alt + T</code></td>
+</tr>
+<tr>
+<td><strong>查看声明</strong></td>
+<td><strong>Declaration</strong></td>
+<td><code>command + B</code></td>
+<td><code>ctrl + B</code></td>
+</tr>
+<tr>
+<td><strong>快捷向下复制行</strong></td>
+<td><strong>Duplicate Line or Block</strong></td>
+<td><code>command + D</code></td>
+<td><code>ctrl + D</code></td>
+</tr>
+<tr>
+<td><strong>删除行</strong></td>
+<td><strong>Delete Line</strong></td>
+<td><code>command + delete</code></td>
+<td><code>ctrl + Y</code></td>
+</tr>
+<tr>
+<td><strong>快捷最近打开</strong></td>
+<td><strong>Recent Files</strong></td>
+<td><code>command + E</code></td>
+<td><code>ctrl + E</code></td>
+</tr>
+<tr>
+<td><strong>查找</strong></td>
+<td><strong>Edit/Find/Find</strong></td>
+<td><code>command + F</code></td>
+<td><code>ctrl + F</code></td>
+</tr>
+<tr>
+<td><strong>文件方法结构</strong></td>
+<td><strong>File Structure</strong></td>
+<td><code>command + F12</code></td>
+<td><code>ctrl + F12</code></td>
+</tr>
+<tr>
+<td><strong>显示书签</strong></td>
+<td><strong>Show Bookmarks</strong></td>
+<td><code>command + F3</code></td>
+<td><code>shift + F11</code></td>
+</tr>
+<tr>
+<td><strong>代码高亮向下查找</strong></td>
+<td><strong>Move To Next Occurrence</strong></td>
+<td><code>command + G</code></td>
+<td><code>F3</code></td>
+</tr>
+<tr>
+<td><strong>代码高亮向上查找</strong></td>
+<td><strong>Move To Previous Occurrence</strong></td>
+<td><code>command + shift + G</code></td>
+<td><code>shift + F3</code></td>
+</tr>
+<tr>
+<td><strong>按照模板生成代码</strong></td>
+<td><strong>Insert Live Template</strong></td>
+<td><code>command + J</code></td>
+<td><code>ctrl + J</code></td>
+</tr>
+<tr>
+<td><strong>定位到行</strong></td>
+<td><strong>Navigate/Line</strong></td>
+<td><code>command + L</code></td>
+<td><code>ctrl + G</code></td>
+</tr>
+<tr>
+<td><strong>快速到行首/尾</strong></td>
+<td><strong>Move Caret to Line Start/End</strong></td>
+<td><code>command + Left/Right</code></td>
+<td><code>ctrl + Left/Right</code></td>
+</tr>
+<tr>
+<td><strong>代码折叠/展开</strong></td>
+<td><strong>Collapse/Expand</strong></td>
+<td><code>command + 减号/加号</code></td>
+<td><code>ctrl + 减号/加号</code></td>
+</tr>
+<tr>
+<td><strong>查找类</strong></td>
+<td><strong>Navigate/Class</strong></td>
+<td><code>command + O</code></td>
+<td><code>ctrl + N</code></td>
+</tr>
+<tr>
+<td><strong>多行注释</strong></td>
+<td><strong>Code/Comment</strong></td>
+<td><code>command + option + /</code></td>
+<td><code>ctrl + alt + /</code></td>
+</tr>
+<tr>
+<td><strong>格式化代码</strong></td>
+<td><strong>Reformat Code</strong></td>
+<td><code>command + option + L</code></td>
+<td><code>ctrl + alt + L</code></td>
+</tr>
+<tr>
+<td><strong>提示参数类型</strong></td>
+<td><strong>Parameter Info</strong></td>
+<td><code>command + P</code></td>
+<td><code>ctrl + P</code></td>
+</tr>
+<tr>
+<td><strong>查找替换</strong></td>
+<td><strong>Replace</strong></td>
+<td><code>command + R</code></td>
+<td><code>ctrl + R</code></td>
+</tr>
+<tr>
+<td><strong>查找命令</strong></td>
+<td><strong>Find Action</strong></td>
+<td><code>command + shift + A</code></td>
+<td><code>ctrl + shift + A</code></td>
+</tr>
+<tr>
+<td><strong>拷贝文件路径</strong></td>
+<td><strong>Copy Paths</strong></td>
+<td><code>command + shift + C</code></td>
+<td><code>ctrl + shift + C</code></td>
+</tr>
+<tr>
+<td><strong>移动代码块</strong></td>
+<td><strong>Move Statement Up/Down</strong></td>
+<td><code>command + shift + down/up</code></td>
+<td><code>ctrl + shift + down/up</code></td>
+</tr>
+<tr>
+<td><strong>代码补全</strong></td>
+<td><strong>Complete Current Statement</strong></td>
+<td><code>command + shift + enter</code></td>
+<td><code>ctrl + shift + enter</code></td>
+</tr>
+<tr>
+<td><strong>全路径查找</strong></td>
+<td><strong>Find in Path</strong></td>
+<td><code>command + shift + F</code></td>
+<td><code>ctrl + shift + F</code></td>
+</tr>
+<tr>
+<td><strong>代码高亮</strong></td>
+<td><strong>Highlight Usages in File</strong></td>
+<td><code>command + shift + F7</code></td>
+<td><code>alt + J</code></td>
+</tr>
+<tr>
+<td><strong>窗口内所有代码折叠/展开</strong></td>
+<td><strong>Collapse/Expand All</strong></td>
+<td><code>command + shift + 减号/加号</code></td>
+<td><code>ctrl + shift + 减号/加号</code></td>
+</tr>
+<tr>
+<td><strong>查找文件</strong></td>
+<td><strong>Navigate/File</strong></td>
+<td><code>command + shift + O</code></td>
+<td><code>ctrl + shift + N</code></td>
+</tr>
+<tr>
+<td><strong>全路径中替换</strong></td>
+<td><strong>Replace in Path</strong></td>
+<td><code>command + shift + R</code></td>
+<td><code>ctrl + shift + R</code></td>
+</tr>
+<tr>
+<td><strong>大小写转换</strong></td>
+<td><strong>Toggle Case</strong></td>
+<td><code>command + shift + U</code></td>
+<td><code>ctrl + shift + U</code></td>
+</tr>
+<tr>
+<td><strong>显示粘贴版历史</strong></td>
+<td><strong>Paste from History</strong></td>
+<td><code>command + shift + V</code></td>
+<td><code>ctrl + shift + V</code></td>
+</tr>
+<tr>
+<td><strong>快速查找定义</strong></td>
+<td></td>
+<td><code>command + space</code></td>
+<td><code>ctrl + shift + I</code></td>
+</tr>
+<tr>
+<td><strong>粘贴</strong></td>
+<td><strong>Paste</strong></td>
+<td><code>command + V</code></td>
+<td><code>ctrl + V</code></td>
+</tr>
+<tr>
+<td><strong>复制</strong></td>
+<td><strong>Copy</strong></td>
+<td><code>command + C</code></td>
+<td><code>ctrl + C</code></td>
+</tr>
+<tr>
+<td><strong>去除无效包引用</strong></td>
+<td><strong>Optimize Imports</strong></td>
+<td><code>control + option + O</code></td>
+<td><code>ctrl + alt + O</code></td>
+</tr>
+<tr>
+<td><strong>显示类关系继承体系</strong></td>
+<td><strong>Type Hierarchy</strong></td>
+<td><code>control + H</code></td>
+<td><code>ctrl + H</code></td>
+</tr>
+<tr>
+<td><strong>快速覆写方法</strong></td>
+<td><strong>override Methods</strong></td>
+<td><code>control + O</code></td>
+<td><code>ctrl + O</code></td>
+</tr>
+<tr>
+<td><strong>查找调用的位置</strong></td>
+<td><strong>Call hierarchy</strong></td>
+<td><code>control + option + H</code></td>
+<td><code>ctrl + alt + H</code></td>
+</tr>
+<tr>
+<td><strong>添加书签</strong></td>
+<td><strong>Toggle Bookmark</strong></td>
+<td><code>F3</code></td>
+<td><code>F11</code></td>
+</tr>
+<tr>
+<td><strong>扩大缩小选中范围</strong></td>
+<td><strong>Extend Selection/Shrink Selection</strong></td>
+<td><code>option + UP/Down</code></td>
+<td><code>ctrl + W + shift + W</code></td>
+</tr>
+<tr>
+<td><strong>跳转到父类</strong></td>
+<td><strong>Super method</strong></td>
+<td><code>command + U</code></td>
+<td><code>ctrl + U</code></td>
+</tr>
+<tr>
+<td><strong>关闭当前tab标签</strong></td>
+<td><strong>Editor Tabs / Close</strong></td>
+<td><code>command + W</code></td>
+<td><code>ctrl + shift + a</code></td>
+</tr>
+<tr>
+<td><strong>关闭除编辑窗口的其余窗口</strong></td>
+<td><strong>Hide All Tool Windows</strong></td>
+<td><code>command + shift + F12</code></td>
+<td><code>ctrl + shift + F12</code></td>
+</tr>
+<tr>
+<td><strong>预览方法定义</strong></td>
+<td><strong>Quick Definition</strong></td>
+<td><code>command + Y</code></td>
+<td><code>ctrl + shift + I</code></td>
+</tr>
+<tr>
+<td><strong>返回光标最后编辑位置</strong></td>
+<td><strong>Last Edit Location</strong></td>
+<td><code>command + shift + delete</code></td>
+<td><code>control + shift + Backspace</code></td>
+</tr>
+<tr>
+<td><strong>调到代码块首部/尾部</strong></td>
+<td><strong>Move Caret To Code Block</strong></td>
+<td><code>Option + Command + [ 或者 ]</code></td>
+<td><code>Control+[ 或者 ]</code></td>
+</tr>
+<tr>
+<td><strong>重命名</strong></td>
+<td><strong>Rename</strong></td>
+<td><code>shift + F6</code></td>
+<td><code>shift + F6</code></td>
+</tr>
+<tr>
+<td><strong>抽取方法</strong></td>
+<td><strong>Extract Method</strong></td>
+<td><code>command + option + M</code></td>
+<td><code>control+alt+M</code></td>
+</tr>
+<tr>
+<td><strong>抽取变量</strong></td>
+<td><strong>Extract Variable</strong></td>
+<td><code>command + option + V</code></td>
+<td><code>control+alt+V</code></td>
+</tr>
+<tr>
+<td><strong>抽取字段</strong></td>
+<td><strong>Extract Field</strong></td>
+<td><code>command + option + F</code></td>
+<td><code>control+alt+F</code></td>
+</tr>
+<tr>
+<td><strong>抽取常量</strong></td>
+<td><strong>Extract Constant</strong></td>
+<td><code>command + option + C</code></td>
+<td><code>control+alt+C</code></td>
+</tr>
+<tr>
+<td><strong>抽取参数</strong></td>
+<td><strong>Extract Parameter</strong></td>
+<td><code>command + option + P</code></td>
+<td><code>control+alt+P</code></td>
+</tr>
+<tr>
+<td><strong>重构入口</strong></td>
+<td><strong>Refactor This</strong></td>
+<td><code>control + T</code></td>
+<td><code>ctrl + alt + shift + T</code></td>
+</tr>
+</tbody>
+</table>
+<p>转载标明出处:</p>
+<ul>
+<li><a href="https://github.com/suzeyu1992/repo.git" target="_blank" rel="external">作者GitHub</a></li>
+<li><a href="http://szysky.com/2016/12/17/Android-Studio-%E5%B8%B8%E7%94%A8%E6%89%8B%E5%86%8C/" target="_blank" rel="external">博客地址</a></li>
+</ul>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/09/12/android/code/Android Studio 常用手册/" data-id="cj7sunbtw0000zfpjgfelley2" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/09/12/android/code/Android Studio 常用手册/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
     <article id="post-java/设计模式六大原则解析" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
@@ -3742,183 +4481,6 @@
 
 
 
-    <article id="post-android/books/《Android 编程实战》Chap7_序列化说明" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2017/09/12/android/books/《Android 编程实战》Chap7_序列化说明/">《Android 编程实战》Chap7_序列化说明</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2017/09/12/android/books/《Android 编程实战》Chap7_序列化说明/">
-            <time datetime="2017-09-11T23:56:25.000Z" itemprop="datePublished">2017-09-12</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a>
-    </div>
-
-                        
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/android/">android</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <blockquote>
-<p>阅读《Android 编程实战》一书的随记笔记<br>注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a></p>
-</blockquote>
-<h2 id="数据存储的介绍"><a href="#数据存储的介绍" class="headerlink" title="数据存储的介绍"></a>数据存储的介绍</h2><p>谈到数据数据存储通常会使用<code>持久化</code>, 而用<code>序列化</code>描述数据是如何表现其存储状态的. 如果没有数据的<code>持久化</code>, 那么数据还能在<code>RAM</code>中保持其状态, 一旦相关进程结束数据就会消失. 实现数据的持久化通常涉及性能, 延迟, 数据大小和复杂度等因素的这种. 例如, 快速的数据读取往往会导致较慢的写入. 序列化就是关于数据如何组织的, 同时包括在持久化状态和内存中.</p>
-<h2 id="Android持久化选项"><a href="#Android持久化选项" class="headerlink" title="Android持久化选项"></a>Android持久化选项</h2><p><code>Android</code>中提供了两种现成的方法, 分别是:</p>
-<ul>
-<li><code>偏好文件(preference files)</code>: 使用<code>XML</code>格式, 通过<code>SharePreferences</code>类提供接口</li>
-<li><code>数据库(sqlite)</code>: 通常被包装成<code>ContentProider</code>组件.</li>
-</ul>
-<p>通常选项, 应用配置属性用<code>preferences files</code>来存储; 数组表格,或者Java表示的一些数据用数据库进行存储; 而一些二进制数据, 例如图片通常当做常规文件来存储在本地.</p>
-<h2 id="Preferences-file"><a href="#Preferences-file" class="headerlink" title="Preferences file"></a>Preferences file</h2><p>这些文件存储在应用程序的内部目录中, 其结构只允许存储键值对.</p>
-<p>创建<code>SharePreferences</code>对象最简单的方式是使用<code>PreferenceManager.getDefaultSharedPreferences()</code>方法, 它会返回应用程序默认的偏好对象. 这种方式的便利是系统会自动管理<strong>偏好文件名</strong>. 如果需要多个偏好文件那么要使用<code>Context.getSharedPreferences()</code>方法, 它允许开发者自由命名文件. 如果只是创建<code>Activity</code>相关的偏好文件, 可以使用<code>Activity.getPreference()</code>方法, 他会在调用时得到<code>Activity</code>的名字.</p>
-<blockquote>
-<p><code>getDefaultSharePreferences()</code>创建的偏好文件名是由包名+<code>_preferences</code>组成的.</p>
-</blockquote>
-<p>其内部支持的存储值类型有<code>int</code>, <code>float</code>, <code>long</code>, <code>boolean</code>, <code>String</code>以及<code>Set&lt;String&gt;</code>对象. 键名必须是一个有效的字符串.</p>
-<hr>
-<p><strong>如果需要文件修改并提交存储</strong></p>
-<p>首先需要获得<code>Editor</code>实例, 他提供了相应的<code>PUT</code>方法, 以及用于提交修改的方法. 在<code>Android 2.3</code>之前, 通过使用<code>commit()</code>方法把修改<strong>同步</strong>提交到存储设备中. 但在2.3之后, <code>Editor</code>类提供了用于<strong>异步</strong>执行写操作的<code>apply()</code>方法. 因为要尽可能地避免主线程执行阻塞操作, 所以<code>apply()</code>相对来说比<code>commit()</code>更好.</p>
-<hr>
-<p><strong>如果需要对偏好值被修改的时候可以收到通知</strong></p>
-<p>那么可以通过注册一个回调函数, 每当<code>apply()</code>和<code>commit()</code>方法时都会触发该监听器. 通过对<code>SharedPreferences</code>的实例调用<code>registerOrSharedPreferenceChangeListener()</code>方法来添加内容改变回调.</p>
-<h3 id="用户选项和设置用户界面"><a href="#用户选项和设置用户界面" class="headerlink" title="用户选项和设置用户界面"></a>用户选项和设置用户界面</h3><p>Android提供一套现成的<code>Activity</code>和<code>Fragment</code>类针对用户更改应用程序的选项和设置, 使得创建这类用户界面非常简单容易<code>PreferenceActivity</code>和<code>PreferenceFragment</code>.</p>
-<p>但! 是! 感觉没啥用处, 基本应用都会按照自己的ui风格进行设计. 知道一下就行</p>
-<h2 id="ContentProvider注意事项"><a href="#ContentProvider注意事项" class="headerlink" title="ContentProvider注意事项"></a>ContentProvider注意事项</h2><h3 id="Android数据库设计"><a href="#Android数据库设计" class="headerlink" title="Android数据库设计"></a>Android数据库设计</h3><p>关系数据库的设计通常通过<code>数据库规范化</code>完成. 该过程使用一些<code>范式</code>规则来减少数据库中的依赖和冗余. 有许多数据库范式, 但在大多数情况下, 只有前三个是相关的. 如果一个数据库设计满足了前三个范式, 可以认为它是<code>规范化</code>的.</p>
-<p>由于面向的对象为<code>android</code>应用. 有可能不一定在表中尽可能多的使用外键, 虽然使用外键可以更好的减少空间的占用, 但是相对于开发中操作多表的困难度也就相应的提高. 所以需要权衡一下.</p>
-<h3 id="创建和升级数据库"><a href="#创建和升级数据库" class="headerlink" title="创建和升级数据库"></a>创建和升级数据库</h3><p>建议总是使用<code>ContentProvider</code>组件包装<code>SQLite</code>数据库. 通过这种方式, 可以只在一个地方管理的数据库调用, 还可以使用一些现成的数据库工具类.</p>
-<h3 id="查询方法说明"><a href="#查询方法说明" class="headerlink" title="查询方法说明"></a>查询方法说明</h3><p>查询数据库(通常会调用<code>ContentResolver.query()</code>)会调用<code>ContentProvider.query()</code>方法. 在实现查询方式时必须解析传入的<code>Uri</code>以决定执行哪个查询, 并且还要检查所有传入的参数是否正确.</p>
-<blockquote>
-<p>编写数据库查询要把<code>WHERE</code>语句中较简单的比较放在前面. 这样会加快查询, 因为其可以尽早决定要包含的信息.</p>
-</blockquote>
-<h3 id="数据库事务"><a href="#数据库事务" class="headerlink" title="数据库事务"></a>数据库事务</h3><p>每次在<code>SQLite</code>数据库执行一条<code>SQL</code>语句都会执行一次数据库事务操作. 除非是自己专门管理事务, 否则每条语句都会自动创建一个事务. 因为大多数<code>ContentProvider</code>调用最终都只会生成一条<code>SQL</code>语句, 这种情况下几乎没有必要手动处理事务. 但是如果应用程序将执行多条<code>SQL</code>语句, 比如一次插入很多条记录, 记得总是自己管理事务.</p>
-<p><code>ContentProvider</code>类提供了两个事务管理的方法: <code>ContentProvider.bulkInsert()</code>和<code>ContentProvider.applyBatch()</code> 相比与普通的<code>insert()</code>快了很多.</p>
-<p>事务的语义很简单. 首先调用<code>SQLiteDatabase.beginTransaction()</code>开始一个新的事务. 当成功插入所有记录之后调用<code>SQLiteDatabase.setTransactionSuccessful()</code>, 然后使用<code>SQLiteDatabase.endTransaction()</code>结束本次事务. 如果某条数据插入失败, 会抛出<code>SQLiteException</code>, 而之前的所有插入都会回滚, 因为在成功之前没有调用过<code>setTransactionSuccessful()</code></p>
-<p><strong>bulkInsert()虽然会提高数据插入性能, 但是此方法只使用插入操作</strong></p>
-<p>如果要在一次事务中执行多次<code>update()</code>或者<code>delete()</code>语句, 必须实现<code>ContentProvider.applyBatch()</code>方法. 接收一个<code>ContentProviderOperation集合</code>.内部循环集合通过调用<code>apply()</code>在事务内部实现操作.</p>
-<p>该API是为<code>ContactsProvider</code>等较复杂的<code>ContentProvider</code>设计的, 他们有许多连接的表, 每个都有自己的<code>Uri</code>. 另外如果要批量插入多个表, 该API也可以使用.</p>
-<h2 id="序列化数据"><a href="#序列化数据" class="headerlink" title="序列化数据"></a>序列化数据</h2><p>如果要在<code>Intent</code>上传输数据或者和另外一台设备共享数据, 需要把数据转化成接收端能识别的格式, 并且还要适于在网络上传输. 这种技术称为<code>序列化(serialization)</code></p>
-<p>序列化是从内存中取出数据并把其写到文件(或者其他输出)中, 是的以后能读取完全相同的数据称为<code>反序列化</code>. android内部使用了<code>Parcelable</code>接口来处理序列化工作, 但它不适合在文件上持久存储或者在网络上传输数据.</p>
-<h3 id="JSON"><a href="#JSON" class="headerlink" title="JSON"></a>JSON</h3><p><code>JSON</code>是<code>JavaScript Object Notation</code>的缩写, 是<code>JavaScript</code>标准的一个子集. 这种格式很适合表示非二进制数据的.</p>
-<p>例如一下JSON数据:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">[</div><div class="line">    &#123;</div><div class="line">        &quot;name&quot;:&quot;张三&quot;</div><div class="line">        &quot;id&quot;  :&quot;1&quot;</div><div class="line">        &quot;sex&quot; :&quot;男&quot;</div><div class="line">    &#125;,</div><div class="line">    &#123;</div><div class="line">        &quot;name&quot;:&quot;张三&quot;</div><div class="line">        &quot;id&quot;  :&quot;1&quot;</div><div class="line">        &quot;sex&quot; :&quot;男&quot;</div><div class="line">    &#125;,</div><div class="line">    &#123;</div><div class="line">        &quot;name&quot;:&quot;张三&quot;</div><div class="line">        &quot;id&quot;  :&quot;1&quot;</div><div class="line">        &quot;sex&quot; :&quot;男&quot;</div><div class="line">    &#125;</div><div class="line">]</div></pre></td></tr></table></figure>
-<p>这里说一下另一个<code>API</code>作为了解, 通过获得输入输出流利用<code>JsonReader</code>和<code>JsonWriter</code>API进行. 相比较直接把一个流中的全部内容读取为一个<code>String</code>中, 然后传给<code>JSONArray</code>的构造函数, 使用<code>JsonReader</code>会消耗更少的内存, 并且相对来说会更快.</p>
-<p>直接使用JSON API 现在也不常用, 想了解看一下<a href="https://github.com/suzeyu1992/AndroidProgrammingPushingTheLimits/blob/master/StoreOrTest/app/src/main/java/com/szysky/note/storeortest/serialization/JSONDemo.java" target="_blank" rel="external">实例代码</a></p>
-<h3 id="Gson介绍"><a href="#Gson介绍" class="headerlink" title="Gson介绍"></a>Gson介绍</h3><p><code>JSONObject</code>和<code>JSONArray</code>类使用起来虽然很方便, 但是他们也有一定的局限性, 并且通常会消耗更多不必要的内存. 同样, 如果有多个不同类型的对象, 使用<code>JsonReader</code>和<code>JsonWriter</code>需要编写比较多的代码. 所以如果需要更高级的JSON数据序列化和反序列化方法, 可是使用<code>Gson</code></p>
-<p><code>Gson</code>允许把简单的Java对象转换成<code>JSON</code>, 反之亦然. 所以常做的就是生成一个<code>JavaBean</code>对象, 提供set/get并转换成json对象.</p>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="http://yoursite.com/2017/09/12/android/books/《Android 编程实战》Chap7_序列化说明/" data-id="cj7hnifdq00106opjay74moqq" class="article-share-link"><i class="fa fa-share"></i>Share</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-        <a href="http://yoursite.com/2017/09/12/android/books/《Android 编程实战》Chap7_序列化说明/#comments" class="article-comment-link">Comments</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
     <nav id="page-nav">
         <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
     </nav>
@@ -3987,7 +4549,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">categories</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">43</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/glide/">glide</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/ssh/">ssh</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">2</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">43</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/glide/">glide</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/ssh/">ssh</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -3996,7 +4558,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">archives</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">53</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">54</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
         </div>
     </div>
 
@@ -4005,7 +4567,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">tags</h3>
         <div class="widget">
-            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">37</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/">ssh</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">37</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/">ssh</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -4014,7 +4576,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">tag cloud</h3>
         <div class="widget tagcloud">
-            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 16.67px;">code</a> <a href="/tags/git/" style="font-size: 11.67px;">git</a> <a href="/tags/github/" style="font-size: 18.33px;">github</a> <a href="/tags/glide/" style="font-size: 15px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 13.33px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.67px;">markdown</a> <a href="/tags/mysql/" style="font-size: 16.67px;">mysql</a> <a href="/tags/node/" style="font-size: 18.33px;">node</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/ssh/" style="font-size: 10px;">ssh</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.67px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.67px;">设计模式</a>
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 16.67px;">code</a> <a href="/tags/git/" style="font-size: 11.67px;">git</a> <a href="/tags/github/" style="font-size: 18.33px;">github</a> <a href="/tags/glide/" style="font-size: 15px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 13.33px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.67px;">markdown</a> <a href="/tags/mysql/" style="font-size: 16.67px;">mysql</a> <a href="/tags/node/" style="font-size: 18.33px;">node</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/ssh/" style="font-size: 11.67px;">ssh</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.67px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.67px;">设计模式</a>
         </div>
     </div>
 

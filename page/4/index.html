@@ -157,7 +157,7 @@
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                74
+                75
                 <span>posts</span>
             </div>
             <div class="article-info-block">
@@ -210,6 +210,339 @@
 
             
             <section id="main">
+    <article id="post-mysql/mysql_1 数据库入门" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/09/08/mysql/mysql_1 数据库入门/">mysql_1 数据库入门</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/09/08/mysql/mysql_1 数据库入门/">
+            <time datetime="2017-09-08T09:08:51.000Z" itemprop="datePublished">2017-09-08</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/mysql/">mysql</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/mysql/">mysql</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <blockquote>
+<p>注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a></p>
+</blockquote>
+<h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p>SQL: 这是关系数据库的语言标准，<code>STRUCT QUERY LANGUAGE</code> (结构化查询语言);</p>
+<p>几个基本的概念</p>
+<ul>
+<li>数据库<code>database</code>: 用于存储一个项目/产品/软件所使用的各种数据的一个逻辑单位</li>
+<li>数据库管理系统<code>dbms</code>: 其实就是指一个具体的数据库软件产品:<code>database management system</code></li>
+<li>表 <code>table</code>: 用于存储一种数据的结构形式</li>
+<li>字段 <code>filed</code>，列 <code>column</code>: 一个数据表中的一个纵列，其实有一个名字又叫字段</li>
+<li>记录 <code>record</code>，行 <code>row</code>:</li>
+</ul>
+<p><strong>mac mysql的默认数据库数据的路径</strong></p>
+<p><code>/usr/local/var/mysql</code></p>
+<p><strong>登录/退出mysql系统</strong></p>
+<ul>
+<li>登录: <code>mysql -h 服务器地址 -u 登录名 [-P 端口号] -p</code></li>
+<li>完整登录: <code>mysql --host=服务器地址 --user=用户名 --port=端口 --password</code></li>
+<li>退出: <code>quit; exit; \q;</code></li>
+<li>注意: 登录数据库系统后，需要使用 <code>set names 编码名;</code> 来设定当前连接数据库的”环境编码名”，及当前跟数据库打交道的客户端本身的编码，通常来说，<code>cmd</code>客户端中是固定的<code>gbk</code>编码，而<code>php</code>网页中，是该网页文件的编码。</li>
+</ul>
+<p><strong>数据库的备份和恢复</strong></p>
+<p>备份: 就是讲一个数据库，完整的转换为一个可以随时携带和传送的文件。</p>
+<p>语法: <code>mysqldump -h 服务器地址 -u 登录名 -p 数据库名 &gt; 文件名</code></p>
+<p>恢复: 就是将一个备份的数据库文件，完整的还原为一个可以使用的数据库。</p>
+<p>语法: <code>mysql -h 服务器地址 -u 登录名 -p 数据库名 &lt; 文件名</code></p>
+<p>注意: 这两个命令，都是在没有登录 进入的时候使用。其中<code>musqldump</code>命令还要求为管理员身份。</p>
+<h3 id="技术语法规定"><a href="#技术语法规定" class="headerlink" title="技术语法规定"></a>技术语法规定</h3><p><strong>注释</strong></p>
+<ol>
+<li>单行注释: <code>#</code>注释内容</li>
+<li>单行注释: <code>--</code>注释内容(–后面有空格存在)</li>
+<li>多行注释: <code>/*</code>注释内容<code>*/</code></li>
+</ol>
+<p><strong>语句行</strong></p>
+<p>默认情况下，以英文分号作为一条语句的结束，而且常规操作中都是一次执行一条语句。</p>
+<p>mysql中可以认为设定语句的结束符。 <code>delimiter</code> 新的结束符。</p>
+<p><strong>大小写问题</strong></p>
+<p>mysql语言内部本身不区分大小写。但是<code>mysql</code>某些命令执行会生成文件夹，此时他们会区分，例如在区分大小写的系统中，<code>unix</code>，<code>linux</code>系统。</p>
+<h3 id="数据库定义语句"><a href="#数据库定义语句" class="headerlink" title="数据库定义语句"></a>数据库定义语句</h3><p><strong>创建数据库</strong></p>
+<p>形式: <code>create database 数据库名 [charset 字符编码名称] [collate 排序规则];</code></p>
+<p>说明:</p>
+<ul>
+<li>字符编码名称是用于设定当前数据库中存储的字符内容以什么编码来存储。</li>
+<li><code>collate</code>排序规则用于设定其中的字符内容的大小关系(先后顺序，对于英文基本没有任何问题,基本不用)。</li>
+</ul>
+<p>查看<code>mysql</code>可用的字符集: <code>show charset</code></p>
+<p>查看<code>mysql</code>可用的排序规则: <code>show collation</code></p>
+<p><strong>删除数据库</strong></p>
+<p>形式: <code>drop database [if exists] 数据库名;</code></p>
+<p>说明: <code>if exists</code> 适用于一种安全运行的考虑，如果数据库不存在，也不会报错。</p>
+<p><strong>修改数据库(字符编码)</strong></p>
+<p>基本上，就是修改数据库的属性：只有两个</p>
+<p>修改编码和修改排序规则</p>
+<p><code>alert database 数据库名 charset 新的编码名 collate 新的排序规则名</code></p>
+<p><strong>显示所有数据库</strong></p>
+<p><code>show databases;</code></p>
+<p><strong>显示一个数据库的创建语句</strong></p>
+<p>形式: <code>show create database 数据库名;</code></p>
+<h3 id="字段类型-数据类型"><a href="#字段类型-数据类型" class="headerlink" title="字段类型(数据类型)"></a>字段类型(数据类型)</h3><p><code>mysql</code>中，数据类型主要分3大类，数字型，字符型，时间型</p>
+<p><strong>整数字节</strong></p>
+<p>主要有: <code>int</code>, <code>tinyint</code>, <code>smallint</code>, <code>mediumint</code>, <code>bigint</code></p>
+<p>整数类型所占的空间字节:</p>
+<ul>
+<li><code>int</code>: 占4个字节，既32位</li>
+<li><code>tinyint</code>: 占1个字节，既8位，最多能存储256个数字，默认范围是-128~127</li>
+<li><code>bigint</code>: 占8个字节，既64位</li>
+</ul>
+<p>整数类型字段的设定形式：</p>
+<ul>
+<li><code>类型名 [(m)] [unsigned] [zerofill]</code></li>
+</ul>
+<p>说明:</p>
+<ol>
+<li><code>m</code>表示设定该整数的显示长度，既<code>select</code>输出的时候，123可能显示为00123.</li>
+<li><code>unsigned</code>用于设定该整数位无符号数，其实就是没有负数</li>
+<li><code>zerofill</code>用于设定是否填充 0 到一个数字的左边，此时需与设定的长度<code>m</code>配合。</li>
+</ol>
+<p><strong>小数类型</strong></p>
+<p>有三种: <code>float</code>, <code>double</code> , <code>decimal</code></p>
+<ul>
+<li><code>float</code>: 单精度浮点型，使用4个字节存储数据，其精度大约只有6~7位有效数字</li>
+<li><code>double</code>: 双精度浮点型，使用8个字节存储数据类型，其精度大约有20个有效数字</li>
+<li><code>decimal</code>: 定点小数类型，整数部分最长可以有65位，小数部分最长可以有30位，一般设置格式为: <code>decimal</code>(总位数，小数部分位数)</li>
+</ul>
+<h3 id="php操作mysql数据库的必要代码"><a href="#php操作mysql数据库的必要代码" class="headerlink" title="php操作mysql数据库的必要代码"></a>php操作mysql数据库的必要代码</h3><p>通常在php网页中完成有关数据库的操作，首先需要如下代码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$link = mysql_connect(&quot;数据库服务器地址&quot;,&quot;用户名&quot;,&quot;密码&quot;);    //连接数据库系统</div><div class="line">mysql_query(&quot;set names 网页文件编码名&quot;);    //设定连接编码</div><div class="line">    //或者 mysql_set_charset(&quot;网页文件编码名&quot;);</div><div class="line">mysql_query(&quot;use 数据库名&quot;); //选定要使用的数据库</div><div class="line">    //或者: musql_select_db(&quot;数据库名&quot;);</div></pre></td></tr></table></figure>
+<p>当执行了连接的前置动作 之后就可以使用<code>mysql_query(&quot;&quot;)</code>; 来执行任何的sql语句。</p>
+<ul>
+<li>场景一:执行没有数据返回的语句，比如：<code>insert,update,delete,create,create table,drop...</code>（通过true和false判断）</li>
+<li>场景二:执行有数据返回的语句: <code>select, show tables,show databases, desc 表名(显示数据结构)</code>失败返回false，成功返回一个数据集。</li>
+</ul>
+<p>补充:<br><code>mysql_error()</code>: 获取<code>mysql</code>执行失败时的错误信息，通常在<code>mysql_query()</code>之后使用。</p>
+<p><strong>结果集的处理</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">while($rec = mysql_fetch_array($result))&#123;</div><div class="line">    // mysql_fetch_array()会取出该结果集中的&quot;一行数据&quot;,并取得该行数据后赋值值给$rec;</div><div class="line">    //$rec就是一个数组，其下标就是字段名</div><div class="line">    //在此while循环中，mysql_fetch_array()会一次次(一行行)取出结果集中的所有数据。</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>fetch函数的3中形式</p>
+<ul>
+<li><code>mysql_fetch_assoc();</code> 返回的是字段名 和对应的字段值</li>
+<li><code>mysql_fetch_row();</code> 返回的没有字段名以下标0为起始点作为键</li>
+<li><code>mysql_fetch_array();</code> 返回的是键 为有规律的数字，也有字段名的两种组合，就是上面的两种组合。</li>
+</ul>
+<h3 id="扩展php中操作mysql数据的几个函数"><a href="#扩展php中操作mysql数据的几个函数" class="headerlink" title="扩展php中操作mysql数据的几个函数:"></a>扩展php中操作mysql数据的几个函数:</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$n1 = mysql_num_rows(结果集);    //获得该结果集的数据行数</div><div class="line">$n2 = mysql_num_fields(结果集);    //获得该结果集的数据列数</div><div class="line">$n3 = mysql_field_name(结果集,$i);    //获得该结果集的第i个字段的名字，从0开始。</div></pre></td></tr></table></figure>
+<h3 id="字段类型"><a href="#字段类型" class="headerlink" title="字段类型"></a>字段类型</h3><p><strong>字符类型</strong></p>
+<ul>
+<li><code>varchar</code>类型: 可变长度字符串，使用时我们必须设定其长度，其最大长度理论值为65535个，实际其实最大只能是65533个，单考虑到存储的字符编码不同，也会有进一步减少。例如如果哦存储中文<code>gbk</code>，则最多是65533/2个，如果存储中文<code>utf8</code>,则最多是65533/3个。此类型的实际长度是存储内容决定，而设定值只是表示最多可存储的字符个数，</li>
+<li><code>char</code>类型: 定长字符串；使用时通常需要设定其长度，如果不设定默认是1，最大理论长度是255个。定长字符串使用与存储的数据都是可预见的明确的固定长度的字符，比如手机号，中国邮政编码。实际存储的时候，如果少于设定长度，也能存，但都会补空格填满。</li>
+<li><code>enum</code>类型: 单选项字符串数据类型。它分成适用于存储表单界面中的<strong>单</strong>项值。它设定的时候，是需要给定固定的几个选项，然后存储的时候，就只存储其中一个值。<br>使用形式: <code>enum</code>(“选项1”,”选项2”,”选项3”,”选项4”….);<br>实际内部: 这些字符串选项值对应的是如下数字值:1234….65535个轩轩个</li>
+<li><code>set</code>类型: 单选项字符串数据类型。它分成适用于存储表单界面中的<strong>多</strong>项值。它设定的时候，是需要给定固定的几个选项，然后存储的时候，就只存储其中若干值。<br>使用形式: <code>set</code>(“选项1”,”选项2”,”选项3”,”选项4”….);<br>实际内部: 这些字符串选项值对应的是如下数字值:1248….64个选项</li>
+<li><code>text</code>类型: 长文本字符类型，通常，其中存储的数据不占据表格中的数据容量限制。其本身最长可存储65535个字符。其他同类字符类型: <code>smalltext,tinytext, longtext.</code></li>
+</ul>
+<p>其他类型(了解):</p>
+<ul>
+<li><code>binary</code>类型: 定长二进制字符串类型，里面存储的是二进制；</li>
+<li><code>varbinary</code>类型: 边仓二进制字符串类型，里面存储的是二进制值；</li>
+<li><code>blob</code>类型: 二进制数据类型，存的仍然是二进制值，但其适用于存储图片，其他文件等。单极少用。</li>
+</ul>
+<p><strong>时间类型</strong></p>
+<ul>
+<li><code>datetime</code>类型: 时间日期类型</li>
+<li><code>date</code>类型: 日期类型</li>
+<li><code>time</code>类型: 时间类型</li>
+<li><code>year</code>类型: 年份类型</li>
+</ul>
+<p>在应用中，时间日期类型，在我们自己给定的数据情况下，需要使用单引号引起来，跟字符串一样。</p>
+<p><code>timestamp</code>: 时间戳类型，就是指一个时间的数据值，本质就是一个数字，类似js中的<code>GetTime()</code>或php中的<code>Time()</code>。 它的一个重要的作用是: 是会自动获得时间戳的数据值–相当于”<code>now()</code>“</p>
+<h3 id="表定义语句"><a href="#表定义语句" class="headerlink" title="表定义语句"></a>表定义语句</h3><p><strong>创建表</strong></p>
+<p><code>create table [if not exists] 表名(字段列表[,索引或约束列表]) [表选项列表];</code></p>
+<p><strong>字段设定形式</strong></p>
+<p><code>字段名 类型 [字段属性1 字段属性2 ...]</code></p>
+<ul>
+<li>字段名可以自己取</li>
+<li>类型就是前面所学的数据类型: <code>int, tinyint, float, double , char(5), varchar(25),text,datetime...</code></li>
+<li>子弹属性可以有多个，相互之间直接空格隔开; 主要有<br><code>auto_increment</code>: 只用于整数类型，让该字段的值自动获得一个增长值。通常用于做一个表的第一个字段的设定，并且通常还当做主键(primary key)<br><code>primary key</code> : 用于设定该字段为主键，此时该字段的值就可以唯一的确定一行数据。<br><code>unique key</code>: 设定该字段是惟一的，也就是不重复的<br><code>not null</code>: 用于设定该字段不能为空。<br><code>default</code> xx值: 用于水规定该字段的默认值，如果此时insert没有给值得时候就使用该默认值<br><code>comment</code> : 字段说明文字。</li>
+</ul>
+<h3 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h3><p>系统内部自动维护的隐藏的数据表，它的作用是可以极大的加快数据的查询速度。</p>
+<p>这个隐藏的数据表，其中的数据是自动排好序的，其查找速度就是建立在这个基础上的。</p>
+<p><strong>索引的类型</strong></p>
+<ul>
+<li>普通索引: <code>形式 key(字段名)</code><br>含义 仅仅是一个索引，没有其他作用只能加快查找速度。</li>
+<li>唯一索引: <code>形式 unique key(字段名)</code><br>含义 是一个索引，而且具有区分改变中的任何一行数据的作用(其实也是唯一性),与唯一索引区别，唯一性可以为null，而主键不能为空。</li>
+<li>主键索引:<code>形式 primary key(字段名)</code></li>
+<li>全文索引: <code>形式 fulltext (字段名)</code></li>
+<li>外建索引: <code>形式 foreign key(字段名) references 其他表(对应其他表中的字段名)</code></li>
+</ul>
+<p>外键: 就是设定某个表中的某一个字段，它的数据的值，必须在另一个表中某个字段中存在。</p>
+<h3 id="约束"><a href="#约束" class="headerlink" title="约束"></a>约束</h3><p>含义: 就是要求数据满足什么条件的一种规定。</p>
+<ul>
+<li>主键约束 作用：使该设定字段的值可以用于唯一确定一行数据，其实就是主键的意思</li>
+<li>唯一约束 作用：是该设定字段字段具有唯一性，自然也是可区分的</li>
+<li>外键约束 作用：使该设定字段的值，必须在其设定的对应表的对应字段中已经有该值了。</li>
+<li>非空约束 not null: 设定一个字段时写的那个not null属性。</li>
+<li>默认约束 default xx值. :设定一个字段的默认值属性。</li>
+<li>检查约束 check(某种判断语句)。</li>
+</ul>
+<p>索引和约束其实是相同一件事情的不同角度的两种说法，例如方法和函数。</p>
+<h3 id="表选项列表"><a href="#表选项列表" class="headerlink" title="表选项列表"></a>表选项列表</h3><p>创建一个表的时候，对该表的整体设定，主要有如下几个</p>
+<ul>
+<li><code>charset=要使用的字符编码</code></li>
+<li><code>engine=要使用的存储引擎(也叫表选项)</code></li>
+<li><code>auto_increment=设定当前表的自增长字段的初始值，默认是1</code></li>
+<li><code>comment=&#39;该表的一些说明文字&#39;</code></li>
+</ul>
+<p>说明:</p>
+<ol>
+<li>设定的字符编码是为了跟数据库设定的不一样，如果一样就不需要设定了，因为其会自动使用数据库级别的设定。</li>
+<li><code>engine</code> 存储引擎，在代码层面，就是一个名词:<strong>InnoDB</strong>,<strong>MyIsam</strong>,BDB,archive,Memory.</li>
+</ol>
+<p>存储引擎:</p>
+<p>存储引擎是讲数据存储到硬盘的机制。不同的存储引擎，其实主要从两大层面设计存储机制-速度或者功能。</p>
+<h3 id="修改表"><a href="#修改表" class="headerlink" title="修改表"></a>修改表</h3><p>说明:</p>
+<ol>
+<li>修改表，是指修改表的结构–正如创建表也是设定表的结构。</li>
+<li>创建表能做的事，修改表几乎都能做–但不推荐去修改表，而是应该在创建表的时候就基本确定表的结构。</li>
+<li>对字段进行增删改；对索引进行增删</li>
+<li>标的选项通常都是修改，即使不写任何表选项，他们都有其默认值。</li>
+</ol>
+<p>常见的操作:</p>
+<ul>
+<li>新建字段: <code>alert table 表名 add [column] 新字段名 字段类型 [字段属性列表];</code></li>
+<li>修改字段: <code>alert table 表名 change [column] 旧字段名 新字段名 新字段类型 [新字段属性列表];</code></li>
+<li>删除字段: <code>alert table 表名 drop [column] 字段名;</code></li>
+<li>添加普通索引: <code>alter table 表名 add key [索引名] (字段名1[,字段名2,...]);</code></li>
+<li>添加唯一索引(约束): <code>alert table 表名 add unique key(字段名1[,字段名2,...]);</code></li>
+<li>添加主键索引(约束): <code>alter table 表名 add primary key(字段名1[,字段名2,...]);</code></li>
+<li>修改表名: <code>alter table 旧表名 rename [to] 新表名;</code></li>
+</ul>
+<h3 id="删除表"><a href="#删除表" class="headerlink" title="删除表"></a>删除表</h3><p><code>drop table [if exists] 表名;</code></p>
+<h3 id="其他表的相关语句"><a href="#其他表的相关语句" class="headerlink" title="其他表的相关语句"></a>其他表的相关语句</h3><ul>
+<li>显示当前数据库中的所有表: <code>show tables;</code></li>
+<li>显示某表的结构: <code>desc 表名; 或者 describe 表名;</code></li>
+<li>显示某表的创建语句: <code>show create table 表名;</code></li>
+<li>重命名表: <code>rename table 旧表名 to 新表名;</code></li>
+<li>从已有表复制表结构: <code>create table [if not exists] 新表名 like 元表名;</code></li>
+</ul>
+<h3 id="视图的定义"><a href="#视图的定义" class="headerlink" title="视图的定义"></a>视图的定义</h3><p>含义</p>
+<p>类似于函数的功能。 就是一个<code>select</code>语句(通常比较复杂),我们给其一个名字(视图名),以后要使用该<code>select</code>语句，直接用该视图名就可以。</p>
+<p>创建语法</p>
+<p>语法形式: <code>create view 视图名 as select语句;</code></p>
+<p>举例: <code>create view v1 as select id, fi, name, age from table where id&gt;7 and id&lt;100 or fi&lt;1000 and age&gt;10;</code></p>
+<p>使用视图</p>
+<p>当做一个表用即可： <code>select * from 视图名 [查询条件];</code></p>
+<p>删除视图</p>
+<p><code>drop view [if exists] 视图名;</code></p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/09/08/mysql/mysql_1 数据库入门/" data-id="cj7bo43qk0000v5pjysbrsxzl" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/09/08/mysql/mysql_1 数据库入门/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
     <article id="post-life/买车注意事项" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
@@ -2706,219 +3039,6 @@
 
 
 
-    <article id="post-android/books/《Android开发艺术探索》Chap12_Bitmap的加载和Cache" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2017/09/06/android/books/《Android开发艺术探索》Chap12_Bitmap的加载和Cache/">《Android开发艺术探索》Chap12_Bitmap的加载和Cache</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2017/09/06/android/books/《Android开发艺术探索》Chap12_Bitmap的加载和Cache/">
-            <time datetime="2017-09-06T09:40:01.000Z" itemprop="datePublished">2017-09-06</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a>
-    </div>
-
-                        
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/android/">android</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <blockquote>
-<p>由于Bitmap的特殊性以及Android对单个应用所施加的内存限制, 会导致加载Bitmap的时候很容易出现内存溢出. 还有常用的缓存策略.<br>注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a></p>
-</blockquote>
-<p><a href="https://github.com/suzeyu1992/Notes_AndroidDevSeek" target="_blank" rel="external">blog相关代码</a></p>
-<h2 id="Bitmap的高效加载"><a href="#Bitmap的高效加载" class="headerlink" title="Bitmap的高效加载"></a>Bitmap的高效加载</h2><p>先来简单介绍一下如何加载一个<code>Bitmap</code>, <code>Bitmap</code>在android中指的是一张图片, 可以是png格式也可以是jpg等其他常见的图片格式.</p>
-<p><strong>那么如何加载一个图片?</strong>首先<code>BitmapFactory</code>类提供了四种方法: <code>decodeFile()</code>, <code>decodeResource()</code>, <code>decodeStream()</code>, <code>decodeByteArray()</code>. 分别用于从文件系统, 资源文件, 输入流以及字节数组加载出一个<code>Bitmap</code>对象. 其中<code>decodeFile</code>和<code>decodeResource</code>又间接调用了<code>decodeStream()</code>方法, 这四类方法最终是在Android的底层实现的, 对应着<code>BitmapFactory</code>类的几个native方法.</p>
-<p><strong>高效加载的Bitmap的核心思想:</strong>采用<code>BitmapFactory.Options</code>来加载所需尺寸的图片. 比如说一个<code>ImageView</code>控件的大小为<code>300*300</code>. 而图片的大小为<code>800*800</code>. 这个时候如果直接加载那么就比较浪费资源, 需要更多的内存空间来加载图片, 这不是很必要的. 这里我们就可以先把图片按一定的采样率来缩小图片在进行加载. 不仅降低了内存占用,还在一定程度上避免了<code>OOM</code>异常. 也提高了加载bitmap时的性能.</p>
-<p><strong>而通过Options参数来缩放图片</strong>: 主要是用到了<code>inSampleSize</code>参数, 即采样率.</p>
-<ul>
-<li>如果是<strong>inSampleSize=1</strong>那么和原图大小一样,</li>
-<li>如果是<strong>inSampleSize=2</strong>那么宽高都为原图<strong>1/2</strong>, 而像素为原图的<strong>1/4</strong>, 占用的内存大小也为原图的<strong>1/4</strong></li>
-<li>如果是<strong>inSampleSize=3</strong>那么宽高都为原图<strong>1/3</strong>, 而像素为原图的<strong>1/9</strong>, 占用的内存大小也为原图的<strong>1/9</strong></li>
-<li>以此类推…..</li>
-</ul>
-<p><strong>要知道Android中加载图片具体在内存中的占有的大小是根据图片的像素决定的, 而与图片的实际占用空间大小没有关系.而且如果要加载mipmap下的图片, 还会根据不同的分辨率下的文件夹进行不同的放大缩小.</strong></p>
-<p>列举现在有一张图片像素为:<strong>1024*1024</strong>, 如果采用<code>ARGB8888</code>(四个颜色通道每个占有一个字节,相当于1点像素占用4个字节的空间)的格式来存储.(这里不考虑不同的资源文件下情况分析) 那么图片的占有大小就是<code>1024*1024*4</code>那现在这张图片在内存中占用<strong>4MB</strong>.</p>
-<p>如果针对刚才的图片进行<code>inSampleSize=2</code>, 那么最后占用内存大小为<code>512*512*4</code>, 也就是<strong>1MB</strong></p>
-<p>采样率的数值必须是大于1的整数是才会有缩放效果, 并且采样率同时作用于宽/高, 这将导致缩放后的图片以这个<strong>采样率的2次方递减, 即内存占用缩放大小为1/(inSampleSize的二次方).</strong> 如果小于1那么相当于=1的时候. 在官方文档中指出, <code>inSampleSize</code>的取值应该总是为2的指数, 比如1,2,4,8,16,32…如果外界传递<code>inSampleSize</code>不为2的指数, 那么系统会向下取整并选择一个最接近的2的指数来代替. 比如如果<code>inSampleSize=3</code>,那么系统会选择2来代替. <strong>但是这条规则并不作用于所有的android版本, 所以可以当成一个开发建议</strong></p>
-<hr>
-<p>整理一下开发中代码流程:</p>
-<ol>
-<li>将<code>BitmapFactory.Options</code>的<code>inJustDecodeBounds</code>参数设置为true并加载图片.</li>
-<li>从<code>BitmapFactory.Options</code>取出图片的原始宽高信息, 他们对应于<code>outWidth</code>和<code>outHeight</code>参数</li>
-<li>根据采样率的规则并结合目标View的所需大小计算出采样率<code>inSampleSize</code></li>
-<li>将<code>BitmapFactory.Options</code>的<code>inJustDecodeBounds</code>参数设为false, 然后重新加载.</li>
-</ol>
-<p>第一个步骤设置了一个参数, 这个参数的作用就是在加载图片的时候是否只是加载图片宽高信息而不把图片全部加载到内存. 所以这个操作是个<strong>轻量级的</strong>.</p>
-<p>通过这些步骤就可以整理出以下的工具加载图片类调用<code>decodeFixedSizeForResource()</code>即可.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div></pre></td><td class="code"><pre><div class="line">public class MyBitmapLoadUtil &#123;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 对一个Resources的资源文件进行指定长宽来加载进内存, 并把这个bitmap对象返回</div><div class="line">     *</div><div class="line">     * @param res   资源文件对象</div><div class="line">     * @param resId 要操作的图片id</div><div class="line">     * @param reqWidth 最终想要得到bitmap的宽度</div><div class="line">     * @param reqHeight 最终想要得到bitmap的高度</div><div class="line">     * @return 返回采样之后的bitmap对象</div><div class="line">     */</div><div class="line">    public static Bitmap decodeFixedSizeForResource(Resources res, int resId, int reqWidth, int reqHeight)&#123;</div><div class="line">        // 首先先指定加载的模式 为只是获取资源文件的大小</div><div class="line">        BitmapFactory.Options options = new BitmapFactory.Options();</div><div class="line">        options.inJustDecodeBounds = true;</div><div class="line">        BitmapFactory.decodeResource(res, resId, options);</div><div class="line"></div><div class="line">        //Calculate Size  计算要设置的采样率 并把值设置到option上</div><div class="line">        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);</div><div class="line"></div><div class="line">        // 关闭只加载属性模式, 并重新加载的时候传入自定义的options对象</div><div class="line">        options.inJustDecodeBounds = false;</div><div class="line">        return BitmapFactory.decodeResource(res, resId, options);</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     *  一个计算工具类的方法, 传入图片的属性对象和 想要实现的目标大小. 通过计算得到采样值</div><div class="line">     */</div><div class="line">    private static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) &#123;</div><div class="line">        //Raw height and width of image</div><div class="line">        //原始图片的宽高属性</div><div class="line">        final int height = options.outHeight;</div><div class="line">        final int width = options.outWidth;</div><div class="line">        int inSampleSize = 1;</div><div class="line"></div><div class="line">        // 如果想要实现的宽高比原始图片的宽高小那么就可以计算出采样率, 否则不需要改变采样率</div><div class="line">        if (reqWidth &lt; height || reqHeight &lt; width)&#123;</div><div class="line">            int halfWidth = width/2;</div><div class="line">            int halfHeight = height/2;</div><div class="line"></div><div class="line">            // 判断原始长宽的一半是否比目标大小小, 如果小那么增大采样率2倍, 直到出现修改后原始值会比目标值大的时候</div><div class="line">            while((halfHeight/inSampleSize) &gt;= reqHeight &amp;&amp; (halfWidth/inSampleSize) &gt;= reqWidth)&#123;</div><div class="line">                inSampleSize *= 2;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        return inSampleSize;</div><div class="line"></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>当给<code>ImageView</code>设置的时候传入控件的大小, 就会自动转换返回. 可以看一下下面的两张图, 当加载一个分辨率很大的图片如果不使用此方法那么就出<strong>程序崩溃</strong></p>
-<p><strong>了解一下一个原始图片到手机显示的最终占用内存大小</strong></p>
-<p><img src="http://szysky.com/2016/08/23/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-12-Bitmap%E7%9A%84%E5%8A%A0%E8%BD%BD%E5%92%8CCache/load_oom_480dpi.png" alt="img"></p>
-<p><img src="http://szysky.com/2016/08/23/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-12-Bitmap%E7%9A%84%E5%8A%A0%E8%BD%BD%E5%92%8CCache/load_oom_560dpi.png" alt="img"></p>
-<h2 id="Android中的缓存策略"><a href="#Android中的缓存策略" class="headerlink" title="Android中的缓存策略"></a>Android中的缓存策略</h2><p>目前常用的一种缓存算法是<strong>LRU(Least Recently Used)</strong>, 最近最少使用算法. 核心思想: 当缓存存满时, 会优先淘汰那些近期最少使用的缓存对象. 采用LRU算法的缓存有两种: <strong>LruCache</strong>和<strong>DiskLruCache</strong>,<strong>LruCache</strong>用于实现内存缓存, <strong>DiskLruCache</strong>则充当了存储设备缓存, 当组合使用后就可以实现一个类似<code>ImageLoader</code>这样的类库.</p>
-<h3 id="LruCache"><a href="#LruCache" class="headerlink" title="LruCache"></a>LruCache</h3><p><strong>LruCache</strong>是Android 3.1所提供的一个缓存类, 通过<code>support-v4</code>兼容包可以兼容到早期的Android版本</p>
-<p><strong>LruCache</strong>是一个泛型类, 它内部采用了一个<code>LinkedHashMap</code>以强引用的方式存储外界的缓存对象, 其提供了get和put方法来完成缓存的获取和添加的操作. 当缓存满了时, <strong>LruCache</strong>会移除较早使用的缓存对象, 然后在添加新的缓存对象. 普及一下各种引用的区别:</p>
-<ul>
-<li>强引用: 直接的对象引用</li>
-<li>软引用: 当一个对象只有软引用存在时, 系统内存不足时此对象会被gc回收</li>
-<li>弱引用: 当一个对象只有弱引用存在时, 对象会随下一次gc时被回收</li>
-</ul>
-<p>创建的缓存对象大小通过可用内存的1/8来进行分配, 并需要重写<code>sizeOf()</code>方法, <code>sizeOf()</code>是计算缓存对象的大小, 如果有需要还可以重写<code>entryRemoved()</code>,在<strong>Lru</strong>移除旧缓存的时候回调用此方法.</p>
-<p>获取, 添加, 删除, 分别对应get, put, remove</p>
-<h3 id="DiskLruCache"><a href="#DiskLruCache" class="headerlink" title="DiskLruCache"></a>DiskLruCache</h3><p><strong>DiskLruCache</strong>用于实现存储设备缓存, 即磁盘缓存. 它通过将缓存对象写入文件系统从而实现缓存的效果.</p>
-<p><strong>1. DiskLruCache</strong>的创建</p>
-<p><strong>DiskLruCache</strong>并不能通过构造方法来创建, 他提供了<code>open()</code>方法用于创建自身, 如下所示</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">public static DiskLruCache open(File directory, int appVersion, int valueCount, long maxSize)</div></pre></td></tr></table></figure>
-<p>这个方法有四个参数:</p>
-<ol>
-<li><code>File directory</code>: 表示磁盘缓存在文件系统中的存储路径. 可以选择SD卡上的缓存目录, 具体是指<code>/sdcard/Andriod/data/package_name/cache</code>目录, package_name表示当前应用的包名, 当应用被卸载后, 此目录会一并删除掉. 也可以选择data目录下. 或者其他地方. <strong>这里给出的建议:</strong>如果应用卸载后就希望删除缓存文件的话 , 那么就选择SD卡上的缓存目录, 如果希望保留缓存数据那就应该选择SD卡上的其他目录.</li>
-<li><code>int appVersion</code>: 表示应用的版本号, 一般设为1即可. 当版本号发生改变的时候<code>DiskLruCache</code>会清空之前所有的缓存文件, 在实际开发中这个实用性不大.</li>
-<li><code>int valueCount</code>: 表示单个节点所对应的数据的个数, 一般设为1.</li>
-<li><code>long maxSize</code>: 表示缓存的总大小, 比如50MB, 当缓存大小超出这个设定值后, <code>DiskLruCache</code>会清除一些缓存而保证总大小不大于这个设定值.</li>
-</ol>
-<p><strong>2. DiskLruCache的缓存添加</strong></p>
-<p><code>DiskLruCache</code>的缓存添加的操作是通过<code>Editor</code>完成的, <code>Editor</code>表示一个缓存对象的编辑对象.</p>
-<p>如果还是缓存图片为例子, 每一张图片都通过图片的<code>url</code>为key, 这里由于url可能会有特殊字符所以采用<strong>url的md5值</strong>作为key. 根据这个key就可以通过<code>edit()</code>来获取<code>Editor</code>对象, 如果这个缓存对象正在被编辑, 那么edit()就会返回null. 即<code>DiskLruCache</code>不允许同时编辑一个缓存对象.</p>
-<p>当用<code>.edit(key)</code>获得了<code>Editor</code>对象之后. 通过<code>editor.newOutputStream(0)</code>就可以得到一个文件输出流. 由于之前<code>open()</code>方法设置了一个节点只能有一个数据. 所以在获得输出流的时候传入常量0即可.</p>
-<p>有了文件输出流, 可以当网络下载图片时, 图片就可以通过这个文件输出流写入到文件系统上. 别忘了使用<code>Bufferedxxxxx</code>写完之后, 要通过<code>Editor中commit()</code>来提交写操作, 如果下载中发生异常, 那么使用<code>Editor中abort()</code>来回退整个操作.</p>
-<p><strong>3. DiskLruCache的缓存查找</strong></p>
-<p>和缓存的添加过程类似, 缓存查找过程也需要将url转换成key, 然后通过<code>DiskLruCache#get()</code>方法可以得到一个<code>Snapshot</code>对象, 接着在通过<code>Snapshot</code>对象即可得到缓存的文件输入流, 有了文件输入流, 自然就可以得到<code>Bitmap</code>对象. 为了避免加载图片出现OOM所以采用压缩的方式. 在前面对<code>BitmapFactory.Options</code>的使用说明了. <strong>但是这中方法对FileInputStream的缩放存在问题</strong>. 原因是<code>FileInputStream</code>是一种有序的文件流, 而两次<code>decodeStream</code>调用会影响文件的位置属性, 这样在第二次<code>decodeStream</code>的时候得到的会是null. 针对这一个问题, 可以通过文件流来得到它所对应的<strong>文件描述符</strong>, 然后通过<code>BitmapFactory.decodeFileDescription()</code>来加载一张缩放后的图片.</p>
-<h3 id="ImageLoader的实现"><a href="#ImageLoader的实现" class="headerlink" title="ImageLoader的实现"></a>ImageLoader的实现</h3><p>一个好的ImageLoader应该具备以下几点:</p>
-<ul>
-<li>图片的压缩</li>
-<li>网络拉取</li>
-<li>内存缓存</li>
-<li>磁盘缓存</li>
-<li>图片的同步加载</li>
-<li>图片的异步加载</li>
-</ul>
-<p>也可以利用<code>picasso</code>和<code>glide</code>这种图片加载类库, 使用<strong>构建者</strong>模式提供使用. 本文练习demo实现了链式调用设置控件,并制定url然后自动去获取. 相关联的类在<code>load包中</code></p>
-<p>可以看看有了缓存的区别</p>
-<p><img src="http://szysky.com/2016/08/23/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-12-Bitmap%E7%9A%84%E5%8A%A0%E8%BD%BD%E5%92%8CCache/lrucache_result.png" alt="img"></p>
-<h2 id="ImageLoader的使用"><a href="#ImageLoader的使用" class="headerlink" title="ImageLoader的使用"></a>ImageLoader的使用</h2><h3 id="照片墙效果"><a href="#照片墙效果" class="headerlink" title="照片墙效果"></a>照片墙效果</h3><p>这里定义一个自定义的<code>ImageView</code>作为GridView的item布局控件, 之所以这样是想让图片的控件自动去使用设备达到<strong>宽高相等的效果比较好看些</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">public class SquareImageView extends ImageView &#123;</div><div class="line">    public SquareImageView(Context context) &#123;</div><div class="line">        super(context);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public SquareImageView(Context context, AttributeSet attrs) &#123;</div><div class="line">        super(context, attrs);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public SquareImageView(Context context, AttributeSet attrs, int defStyleAttr) &#123;</div><div class="line">        super(context, attrs, defStyleAttr);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">      @Override</div><div class="line">    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) &#123;</div><div class="line">        // 由于这里准备提供给GridView控件使用, 对于一个水平线有几个是未知的</div><div class="line">        // 那么通过父控件的测量传到这里的宽度规格, 也当做高度即可</div><div class="line">        super.onMeasure(widthMeasureSpec, widthMeasureSpec);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>这个实现很简单, 利用动态的宽度同时也当做高度即可实现预期的效果.</p>
-<p><img src="http://szysky.com/2016/08/23/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-12-Bitmap%E7%9A%84%E5%8A%A0%E8%BD%BD%E5%92%8CCache/photo_wall_result.png" alt="img"></p>
-<p>这个就是结果, 或许应该对网络加上判断非wifi给一个提示, 可能首次加载会需要比较多的流量.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"> // 根据连接网络的情况判断是否加载图片</div><div class="line">if (!NetWorkUtil.isWifi(getApplicationContext())) &#123;</div><div class="line">  AlertDialog.Builder builder = new AlertDialog.Builder(this);</div><div class="line">  builder.setMessage(&quot;首次使用会从手机网络下载图片, 是否确认下载?&quot;)</div><div class="line">          .setTitle(&quot;友情提示&quot;)</div><div class="line">          .setPositiveButton(&quot;好的.&quot;, new DialogInterface.OnClickListener() &#123;</div><div class="line">              @Override</div><div class="line">              public void onClick(DialogInterface dialog, int which) &#123;</div><div class="line">                  mCanLoadForPhoneNet = true;</div><div class="line">                  imageAdapter.notifyDataSetChanged();</div><div class="line">              &#125;</div><div class="line">          &#125;)</div><div class="line">          .setNegativeButton(&quot;不行!&quot;, new DialogInterface.OnClickListener() &#123;</div><div class="line">              @Override</div><div class="line">              public void onClick(DialogInterface dialog, int which) &#123;</div><div class="line">                  Toast.makeText(getApplicationContext(), &quot;瞅你扣那样!!!&quot;, Toast.LENGTH_LONG).show();</div><div class="line">              &#125;</div><div class="line">          &#125;).show();</div><div class="line">&#125;else&#123;</div><div class="line">  mCanLoadForPhoneNet = true;</div><div class="line">&#125;</div><div class="line"></div><div class="line">// NetWorkUtil类</div><div class="line">public class NetWorkUtil &#123;</div><div class="line">    public static boolean isWifi(Context context) &#123;</div><div class="line">        ConnectivityManager connectivityManager = (ConnectivityManager) context</div><div class="line">                .getSystemService(Context.CONNECTIVITY_SERVICE);</div><div class="line">        NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();</div><div class="line">        if (activeNetInfo != null</div><div class="line">                &amp;&amp; activeNetInfo.getType() == ConnectivityManager.TYPE_WIFI) &#123;</div><div class="line">            return true;</div><div class="line">        &#125;</div><div class="line">        return false;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>然后优化列表 <strong>只有在GridView静止的时候才进行图片加载, 避免滑动时候的无谓的线程加载消耗(即使ImageLoader内部使用了线程池, 你仍然有这么做的必要)</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">GridView gv_main = (GridView) findViewById(R.id.gv_main);</div><div class="line">// 监听GridView的滑动状态</div><div class="line">  gv_main.setOnScrollListener(new AbsListView.OnScrollListener() &#123;</div><div class="line">      @Override</div><div class="line">      public void onScrollStateChanged(AbsListView view, int scrollState) &#123;</div><div class="line">          if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE)&#123;</div><div class="line">              mIsGridViewIdle = true;</div><div class="line">              // 并触发更新adapter</div><div class="line">              imageAdapter.notifyDataSetChanged();</div><div class="line">          &#125;else&#123;</div><div class="line">              mIsGridViewIdle = false;</div><div class="line">          &#125;</div><div class="line">      &#125;</div><div class="line"></div><div class="line">      @Override</div><div class="line">      public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) &#123;</div><div class="line"></div><div class="line">      &#125;</div><div class="line">  &#125;);</div></pre></td></tr></table></figure>
-<p>最后在<strong>adapter中的getView()设置标记位的判断, 只有在wifi和静止的状态下才进行加载请求</strong>下面是<code>getView()</code>代码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public View getView(int position, View convertView, ViewGroup parent) &#123;</div><div class="line">  ViewHolder holder = null;</div><div class="line">  if (convertView == null)&#123;</div><div class="line">      convertView = View.inflate(mContext, R.layout.item_photo_wall, null);</div><div class="line">      holder = new ViewHolder();</div><div class="line">      holder.mImageView = (ImageView) convertView.findViewById(R.id.iv_square);</div><div class="line">      convertView.setTag(holder);</div><div class="line">  &#125;else&#123;</div><div class="line">      holder = (ViewHolder) convertView.getTag();</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  // 设置默认图片</div><div class="line">  ImageView mImageView = holder.mImageView;</div><div class="line">  mImageView.setImageResource(android.R.drawable.screen_background_dark_transparent);</div><div class="line"></div><div class="line"></div><div class="line">  // 检测是否wifi 和 是否是滑动状态</div><div class="line">  // 优化重点</div><div class="line">  if (mCanLoadForPhoneNet &amp;&amp; mIsGridViewIdle)&#123;</div><div class="line">      // 加载图片</div><div class="line">      mImageLoader.setImageView(mImageView).url(mUrls.get(position));</div><div class="line">  &#125;</div><div class="line"></div><div class="line"></div><div class="line">  return convertView;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="http://yoursite.com/2017/09/06/android/books/《Android开发艺术探索》Chap12_Bitmap的加载和Cache/" data-id="cj78uk37m0003kbpjtovgua5o" class="article-share-link"><i class="fa fa-share"></i>Share</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-        <a href="http://yoursite.com/2017/09/06/android/books/《Android开发艺术探索》Chap12_Bitmap的加载和Cache/#comments" class="article-comment-link">Comments</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
     <nav id="page-nav">
         <a class="extend prev" rel="prev" href="/page/3/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/5/">Next &raquo;</a>
     </nav>
@@ -2987,7 +3107,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">categories</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">43</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/glide/">glide</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/ssh/">ssh</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">2</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">43</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/glide/">glide</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/ssh/">ssh</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -2996,7 +3116,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">archives</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">53</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">54</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
         </div>
     </div>
 
@@ -3005,7 +3125,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">tags</h3>
         <div class="widget">
-            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">37</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/">ssh</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">37</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/">ssh</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -3014,7 +3134,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">tag cloud</h3>
         <div class="widget tagcloud">
-            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 16.67px;">code</a> <a href="/tags/git/" style="font-size: 11.67px;">git</a> <a href="/tags/github/" style="font-size: 18.33px;">github</a> <a href="/tags/glide/" style="font-size: 15px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 13.33px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.67px;">markdown</a> <a href="/tags/mysql/" style="font-size: 16.67px;">mysql</a> <a href="/tags/node/" style="font-size: 18.33px;">node</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/ssh/" style="font-size: 10px;">ssh</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.67px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.67px;">设计模式</a>
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 16.67px;">code</a> <a href="/tags/git/" style="font-size: 11.67px;">git</a> <a href="/tags/github/" style="font-size: 18.33px;">github</a> <a href="/tags/glide/" style="font-size: 15px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 13.33px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.67px;">markdown</a> <a href="/tags/mysql/" style="font-size: 16.67px;">mysql</a> <a href="/tags/node/" style="font-size: 18.33px;">node</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/ssh/" style="font-size: 11.67px;">ssh</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.67px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.67px;">设计模式</a>
         </div>
     </div>
 

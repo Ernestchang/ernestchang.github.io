@@ -157,7 +157,7 @@
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                74
+                75
                 <span>posts</span>
             </div>
             <div class="article-info-block">
@@ -210,6 +210,219 @@
 
             
             <section id="main">
+    <article id="post-android/books/《Android开发艺术探索》Chap12_Bitmap的加载和Cache" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/09/06/android/books/《Android开发艺术探索》Chap12_Bitmap的加载和Cache/">《Android开发艺术探索》Chap12_Bitmap的加载和Cache</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/09/06/android/books/《Android开发艺术探索》Chap12_Bitmap的加载和Cache/">
+            <time datetime="2017-09-06T09:40:01.000Z" itemprop="datePublished">2017-09-06</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/android/">android</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <blockquote>
+<p>由于Bitmap的特殊性以及Android对单个应用所施加的内存限制, 会导致加载Bitmap的时候很容易出现内存溢出. 还有常用的缓存策略.<br>注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a></p>
+</blockquote>
+<p><a href="https://github.com/suzeyu1992/Notes_AndroidDevSeek" target="_blank" rel="external">blog相关代码</a></p>
+<h2 id="Bitmap的高效加载"><a href="#Bitmap的高效加载" class="headerlink" title="Bitmap的高效加载"></a>Bitmap的高效加载</h2><p>先来简单介绍一下如何加载一个<code>Bitmap</code>, <code>Bitmap</code>在android中指的是一张图片, 可以是png格式也可以是jpg等其他常见的图片格式.</p>
+<p><strong>那么如何加载一个图片?</strong>首先<code>BitmapFactory</code>类提供了四种方法: <code>decodeFile()</code>, <code>decodeResource()</code>, <code>decodeStream()</code>, <code>decodeByteArray()</code>. 分别用于从文件系统, 资源文件, 输入流以及字节数组加载出一个<code>Bitmap</code>对象. 其中<code>decodeFile</code>和<code>decodeResource</code>又间接调用了<code>decodeStream()</code>方法, 这四类方法最终是在Android的底层实现的, 对应着<code>BitmapFactory</code>类的几个native方法.</p>
+<p><strong>高效加载的Bitmap的核心思想:</strong>采用<code>BitmapFactory.Options</code>来加载所需尺寸的图片. 比如说一个<code>ImageView</code>控件的大小为<code>300*300</code>. 而图片的大小为<code>800*800</code>. 这个时候如果直接加载那么就比较浪费资源, 需要更多的内存空间来加载图片, 这不是很必要的. 这里我们就可以先把图片按一定的采样率来缩小图片在进行加载. 不仅降低了内存占用,还在一定程度上避免了<code>OOM</code>异常. 也提高了加载bitmap时的性能.</p>
+<p><strong>而通过Options参数来缩放图片</strong>: 主要是用到了<code>inSampleSize</code>参数, 即采样率.</p>
+<ul>
+<li>如果是<strong>inSampleSize=1</strong>那么和原图大小一样,</li>
+<li>如果是<strong>inSampleSize=2</strong>那么宽高都为原图<strong>1/2</strong>, 而像素为原图的<strong>1/4</strong>, 占用的内存大小也为原图的<strong>1/4</strong></li>
+<li>如果是<strong>inSampleSize=3</strong>那么宽高都为原图<strong>1/3</strong>, 而像素为原图的<strong>1/9</strong>, 占用的内存大小也为原图的<strong>1/9</strong></li>
+<li>以此类推…..</li>
+</ul>
+<p><strong>要知道Android中加载图片具体在内存中的占有的大小是根据图片的像素决定的, 而与图片的实际占用空间大小没有关系.而且如果要加载mipmap下的图片, 还会根据不同的分辨率下的文件夹进行不同的放大缩小.</strong></p>
+<p>列举现在有一张图片像素为:<strong>1024*1024</strong>, 如果采用<code>ARGB8888</code>(四个颜色通道每个占有一个字节,相当于1点像素占用4个字节的空间)的格式来存储.(这里不考虑不同的资源文件下情况分析) 那么图片的占有大小就是<code>1024*1024*4</code>那现在这张图片在内存中占用<strong>4MB</strong>.</p>
+<p>如果针对刚才的图片进行<code>inSampleSize=2</code>, 那么最后占用内存大小为<code>512*512*4</code>, 也就是<strong>1MB</strong></p>
+<p>采样率的数值必须是大于1的整数是才会有缩放效果, 并且采样率同时作用于宽/高, 这将导致缩放后的图片以这个<strong>采样率的2次方递减, 即内存占用缩放大小为1/(inSampleSize的二次方).</strong> 如果小于1那么相当于=1的时候. 在官方文档中指出, <code>inSampleSize</code>的取值应该总是为2的指数, 比如1,2,4,8,16,32…如果外界传递<code>inSampleSize</code>不为2的指数, 那么系统会向下取整并选择一个最接近的2的指数来代替. 比如如果<code>inSampleSize=3</code>,那么系统会选择2来代替. <strong>但是这条规则并不作用于所有的android版本, 所以可以当成一个开发建议</strong></p>
+<hr>
+<p>整理一下开发中代码流程:</p>
+<ol>
+<li>将<code>BitmapFactory.Options</code>的<code>inJustDecodeBounds</code>参数设置为true并加载图片.</li>
+<li>从<code>BitmapFactory.Options</code>取出图片的原始宽高信息, 他们对应于<code>outWidth</code>和<code>outHeight</code>参数</li>
+<li>根据采样率的规则并结合目标View的所需大小计算出采样率<code>inSampleSize</code></li>
+<li>将<code>BitmapFactory.Options</code>的<code>inJustDecodeBounds</code>参数设为false, 然后重新加载.</li>
+</ol>
+<p>第一个步骤设置了一个参数, 这个参数的作用就是在加载图片的时候是否只是加载图片宽高信息而不把图片全部加载到内存. 所以这个操作是个<strong>轻量级的</strong>.</p>
+<p>通过这些步骤就可以整理出以下的工具加载图片类调用<code>decodeFixedSizeForResource()</code>即可.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div></pre></td><td class="code"><pre><div class="line">public class MyBitmapLoadUtil &#123;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 对一个Resources的资源文件进行指定长宽来加载进内存, 并把这个bitmap对象返回</div><div class="line">     *</div><div class="line">     * @param res   资源文件对象</div><div class="line">     * @param resId 要操作的图片id</div><div class="line">     * @param reqWidth 最终想要得到bitmap的宽度</div><div class="line">     * @param reqHeight 最终想要得到bitmap的高度</div><div class="line">     * @return 返回采样之后的bitmap对象</div><div class="line">     */</div><div class="line">    public static Bitmap decodeFixedSizeForResource(Resources res, int resId, int reqWidth, int reqHeight)&#123;</div><div class="line">        // 首先先指定加载的模式 为只是获取资源文件的大小</div><div class="line">        BitmapFactory.Options options = new BitmapFactory.Options();</div><div class="line">        options.inJustDecodeBounds = true;</div><div class="line">        BitmapFactory.decodeResource(res, resId, options);</div><div class="line"></div><div class="line">        //Calculate Size  计算要设置的采样率 并把值设置到option上</div><div class="line">        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);</div><div class="line"></div><div class="line">        // 关闭只加载属性模式, 并重新加载的时候传入自定义的options对象</div><div class="line">        options.inJustDecodeBounds = false;</div><div class="line">        return BitmapFactory.decodeResource(res, resId, options);</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     *  一个计算工具类的方法, 传入图片的属性对象和 想要实现的目标大小. 通过计算得到采样值</div><div class="line">     */</div><div class="line">    private static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) &#123;</div><div class="line">        //Raw height and width of image</div><div class="line">        //原始图片的宽高属性</div><div class="line">        final int height = options.outHeight;</div><div class="line">        final int width = options.outWidth;</div><div class="line">        int inSampleSize = 1;</div><div class="line"></div><div class="line">        // 如果想要实现的宽高比原始图片的宽高小那么就可以计算出采样率, 否则不需要改变采样率</div><div class="line">        if (reqWidth &lt; height || reqHeight &lt; width)&#123;</div><div class="line">            int halfWidth = width/2;</div><div class="line">            int halfHeight = height/2;</div><div class="line"></div><div class="line">            // 判断原始长宽的一半是否比目标大小小, 如果小那么增大采样率2倍, 直到出现修改后原始值会比目标值大的时候</div><div class="line">            while((halfHeight/inSampleSize) &gt;= reqHeight &amp;&amp; (halfWidth/inSampleSize) &gt;= reqWidth)&#123;</div><div class="line">                inSampleSize *= 2;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        return inSampleSize;</div><div class="line"></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>当给<code>ImageView</code>设置的时候传入控件的大小, 就会自动转换返回. 可以看一下下面的两张图, 当加载一个分辨率很大的图片如果不使用此方法那么就出<strong>程序崩溃</strong></p>
+<p><strong>了解一下一个原始图片到手机显示的最终占用内存大小</strong></p>
+<p><img src="http://szysky.com/2016/08/23/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-12-Bitmap%E7%9A%84%E5%8A%A0%E8%BD%BD%E5%92%8CCache/load_oom_480dpi.png" alt="img"></p>
+<p><img src="http://szysky.com/2016/08/23/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-12-Bitmap%E7%9A%84%E5%8A%A0%E8%BD%BD%E5%92%8CCache/load_oom_560dpi.png" alt="img"></p>
+<h2 id="Android中的缓存策略"><a href="#Android中的缓存策略" class="headerlink" title="Android中的缓存策略"></a>Android中的缓存策略</h2><p>目前常用的一种缓存算法是<strong>LRU(Least Recently Used)</strong>, 最近最少使用算法. 核心思想: 当缓存存满时, 会优先淘汰那些近期最少使用的缓存对象. 采用LRU算法的缓存有两种: <strong>LruCache</strong>和<strong>DiskLruCache</strong>,<strong>LruCache</strong>用于实现内存缓存, <strong>DiskLruCache</strong>则充当了存储设备缓存, 当组合使用后就可以实现一个类似<code>ImageLoader</code>这样的类库.</p>
+<h3 id="LruCache"><a href="#LruCache" class="headerlink" title="LruCache"></a>LruCache</h3><p><strong>LruCache</strong>是Android 3.1所提供的一个缓存类, 通过<code>support-v4</code>兼容包可以兼容到早期的Android版本</p>
+<p><strong>LruCache</strong>是一个泛型类, 它内部采用了一个<code>LinkedHashMap</code>以强引用的方式存储外界的缓存对象, 其提供了get和put方法来完成缓存的获取和添加的操作. 当缓存满了时, <strong>LruCache</strong>会移除较早使用的缓存对象, 然后在添加新的缓存对象. 普及一下各种引用的区别:</p>
+<ul>
+<li>强引用: 直接的对象引用</li>
+<li>软引用: 当一个对象只有软引用存在时, 系统内存不足时此对象会被gc回收</li>
+<li>弱引用: 当一个对象只有弱引用存在时, 对象会随下一次gc时被回收</li>
+</ul>
+<p>创建的缓存对象大小通过可用内存的1/8来进行分配, 并需要重写<code>sizeOf()</code>方法, <code>sizeOf()</code>是计算缓存对象的大小, 如果有需要还可以重写<code>entryRemoved()</code>,在<strong>Lru</strong>移除旧缓存的时候回调用此方法.</p>
+<p>获取, 添加, 删除, 分别对应get, put, remove</p>
+<h3 id="DiskLruCache"><a href="#DiskLruCache" class="headerlink" title="DiskLruCache"></a>DiskLruCache</h3><p><strong>DiskLruCache</strong>用于实现存储设备缓存, 即磁盘缓存. 它通过将缓存对象写入文件系统从而实现缓存的效果.</p>
+<p><strong>1. DiskLruCache</strong>的创建</p>
+<p><strong>DiskLruCache</strong>并不能通过构造方法来创建, 他提供了<code>open()</code>方法用于创建自身, 如下所示</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">public static DiskLruCache open(File directory, int appVersion, int valueCount, long maxSize)</div></pre></td></tr></table></figure>
+<p>这个方法有四个参数:</p>
+<ol>
+<li><code>File directory</code>: 表示磁盘缓存在文件系统中的存储路径. 可以选择SD卡上的缓存目录, 具体是指<code>/sdcard/Andriod/data/package_name/cache</code>目录, package_name表示当前应用的包名, 当应用被卸载后, 此目录会一并删除掉. 也可以选择data目录下. 或者其他地方. <strong>这里给出的建议:</strong>如果应用卸载后就希望删除缓存文件的话 , 那么就选择SD卡上的缓存目录, 如果希望保留缓存数据那就应该选择SD卡上的其他目录.</li>
+<li><code>int appVersion</code>: 表示应用的版本号, 一般设为1即可. 当版本号发生改变的时候<code>DiskLruCache</code>会清空之前所有的缓存文件, 在实际开发中这个实用性不大.</li>
+<li><code>int valueCount</code>: 表示单个节点所对应的数据的个数, 一般设为1.</li>
+<li><code>long maxSize</code>: 表示缓存的总大小, 比如50MB, 当缓存大小超出这个设定值后, <code>DiskLruCache</code>会清除一些缓存而保证总大小不大于这个设定值.</li>
+</ol>
+<p><strong>2. DiskLruCache的缓存添加</strong></p>
+<p><code>DiskLruCache</code>的缓存添加的操作是通过<code>Editor</code>完成的, <code>Editor</code>表示一个缓存对象的编辑对象.</p>
+<p>如果还是缓存图片为例子, 每一张图片都通过图片的<code>url</code>为key, 这里由于url可能会有特殊字符所以采用<strong>url的md5值</strong>作为key. 根据这个key就可以通过<code>edit()</code>来获取<code>Editor</code>对象, 如果这个缓存对象正在被编辑, 那么edit()就会返回null. 即<code>DiskLruCache</code>不允许同时编辑一个缓存对象.</p>
+<p>当用<code>.edit(key)</code>获得了<code>Editor</code>对象之后. 通过<code>editor.newOutputStream(0)</code>就可以得到一个文件输出流. 由于之前<code>open()</code>方法设置了一个节点只能有一个数据. 所以在获得输出流的时候传入常量0即可.</p>
+<p>有了文件输出流, 可以当网络下载图片时, 图片就可以通过这个文件输出流写入到文件系统上. 别忘了使用<code>Bufferedxxxxx</code>写完之后, 要通过<code>Editor中commit()</code>来提交写操作, 如果下载中发生异常, 那么使用<code>Editor中abort()</code>来回退整个操作.</p>
+<p><strong>3. DiskLruCache的缓存查找</strong></p>
+<p>和缓存的添加过程类似, 缓存查找过程也需要将url转换成key, 然后通过<code>DiskLruCache#get()</code>方法可以得到一个<code>Snapshot</code>对象, 接着在通过<code>Snapshot</code>对象即可得到缓存的文件输入流, 有了文件输入流, 自然就可以得到<code>Bitmap</code>对象. 为了避免加载图片出现OOM所以采用压缩的方式. 在前面对<code>BitmapFactory.Options</code>的使用说明了. <strong>但是这中方法对FileInputStream的缩放存在问题</strong>. 原因是<code>FileInputStream</code>是一种有序的文件流, 而两次<code>decodeStream</code>调用会影响文件的位置属性, 这样在第二次<code>decodeStream</code>的时候得到的会是null. 针对这一个问题, 可以通过文件流来得到它所对应的<strong>文件描述符</strong>, 然后通过<code>BitmapFactory.decodeFileDescription()</code>来加载一张缩放后的图片.</p>
+<h3 id="ImageLoader的实现"><a href="#ImageLoader的实现" class="headerlink" title="ImageLoader的实现"></a>ImageLoader的实现</h3><p>一个好的ImageLoader应该具备以下几点:</p>
+<ul>
+<li>图片的压缩</li>
+<li>网络拉取</li>
+<li>内存缓存</li>
+<li>磁盘缓存</li>
+<li>图片的同步加载</li>
+<li>图片的异步加载</li>
+</ul>
+<p>也可以利用<code>picasso</code>和<code>glide</code>这种图片加载类库, 使用<strong>构建者</strong>模式提供使用. 本文练习demo实现了链式调用设置控件,并制定url然后自动去获取. 相关联的类在<code>load包中</code></p>
+<p>可以看看有了缓存的区别</p>
+<p><img src="http://szysky.com/2016/08/23/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-12-Bitmap%E7%9A%84%E5%8A%A0%E8%BD%BD%E5%92%8CCache/lrucache_result.png" alt="img"></p>
+<h2 id="ImageLoader的使用"><a href="#ImageLoader的使用" class="headerlink" title="ImageLoader的使用"></a>ImageLoader的使用</h2><h3 id="照片墙效果"><a href="#照片墙效果" class="headerlink" title="照片墙效果"></a>照片墙效果</h3><p>这里定义一个自定义的<code>ImageView</code>作为GridView的item布局控件, 之所以这样是想让图片的控件自动去使用设备达到<strong>宽高相等的效果比较好看些</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">public class SquareImageView extends ImageView &#123;</div><div class="line">    public SquareImageView(Context context) &#123;</div><div class="line">        super(context);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public SquareImageView(Context context, AttributeSet attrs) &#123;</div><div class="line">        super(context, attrs);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public SquareImageView(Context context, AttributeSet attrs, int defStyleAttr) &#123;</div><div class="line">        super(context, attrs, defStyleAttr);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">      @Override</div><div class="line">    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) &#123;</div><div class="line">        // 由于这里准备提供给GridView控件使用, 对于一个水平线有几个是未知的</div><div class="line">        // 那么通过父控件的测量传到这里的宽度规格, 也当做高度即可</div><div class="line">        super.onMeasure(widthMeasureSpec, widthMeasureSpec);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这个实现很简单, 利用动态的宽度同时也当做高度即可实现预期的效果.</p>
+<p><img src="http://szysky.com/2016/08/23/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-12-Bitmap%E7%9A%84%E5%8A%A0%E8%BD%BD%E5%92%8CCache/photo_wall_result.png" alt="img"></p>
+<p>这个就是结果, 或许应该对网络加上判断非wifi给一个提示, 可能首次加载会需要比较多的流量.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"> // 根据连接网络的情况判断是否加载图片</div><div class="line">if (!NetWorkUtil.isWifi(getApplicationContext())) &#123;</div><div class="line">  AlertDialog.Builder builder = new AlertDialog.Builder(this);</div><div class="line">  builder.setMessage(&quot;首次使用会从手机网络下载图片, 是否确认下载?&quot;)</div><div class="line">          .setTitle(&quot;友情提示&quot;)</div><div class="line">          .setPositiveButton(&quot;好的.&quot;, new DialogInterface.OnClickListener() &#123;</div><div class="line">              @Override</div><div class="line">              public void onClick(DialogInterface dialog, int which) &#123;</div><div class="line">                  mCanLoadForPhoneNet = true;</div><div class="line">                  imageAdapter.notifyDataSetChanged();</div><div class="line">              &#125;</div><div class="line">          &#125;)</div><div class="line">          .setNegativeButton(&quot;不行!&quot;, new DialogInterface.OnClickListener() &#123;</div><div class="line">              @Override</div><div class="line">              public void onClick(DialogInterface dialog, int which) &#123;</div><div class="line">                  Toast.makeText(getApplicationContext(), &quot;瞅你扣那样!!!&quot;, Toast.LENGTH_LONG).show();</div><div class="line">              &#125;</div><div class="line">          &#125;).show();</div><div class="line">&#125;else&#123;</div><div class="line">  mCanLoadForPhoneNet = true;</div><div class="line">&#125;</div><div class="line"></div><div class="line">// NetWorkUtil类</div><div class="line">public class NetWorkUtil &#123;</div><div class="line">    public static boolean isWifi(Context context) &#123;</div><div class="line">        ConnectivityManager connectivityManager = (ConnectivityManager) context</div><div class="line">                .getSystemService(Context.CONNECTIVITY_SERVICE);</div><div class="line">        NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();</div><div class="line">        if (activeNetInfo != null</div><div class="line">                &amp;&amp; activeNetInfo.getType() == ConnectivityManager.TYPE_WIFI) &#123;</div><div class="line">            return true;</div><div class="line">        &#125;</div><div class="line">        return false;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>然后优化列表 <strong>只有在GridView静止的时候才进行图片加载, 避免滑动时候的无谓的线程加载消耗(即使ImageLoader内部使用了线程池, 你仍然有这么做的必要)</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">GridView gv_main = (GridView) findViewById(R.id.gv_main);</div><div class="line">// 监听GridView的滑动状态</div><div class="line">  gv_main.setOnScrollListener(new AbsListView.OnScrollListener() &#123;</div><div class="line">      @Override</div><div class="line">      public void onScrollStateChanged(AbsListView view, int scrollState) &#123;</div><div class="line">          if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE)&#123;</div><div class="line">              mIsGridViewIdle = true;</div><div class="line">              // 并触发更新adapter</div><div class="line">              imageAdapter.notifyDataSetChanged();</div><div class="line">          &#125;else&#123;</div><div class="line">              mIsGridViewIdle = false;</div><div class="line">          &#125;</div><div class="line">      &#125;</div><div class="line"></div><div class="line">      @Override</div><div class="line">      public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) &#123;</div><div class="line"></div><div class="line">      &#125;</div><div class="line">  &#125;);</div></pre></td></tr></table></figure>
+<p>最后在<strong>adapter中的getView()设置标记位的判断, 只有在wifi和静止的状态下才进行加载请求</strong>下面是<code>getView()</code>代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public View getView(int position, View convertView, ViewGroup parent) &#123;</div><div class="line">  ViewHolder holder = null;</div><div class="line">  if (convertView == null)&#123;</div><div class="line">      convertView = View.inflate(mContext, R.layout.item_photo_wall, null);</div><div class="line">      holder = new ViewHolder();</div><div class="line">      holder.mImageView = (ImageView) convertView.findViewById(R.id.iv_square);</div><div class="line">      convertView.setTag(holder);</div><div class="line">  &#125;else&#123;</div><div class="line">      holder = (ViewHolder) convertView.getTag();</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  // 设置默认图片</div><div class="line">  ImageView mImageView = holder.mImageView;</div><div class="line">  mImageView.setImageResource(android.R.drawable.screen_background_dark_transparent);</div><div class="line"></div><div class="line"></div><div class="line">  // 检测是否wifi 和 是否是滑动状态</div><div class="line">  // 优化重点</div><div class="line">  if (mCanLoadForPhoneNet &amp;&amp; mIsGridViewIdle)&#123;</div><div class="line">      // 加载图片</div><div class="line">      mImageLoader.setImageView(mImageView).url(mUrls.get(position));</div><div class="line">  &#125;</div><div class="line"></div><div class="line"></div><div class="line">  return convertView;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/09/06/android/books/《Android开发艺术探索》Chap12_Bitmap的加载和Cache/" data-id="cj78uk37m0003kbpjtovgua5o" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/09/06/android/books/《Android开发艺术探索》Chap12_Bitmap的加载和Cache/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
     <article id="post-android/books/《Android开发艺术探索》Chap11_Android的线程和线程池" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
@@ -2854,411 +3067,6 @@
 
 
 
-    <article id="post-android/books/《Android开发艺术探索》Chap2_IPC机制" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2017/09/05/android/books/《Android开发艺术探索》Chap2_IPC机制/">《Android开发艺术探索》Chap2_IPC机制</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2017/09/05/android/books/《Android开发艺术探索》Chap2_IPC机制/">
-            <time datetime="2017-09-05T01:44:25.000Z" itemprop="datePublished">2017-09-05</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a>
-    </div>
-
-                        
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/android/">android</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <blockquote>
-<p>第二章: Android中的IPC机制,深入记录Bundle, 文件共享, AIDL, Messenger, ContentProvider, Socket等进程间的通信.</p>
-<p> 注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a></p>
-</blockquote>
-<p><a href="https://github.com/suzeyu1992/Notes_AndroidDevSeek" target="_blank" rel="external">blog相关代码</a></p>
-<h2 id="Android-IPC简介"><a href="#Android-IPC简介" class="headerlink" title="Android IPC简介"></a>Android IPC简介</h2><p>IPC是<strong>Inter-Process Communication</strong>缩写,含义为进程间通信. 按照操作系统中的描述,线程是cpu调度的最小单元,而进程一般指一个执行单元. 进程中可以有一个或者多个线程.</p>
-<p>不同的操作系统有着不同的IPC机制:</p>
-<ul>
-<li><strong>Windows</strong>: 通过剪切板, 管道, 信号量来进行进程间通信</li>
-<li><strong>Linux</strong>: 通过命名管道, 共享内存, 信号量等来进行进行进程间通信</li>
-<li><strong>android</strong>: 虽然基于Linux内核,但是使用了独有的Binder机制, 也可以Socket进行通信</li>
-</ul>
-<p>使用场景: 可能有些模块因为特殊原因需要运行在单独的进程中; 或者为了加大一个应用可使用的内存; 又或者我们需要去另外一个进程去获取数据,必然需要跨进程.</p>
-<h2 id="Android中的多进程的模式"><a href="#Android中的多进程的模式" class="headerlink" title="Android中的多进程的模式"></a>Android中的多进程的模式</h2><h3 id="开启多进程模式"><a href="#开启多进程模式" class="headerlink" title="开启多进程模式"></a>开启多进程模式</h3><p>如果你想在一个应用中使用多个进程,通过清单文件给四大组件添加<code>android:process</code>属性,就可以很方便的开启多进程.</p>
-<p>还有一种非常规的创建方式,通过JNI在native层去fork一个新的进程.这种只做了解.</p>
-<p><img src="http://szysky.com/2016/08/02/Android%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%94%E8%AE%B002-IPC%E6%9C%BA%E5%88%B6/sample_1.png" alt="img"></p>
-<p>例如这样,当我们依次打开<strong>MainActivity</strong>, <strong>SecondActivity</strong>, <strong>ThirdActivity</strong>.此时应该打开了三个进程.</p>
-<p>我们来检测一下, 你可以直接使用DDMS来查看进程,这里使用命令行来测试</p>
-<p><code>$ adb shell ps | grep com.szysky</code> 你可以直接使用<code>adb shell ps</code>这会把系统所有进程展示出来, 你可以加上过滤信息<code>| grep xxx</code> xxx替换你需要过滤出来信息即可</p>
-<p><img src="http://szysky.com/2016/08/02/Android%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%94%E8%AE%B002-IPC%E6%9C%BA%E5%88%B6/psnum.png" alt="img"></p>
-<p>你可能已经发现在创建新进程的时候使用两种不同的方式</p>
-<ul>
-<li>当以<code>:</code>开头的进程,属于当前应用的私有进程,其他应用的组件不可以和它跑在同一个进程</li>
-<li>当不以<code>:</code>开头,那么进程属于全局进程,其他应用通过<code>ShareUID</code>方法可以和它跑在同一个进程</li>
-</ul>
-<p>Android系统会为每一个应用分配唯一的<strong>UID</strong>. 相同<strong>UID</strong>的应用才能共享数据. 但是两个应用通过<strong>ShareUID</strong>跑在同一个进程是有要求的. 除了具有相同的<strong>ShareUID</strong>并且还要<strong>签名相同</strong>才可以. 这时如果不在同一进程他们之间可以<strong>共享data目录</strong>,<strong>组件信息</strong>等. 如果还在同一进程, 那么他们还能共享<strong>内存数据</strong>.</p>
-<h3 id="进程模式的运行机制"><a href="#进程模式的运行机制" class="headerlink" title="进程模式的运行机制"></a>进程模式的运行机制</h3><p>开启多进程简单,但是如果不能处理好其中的特性,那么受伤的总会是你.</p>
-<p>先说第一个比较严重的问题. <strong>静态变量不在共享</strong>. 还是直接三个类的例子,如果在<strong>mainActivity</strong>中对静态变量进行修改, 在<strong>SecondActivity</strong>取出这个静态发现是main没修改之前的. 这说明两个进程间即使是静态属性也是无法共享.</p>
-<p>其实这是因为这两个类运行在两个进程间,而每个单独的进程又会分配一个独立的虚拟机, 所以每个虚拟机在内存分配上有不同的地址空间.对于不同虚拟机访问同一个对象就会产生多份副本. 副本之间互相独立不干扰彼此.</p>
-<p>一般情况下多进程可能面临的问题:</p>
-<ol>
-<li>静态成员和单例模式完全失效</li>
-<li>线程同步机制完全失效</li>
-<li>SharedPreferences的可靠性下降</li>
-<li>Application会多次创建</li>
-</ol>
-<p>2中因为不是一块内存,所以不管是锁对象还是锁全局都无法保证线程同步,因为不是同一个对象. 3中因为Sp不支持两个进程同时读写,因为底层是通过读写XML文件实现的,并发可能会触发异常. 4中运行在多个进程中,那么就会创建多个虚拟机,每个虚拟机都有一个对应Application并需要启动加载这个文件.</p>
-<p>一个应用的多进程:<strong>它就相当于两个不同的应用采用了ShareUID的模式. 每个进程都会拥有独立的虚拟机, Application以及内存空间</strong></p>
-<h2 id="IPC基础概念"><a href="#IPC基础概念" class="headerlink" title="IPC基础概念"></a>IPC基础概念</h2><p>关于IPC主要包含三方面的内容: <strong>Serializable接口</strong>, <strong>Parcelable接口</strong>, 以及<strong>Binder</strong></p>
-<h3 id="Serializable接口"><a href="#Serializable接口" class="headerlink" title="Serializable接口"></a>Serializable接口</h3><p>Serializable是Java提供的一个序列化接口,这个一个空接口. 如果我们想使用只需要实现<code>Serializable</code>接口,并声明一个long类型的常量<code>serialVersionUID</code>(不声明也是可以,但是在反序列化会出现错误).</p>
-<p>javabean 的实现</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">public class Student implements Serializable&#123;</div><div class="line">    public static final long serialVersionUID = 123456789L;</div><div class="line">    //.....省略创建属性,打印等操作</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>序列化的代码如下图,并附上结果.</p>
-<p><img src="http://szysky.com/2016/08/02/Android%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%94%E8%AE%B002-IPC%E6%9C%BA%E5%88%B6/serial_1.png" alt="img"></p>
-<p>好了说一下<code>serialVersionUID</code>这个属性. 即使我们不声明系统会根据当前类结构(成员变量等)生成一个hash为<code>serialVersionUID</code>, 虽然这样也可以但是如果在你把一个对象序列化的到磁盘的一个文件的时候. 对这个对象增加了一个成员变量,那么在反序列的时候就会报错. 因为当你反序列化的时候对象如果没有<code>serialVersionUID</code>还会重新计算.这时反序列化的hash和序列化的hash就不一致了.</p>
-<p>关于根据当前类结构计算hash值,有两点需要注意:</p>
-<ul>
-<li>静态成员变量属于类不属于对象,所以不参与序列化的过程</li>
-<li>其次用<code>transient</code>关键字标记的成员变量不参与序列化的过程.</li>
-</ul>
-<p>系统默认的序列化过程是可以改变的,通过实现<code>writeObject</code>和<code>readObject</code>可以重写默认的序列化和反序列化过程. 这里就不详细说明</p>
-<h3 id="Parcelable接口"><a href="#Parcelable接口" class="headerlink" title="Parcelable接口"></a>Parcelable接口</h3><p>系统已经为我们提供了很多实现了Parcelable接口的类,他们都可以直接序列化. 例如<code>intent</code>, <code>Bundle</code>, <code>Bitmap</code>, 同时List和Map也可以序列化.前提是他们里面的每个元素都可以序列化.</p>
-<p>实现Parcelable接口主要复写四个, 我们可以直接定义好javabean直接让AS帮我们实现.</p>
-<ul>
-<li><strong>writeToParcel()</strong> 主要完成序列化功能</li>
-<li><strong>CREATOR</strong> 主要完成反序列化</li>
-<li><strong>接收参数parcel的构造函数</strong> 用于从序列化后的对象中创建原始对象</li>
-<li><strong>describeContents()</strong> 几乎所有情况下都返回0,只有当前对象中存在文件描述符时返回1</li>
-</ul>
-<p><strong>关于Parcelable和Serializable的取舍</strong></p>
-<ul>
-<li>Serializable: 适合序列化到设备或者序列化后通过网络传输.</li>
-<li>Parcelable: 主要用在内存序列化上. 不需要大量的I/O操作,所以在内存中使用高效.</li>
-</ul>
-<h3 id="了解Binder"><a href="#了解Binder" class="headerlink" title="了解Binder"></a>了解Binder</h3><ul>
-<li><strong>代码层面</strong>: Binder是Android中的一个类,它实现了IBinder接口</li>
-<li><strong>IPC角度</strong>: Binder是Android中的一种跨进程通信方式.</li>
-<li><strong>物理设备角度</strong>: Binder也可以认为是一种虚拟的物理设备,设备驱动是/dev/binder</li>
-<li><strong>Framework角度</strong>: Binder是ServiceManager连接各种Manager和相应的ManagerService的桥梁.</li>
-<li><strong>Android应用角度</strong>:Binder是客户端和服务端进行通信的媒介.</li>
-</ul>
-<p>日常开发中,Binder主要用在<code>Service</code>包括<code>AIDL</code>和<code>Messenger</code>. 而普通的Service中的Binder不涉及进程间的通信,无法触及Binder的核心. 而Messenger底层其实就是AIDL.所以我们利用AIDL来分析Binder的工作机制</p>
-<h3 id="创建AIDL实例"><a href="#创建AIDL实例" class="headerlink" title="创建AIDL实例"></a>创建AIDL实例</h3><p>新建三个文件 <code>Book.java</code> <code>Book.aidl</code> 和<code>IBookManager.aidl</code></p>
-<p>首先创建一个Book类并实现Parcelable接口,然后在这个类所在的包上右键,如图所示</p>
-<p><img src="http://szysky.com/2016/08/02/Android%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%94%E8%AE%B002-IPC%E6%9C%BA%E5%88%B6/createAIDL.png" alt="img"></p>
-<p>如果名字不能为Book,可以先随便写一个,创建之后修改. 然后按图修改,</p>
-<p><img src="http://szysky.com/2016/08/02/Android%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%94%E8%AE%B002-IPC%E6%9C%BA%E5%88%B6/createAIDL_2.png" alt="img"></p>
-<p>文件声明完,我们只需要重新Make一下工程就可以.<code>Build --&gt; Rebuild Project或者Make Project</code></p>
-<p><img src="http://szysky.com/2016/08/02/Android%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%94%E8%AE%B002-IPC%E6%9C%BA%E5%88%B6/createAIDL_3.png" alt="img"></p>
-<p>Make之后会在app -&gt; build -&gt; generated -&gt; source -&gt; aidl -&gt; debug -&gt; … 出现系统自动生成好的java类. 我们需要对其进行分析</p>
-<p>看下图了解一个大体结构</p>
-<p><img src="http://szysky.com/2016/08/02/Android%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%94%E8%AE%B002-IPC%E6%9C%BA%E5%88%B6/aidl_1.png" alt="img"></p>
-<p>上图圈出了两个部分,部分二应该很清楚就是我们定义在aidl中的两个抽象方法. 而部分一在图上的内部类Stub写了说明. 我们自定义的两个抽象方法,在内部类中用了两个<strong>整形int值</strong>来标识两个抽象方法,用在<code>transact()</code>中可以识别客户端请求哪个方法.</p>
-<p>这个继承了<strong>IInterface</strong>的接口的核心实现:<strong>就是内部类Stub和Stub的内部代理Proxy</strong></p>
-<p>先看一下内部类的结构图:</p>
-<p><img src="http://szysky.com/2016/08/02/Android%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%94%E8%AE%B002-IPC%E6%9C%BA%E5%88%B6/aidl_2.png" alt="img"></p>
-<p>说明直接放图,写在代码上,在git上的根目录的aidl的java类说明文件夹也有添加了注释的类.</p>
-<p><img src="http://szysky.com/2016/08/02/Android%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%94%E8%AE%B002-IPC%E6%9C%BA%E5%88%B6/aidl_3.png" alt="img"></p>
-<p>有两点需要注意:</p>
-<ol>
-<li>客户端发起远程请求时,当前线程会被挂起直到服务器进程返回数据,所以注意线程是否在意耗时</li>
-<li>由于服务端Binder方法运行在Binder线程池中,所以不管Binder方法是否耗时都应该采用同步方式,因为已经在一个线程中了</li>
-</ol>
-<p>我们也可以手动实现Binder类,这里不再细说,在git仓库的项目中有一个<code>manual</code>包里面是关于手动实现Binder的代码.</p>
-<p><strong>其实</strong> 不管是手动实现Binder也好,或者AIDL文件实现Binder也好. 其实两者的工作原理都是一样的, AIDL文件的存在意义是系统为我们提供了一种快速实现Binder的工具,仅此而已.</p>
-<h3 id="Binder生命状态的监听"><a href="#Binder生命状态的监听" class="headerlink" title="Binder生命状态的监听"></a>Binder生命状态的监听</h3><p>由于Binder是运行在服务端,如果服务端进程异常终止,那么我们到服务端的Binder连接也就断裂(Binder死亡).就会导致调用失败,所里系统提供了<strong>死亡代理的方法</strong> 就是当Binder死亡时,我们就会收到通知,这个时候就可以重新发起连接请求而恢复连接</p>
-<p>首先创建监听的DeathRecipient对象</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">IBinder.DeathRecipient mDeat = new IBinder.DeathRecipient() &#123;</div><div class="line">            // 当Binder死亡的时候,系统会回调binderDied()方法</div><div class="line">            @Override</div><div class="line">            public void binderDied() &#123;</div><div class="line">                if (mBookManager == null)</div><div class="line">                    return ;</div><div class="line">                //清除掉已经无用的Binder连接</div><div class="line">                mBookManager.asBinder().unlinkToDeath(mDeat,0);</div><div class="line">                mBookManager == null;</div><div class="line">                //TODO  进行重新绑定远程服务</div><div class="line">            &#125;</div><div class="line">        &#125;;</div></pre></td></tr></table></figure>
-<p>当客户端绑定远程服务成功的时候,给binder设置死亡代理</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">xxxxManager.Stub.asInterface(binder);</div><div class="line">binder.linkToDeath(mDeat,0);</div></pre></td></tr></table></figure>
-<p>linkToDeath的第二个参数是个标志位,直接设0即可. 另外也可以通过Binder的方法<code>isBindAlive</code>也可以判断Binder是否死亡.</p>
-<h2 id="Android的几种跨进程的方式"><a href="#Android的几种跨进程的方式" class="headerlink" title="Android的几种跨进程的方式"></a>Android的几种跨进程的方式</h2><h3 id="使用Bundle"><a href="#使用Bundle" class="headerlink" title="使用Bundle"></a>使用Bundle</h3><p>由于Bundle实现了<strong>Parcelable</strong>接口,所以在四大组件中的三大组件(<code>Activity</code>, <code>Service</code>, <code>Receiver</code>)都支持在Intent中传递Bundle.</p>
-<p>所以如果在一个进程中启动了另一个进程的三大组件,就可以在Bundle中附加我们需要的信息通过Intent发送出去. 当然传递的类型必须是能够被序列化的, 例如基本数据类型,实现了Parcelable和Serializable接口的对象和一些Android支持的特殊对象.</p>
-<h3 id="使用文件共享"><a href="#使用文件共享" class="headerlink" title="使用文件共享"></a>使用文件共享</h3><p>练习代码对应仓库中的<code>userbundle</code>包中.</p>
-<p><strong>文件共享适合在对数据同步要求不高的进程之间进行通信,并且要妥善的处理并发读写的问题.</strong></p>
-<p>两个进程通过<strong>读/写</strong>同一个文件来交换数据. 例如进程A把数据写入文件中,而进程B从文件中读取出来数据.</p>
-<p>Android是基于Linux系统, 所以对于并发读写文件可以没有限制的执行. 这里不像Windows系统,对于一个文件如果加了排斥锁将会导致其他线程无法对其进行访问.</p>
-<p>关于这部分的练习, 在之前练习Binder的时候已经练习过了. <em>代码在项目中的MainActivity中</em></p>
-<p>虽然序列化反序列达到的效果是可以恢复对象里面的属性值,但是反序列每回都是一个新的对象.</p>
-<p><strong>SharePreferencess</strong>是Android提供的一个轻量级方案,通过键值对存储数据,底层采用XML文件来进行存储. 存储路径<code>/data/data/package name/shared_prefs</code>目录下. 也属于文件的一种,但是由于系统对SP的读写存在一定的缓存策略,内存中会有一份缓存,所以多进程下,系统对它的读写也就变得不可靠.</p>
-<h3 id="使用Messenger"><a href="#使用Messenger" class="headerlink" title="使用Messenger"></a>使用Messenger</h3><p><code>Messenger</code>(信使). 不同的进程中可以传递Message对象, 在Message中放入我们需要传递的数据,就可实现进程间传递. Messenger是一种轻量级的IPC方案,它的底层实现<code>AIDL</code>. 看一些构造函数</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">public Messenger(Handler target) &#123;</div><div class="line">        mTarget = target.getIMessenger();</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">public Messenger(IBinder target) &#123;</div><div class="line">   mTarget = IMessenger.Stub.asInterface(target);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>无论是IMessenger还是Stub.asInterface. 可以明显看出AIDL的痕迹.</p>
-<p>因为Messenger对<code>AIDL</code>进行了封装,使得在使用时更加简单,并且它的处理方式是一次处理一个请求,因此服务器端不用考虑线程同步因为服务端不存在并发执行的情形.</p>
-<p><strong>具体实现Messenger</strong></p>
-<p><strong>1.服务端</strong></p>
-<p>创建一个<code>Service</code>作为服务端来处理客户端的请求, 同时创建一个<code>Handle</code>并通过它来创建一个<code>Messenger</code>对象,然后在Service的<code>onBind()</code>方法中返回这个<code>Messenger</code>对象底层的<code>Binder</code>.<br>最后这个组件在清单文件中声明加上<code>android:process=&quot;com.szysky.test&quot;</code>属性.已达到模拟多进程的场景</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line">public class MessengerService extends Service &#123;</div><div class="line"></div><div class="line"></div><div class="line">    /**</div><div class="line">     * 编写一个类继承Handler,并对客户端发来的消息进行处理操作进行添加</div><div class="line">     */</div><div class="line">    private static  class MessengerHandler extends Handler&#123;</div><div class="line">        private static final String TAG = &quot;MessengerHandler&quot;;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public void handleMessage(Message msg) &#123;</div><div class="line">            switch (msg.what)&#123;</div><div class="line">                //客户端发来的信息标识</div><div class="line">                case MessengerActivity.FROM_CLIENT:</div><div class="line">                    Log.d(TAG, &quot;handleMessage: receive msg form clinet--&gt;&quot; +msg.getData().getString(&quot;msg&quot;));</div><div class="line"></div><div class="line">                    //对客户端进行reply回答</div><div class="line">                    // 1. 通过接收到的到客户端的Message对象获取到Messenger信使</div><div class="line">                    Messenger client = msg.replyTo;</div><div class="line">                    // 2. 创建一个信息Message对象,并把一些数据加入到这个对象中</div><div class="line">                    Message replyMessage = Message.obtain(null, MessengerActivity.FROM_SERVICE);</div><div class="line">                    Bundle bundle = new Bundle();</div><div class="line">                    bundle.putString(&quot;reply&quot;, &quot;我是服务端发送的消息,我已经接收到你的消息了,你应该在你的客户端可以看到&quot;);</div><div class="line">                    replyMessage.setData(bundle);</div><div class="line">                    // 3. 通过信使Messenger发送封装好的Message信息</div><div class="line">                    try &#123;</div><div class="line">                        client.send(replyMessage);</div><div class="line">                    &#125; catch (RemoteException e) &#123;</div><div class="line">                        e.printStackTrace();</div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                    break;</div><div class="line">                default:</div><div class="line">                    super.handleMessage(msg);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 创建一个Messenger信使</div><div class="line">     */</div><div class="line">    private final Messenger mMessenger = new Messenger(new MessengerHandler());</div><div class="line"></div><div class="line">    @Nullable</div><div class="line">    @Override</div><div class="line">    public IBinder onBind(Intent intent) &#123;</div><div class="line">        return mMessenger.getBinder();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>别忘了清单文件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&lt;service android:name=&quot;.message.MessengerService&quot;</div><div class="line">            android:process=&quot;com.szysky.test&quot;/&gt;</div></pre></td></tr></table></figure>
-<p><strong>2.客户端</strong></p>
-<p>直接用一个<code>activity</code>作为客户端, 首先绑定之前创建的服务端的<code>Service</code>, 绑定成功时通过<code>ServiceConnection</code>对象接收到服务端返回的<code>IBinder</code>,用<code>IBinder</code>对象创建一个<code>Messenger</code>. 通过这个<code>Messenger</code>就可以往服务端发送消息. 如果我们需要服务端也能够回应客户端. 那么就要在客户端同之前服务端一样通过<code>Handle</code>创建一个<code>Messenger</code>对象, 并把这个<code>Messenger</code>在通过连接成功返回的IBinder创建的Message对象通过<code>replyTo</code>参数传递给服务器. 这个服务器就可以通过<code>replyTo</code>参数来回应客户端.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">* 声明一个本进程的信使 用来监听并处理服务端传入的消息</div><div class="line">*/</div><div class="line">private Messenger mGetReplyMessenger =  new Messenger(new Handler()&#123;</div><div class="line">   @Override</div><div class="line">   public void handleMessage(Message msg) &#123;</div><div class="line">       switch (msg.what)&#123;</div><div class="line">           case FROM_SERVICE:</div><div class="line">               Log.d(TAG, &quot;handleMessage: 这里是客户端:::&quot;+msg.getData().getString(&quot;reply&quot;));</div><div class="line">               break;</div><div class="line">           default:</div><div class="line">               super.handleMessage(msg);</div><div class="line">       &#125;</div><div class="line">   &#125;</div><div class="line">&#125;);</div><div class="line">/**</div><div class="line">* 创建一个服务监听连接对象 并在成功的时候给服务器发送一条消息</div><div class="line">*/</div><div class="line">private ServiceConnection mConnection = new ServiceConnection() &#123;</div><div class="line">   //绑定成功回调</div><div class="line">   @Override</div><div class="line">   public void onServiceConnected(ComponentName name, IBinder service) &#123;</div><div class="line">       // 利用服务端返回的binder对象创建Messenger并使用此对象想服务端发送消息</div><div class="line">       Messenger mService = new Messenger(service);</div><div class="line">       Message obtain = Message.obtain(null, FROM_CLIENT);</div><div class="line">       Bundle bundle = new Bundle();</div><div class="line">       bundle.putString(&quot;msg&quot;, &quot;你好啊,  我是从客户端来&quot;);</div><div class="line">       obtain.setData(bundle);</div><div class="line">       // 需要把接收服务端回复的Messenger通过Message的replyTo传递给服务端</div><div class="line">       obtain.replyTo = mGetReplyMessenger;</div><div class="line">       try &#123;</div><div class="line">           mService.send(obtain);</div><div class="line">       &#125; catch (RemoteException e) &#123;</div><div class="line">           e.printStackTrace();</div><div class="line">       &#125;</div><div class="line">   &#125;</div><div class="line">   @Override</div><div class="line">   public void onServiceDisconnected(ComponentName name) &#123;</div><div class="line"></div><div class="line">   &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"></div><div class="line">//进行远端服务的连接</div><div class="line"> Intent intent = new Intent(MessengerActivity.this, MessengerService.class);</div><div class="line"> bindService(intent, mConnection, Context.BIND_AUTO_CREATE);</div></pre></td></tr></table></figure>
-<p><a href="https://github.com/suzeyu1992/Notes_AndroidDevSeek" target="_blank" rel="external"><strong>本例测试代码在仓库对应项目的message包中</strong></a></p>
-<p>在使用Messenger进行数据传递必须将数据放入到Message中. 而Messenger和Message都实现了序列化接口. 所以可以在进程间通信.</p>
-<p><code>Message</code>的能使用的载体只有<strong>what</strong>, <strong>arg1</strong>, <strong>arg2</strong>, <strong>Bundle</strong> 以及<strong>replyTo</strong>. 这里有一个载体需要注意<strong>object</strong>,它在同一个进程很实用,但是在版本2.2之前是不支持跨进程的,虽然进行了改进之后,但是也只是支持系统提供实现的某些对象才可以. 所以使用的时候需要注意.</p>
-<p>顺便绘制了一个Messenger通信的流程图, 可以对代码的调用顺序理解的更清楚.</p>
-<p><img src="http://szysky.com/2016/08/02/Android%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%94%E8%AE%B002-IPC%E6%9C%BA%E5%88%B6/messenger.png" alt="img"></p>
-<h3 id="使用AIDL"><a href="#使用AIDL" class="headerlink" title="使用AIDL"></a>使用AIDL</h3><p>虽然Messenger使用方便, 但是要清楚它是以串行的方式处理客户端发来的消息,如果有大量并发的请求. 或者需求是跨进程调用服务端的方法时. 就无法使用Messenger. 这个时候就该<strong>AIDL</strong></p>
-<p>对于使用AIDL的流程简单梳理一遍</p>
-<p><strong>服务端</strong></p>
-<p>服务端创建一个<code>Service</code>用来监听客户端的连接请求, 然后创建一个AIDL文件,将暴露给客户端的接口在这个AIDL文件中声明,最后在Service中实现这个AIDL接口并在<code>onBind()</code>返回即可.</p>
-<p><strong>客户端</strong></p>
-<p>绑定服务端的Service,绑定成功后,将服务端返回来的Binder对象转成AIDL接口所属的类型,接着就可以直接调用AIDL中的方法了.</p>
-<p><a href="https://github.com/suzeyu1992/Notes_AndroidDevSeek" target="_blank" rel="external"><strong>AIDL相关代码在仓库项目的java路径下的aidl包中,包中可能是包含实现订阅的代码,可以通过git回退到’使用AIDL实现简单的进程通信’版本查看基础实现</strong></a></p>
-<p>详细代码在上面仓库中都有,这里不全部贴出来,记录一下需要注意的地方.</p>
-<p><strong>AIDL中所支持的类型</strong></p>
-<ul>
-<li>基本数据类型</li>
-<li>String 和 CharSequence</li>
-<li>List: 只支持ArrayList, 里面每个元素都必须能被AIDL支持</li>
-<li>Map: 只支持HashMap, 里面的每个元素都必须被AIDL支持</li>
-<li>Parcelable: 所有实现了Parcelable接口的对象</li>
-<li>AIDL: 所有的AIDL接口本身也可以在AIDL文件中使用</li>
-</ul>
-<p><strong>这里请注意,上面支持类型中Parcelable和AIDL比较特殊,自定义的Parcelable对象和AIDL对象必须要显示的import引入, 这是AIDL的规范需要遵循, 如下Book类</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">import com.szysky.note.androiddevseek_02.aidl.Book;//必须Book的全限定名</div><div class="line">interface IBookManager &#123;</div><div class="line">   List&lt;Book&gt; getBookList();</div><div class="line">   void addBook(in Book book);  //这里标明输入型</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p><strong>如果用到了自定义对象实现了Parcelable那么就需要创建一个同名的aidl文件</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">package com.szysky.note.androiddevseek_02.aidl;</div><div class="line"></div><div class="line">parcelable Book;</div></pre></td></tr></table></figure>
-<p>AIDL中除了基本数据类型外,其他类型的<code>参数</code>必须标上方向<strong>out</strong> , <strong>in</strong>, <strong>inout</strong>.分别表示输入,输出,输入输出型. 按需而定可以节省不必要的操作在底层实现的开销. 最后一点AIDL接口中只支持方法,不支持声明静态常量.</p>
-<p>在服务端用了<code>CopyOnWriteArrayList</code>数组来保存所有书籍. 这个集合的特性是<strong>支持并发读写</strong>. 在说Binder的时候提到过, AIDL方法是在服务端Binder线程池中执行的, 所以当多个客户端同时连接,会存在多线程并发的问题. 所以使用<code>CopyOnWriteArrayList</code>集合可以进行自动的线程同步.与之相似的还有<code>ConcurrentHashMap</code>这个在<strong>LRU机制中使用到过</strong></p>
-<p>这里有知识点. 之前说过AIDL中能过使用的只有ArrayList. 而<code>CopyOnWriteArrayList</code>也并不是ArrayList的子类. 其实AIDL所支持的是抽象的List, 而List只是一个接口, 虽然服务端返回的是<code>CopyOnWriteArrayList</code>,但是在Binder中会按照List的规范去访问数据并最终形成一个新的ArrayList传递给客户端.</p>
-<p>看下面的log图在客户端接收返回的<code>CopyOnWriteArrayList</code>实际上是ArrayList类型</p>
-<p><img src="http://szysky.com/2016/08/02/Android%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%94%E8%AE%B002-IPC%E6%9C%BA%E5%88%B6/aidl_4.png" alt="img"></p>
-<p>git仓库的代码的<code>aidl包中</code> 最后保存的是实现了客户端和服务端的观察者模式(可以通过git版本切换之前代码), 通过客户端注册监听接口,<br>在服务端每当有新书来的时候,通知已经注册了的客户端.</p>
-<p><strong>需要注意的几点</strong></p>
-<p><strong>线程问题</strong></p>
-<p>当有新书的时候,服务端回调的是客户端实现的接口里面的方法. 这个方法实际是在客户端的线程池中执行的. 所以要处理处理UI的问题, 解决方案可以创建一个Handler,将其切换到客户端的主线程中</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">private INewBookArrivedListener mNewBookListener = new INewBookArrivedListener.Stub() &#123;</div><div class="line">        @Override</div><div class="line">        public void onNewBookArrived(Book book) throws RemoteException &#123;</div><div class="line">            // 如果有新书 那么此方法会被回调,  并且由于调用处服务端的Binder线程池, 所以给主线程的Handler发送消息,以切换线程</div><div class="line">            mhandler.obtainMessage(NEW_BOOK_ARRIVED, book).sendToTarget();</div><div class="line">        &#125;</div><div class="line">    &#125;;</div></pre></td></tr></table></figure>
-<p><strong>对象不一致,导致接触绑定失败</strong></p>
-<p>服务端不能再用<strong>CopyOnWriteArrayList</strong>来记录绑定过的客户端. 因为这里一定要清楚<strong>对象是不能跨进程的</strong>当我们客户端注册监听传入一个监听对象到服务端, 在解绑的时候再次传入一个进行判断与注册时相同的对象时删除达到解除绑定效果时是无效的. 因为服务端在注册和解绑的时候是两个反序列化的对象完全不一致.</p>
-<p><code>RemoteCallbackList</code>是系统专门提供的用于删除跨进程listener的接口. 接收的是一个泛型,支持管理任意的AIDL接口,从声明就可以看出, 因为AIDL接口都继承<code>IInterface</code></p>
-<p>内部实现是一个Map结构 key是<code>IBinder</code>类型, value是<code>Callback</code>类型.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">ArrayMap&lt;IBinder, Callback&gt; mCallbacks= new ArrayMap&lt;IBinder, Callback&gt;();</div><div class="line"></div><div class="line">IBinder key = listener.asBinder();</div><div class="line">Callback value = new Callback(listener, cookie);    //这里的Callback封装了真正的监听对象</div></pre></td></tr></table></figure>
-<p>不管是注册还是解注册,多进程到服务端都会生成不同的对象. 但是这些不同的对象有一个共同点, 底层的Binder对象是同一个, 利用这个特性可解决上面的问题.</p>
-<p><code>RemoteCallbackList</code> 当客户端进程终止后, 它能够自动移出客户端所注册的listener. 并且内部实现了线程同步的功能, 所以在注册和解注册的时候不需要做额外的线程工作.</p>
-<p>在使用的使用,虽然名字有List但是他并不是一个List我们要遍历的通知监听者的时候,要使用<strong>bigenBroadcast</strong>和<strong>finishBroadcase</strong>成对出现.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">//遍历集合  去调用客户端方法</div><div class="line">int N = mListeners.beginBroadcast();</div><div class="line"></div><div class="line">for (int i = 0; i&lt;N; i++)&#123;</div><div class="line">  INewBookArrivedListener listener = mListeners.getBroadcastItem(i);</div><div class="line">  if (listener != null)&#123;</div><div class="line">      listener.onNewBookArrived(newBook);</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">mListeners.finishBroadcast();</div></pre></td></tr></table></figure>
-<p>当客户端调用远程服务的方法,被调用的方法运行在服务端的Binder线程池中,同时<strong>客户端会被挂起</strong>, 所以你如果在主线程(客户端的<code>onServiceConnected</code>和<code>onServiceDisconnected</code>就是UI线程)调用服务端的耗时方法, 你多点几次就很容易出现ANR. 比方说在服务端的<code>getBookList()</code>睡上十秒,可以复现ANR.</p>
-<p>监听死亡状态: 在整理Binder的时候有说了一种<strong>DeathRecipient</strong>的方式,下两种都可以</p>
-<ul>
-<li><code>onServiceDisconnected()</code> UI线程被回调</li>
-<li><code>binderDied()</code> 在客户端的Binder线程池中被回调</li>
-</ul>
-<p>还记得在绑定的时候<code>bindService(intent,mConnection, Context.BIND_AUTO_CREATE);</code>其中参数3如果设置这个模式, 当服务或线程死亡,还会重新启动的.</p>
-<p><strong>权限验证</strong></p>
-<ol>
-<li>在服务端的<strong>onBinder()</strong>回调中判断权限.</li>
-<li>在服务端实现的AIDL接口中的<strong>onTransact()</strong>进行包名判断或者权限</li>
-</ol>
-<p><strong>第一种:</strong></p>
-<p>先清单文件中注册一个自定义的权限</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;permission</div><div class="line">        android:name=&quot;com.szysky.permission.ACCESS_BOOK_SERVICE&quot;</div><div class="line">        android:protectionLevel=&quot;normal&quot;/&gt;</div></pre></td></tr></table></figure>
-<p>在清单文件中添加这个权限的使用资格</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;uses-permission android:name=&quot;com.szysky.permission.ACCESS_BOOK_SERVICE&quot;/&gt;</div></pre></td></tr></table></figure>
-<p>然后在<strong>onBinder()</strong>进行判断,如果没有那么就返回null, 这样客户端是无法绑定服务的</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">public IBinder onBind(Intent intent) &#123;</div><div class="line">    //做一下权限的验证  在清单文件中声明了一个,  并添加了使用权限</div><div class="line">    int check = checkCallingOrSelfPermission(&quot;com.szysky.permission.ACCESS_BOOK_SERVICE&quot;);</div><div class="line">    if (check == PackageManager.PERMISSION_DENIED)&#123;</div><div class="line">      return  null;</div><div class="line">    &#125;</div><div class="line">    return mBinder;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p><strong>第二种</strong></p>
-<p>可以判断客户端的包名是否满足我们的需求,这里用<strong>com.szysky</strong>开头为例. 如果不符合方法返回false.那么调用服务的方法也会失效</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException &#123;</div><div class="line">  String packageName = null;</div><div class="line">  String[] packagesForUid = getPackageManager().getPackagesForUid(getCallingUid());</div><div class="line"></div><div class="line">//下面是获得客户端的包名</div><div class="line">  if (packagesForUid != null &amp;&amp; packagesForUid.length &gt;0)&#123;</div><div class="line">      packageName = packagesForUid[0];</div><div class="line">  &#125;</div><div class="line">  Log.e(TAG, &quot;onTransact: -----------------------------&quot; + packageName);</div><div class="line">  if (!packageName.startsWith(&quot;com.szysky&quot;))&#123;</div><div class="line">      return false;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  return super.onTransact(code, data, reply, flags);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h3 id="使用ContentProvider"><a href="#使用ContentProvider" class="headerlink" title="使用ContentProvider"></a>使用ContentProvider</h3><p><a href="https://github.com/suzeyu1992/Notes_AndroidDevSeek" target="_blank" rel="external"><strong>相关代码在仓库项目的java路径下的provider包中</strong></a></p>
-<p><code>ContentProvider</code>是Android提供专门用于不用应用进行数据共享的方式. 它的底层同样也是Binder. 因为系统封装, 所以它的使用比起AIDL要简单很多.</p>
-<p>要实现一个内容提供者, 只需要写一个类继承<strong>ContentProvider</strong>,并复写六个抽象方法. 其中有四个是CURD操作方法. 一个<strong>onCreate()</strong>用来做初始化. 一个<strong>getType()</strong>用来返回一个Uri请求所对应的MIME类型,比如图片还是视频等. 如果我们不关心那么可是直接返回<code>NULL</code>或者<code>*/*</code>.</p>
-<p>这六个方法根据Binder工作原理,都是运行在ContentProvider的进程中. 除了<strong>onCreate()</strong>是被系统回调运行在主线程, 其余的都在Binder的线程池中.</p>
-<p>主要存储方式是<strong>表格</strong>的形式, 也可以支持<strong>文件</strong>格式,例如图片视频, 可以返回这类文件的句柄给外界来访问ContentProvider中的文件信息.</p>
-<p><strong>清单文件的声明</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;provider</div><div class="line">           android:authorities=&quot;com.szysky.note.androiddevseek_02.provider&quot;</div><div class="line">           android:name=&quot;.provider.BookProvider&quot;</div><div class="line">           android:permission=&quot;com.szysky.PROVIDER&quot;/&gt;</div></pre></td></tr></table></figure>
-<ul>
-<li><code>authorities</code>: 后面的值是指定这个ContentProvider的唯一标识.</li>
-<li><code>permission</code>: 添加一个权限认证, 对于访问者必须添加了这个使用权限的声明.</li>
-</ul>
-<p>查询的时候通过<code>Uri</code>对<code>authorities</code>声明值得解析就可以找到对应的ContentProvider</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Uri uri = Uri.parse(&quot;content://com.szysky.note.androiddevseek_02.provider&quot;);</div><div class="line">getContentResolver().query(uri, null, null, null, null);</div></pre></td></tr></table></figure>
-<p>为了后续操作, 这里利用<strong>SQLiteOpenHelper</strong>来管理数据库,并创建两个表<strong>user</strong>和<strong>book</strong>,代码在仓库有,这里不写实现过程.</p>
-<p>由于有两个表支持被访问, 所以应该为每一个不同的表设定单独的Uri和Uri_Code 并将其关联. 这样外界访问的时候可以根据Uri得到Uri_Code. 也就在ContentProvider知道要处理的具体事件.</p>
-<p>在新建的<strong>ContentProvider</strong>类中进行关联, 如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">private static final String AUTHORITY = &quot;com.szysky.note.androiddevseek_02.provider&quot;;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 指定两个操作的Uri</div><div class="line">     */</div><div class="line">    private static final Uri BOOK_CONTENT_URI = Uri.parse(&quot;content://&quot; +AUTHORITY + &quot;/book&quot;);</div><div class="line">    private static final Uri USER_CONTENT_URI = Uri.parse(&quot;content://&quot; +AUTHORITY + &quot;/user&quot;);</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 创建Uri对应的Uri_Code</div><div class="line">     */</div><div class="line">    private static final int BOOK_URI_CODE = 1;</div><div class="line">    private static final int USER_URI_CODE = 2;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 创建一个管理Uri和Uri_Code的对象</div><div class="line">     */</div><div class="line">    private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);</div><div class="line">    </div><div class="line">    static &#123;</div><div class="line">        //进行关联</div><div class="line">        sUriMatcher.addURI(AUTHORITY, &quot;book&quot;,BOOK_URI_CODE);</div><div class="line">        sUriMatcher.addURI(AUTHORITY, &quot;user&quot;,USER_URI_CODE);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p>针对<strong>query</strong>方法进行演示,其他三个类似,代码有全部实现的例子, 在<strong>自定义Provider</strong>文件中.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">* 通过自动以的Uri来判断对应的数据库表名</div><div class="line">*/</div><div class="line">private String getTableName(Uri uri)&#123;</div><div class="line">   String tableName = null;</div><div class="line">   switch (sUriMatcher.match(uri))&#123;</div><div class="line">       case BOOK_URI_CODE:</div><div class="line">           tableName = DbHelper.BOOK_TABLE_NAME;</div><div class="line">           break;</div><div class="line"></div><div class="line">       case USER_URI_CODE:</div><div class="line">           tableName = DbHelper.USER_TABLE_NAME;</div><div class="line">           break;</div><div class="line">       default:break;</div><div class="line">   &#125;</div><div class="line">   return tableName;</div><div class="line">&#125;</div><div class="line"></div><div class="line">/**</div><div class="line"> *   在query中, 获取到Uri传入要查询的具体表名, 使用SQLiteOpenHelper来进行query的查询,并把结果返回</div><div class="line"> */</div><div class="line">public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) &#123;</div><div class="line">        //获取表名</div><div class="line">        String tableName = getTableName(uri);</div><div class="line">        if (tableName == null)</div><div class="line">            throw new IllegalArgumentException(&quot;不被支持的Uri参数--&gt;&quot;+uri );</div><div class="line">        return mDb.query(tableName, projection, selection, selectionArgs, null, null, sortOrder,null);</div><div class="line"></div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p>如果需要监听<strong>Provider</strong>内容的变化, 那么可以在<strong>Provider中</strong><code>update</code>, <code>delete</code>, <code>insert</code>. 中操作完数据库之后. 使用<code>getContentResolver().notifyChange(uri,null);</code>来通知外界当前ContentProvider中数据已经发生改变. 而外部要想观察其变化. 使用<code>ContentResolver</code>的<code>rigisterContentObserver</code>方法来注册观察者.</p>
-<p><strong>线程安全问题</strong></p>
-<p>如果只有一个<strong>SQLiteDataBase</strong>对象被使用, 那么增删改查不会出现线程安全问题, 因为其内部对数据库的操作是有同步处理. 但是如果多个<strong>SQLiteDataBase</strong>对象来操作数据库就无法保证其线程安全. 这个时候就要注意了.</p>
-<h3 id="使用Socket"><a href="#使用Socket" class="headerlink" title="使用Socket"></a>使用Socket</h3><p>Socket也称为套接字. 是网络通信中的概念, 它分为流式套接字和用户数据包套接字两种. 分别对应于网络的传输控制层中TCP和UDP协议.</p>
-<p>使用Socket通信, 需要在清单文件添加权限的申请</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;!--Socket通信额外需要的线程--&gt;</div><div class="line">&lt;uses-permission android:name=&quot;android.permission.ACCESS_NETWORK_STATE&quot;/&gt;</div><div class="line">&lt;uses-permission android:name=&quot;android.permission.INTERNET&quot;/&gt;</div></pre></td></tr></table></figure>
-<p><strong>服务端</strong> 需要启动服务, 并且在线程中建立<code>TCP</code>服务, 然后监听一个<strong>端口</strong>. 当客户端建立连接的时候就会生成一个<code>Socket</code>流. 可以保持后续的持续通信. 每一个客户端都对应一个Socket. 如果客户端断开连接. 服务端需要做好相应的Socket流关闭并结束通话线程. 可以通过在客户端断开的时候服务端的接收字节流会是<strong>null</strong>来判断连接是否还存活.</p>
-<p>首先需要开启一个新线程, <code>Runnable</code>接口这样实现, 以下是伪代码, 没有捕捉异常</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">// 监听 3333 端口</div><div class="line"> ServerSocket serverSocket = new ServerSocket(3333);</div><div class="line">// 判断服务是否断开 没有断开就继续监听端口         </div><div class="line">  while (!mIsServiceDestoryed) &#123;</div><div class="line">        //这个是阻塞方法, 当有新的客户端连接,才会返回Socket值</div><div class="line">        final Socket accept = serverSocket.accept();</div><div class="line">        // 有了新的客户端 那就需要创建一个新的线程去维护</div><div class="line">        new Thread() &#123;</div><div class="line">            public void run() &#123;</div><div class="line">                //  这里做对一个Socket的具体操作</div><div class="line">                responseClient(accept);</div><div class="line">            &#125;&#125;.start();</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">private void responseClient(Socket client) throws IOException &#123;</div><div class="line">        //接收客户端消息</div><div class="line">        BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));</div><div class="line">        </div><div class="line">        //发送到客户端 , 设置true参数就不需要手动的刷新输出流</div><div class="line">        PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(client.getOutputStream())),true);</div><div class="line"></div><div class="line">        out.println(&quot;欢迎来到直播间&quot;);</div><div class="line"></div><div class="line">        //判断服务标志是否销毁, 没有销毁那么就一直监听此链接的Socket流</div><div class="line">        while (!mIsServiceDestoryed) &#123;</div><div class="line">            String str = in.readLine(); //这是一个阻塞方法</div><div class="line">            </div><div class="line">            //判断如果取出来的是null,那么就说明连接已经断开</div><div class="line">            if (str == null)</div><div class="line">                break;</div><div class="line"></div><div class="line">            // 对客户端进行回复</div><div class="line">            out.println(&quot;我是回复消息&quot;);</div><div class="line">        &#125;</div><div class="line">        //准备关闭一系列的流</div><div class="line">        ......</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p>最后就是要在<code>onDestroy()</code>中把循环中判断服务存活的标识置为<code>false</code>, 让开启的线程都能自动走完关闭.</p>
-<p><strong>客户端</strong></p>
-<p>在<code>onCreate()</code>先startService开启TCP的服务, 然后开启一个线程准备连接<strong>Socket</strong>. 可以加上失败重连的的机制. 只要获取到了<strong>Socket</strong>, 就和之前服务端一样获取输入输出流进行对应的操作.</p>
-<p>贴出客户端的核心代码, Runnable接口实现的 ,同样是伪代码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">Socket socket = null;</div><div class="line">// 试图连接服务器, 如果失败休眠一秒重试</div><div class="line">while(socket == null)&#123;</div><div class="line">  try &#123;</div><div class="line">      // 如果可以连接 3333 端口成功那么socket就不为null, 此循环也就结束</div><div class="line">      socket = new Socket(&quot;localhost&quot;, 3333);</div><div class="line">      mClientSocket = socket;</div><div class="line">      // 获得输出流, 并设置true,自动刷新输出流里面的内容</div><div class="line">      mPrintWrite = new PrintWriter(new BufferedWriter(new OutputStreamWriter(mClientSocket.getOutputStream())),true );</div><div class="line">  &#125; catch (IOException e) &#123;</div><div class="line">      SystemClock.sleep(1000);</div><div class="line">      e.printStackTrace();</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line">//准备接收服务器的消息.</div><div class="line"> BufferedReader in = new BufferedReader(new InputStreamReader(mClientSocket.getInputStream()));</div><div class="line">  //获得了socket流的读入段  只要activity不关闭一直循环读</div><div class="line">  while(!SocketActivity.this.isFinishing())&#123;</div><div class="line">      // readLine()同样也是阻塞方法</div><div class="line">      String strLine = in.readLine();</div><div class="line">      if (strLine != null)&#123;</div><div class="line">          //TODO 获取到了服务端发来的数据, 做一些事情</div><div class="line">          //....</div><div class="line">      &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">//走到这里 说明界面已经不存在, 进行扫尾动作</div><div class="line">in.close();</div><div class="line">mPrintWrite.close();</div><div class="line">socket.close();</div></pre></td></tr></table></figure>
-<p>demo图例<strong>Socket相关代码存在仓库的socket包中</strong></p>
-<p><img src="http://szysky.com/2016/08/02/Android%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%94%E8%AE%B002-IPC%E6%9C%BA%E5%88%B6/socket.png" alt="img"></p>
-<h2 id="各种IPC的差异以及选择"><a href="#各种IPC的差异以及选择" class="headerlink" title="各种IPC的差异以及选择"></a>各种IPC的差异以及选择</h2><table>
-<thead>
-<tr>
-<th>名称</th>
-<th>优点</th>
-<th>缺点</th>
-<th>使用场景</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>Bundle</code></td>
-<td>简单易用</td>
-<td>只能传输Bundle支持的数据类型</td>
-<td>四大组件间的进程间通信</td>
-</tr>
-<tr>
-<td><code>文件共享</code></td>
-<td>简单易用</td>
-<td>不适合高并发场景,并且无法做到进程间的即时通</td>
-<td>无法并发访问情形, 交换简单的数据实时性不高的场景</td>
-</tr>
-<tr>
-<td><code>AIDL</code></td>
-<td>功能强大</td>
-<td>使用稍复杂,需要处理好线程同步</td>
-<td>一对多通信且有RPC需求</td>
-</tr>
-<tr>
-<td><code>ContentProvider</code></td>
-<td>在数据源访问方面功能强大,支持一对多并发数据共享</td>
-<td>可以理解为受约束的AIDL,主要提供数据源的CRUD操作</td>
-<td>一对多的进程间的数据共享</td>
-</tr>
-<tr>
-<td><code>Messenger</code></td>
-<td>功能一般, 支持一对多串行通信,支持实时通信</td>
-<td>不能很好处理高并发,不支持RPC,数据通过Message进行传输, 因此只能传输Bundle支持的数据类型</td>
-<td>低并发的一对多即时通信,无RPC需求,或者无需要返回结果的RPC需求</td>
-</tr>
-<tr>
-<td><code>Socket</code></td>
-<td>功能强大,可以通过网络传输字节流,支持一对多并发实时通信</td>
-<td>实现细节稍微有点繁琐,不支持直接的RPC</td>
-<td>网络数据交换</td>
-</tr>
-</tbody>
-</table>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="http://yoursite.com/2017/09/05/android/books/《Android开发艺术探索》Chap2_IPC机制/" data-id="cj76wnr85000zenpjapmuol01" class="article-share-link"><i class="fa fa-share"></i>Share</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-        <a href="http://yoursite.com/2017/09/05/android/books/《Android开发艺术探索》Chap2_IPC机制/#comments" class="article-comment-link">Comments</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
     <nav id="page-nav">
         <a class="extend prev" rel="prev" href="/page/4/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/6/">Next &raquo;</a>
     </nav>
@@ -3327,7 +3135,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">categories</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">43</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/glide/">glide</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/ssh/">ssh</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">2</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">43</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/glide/">glide</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/ssh/">ssh</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -3336,7 +3144,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">archives</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">53</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">54</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
         </div>
     </div>
 
@@ -3345,7 +3153,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">tags</h3>
         <div class="widget">
-            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">37</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/">ssh</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">37</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/">ssh</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -3354,7 +3162,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">tag cloud</h3>
         <div class="widget tagcloud">
-            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 16.67px;">code</a> <a href="/tags/git/" style="font-size: 11.67px;">git</a> <a href="/tags/github/" style="font-size: 18.33px;">github</a> <a href="/tags/glide/" style="font-size: 15px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 13.33px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.67px;">markdown</a> <a href="/tags/mysql/" style="font-size: 16.67px;">mysql</a> <a href="/tags/node/" style="font-size: 18.33px;">node</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/ssh/" style="font-size: 10px;">ssh</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.67px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.67px;">设计模式</a>
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 16.67px;">code</a> <a href="/tags/git/" style="font-size: 11.67px;">git</a> <a href="/tags/github/" style="font-size: 18.33px;">github</a> <a href="/tags/glide/" style="font-size: 15px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 13.33px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.67px;">markdown</a> <a href="/tags/mysql/" style="font-size: 16.67px;">mysql</a> <a href="/tags/node/" style="font-size: 18.33px;">node</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/ssh/" style="font-size: 11.67px;">ssh</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.67px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.67px;">设计模式</a>
         </div>
     </div>
 
