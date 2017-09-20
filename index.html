@@ -157,11 +157,11 @@
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                73
+                74
                 <span>posts</span>
             </div>
             <div class="article-info-block">
-                20
+                21
                 <span>tags</span>
             </div>
         </div>
@@ -210,6 +210,440 @@
 
             
             <section id="main">
+    <article id="post-other/Gitlab权限说明" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/09/20/other/Gitlab权限说明/">Gitlab权限说明</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/09/20/other/Gitlab权限说明/">
+            <time datetime="2017-09-20T09:54:25.000Z" itemprop="datePublished">2017-09-20</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/ssh/">ssh</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/ssh/">ssh</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h1 id="关于Gitlab若干权限问题"><a href="#关于Gitlab若干权限问题" class="headerlink" title="关于Gitlab若干权限问题"></a>关于Gitlab若干权限问题</h1><p>Mar 11, 2016</p>
+<p>公司切入Gitlab来管理代码已经有一年多了，其中遇到很多权限问题，如没有权限clone、没有权限提交代码等等，这里做个总结. 权限分为访问权限和行为权限两个层次.</p>
+<h2 id="访问权限-Visibility-Level"><a href="#访问权限-Visibility-Level" class="headerlink" title="访问权限 - Visibility Level"></a>访问权限 - Visibility Level</h2><p>这个是在建立项目时就需要选定的，主要用于决定哪些人可以访问此项目，包含3种</p>
+<ul>
+<li>Private - 私有，只有属于该项目成员才有原先查看</li>
+<li>Internal - 内部，用个Gitlab账号的人都可以clone</li>
+<li>Public - 公开，任何人可以clone</li>
+</ul>
+<h2 id="行为权限"><a href="#行为权限" class="headerlink" title="行为权限"></a>行为权限</h2><p>在满足行为权限之前，必须具备访问权限（如果没有访问权限，那就无所谓行为权限了），行为权限是指对该项目进行某些操作，比如提交、创建问题、创建新分支、删除分支、创建标签、删除标签等.</p>
+<h3 id="角色"><a href="#角色" class="headerlink" title="角色"></a>角色</h3><p>Gitlab定义了以下几个角色:</p>
+<ul>
+<li>Guest - 访客</li>
+<li>Reporter - 报告者; 可以理解为测试员、产品经理等，一般负责提交issue等</li>
+<li>Developer - 开发者; 负责开发</li>
+<li>Master - 主人; 一般是组长，负责对Master分支进行维护</li>
+<li>Owner - 拥有者; 一般是项目经理</li>
+</ul>
+<h3 id="权限"><a href="#权限" class="headerlink" title="权限"></a>权限</h3><p>不同角色，拥有不同权限，下面列出Gitlab各角色权限</p>
+<h5 id="1-工程权限"><a href="#1-工程权限" class="headerlink" title="1. 工程权限"></a>1. 工程权限</h5><table>
+<thead>
+<tr>
+<th>行为</th>
+<th>Guest</th>
+<th>Reporter</th>
+<th>Developer</th>
+<th>Master</th>
+<th>Owner</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>创建issue</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>留言评论</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>更新代码</td>
+<td></td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>下载工程</td>
+<td></td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>创建代码片段</td>
+<td></td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>创建合并请求</td>
+<td></td>
+<td></td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>创建新分支</td>
+<td></td>
+<td></td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>提交代码到非保护分支</td>
+<td></td>
+<td></td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>强制提交到非保护分支</td>
+<td></td>
+<td></td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>移除非保护分支</td>
+<td></td>
+<td></td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>添加tag</td>
+<td></td>
+<td></td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>创建wiki</td>
+<td></td>
+<td></td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>管理issue处理者</td>
+<td></td>
+<td></td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>管理labels</td>
+<td></td>
+<td></td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>创建里程碑</td>
+<td></td>
+<td></td>
+<td></td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>添加项目成员</td>
+<td></td>
+<td></td>
+<td></td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>提交保护分支</td>
+<td></td>
+<td></td>
+<td></td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>使能分支保护</td>
+<td></td>
+<td></td>
+<td></td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>修改/移除tag</td>
+<td></td>
+<td></td>
+<td></td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>编辑工程</td>
+<td></td>
+<td></td>
+<td></td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>添加deploy keys</td>
+<td></td>
+<td></td>
+<td></td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>配置hooks</td>
+<td></td>
+<td></td>
+<td></td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>切换visibility level</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>✓</td>
+</tr>
+<tr>
+<td>切换工程namespace</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>✓</td>
+</tr>
+<tr>
+<td>移除工程</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>✓</td>
+</tr>
+<tr>
+<td>强制提交保护分支</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>✓</td>
+</tr>
+<tr>
+<td>移除保护分支</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>✓</td>
+</tr>
+</tbody>
+</table>
+<p>PS: 关于保护分支的设置，可以进入Settings-&gt;Protected branches进行管理</p>
+<h5 id="2-组权限"><a href="#2-组权限" class="headerlink" title="2. 组权限"></a>2. 组权限</h5><table>
+<thead>
+<tr>
+<th>行为</th>
+<th>Guest</th>
+<th>Reporter</th>
+<th>Developer</th>
+<th>Master</th>
+<th>Owner</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>浏览组</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>编辑组</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>✓</td>
+</tr>
+<tr>
+<td>创建项目</td>
+<td></td>
+<td></td>
+<td></td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>管理组成员</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>✓</td>
+</tr>
+<tr>
+<td>移除组</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>✓</td>
+</tr>
+</tbody>
+</table>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/09/20/other/Gitlab权限说明/" data-id="cj7susd0300005npj40gfzdoa" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/09/20/other/Gitlab权限说明/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
     <article id="post-android/github/glide解析5_图片变换" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
@@ -3093,211 +3527,6 @@ limitations under the License.
 
 
 
-    <article id="post-java/设计模式六大原则解析" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2017/09/12/java/设计模式六大原则解析/">设计模式六大原则解析</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2017/09/12/java/设计模式六大原则解析/">
-            <time datetime="2017-09-12T01:24:10.000Z" itemprop="datePublished">2017-09-12</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/java/">java</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/java/设计模式/">设计模式</a>
-    </div>
-
-                        
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/java/">java</a>, <a class="tag-link" href="/tags/设计模式/">设计模式</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <blockquote>
-<p>注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a><br>列举出设计模式中的六大原则应该如何实现</p>
-</blockquote>
-<h2 id="单一职责原则-SRP"><a href="#单一职责原则-SRP" class="headerlink" title="单一职责原则 SRP"></a>单一职责原则 SRP</h2><blockquote>
-<p>Single Responsibility Principle</p>
-</blockquote>
-<p><code>场景</code>: 如果让你写出一个图片缓存类, 要求内部实现缓存策略, 并提供方法只需要传递<code>控件</code>和<code>图片地址</code>就可以自动设置背景的类.</p>
-<p>先给出最简单<code>直接</code>的写法.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div><div class="line">192</div><div class="line">193</div><div class="line">194</div><div class="line">195</div><div class="line">196</div></pre></td><td class="code"><pre><div class="line">public class ImageLoader &#123;</div><div class="line">    /**</div><div class="line">     * 图片的缓存</div><div class="line">     */</div><div class="line">    LruCache&lt;String , Bitmap&gt; mImageCache;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 线程池</div><div class="line">     */</div><div class="line">    ExecutorService mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());</div><div class="line"></div><div class="line">    public ImageLoader()&#123;</div><div class="line">        // 初始化内存缓存策略</div><div class="line">        initImageCache();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private void initImageCache() &#123;</div><div class="line"></div><div class="line">        // 获得可使用的最大内存</div><div class="line">        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);</div><div class="line"></div><div class="line">        // 设置 1/4 的最大内存为作为缓存</div><div class="line">        final int cacheSize = maxMemory / 4;</div><div class="line"></div><div class="line">        mImageCache = new LruCache&lt;String,Bitmap&gt;(cacheSize)&#123;</div><div class="line">            @Override</div><div class="line">            protected int sizeOf(String key, Bitmap value) &#123;</div><div class="line">                //  返回缓存的bitmap大小</div><div class="line">                return value.getRowBytes() * value.getHeight() /1024 ;</div><div class="line">            &#125;</div><div class="line">        &#125;;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    public void displayImage(final ImageView iv, final String imgUrl)&#123;</div><div class="line">        // 获取缓存</div><div class="line">        Bitmap bitmap = mImageCache.get(imgUrl);</div><div class="line">        if(null != bitmap)&#123;</div><div class="line">             iv.setImageBitmap(bitmap);</div><div class="line">             return;</div><div class="line">        &#125;</div><div class="line">        // 网络加载</div><div class="line">        iv.setTag(imgUrl);</div><div class="line">        mExecutorService.submit(new Runnable() &#123;</div><div class="line">            @Override</div><div class="line">            public void run() &#123;</div><div class="line">                Bitmap bitmap = downloadImage(imgUrl);</div><div class="line">                if (null == bitmap)</div><div class="line">                    return ;</div><div class="line">                if (iv.getTag().equals(imgUrl)) &#123;</div><div class="line">                    iv.setImageBitmap(bitmap);</div><div class="line">                &#125;</div><div class="line">                mImageCache.put(imgUrl,bitmap);</div><div class="line">            &#125;</div><div class="line">        &#125;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    /**</div><div class="line">     * 根据图片的url下载图片并转换成bitmap对象返回</div><div class="line">     */</div><div class="line">    public Bitmap downloadImage(String url)&#123;</div><div class="line">        Bitmap bitmap = null;</div><div class="line"></div><div class="line">        try &#123;</div><div class="line">            URL url1 = new URL(url);</div><div class="line">            HttpURLConnection conn = (HttpURLConnection) url1.openConnection();</div><div class="line">            bitmap = BitmapFactory.decodeStream(conn.getInputStream());</div><div class="line">            conn.disconnect();</div><div class="line">        &#125; catch (Exception e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        return bitmap;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">​``` </div><div class="line"></div><div class="line"></div><div class="line">对于功能来说这是没有问题的. 但是接下来分析一下. 这样写会有什么弊端. </div><div class="line"></div><div class="line">1. 首先这个类的职责包括了两个`图片缓存的逻辑`和`图片下载的逻辑`. 耦合性太强,</div><div class="line">2. `类的职责过多`那么就会造成类中的代码更多,两个逻辑的代码会交叉分布. 不易被阅读.</div><div class="line">3. `扩展性`随着后续的实现`磁盘缓存`修改`加载图片`逻辑等会让代码越来越复杂难懂. </div><div class="line"></div><div class="line">那么重构一下, 让两个职责分离开来. </div><div class="line"></div><div class="line"></div><div class="line">​```java</div><div class="line">/**</div><div class="line"> * 处理图片的加载</div><div class="line"> */</div><div class="line">public class ImageLoader &#123;</div><div class="line">    /**</div><div class="line">     * 图片的缓存</div><div class="line">     */</div><div class="line">    ImageCache mImageCache = new ImageCache();</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 线程池</div><div class="line">     */</div><div class="line">    ExecutorService mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    public void displayImage(final ImageView iv, final String imgUrl)&#123;</div><div class="line">        // 获取缓存</div><div class="line">         Bitmap bitmap = mImageCache.getCache(imgUrl);</div><div class="line">        if(null != bitmap)&#123;</div><div class="line">            iv.setImageBitmap(bitmap);</div><div class="line">            return;</div><div class="line">        &#125;</div><div class="line">        // 网络加载</div><div class="line">        iv.setTag(imgUrl);</div><div class="line">        mExecutorService.submit(new Runnable() &#123;</div><div class="line">            @Override</div><div class="line">            public void run() &#123;</div><div class="line">                Bitmap bitmap = downloadImage(imgUrl);</div><div class="line">                if (null == bitmap)</div><div class="line">                    return ;</div><div class="line">                if (iv.getTag().equals(imgUrl)) &#123;</div><div class="line">                    iv.setImageBitmap(bitmap);</div><div class="line">                &#125;</div><div class="line">                mImageCache.putCache(imgUrl,bitmap);</div><div class="line">            &#125;</div><div class="line">        &#125;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    /**</div><div class="line">     * 根据图片的url下载图片并转换成bitmap对象返回</div><div class="line">     */</div><div class="line">    public Bitmap downloadImage(String url)&#123;</div><div class="line">        Bitmap bitmap = null;</div><div class="line"></div><div class="line">        try &#123;</div><div class="line">            URL url1 = new URL(url);</div><div class="line">            HttpURLConnection conn = (HttpURLConnection) url1.openConnection();</div><div class="line">            bitmap = BitmapFactory.decodeStream(conn.getInputStream());</div><div class="line">            conn.disconnect();</div><div class="line">        &#125; catch (Exception e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        return bitmap;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line">/**</div><div class="line"> * 图片缓存逻辑处理类</div><div class="line"> */</div><div class="line">public class ImageCache &#123;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 图片的缓存</div><div class="line">     */</div><div class="line">    LruCache&lt;String , Bitmap&gt; mImageCache;</div><div class="line"></div><div class="line">    public ImageCache()&#123;</div><div class="line">        // 初始化内存缓存策略</div><div class="line">        initImageCache();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private void initImageCache() &#123;</div><div class="line"></div><div class="line">        // 获得可使用的最大内存</div><div class="line">        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);</div><div class="line"></div><div class="line">        // 设置 1/4 的最大内存为作为缓存</div><div class="line">        final int cacheSize = maxMemory / 4;</div><div class="line"></div><div class="line">        mImageCache = new LruCache&lt;String,Bitmap&gt;(cacheSize)&#123;</div><div class="line">            @Override</div><div class="line">            protected int sizeOf(String key, Bitmap value) &#123;</div><div class="line">                //  返回缓存的bitmap大小</div><div class="line">                return value.getRowBytes() * value.getHeight() /1024 ;</div><div class="line">            &#125;</div><div class="line">        &#125;;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 提供一个对 bitmap 进行缓存的方法</div><div class="line">     */</div><div class="line">    public void putCache(String imgUrl, Bitmap bitmap)&#123;</div><div class="line">        mImageCache.put(imgUrl, bitmap);</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    /**</div><div class="line">     * 对外提供一个 获取缓存的方法</div><div class="line">     */</div><div class="line">    public Bitmap getCache(String imgUrl)&#123;</div><div class="line">        return mImageCache.get(imgUrl);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>将原类拆分为两个类之后, 每个类的职责变得清晰. 如果需要更改<code>缓存策略</code>那么只需要修改<code>ImageCache</code>类总逻辑. 如果需要替换<code>HttpURLConnection</code>为<code>OKHttp</code>那么只需要在<code>ImageLoader</code>类中修改. 这样充分了体现了一个类<code>单一职责SRP</code>的好处, 清晰, 排除了修改时的多余干扰代码.</p>
-<h2 id="开闭原则-OCP"><a href="#开闭原则-OCP" class="headerlink" title="开闭原则 OCP"></a>开闭原则 OCP</h2><blockquote>
-<p>全称<code>Open Close Principle</code></p>
-</blockquote>
-<p><code>定义</code>: 对于对象应该对于扩展是开放的, 对于修改是封闭的. 就是在后续的功能添加的时候要尽可能做到不修改已存在的代码! 就是通过<code>继承</code> <code>接口</code>的特性来实现的. 就是我们口中常说的<code>面向接口编程</code></p>
-<p>还是上面的代码, 这个时候我们如果想增添一个<code>二级缓存,添加一个磁盘的缓存</code>那么代码就如下了</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * 磁盘缓存</div><div class="line"> */</div><div class="line">public class DiskCache &#123;</div><div class="line"></div><div class="line">    public static final String cacheDir = &quot;sdcard/cache/&quot;;</div><div class="line"></div><div class="line">    // 从磁盘中获取缓存</div><div class="line">    public Bitmap getCache(String imgUrl)&#123;</div><div class="line">        return BitmapFactory.decodeFile(cacheDir+imgUrl);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    // 向磁盘中缓存</div><div class="line">    public void putCache(String imgUrl, Bitmap bitmap)&#123;</div><div class="line">        try(FileOutputStream fileOutputStream = new FileOutputStream(cacheDir+imgUrl))&#123;</div><div class="line">            // 对bitmap压缩到本地文件</div><div class="line">            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);</div><div class="line">        &#125; catch (IOException e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">// 还需要对ImageLoader类进行部分修改 只贴出添加的代码</div><div class="line">/**</div><div class="line"> * 处理图片的加载</div><div class="line"> */</div><div class="line">public class ImageLoader &#123;</div><div class="line">    /**</div><div class="line">     * 磁盘缓存</div><div class="line">     */</div><div class="line">    DiskCache mDiskCache = new DiskCache();</div><div class="line"></div><div class="line"></div><div class="line">    /**</div><div class="line">     * 设置一个标记表示是否开启磁盘缓存</div><div class="line">     */</div><div class="line">    public boolean isUseDiskCache = false;</div><div class="line">    </div><div class="line">    public void displayImage(final ImageView iv, final String imgUrl)&#123;</div><div class="line">        // 获取缓存</div><div class="line">         Bitmap bitmap = mImageCache.getCache(imgUrl);</div><div class="line">        if(null != bitmap)&#123;</div><div class="line">            iv.setImageBitmap(bitmap);</div><div class="line">            return;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        // 判断磁盘缓存</div><div class="line">        if (isUseDiskCache)&#123;</div><div class="line">            bitmap = mDiskCache.getCache(imgUrl);</div><div class="line">            if (null != bitmap)</div><div class="line">                return;</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">        // 省略相同的网络下载代码...   </div><div class="line">    &#125; </div><div class="line">    public void setUseDiskCache(boolean useDiskCache) &#123;</div><div class="line">        isUseDiskCache = useDiskCache;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>至此初步的添加功能需求已经完成, 增加了一个<code>DiskCache</code>类实现磁盘缓存, 并在<code>ImageLoader</code>类中进行判断使用的代码.</p>
-<p><code>分析</code>: 现在的加载可以有两种.一种是只使用<code>LruCache</code>缓存, 另一种是实现两种缓存同时实现. 那么这样的代码会有怎样的问题?</p>
-<ul>
-<li>问题1: 如果想实现单磁盘缓存? 那么必须再对<code>ImageLoader</code>进行修改. 添加判断条件. 并且三种缓存策略<code>if</code>的判断也就比较多.</li>
-<li>问题2: 如果用户想实现<code>自定义缓存</code>? 呵呵哒. 目前的代码没这么厉害的扩展性…</li>
-</ul>
-<p>那么看一下<code>UML</code>类图</p>
-<p><img src="http://szysky.com/2016/11/28/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%85%AD%E5%A4%A7%E5%8E%9F%E5%88%99%E8%A7%A3%E6%9E%90/1.png" alt="img"></p>
-<p>可以看出只要添加一个缓存策略就要建立一个依赖关系.</p>
-<p>那么如果通过<code>接口</code>的方式来修改代码呢. 看一下…</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * 缓存接口</div><div class="line"> */</div><div class="line">public interface BaseCache &#123;</div><div class="line"></div><div class="line">    // 添加缓存的抽象方法</div><div class="line">    void putCache(String imgUrl, Bitmap bitmap);</div><div class="line"></div><div class="line">    // 获取缓存的抽象方法</div><div class="line">    Bitmap getCache(String imgUrl);</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line">/**</div><div class="line"> * 双缓存</div><div class="line"> */</div><div class="line">public class DoubleCache implements BaseCache &#123;</div><div class="line"></div><div class="line">    BaseCache mMemoryCache = new ImageCache();</div><div class="line">    BaseCache mDiskCache = new DiskCache();</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void putCache(String imgUrl, Bitmap bitmap) &#123;</div><div class="line">        // 缓存</div><div class="line">        mMemoryCache.putCache(imgUrl, bitmap);</div><div class="line">        mDiskCache.putCache(imgUrl, bitmap);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public Bitmap getCache(String imgUrl) &#123;</div><div class="line">        // 先从缓存取没有再从sd取</div><div class="line">        Bitmap cache = mMemoryCache.getCache(imgUrl);</div><div class="line">        if (null == cache)&#123;</div><div class="line">            cache = mDiskCache.getCache(imgUrl);</div><div class="line">        &#125;</div><div class="line">        return cache;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">/**</div><div class="line"> * 图片缓存逻辑处理类</div><div class="line"> */</div><div class="line">public class ImageCache  implements BaseCache&#123;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 图片的缓存</div><div class="line">     */</div><div class="line">    LruCache&lt;String , Bitmap&gt; mImageCache;</div><div class="line"></div><div class="line">    public ImageCache()&#123;</div><div class="line">        // 初始化内存缓存策略</div><div class="line">        initImageCache();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private void initImageCache() &#123;</div><div class="line"></div><div class="line">        // 获得可使用的最大内存</div><div class="line">        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);</div><div class="line"></div><div class="line">        // 设置 1/4 的最大内存为作为缓存</div><div class="line">        final int cacheSize = maxMemory / 4;</div><div class="line"></div><div class="line">        mImageCache = new LruCache&lt;String,Bitmap&gt;(cacheSize)&#123;</div><div class="line">            @Override</div><div class="line">            protected int sizeOf(String key, Bitmap value) &#123;</div><div class="line">                //  返回缓存的bitmap大小</div><div class="line">                return value.getRowBytes() * value.getHeight() /1024 ;</div><div class="line">            &#125;</div><div class="line">        &#125;;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 提供一个对 bitmap 进行缓存的方法</div><div class="line">     */</div><div class="line">    @Override</div><div class="line">    public void putCache(String imgUrl, Bitmap bitmap)&#123;</div><div class="line">        mImageCache.put(imgUrl, bitmap);</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    /**</div><div class="line">     * 对外提供一个 获取缓存的方法</div><div class="line">     */</div><div class="line">    @Override</div><div class="line">    public Bitmap getCache(String imgUrl)&#123;</div><div class="line">        return mImageCache.get(imgUrl);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">/**</div><div class="line"> * 处理图片的加载</div><div class="line"> */</div><div class="line">public class ImageLoader &#123;</div><div class="line">    /**</div><div class="line">     * 图片的缓存 默认只是内存缓存</div><div class="line">     */</div><div class="line">    BaseCache mImageCache = new ImageCache();</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 注入缓存策略</div><div class="line">     */</div><div class="line">    public void setmImageCache(BaseCache mImageCache) &#123;</div><div class="line">        this.mImageCache = mImageCache;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line"></div><div class="line">    /**</div><div class="line">     * 线程池</div><div class="line">     */</div><div class="line">    ExecutorService mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());</div><div class="line"></div><div class="line"></div><div class="line">    public void displayImage(final ImageView iv, final String imgUrl)&#123;</div><div class="line">        // 获取缓存 具体的缓存策略实现了依赖注入. 有调用者后续决定, 默认内存缓存</div><div class="line">         Bitmap bitmap = mImageCache.getCache(imgUrl);</div><div class="line">        if(null != bitmap)&#123;</div><div class="line">            iv.setImageBitmap(bitmap);</div><div class="line">            return;</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">        // 网络加载</div><div class="line">        iv.setTag(imgUrl);</div><div class="line">        mExecutorService.submit(new Runnable() &#123;</div><div class="line">            @Override</div><div class="line">            public void run() &#123;</div><div class="line">                Bitmap bitmap = downloadImage(imgUrl);</div><div class="line">                if (null == bitmap)</div><div class="line">                    return ;</div><div class="line">                if (iv.getTag().equals(imgUrl)) &#123;</div><div class="line">                    iv.setImageBitmap(bitmap);</div><div class="line">                &#125;</div><div class="line">                mImageCache.putCache(imgUrl,bitmap);</div><div class="line">            &#125;</div><div class="line">        &#125;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    /**</div><div class="line">     * 根据图片的url下载图片并转换成bitmap对象返回</div><div class="line">     */</div><div class="line">    public Bitmap downloadImage(String url)&#123;</div><div class="line">        Bitmap bitmap = null;</div><div class="line"></div><div class="line">        try &#123;</div><div class="line">            URL url1 = new URL(url);</div><div class="line">            HttpURLConnection conn = (HttpURLConnection) url1.openConnection();</div><div class="line">            bitmap = BitmapFactory.decodeStream(conn.getInputStream());</div><div class="line">            conn.disconnect();</div><div class="line">        &#125; catch (Exception e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        return bitmap;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>上面代码没有<code>单磁盘缓存</code>的策略, 但是如果现在想要实现了这个功能, 怎么做? 只需要创建一个类实现<code>BaseCache</code>. 在创建<code>ImageLoader</code>的时候通过<code>setmImageCache()</code>来注入不同的实现. <code>不需要修改源代码</code>, 并且<code>ImageLoader</code>中的<code>if</code>语句判断和<code>布尔标记</code>也完全不需要, 代码更加简洁.</p>
-<p>看一下类图:</p>
-<p><img src="http://szysky.com/2016/11/28/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E5%85%AD%E5%A4%A7%E5%8E%9F%E5%88%99%E8%A7%A3%E6%9E%90/2.png" alt="img"></p>
-<p>可以看到<code>ImageLoader</code>依赖了接口编程. 接口定义了缓存的共性方法. 在后续只要是其子类就可以使用.这不正满足了<code>开闭原则的定义</code>, <code>对修改封闭, 对于扩展开放</code>了.</p>
-<h2 id="里氏替换原则-LSP"><a href="#里氏替换原则-LSP" class="headerlink" title="里氏替换原则 LSP"></a>里氏替换原则 LSP</h2><blockquote>
-<p>全称<code>Liskov Substitution Principle</code></p>
-</blockquote>
-<p><code>定义</code>: 所有引用基类的地方必须能透明的使用其子类.</p>
-<p>说白了就是Java中的<code>继承</code>和<code>多态</code>的特性. 父类可以直接引用子类类型. 比如<code>Object</code>可以引用任何类型的概念.</p>
-<p>其实在上面的<code>开闭原则</code>中就已经存在了<code>里氏替换</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">* 注入缓存策略</div><div class="line">*/</div><div class="line">public void setmImageCache(BaseCache mImageCache) &#123;</div><div class="line">   this.mImageCache = mImageCache;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>参数接收的<code>BaseCache</code>类型. 可以透明的引用任何的子类. 通过<code>抽象</code>实现了多种可能.</p>
-<p>一般来说<code>开闭原则</code>和<code>里氏替换</code>是不离不弃, 生死相依的. 通过<code>里氏替换</code>达到了对扩展的开发, 对修改封闭的效果. 这两个原则同时实现了一个<code>OOP</code>的一个重要特性<code>抽象</code></p>
-<h2 id="依赖倒置原则-DIP"><a href="#依赖倒置原则-DIP" class="headerlink" title="依赖倒置原则 DIP"></a>依赖倒置原则 DIP</h2><blockquote>
-<p>全称:Dependence Inversion Principle</p>
-</blockquote>
-<p><code>定义</code>: 指代了一种特定的解耦方式, 使得<code>高层次</code>的模块不依赖于<code>低层次的模块实现细节</code>.</p>
-<ul>
-<li>高层次模块不应该依赖低层次, 两者都应该依赖其抽象</li>
-<li>抽象不应该依赖细节</li>
-<li>细节应该依赖抽象</li>
-</ul>
-<p>而在<code>Java</code>中的表现就是: <code>模块间的依赖通过抽象发生, 实现类之间不发生直接的依赖关系, 其依赖关系是通过接口或抽象产生的</code></p>
-<p>直接看代码, 还是上面的<code>ImageLoader</code>类中</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">// 依赖于接口抽象, </div><div class="line">BaseCache mImageCache = new ImageCache();</div><div class="line"></div><div class="line">// 依赖于细节, 内存缓存</div><div class="line">ImageCache mImageCache = new ImageCache();</div><div class="line">// 依赖于细节, 双缓存</div><div class="line">DoubleCache mImageCache = new DoubleCache();</div></pre></td></tr></table></figure>
-<p>如果依赖了内存缓存细节, 那么注入的缓存策略必须是<code>ImageCache</code>的子类. 但是这个子类已经具备一个细节的实现, 我们再去做其他细节的实现. 岂不是很怪异. 这个类中的出现的方法也是匪夷所思. 并且可能用户实现的具体策略也不一定是<code>内存</code>方法的缓存. 在命名上的限制也是很不友好.</p>
-<p>总结一句话: <code>依赖抽象, 而不依赖具体实现</code></p>
-<h2 id="接口隔离原则-ISP"><a href="#接口隔离原则-ISP" class="headerlink" title="接口隔离原则 ISP"></a>接口隔离原则 ISP</h2><blockquote>
-<p>全称: Interface Segregation Principle</p>
-</blockquote>
-<p><code>定义</code>: 类间的依赖关系应该建立在最小的接口上.</p>
-<p>接口隔离的原则就是让系统接口耦合, 从而更容易重构, 更改和重新部署.</p>
-<p>对于操作<code>IO</code>或者<code>网络</code>我们总是需要在<code>finally</code>中确保资源的释放. 如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">FileOutputStream fileOutputStream = null;</div><div class="line">try&#123;</div><div class="line">  fileOutputStream = new FileOutputStream(cacheDir+imgUrl);</div><div class="line">  bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);</div><div class="line">&#125;catch (IOException e) &#123;</div><div class="line">  e.printStackTrace();</div><div class="line">&#125;finally &#123;</div><div class="line">  try &#123;</div><div class="line">      fileOutputStream.close();</div><div class="line">  &#125; catch (IOException e) &#123;</div><div class="line">      e.printStackTrace();</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>这是多么蛋疼的代码… 一堆堆的花括号.</p>
-<p>对于可关闭的对象, 都具备一个接口<code>Closeable</code>. 这个接口一个空接口, 也就是<code>标识接口</code>. 作用? 就是标识这个对象可以调用<code>close()</code>被关闭. 体现了一类对象的某一个特性. 而且这个特性<code>建立在了最小接口</code>的原则上.</p>
-<p>那么编写这么一段代码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">public class CloseUtils &#123;</div><div class="line">    </div><div class="line">    // 整个方法通过最小接口的特性, 实现了隔离其他无用的属性. 只关心</div><div class="line">    // Closeable接口即可. 接口隔离</div><div class="line">    </div><div class="line">    // 参数 对应了里氏替换的原则</div><div class="line">    public static void fastClose(Closeable closeObj)&#123;</div><div class="line">        if (null != closeObj)&#123;</div><div class="line">            try &#123;</div><div class="line">                // close()方法的调用, 对应了 依赖倒置原则</div><div class="line">                closeObj.close();</div><div class="line">            &#125; catch (IOException e) &#123;</div><div class="line">                e.printStackTrace();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>之前的代码调用就变成了</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">FileOutputStream fileOutputStream = null;</div><div class="line">try&#123;</div><div class="line">  fileOutputStream = new FileOutputStream(cacheDir+imgUrl);</div><div class="line">  bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);</div><div class="line">&#125;catch (IOException e) &#123;</div><div class="line">  e.printStackTrace();</div><div class="line">&#125;finally &#123;</div><div class="line">  CloseUtils.fastClose(fileOutputStream);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>不仅简单, 而且方便到处调用, 看起来也舒服多了.</p>
-<h2 id="迪米特原则-LOD"><a href="#迪米特原则-LOD" class="headerlink" title="迪米特原则 LOD"></a>迪米特原则 LOD</h2><blockquote>
-<p>Law of Demeter</p>
-</blockquote>
-<p>就是一个对象应该尽可能少的关联其他对象.</p>
-<p>通俗讲, 一个类应该对自己需要耦合或调用的类知道的<code>最少</code>, 类的内部如何实现与调用者或者依赖者没有关系, 调用者或者依赖者只需要知道他需要的方法即可, 其他的一概不关心. 因为类与类之间的关系越密切, 耦合度也就越大, 当一个类发生改变时, 对另一个类的影响也会变大.</p>
-<p>太懒了, 无具体实现…</p>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="http://yoursite.com/2017/09/12/java/设计模式六大原则解析/" data-id="cj7hnifbv00016opjrfkqwgiq" class="article-share-link"><i class="fa fa-share"></i>Share</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-        <a href="http://yoursite.com/2017/09/12/java/设计模式六大原则解析/#comments" class="article-comment-link">Comments</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
     <nav id="page-nav">
         <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
     </nav>
@@ -3311,6 +3540,15 @@ limitations under the License.
         <h3 class="widget-title">recent</h3>
         <div class="widget">
             <ul id="recent-post" class="no-thumbnail">
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/ssh/">ssh</a></p>
+                            <p class="item-title"><a href="/2017/09/20/other/Gitlab权限说明/" class="title">Gitlab权限说明</a></p>
+                            <p class="item-date"><time datetime="2017-09-20T09:54:25.000Z" itemprop="datePublished">2017-09-20</time></p>
+                        </div>
+                    </li>
                 
                     <li>
                         
@@ -3348,15 +3586,6 @@ limitations under the License.
                         </div>
                     </li>
                 
-                    <li>
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/glide/">glide</a></p>
-                            <p class="item-title"><a href="/2017/09/20/android/github/glide解析1_基本用法/" class="title">Glide解析1_基本用法</a></p>
-                            <p class="item-date"><time datetime="2017-09-20T08:38:10.000Z" itemprop="datePublished">2017-09-20</time></p>
-                        </div>
-                    </li>
-                
             </ul>
         </div>
     </div>
@@ -3366,7 +3595,7 @@ limitations under the License.
     <div class="widget-wrap">
         <h3 class="widget-title">categories</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">43</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/glide/">glide</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">2</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">43</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/glide/">glide</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/ssh/">ssh</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -3375,7 +3604,7 @@ limitations under the License.
     <div class="widget-wrap">
         <h3 class="widget-title">archives</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">52</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">53</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
         </div>
     </div>
 
@@ -3384,7 +3613,7 @@ limitations under the License.
     <div class="widget-wrap">
         <h3 class="widget-title">tags</h3>
         <div class="widget">
-            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">37</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">37</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/">ssh</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -3393,7 +3622,7 @@ limitations under the License.
     <div class="widget-wrap">
         <h3 class="widget-title">tag cloud</h3>
         <div class="widget tagcloud">
-            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 16.67px;">code</a> <a href="/tags/git/" style="font-size: 11.67px;">git</a> <a href="/tags/github/" style="font-size: 18.33px;">github</a> <a href="/tags/glide/" style="font-size: 15px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 13.33px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.67px;">markdown</a> <a href="/tags/mysql/" style="font-size: 16.67px;">mysql</a> <a href="/tags/node/" style="font-size: 18.33px;">node</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.67px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.67px;">设计模式</a>
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 16.67px;">code</a> <a href="/tags/git/" style="font-size: 11.67px;">git</a> <a href="/tags/github/" style="font-size: 18.33px;">github</a> <a href="/tags/glide/" style="font-size: 15px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 13.33px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.67px;">markdown</a> <a href="/tags/mysql/" style="font-size: 16.67px;">mysql</a> <a href="/tags/node/" style="font-size: 18.33px;">node</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/ssh/" style="font-size: 10px;">ssh</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.67px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.67px;">设计模式</a>
         </div>
     </div>
 

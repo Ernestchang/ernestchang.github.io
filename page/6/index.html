@@ -157,11 +157,11 @@
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                73
+                74
                 <span>posts</span>
             </div>
             <div class="article-info-block">
-                20
+                21
                 <span>tags</span>
             </div>
         </div>
@@ -210,6 +210,256 @@
 
             
             <section id="main">
+    <article id="post-git/git常用指令详解" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p><code>常用指令ls　 显示文件或目录 -l 列出文件详细信息l(list) -a 列出当前目录下所有文件及目录，包括隐藏的a(all)mkdir 创建目录 -p 创建目录，若无父目录，则创建p(parent)cd 切换目录touch 创建空文件echo 创建带有内容的文件。cat 查看文件内容cp 拷贝mv 移动或重命名rm 删除文件 -r 递归删除，可删除子目录及文件 -f 强制删除find 在文件系统中搜索某文件wc 统计文本中行数、字数、字符数grep 在文本文件中查找某个字符串rmdir 删除空目录tree 树形结构显示目录，需要安装tree包pwd 显示当前目录</code></p>
+<p>git速度快，分布式，</p>
+<ul>
+<li>回到过去，未来，版本</li>
+<li>使用git会在当前目录下，产生一个.git文件，记录</li>
+<li>多端共享</li>
+<li>团队协作</li>
+</ul>
+<ul>
+<li>冲突需要手动解决</li>
+</ul>
+<ul>
+<li>svn和git对比</li>
+</ul>
+<ul>
+<li>每个文件夹里面都有.svn文件，速度慢</li>
+</ul>
+<ul>
+<li>svn叫集中式，集中存放，有一个中央服务器，如果中央服务器报废，所有的文件将瘫痪</li>
+<li>git叫分布式，每个人都有本地仓库，（也有中央服务器github,可有可无，github/gitlab）</li>
+<li>git 速度快</li>
+</ul>
+<p>git界面化管理（sourceTree）/命令行</p>
+<ul>
+<li>常见编辑器 webstrom sublime vscode</li>
+</ul>
+<p>查看git 版本号</p>
+<p><code>git --version</code></p>
+<p>清屏</p>
+<p><code>clear</code></p>
+<p>创建目录</p>
+<p><code>mkdir</code></p>
+<p>创建文件</p>
+<p><code>touch</code></p>
+<p>使用git</p>
+<ul>
+<li>查看 git配置是否 git config –list</li>
+<li>配置git用户</li>
+</ul>
+<p><code>git config --global user.name 名字`` git config --global user.email 邮箱</code></p>
+<p>初始化git仓库</p>
+<p><code>git init</code></p>
+<p>删除文件夹（删除.git文件夹）</p>
+<p><code>rm -rf .git</code></p>
+<p>创建文件</p>
+<p><code>touch index.txt</code></p>
+<p>查看文件</p>
+<p><code>cat index.txt</code></p>
+<p>vi 编辑</p>
+<p><code>vi index.txti 表示插入编辑esc+:wq保存并退出</code></p>
+<p>列出了(修改过的、新创建的、已经暂存但未提交的)文件，</p>
+<ul>
+<li>git status</li>
+</ul>
+<p>git 三个区</p>
+<ul>
+<li>工作区</li>
+</ul>
+<p><code>git add .``- . 点代表所有</code></p>
+<ul>
+<li>暂存区/过渡区</li>
+</ul>
+<p><code>git commit -m &#39;解释文件信息&#39;</code></p>
+<ul>
+<li>历史去/版本库<code>git log</code></li>
+</ul>
+<ul>
+<li>每次提交都会产生一个版本号</li>
+<li>查看日志git log</li>
+</ul>
+<ul>
+<li>提交github</li>
+</ul>
+<p>git log 查看日志</p>
+<p>git比较三个区不同</p>
+<p><code>git dirr</code></p>
+<ul>
+<li>直接写git dirr 比较的是工作区和暂缓区</li>
+<li>git diff –cached 比较的是暂缓区和历史区</li>
+<li>git diff (分支名)</li>
+<li>git diff master 工作区和版本库</li>
+</ul>
+<p>输出内容到文件中</p>
+<p><code>echo world &gt;&gt; index.txt</code></p>
+<p>根据字段搜索日志</p>
+<p><code>git log --author=&#39;搜索的关键字&#39;</code></p>
+<p>回滚工作区</p>
+<ul>
+<li>用暂存区的覆盖掉工作区</li>
+</ul>
+<p><code>git checkout &#39;文件&#39;</code></p>
+<p>将暂存区的内容回到上一次的暂存区</p>
+<p><code>git reset HEAD .</code></p>
+<p>回滚历史区</p>
+<p><code>git reset --hard 版本id</code></p>
+<ul>
+<li>强制用–历史区–覆盖到–工作区–和–缓存区</li>
+</ul>
+<p>打印以前所有的日志</p>
+<p><code>git reflog</code></p>
+<p>打印日志合并提示</p>
+<p><code>git log --graph</code></p>
+<p>查看分支</p>
+<p><code>git branch</code></p>
+<p>git分支管理</p>
+<ul>
+<li>只有提交过一次，才会产生master分支，否做分支是空的</li>
+<li>新建一个(dev)分支</li>
+</ul>
+<p><code>git branch dev</code></p>
+<ul>
+<li>切换到（dev）分支上</li>
+</ul>
+<p><code>git checkout dev</code></p>
+<ul>
+<li>删除(dev)分支</li>
+</ul>
+<ul>
+<li>切换到别的分支，删除要删除的分支</li>
+<li>在要删除的分支上，没有办法删除要删除的分支</li>
+</ul>
+<p><code>git branch -D dev</code></p>
+<ul>
+<li>创建(dev)分支并切换到（dev）分支上</li>
+</ul>
+<p><code>git checkout -b dev</code></p>
+<ul>
+<li><p>在工作区中创建一个文件，这个文件不属于任何分支</p>
+</li>
+<li><p>只有提交过一次，此时两个分支才无任何关系</p>
+</li>
+<li><p>合并分支</p>
+<p><code>git merge &#39;要合并的分支名&#39;</code></p>
+</li>
+</ul>
+<ul>
+<li>切换到master</li>
+</ul>
+<ul>
+<li>解决冲突</li>
+<li>删除所有没用的，留下需要的，再次提交</li>
+</ul>
+<p>简写，提交</p>
+<p><code>git commit -a -m &#39;merge&#39;</code></p>
+<p>推送到github</p>
+<ul>
+<li>先在github上创建一个远程仓库</li>
+<li>初始化github</li>
+<li>添加readme文件</li>
+<li>添加忽视文件.gitignore这个文件上传</li>
+<li>空文件夹不会被提交（想提交并且还是空的的）添加.gitkeep</li>
+<li>添加暂存区 添加历史区 添加一个远程地址 提交github上</li>
+</ul>
+<p>** </p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/09/05/git/git常用指令详解/" data-id="cj76ysgds00004cpjktqen7yj" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/09/05/git/git常用指令详解/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
     <article id="post-android/books/《Android开发艺术探索》Chap1_Activity生命周期和启动模式" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
@@ -1327,6 +1577,206 @@ Ctrl-w l    移动到窗口右边
 
 
 
+    <article id="post-git/git commit 编写风格模板" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/07/19/git/git commit 编写风格模板/">git commit 编写风格模板</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/07/19/git/git commit 编写风格模板/">
+            <time datetime="2017-07-19T12:15:00.000Z" itemprop="datePublished">2017-07-19</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/git/">git</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/git/">git</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>最近看了Ruan YiFeng写的<a href="http://www.ruanyifeng.com/blog/2016/01/commit_message_change_log.html" target="_blank" rel="external">Commit message 和 Change log 编写指南</a>。<br>了解了如何写规范的commit message。</p>
+<!-- * 目录
+{:toc} -->
+<h3 id="编写规范"><a href="#编写规范" class="headerlink" title="编写规范"></a>编写规范</h3><p>先简要记录一下编写规范，这部分内容可以直接看Ruan YiFeng的博客，要比我写的详细。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;type&gt;(&lt;scope&gt;): &lt;subject&gt;</div><div class="line">// 空一行</div><div class="line">&lt;body&gt;</div><div class="line">// 空一行</div><div class="line">&lt;footer&gt;</div></pre></td></tr></table></figure></p>
+<p>commit message包含三个部分，header, body和footer，其中header必须有，body和footer可以按情况省略。</p>
+<p><strong>type 字段</strong></p>
+<ul>
+<li>feat：新功能（feature）</li>
+<li>fix：修补bug</li>
+<li>docs：文档（documentation）</li>
+<li>style： 格式（不影响代码运行的变动）</li>
+<li>refactor：重构（即不是新增功能，也不是修改bug的代码变动）</li>
+<li>test：增加测试</li>
+<li>chore：构建过程或辅助工具的变动</li>
+</ul>
+<p><strong>scope用于说明 commit 影响的范围，比如数据层、控制层、视图层等等，视项目不同而不同。</strong></p>
+<p>也就是写用户会感觉到改变在哪个地方。</p>
+<p><strong>subject是 commit 目的的简短描述，不超过50个字符</strong></p>
+<ul>
+<li>以动词开头，使用第一人称现在时，比如change，而不是changed或changes</li>
+<li>第一个字母小写</li>
+<li>结尾不加句号（.）</li>
+</ul>
+<p><strong>Body 部分是对本次 commit 的详细描述，可以分成多行</strong></p>
+<ul>
+<li>使用第一人称现在时，比如使用change而不是changed或changes。</li>
+<li>应该说明代码变动的动机，以及与以前行为的对比。</li>
+</ul>
+<p><strong>Footer</strong></p>
+<ul>
+<li>如果当前代码与上一个版本不兼容，则 Footer 部分以BREAKING CHANGE开头，后面是对变动的描述、以及变动理由和迁移方法。</li>
+<li>关闭 Issue</li>
+</ul>
+<p>另外，也可以包括JIRA issue references或者其他actions。</p>
+<p><q><strong>Revert</strong></q></p>
+<p>这是一种特殊情况，为了撤销前面的操作。</p>
+<p>如果当前 commit 用于撤销以前的 commit，则必须以revert:开头，后面跟着被撤销 Commit 的 Header。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">revert: feat(pencil): add &apos;graphiteWidth&apos; option</div><div class="line"></div><div class="line">This reverts commit 667ecc1654a317a13331b17617d973392f415f02.</div></pre></td></tr></table></figure>
+<p>Body部分的格式是固定的，必须写成<code>This reverts commit &amp;lt;hash&gt;.</code>，其中的<code>hash</code>是被撤销 commit 的 <code>SHA 标识符</code>。<br>如果当前 commit 与被撤销的 commit，在同一个发布（release）里面，<br>那么它们都不会出现在 Change log 里面。如果两者在不同的发布，那么当前 commit，会出现在 Change log 的Reverts小标题下面。</p>
+<p><a href="https://github.com/yulijia/cn/commit/e36d3ee657107623ff3fffc4bf8aec4b26a9bac0" target="_blank" rel="external">https://github.com/yulijia/cn/commit/e36d3ee657107623ff3fffc4bf8aec4b26a9bac0</a></p>
+<h3 id="修改git-message默认编辑器"><a href="#修改git-message默认编辑器" class="headerlink" title="修改git message默认编辑器"></a>修改git message默认编辑器</h3><p>说了这么多写作规范，如果有个模板可以直接拷贝，是再好不过的。</p>
+<p>使用模板之前，先对git message的默认编辑器做个修改，默认的是<code>nano</code>，但这个软件我不会用。</p>
+<p>用下面的命令，可以把默认编辑器改成<code>vim</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git config core.editor &quot;vim&quot;</div></pre></td></tr></table></figure>
+<h3 id="使用模板"><a href="#使用模板" class="headerlink" title="使用模板"></a>使用模板</h3><p>我采用了<a href="https://gist.github.com/Linell/bd8100c4e04348c7966d" target="_blank" rel="external">Linell编写的模板</a></p>
+<p>安装方式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">curl https://gist.githubusercontent.com/Linell/bd8100c4e04348c7966d/raw/84c0ea6e0f0a1431d406be6b7bb6e136949090cd/.git-commit-template.txt &gt;&gt; ~/.git-commit-template.txt</div><div class="line">git config --global commit.template ~/.git-commit-template.txt</div></pre></td></tr></table></figure>
+<p>另外，在这里也提供一个<a href="https://gist.github.com/yulijia/fe2522fe138b6ed41ff4" target="_blank" rel="external">中文的模板</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">curl https://gist.githubusercontent.com/yulijia/fe2522fe138b6ed41ff4/raw/5fa0007d1863f70cf4631f2dc1513c8676cd4ab8/.git-commit-template.txt &gt;&gt; ~/.git-commit-template.txt</div><div class="line">git config --global commit.template ~/.git-commit-template.txt</div></pre></td></tr></table></figure>
+<p>实际使用截图如下：</p>
+<p><img src="http://i.imgur.com/LMDCXdN.png" alt="Imgur"></p>
+<h3 id="写博客的commit-message应该怎么写？"><a href="#写博客的commit-message应该怎么写？" class="headerlink" title="写博客的commit message应该怎么写？"></a>写博客的commit message应该怎么写？</h3><p><u>这部分就是自娱自乐了</u>。查看了一下自己写博客提交的message，基本分为四类：1.提交一篇/多篇新内容；2.改错别字；3.修改/更新内容；4.修改/更新YAML说明；5.增加新页面。</p>
+<p>根据现有的git commit message写作规范，编写了自己的博客提交message规范。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;type&gt;(&lt;scope&gt;): &lt;subject&gt;</div><div class="line">// 空一行</div><div class="line">&lt;body&gt;</div><div class="line">// 空一行</div><div class="line">&lt;footer&gt;</div></pre></td></tr></table></figure>
+<p><strong>type</strong>为：</p>
+<ul>
+<li>add 增加新博客/页面（add new post/page）</li>
+<li>correct 改错别字/语法（correct spelling/grammar ）</li>
+<li>update 更新内容（update content）</li>
+<li>change 修改YAML说明（change YAML front-matter）</li>
+</ul>
+<p><strong>scope</strong>为：post/page, spelling/grammar, content, YAML front-matter</p>
+<p><strong>subject</strong>为：短描述，可以包含文件名等内容(如果名字过长，用首字母大写代替，省略连词)。（<code>add(post):20160121-postname.md</code>)</p>
+<p><strong>body</strong>为：具体的修改内容，如果是新增博客/页面，则可以省略。</p>
+<p><strong>footer</strong>为：空</p>
+<p>这个模板也放到<a href="https://gist.github.com/yulijia/fe2522fe138b6ed41ff4#file-git-commit-blog-txt" target="_blank" rel="external">gist</a>上。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">curl https://gist.githubusercontent.com/yulijia/fe2522fe138b6ed41ff4/raw/1e90ec272180dba299f5ad861e72dfab876c0c5b/.git-commit-blog.txt &gt;&gt; ~/.git-commit-template.txt</div><div class="line">git config --global commit.template ~/.git-commit-template.txt</div></pre></td></tr></table></figure>
+<p>实际使用时的截图如下</p>
+<p><img src="http://i.imgur.com/rVEhe7Z.png" alt="Imgur"></p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/07/19/git/git commit 编写风格模板/" data-id="cj76wnr6x0004enpjzrccax9w" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/07/19/git/git commit 编写风格模板/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
     <article id="post-android/github/android indicator解析" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
@@ -1579,206 +2029,6 @@ mTab.setupWithViewPager(mViewPager);
             
     
         <a href="http://yoursite.com/2017/07/19/android/github/android indicator解析/#comments" class="article-comment-link">Comments</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-git/git commit 编写风格模板" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2017/07/19/git/git commit 编写风格模板/">git commit 编写风格模板</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2017/07/19/git/git commit 编写风格模板/">
-            <time datetime="2017-07-19T12:15:00.000Z" itemprop="datePublished">2017-07-19</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/git/">git</a>
-    </div>
-
-                        
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/git/">git</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <p>最近看了Ruan YiFeng写的<a href="http://www.ruanyifeng.com/blog/2016/01/commit_message_change_log.html" target="_blank" rel="external">Commit message 和 Change log 编写指南</a>。<br>了解了如何写规范的commit message。</p>
-<!-- * 目录
-{:toc} -->
-<h3 id="编写规范"><a href="#编写规范" class="headerlink" title="编写规范"></a>编写规范</h3><p>先简要记录一下编写规范，这部分内容可以直接看Ruan YiFeng的博客，要比我写的详细。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;type&gt;(&lt;scope&gt;): &lt;subject&gt;</div><div class="line">// 空一行</div><div class="line">&lt;body&gt;</div><div class="line">// 空一行</div><div class="line">&lt;footer&gt;</div></pre></td></tr></table></figure></p>
-<p>commit message包含三个部分，header, body和footer，其中header必须有，body和footer可以按情况省略。</p>
-<p><strong>type 字段</strong></p>
-<ul>
-<li>feat：新功能（feature）</li>
-<li>fix：修补bug</li>
-<li>docs：文档（documentation）</li>
-<li>style： 格式（不影响代码运行的变动）</li>
-<li>refactor：重构（即不是新增功能，也不是修改bug的代码变动）</li>
-<li>test：增加测试</li>
-<li>chore：构建过程或辅助工具的变动</li>
-</ul>
-<p><strong>scope用于说明 commit 影响的范围，比如数据层、控制层、视图层等等，视项目不同而不同。</strong></p>
-<p>也就是写用户会感觉到改变在哪个地方。</p>
-<p><strong>subject是 commit 目的的简短描述，不超过50个字符</strong></p>
-<ul>
-<li>以动词开头，使用第一人称现在时，比如change，而不是changed或changes</li>
-<li>第一个字母小写</li>
-<li>结尾不加句号（.）</li>
-</ul>
-<p><strong>Body 部分是对本次 commit 的详细描述，可以分成多行</strong></p>
-<ul>
-<li>使用第一人称现在时，比如使用change而不是changed或changes。</li>
-<li>应该说明代码变动的动机，以及与以前行为的对比。</li>
-</ul>
-<p><strong>Footer</strong></p>
-<ul>
-<li>如果当前代码与上一个版本不兼容，则 Footer 部分以BREAKING CHANGE开头，后面是对变动的描述、以及变动理由和迁移方法。</li>
-<li>关闭 Issue</li>
-</ul>
-<p>另外，也可以包括JIRA issue references或者其他actions。</p>
-<p><q><strong>Revert</strong></q></p>
-<p>这是一种特殊情况，为了撤销前面的操作。</p>
-<p>如果当前 commit 用于撤销以前的 commit，则必须以revert:开头，后面跟着被撤销 Commit 的 Header。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">revert: feat(pencil): add &apos;graphiteWidth&apos; option</div><div class="line"></div><div class="line">This reverts commit 667ecc1654a317a13331b17617d973392f415f02.</div></pre></td></tr></table></figure>
-<p>Body部分的格式是固定的，必须写成<code>This reverts commit &amp;lt;hash&gt;.</code>，其中的<code>hash</code>是被撤销 commit 的 <code>SHA 标识符</code>。<br>如果当前 commit 与被撤销的 commit，在同一个发布（release）里面，<br>那么它们都不会出现在 Change log 里面。如果两者在不同的发布，那么当前 commit，会出现在 Change log 的Reverts小标题下面。</p>
-<p><a href="https://github.com/yulijia/cn/commit/e36d3ee657107623ff3fffc4bf8aec4b26a9bac0" target="_blank" rel="external">https://github.com/yulijia/cn/commit/e36d3ee657107623ff3fffc4bf8aec4b26a9bac0</a></p>
-<h3 id="修改git-message默认编辑器"><a href="#修改git-message默认编辑器" class="headerlink" title="修改git message默认编辑器"></a>修改git message默认编辑器</h3><p>说了这么多写作规范，如果有个模板可以直接拷贝，是再好不过的。</p>
-<p>使用模板之前，先对git message的默认编辑器做个修改，默认的是<code>nano</code>，但这个软件我不会用。</p>
-<p>用下面的命令，可以把默认编辑器改成<code>vim</code>：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git config core.editor &quot;vim&quot;</div></pre></td></tr></table></figure>
-<h3 id="使用模板"><a href="#使用模板" class="headerlink" title="使用模板"></a>使用模板</h3><p>我采用了<a href="https://gist.github.com/Linell/bd8100c4e04348c7966d" target="_blank" rel="external">Linell编写的模板</a></p>
-<p>安装方式如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">curl https://gist.githubusercontent.com/Linell/bd8100c4e04348c7966d/raw/84c0ea6e0f0a1431d406be6b7bb6e136949090cd/.git-commit-template.txt &gt;&gt; ~/.git-commit-template.txt</div><div class="line">git config --global commit.template ~/.git-commit-template.txt</div></pre></td></tr></table></figure>
-<p>另外，在这里也提供一个<a href="https://gist.github.com/yulijia/fe2522fe138b6ed41ff4" target="_blank" rel="external">中文的模板</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">curl https://gist.githubusercontent.com/yulijia/fe2522fe138b6ed41ff4/raw/5fa0007d1863f70cf4631f2dc1513c8676cd4ab8/.git-commit-template.txt &gt;&gt; ~/.git-commit-template.txt</div><div class="line">git config --global commit.template ~/.git-commit-template.txt</div></pre></td></tr></table></figure>
-<p>实际使用截图如下：</p>
-<p><img src="http://i.imgur.com/LMDCXdN.png" alt="Imgur"></p>
-<h3 id="写博客的commit-message应该怎么写？"><a href="#写博客的commit-message应该怎么写？" class="headerlink" title="写博客的commit message应该怎么写？"></a>写博客的commit message应该怎么写？</h3><p><u>这部分就是自娱自乐了</u>。查看了一下自己写博客提交的message，基本分为四类：1.提交一篇/多篇新内容；2.改错别字；3.修改/更新内容；4.修改/更新YAML说明；5.增加新页面。</p>
-<p>根据现有的git commit message写作规范，编写了自己的博客提交message规范。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;type&gt;(&lt;scope&gt;): &lt;subject&gt;</div><div class="line">// 空一行</div><div class="line">&lt;body&gt;</div><div class="line">// 空一行</div><div class="line">&lt;footer&gt;</div></pre></td></tr></table></figure>
-<p><strong>type</strong>为：</p>
-<ul>
-<li>add 增加新博客/页面（add new post/page）</li>
-<li>correct 改错别字/语法（correct spelling/grammar ）</li>
-<li>update 更新内容（update content）</li>
-<li>change 修改YAML说明（change YAML front-matter）</li>
-</ul>
-<p><strong>scope</strong>为：post/page, spelling/grammar, content, YAML front-matter</p>
-<p><strong>subject</strong>为：短描述，可以包含文件名等内容(如果名字过长，用首字母大写代替，省略连词)。（<code>add(post):20160121-postname.md</code>)</p>
-<p><strong>body</strong>为：具体的修改内容，如果是新增博客/页面，则可以省略。</p>
-<p><strong>footer</strong>为：空</p>
-<p>这个模板也放到<a href="https://gist.github.com/yulijia/fe2522fe138b6ed41ff4#file-git-commit-blog-txt" target="_blank" rel="external">gist</a>上。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">curl https://gist.githubusercontent.com/yulijia/fe2522fe138b6ed41ff4/raw/1e90ec272180dba299f5ad861e72dfab876c0c5b/.git-commit-blog.txt &gt;&gt; ~/.git-commit-template.txt</div><div class="line">git config --global commit.template ~/.git-commit-template.txt</div></pre></td></tr></table></figure>
-<p>实际使用时的截图如下</p>
-<p><img src="http://i.imgur.com/rVEhe7Z.png" alt="Imgur"></p>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="http://yoursite.com/2017/07/19/git/git commit 编写风格模板/" data-id="cj76wnr6x0004enpjzrccax9w" class="article-share-link"><i class="fa fa-share"></i>Share</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-        <a href="http://yoursite.com/2017/07/19/git/git commit 编写风格模板/#comments" class="article-comment-link">Comments</a>
     
 
         </footer>
@@ -2057,163 +2307,6 @@ mTab.setupWithViewPager(mViewPager);
 
 
 
-    <article id="post-node/Lesson1" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2017/03/29/node/Lesson1/">Node.js学习笔记 lesson1</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2017/03/29/node/Lesson1/">
-            <time datetime="2017-03-29T05:31:20.000Z" itemprop="datePublished">2017-03-29</time>
-        </a>
-    </div>
-
-
-                        
-                        
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <h4 id="Golbal"><a href="#Golbal" class="headerlink" title="Golbal"></a>Golbal</h4><ol>
-<li><p><code>__dirname</code> : 全路径名</p>
-</li>
-<li><p><code>__filename</code>:文件的绝对路径</p>
-</li>
-<li><p><code>console.log(--dirname)</code>:日志输出</p>
-</li>
-<li><p><code>module.exports</code>:定义一个模块导出什么，且通过<code>require()</code>引入。<code>module</code>实际上不是全局变量，而是每个模块内部的。</p>
-</li>
-<li><p><code>require()</code>：用于引入变量，也是每个模块内部的。</p>
-</li>
-</ol>
-<h4 id="module"><a href="#module" class="headerlink" title="module"></a>module</h4><ol>
-<li><p>在Node.js中，文件和模块是一一对应的，每个文件被视为一个独立模块。</p>
-</li>
-<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">const circle = require(&apos;./circle.js&apos;);</div><div class="line">console.log(&apos;半径为 4 的圆的面积是 $&#123;circle.area(4)&#125;&apos;)</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">const PI = Math.PI;</div><div class="line">exports.area = (r) =&gt;PI *r *r;</div><div class="line">exports.circumference = (r) =&gt;2 * PI *r;</div></pre></td></tr></table></figure>
-<p>模块内的本地变量是私有的，因为模块被Node.js包装在一个函数中。</p>
-</li>
-<li><p>如果希望模块根导出为一个函数(比如构造函数)，或者一次导出一个完整的对象而不是每次创建一个属性，可以将它赋值给<code>module.exports</code>，而不是<code>exports</code>。</p>
-</li>
-<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">const square = require(&apos;./square.js&apos;);</div><div class="line">var mySquare = square(2);</div><div class="line">console.log(&apos;正方形的面积是 $&#123;mySquare.area()&#125;&apos;);</div></pre></td></tr></table></figure>
-</li>
-<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">module.exports = (width) =&gt;&#123;</div><div class="line">  return &#123;</div><div class="line">    area:() =&gt; width * width;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-<li><p>模块第一次加载后会被缓存。以后每次调用都会解析到同一个文件，返回相同的对象。多次调用<code>require(foo)</code>不会导致模块代码被执行多次，如果想多次执行一个模块，可以先导出一个函数，然后调研该函数。</p>
-</li>
-<li><p>模块是基于其缓存的模块名进行解析。调用模块的位置不同，模块可能别解析成不同的文件名，这样就不能保证<code>require(&#39;foo&#39;)</code>总能返回同一个对象。</p>
-</li>
-<li><p>为了防止无限的循环，相互调用时，会先返回一个未完成的副本。</p>
-</li>
-<li><p>以<code>/</code>为前缀的模块是文件的绝对路径。</p>
-<p>以<code>./</code>为前缀的模块是相对于调用<code>require()</code>的文件的。</p>
-<p>​</p>
-</li>
-</ol>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="http://yoursite.com/2017/03/29/node/Lesson1/" data-id="cj76wnr79000denpjw5f1jmzt" class="article-share-link"><i class="fa fa-share"></i>Share</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-        <a href="http://yoursite.com/2017/03/29/node/Lesson1/#comments" class="article-comment-link">Comments</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
     <nav id="page-nav">
         <a class="extend prev" rel="prev" href="/page/5/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/7/">Next &raquo;</a>
     </nav>
@@ -2227,6 +2320,15 @@ mTab.setupWithViewPager(mViewPager);
         <h3 class="widget-title">recent</h3>
         <div class="widget">
             <ul id="recent-post" class="no-thumbnail">
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/ssh/">ssh</a></p>
+                            <p class="item-title"><a href="/2017/09/20/other/Gitlab权限说明/" class="title">Gitlab权限说明</a></p>
+                            <p class="item-date"><time datetime="2017-09-20T09:54:25.000Z" itemprop="datePublished">2017-09-20</time></p>
+                        </div>
+                    </li>
                 
                     <li>
                         
@@ -2264,15 +2366,6 @@ mTab.setupWithViewPager(mViewPager);
                         </div>
                     </li>
                 
-                    <li>
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/glide/">glide</a></p>
-                            <p class="item-title"><a href="/2017/09/20/android/github/glide解析1_基本用法/" class="title">Glide解析1_基本用法</a></p>
-                            <p class="item-date"><time datetime="2017-09-20T08:38:10.000Z" itemprop="datePublished">2017-09-20</time></p>
-                        </div>
-                    </li>
-                
             </ul>
         </div>
     </div>
@@ -2282,7 +2375,7 @@ mTab.setupWithViewPager(mViewPager);
     <div class="widget-wrap">
         <h3 class="widget-title">categories</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">43</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/glide/">glide</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">2</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">43</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/glide/">glide</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/ssh/">ssh</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -2291,7 +2384,7 @@ mTab.setupWithViewPager(mViewPager);
     <div class="widget-wrap">
         <h3 class="widget-title">archives</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">52</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">53</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
         </div>
     </div>
 
@@ -2300,7 +2393,7 @@ mTab.setupWithViewPager(mViewPager);
     <div class="widget-wrap">
         <h3 class="widget-title">tags</h3>
         <div class="widget">
-            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">37</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">37</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/">ssh</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -2309,7 +2402,7 @@ mTab.setupWithViewPager(mViewPager);
     <div class="widget-wrap">
         <h3 class="widget-title">tag cloud</h3>
         <div class="widget tagcloud">
-            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 16.67px;">code</a> <a href="/tags/git/" style="font-size: 11.67px;">git</a> <a href="/tags/github/" style="font-size: 18.33px;">github</a> <a href="/tags/glide/" style="font-size: 15px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 13.33px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.67px;">markdown</a> <a href="/tags/mysql/" style="font-size: 16.67px;">mysql</a> <a href="/tags/node/" style="font-size: 18.33px;">node</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.67px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.67px;">设计模式</a>
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 16.67px;">code</a> <a href="/tags/git/" style="font-size: 11.67px;">git</a> <a href="/tags/github/" style="font-size: 18.33px;">github</a> <a href="/tags/glide/" style="font-size: 15px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 13.33px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.67px;">markdown</a> <a href="/tags/mysql/" style="font-size: 16.67px;">mysql</a> <a href="/tags/node/" style="font-size: 18.33px;">node</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/ssh/" style="font-size: 10px;">ssh</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.67px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.67px;">设计模式</a>
         </div>
     </div>
 

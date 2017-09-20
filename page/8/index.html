@@ -157,11 +157,11 @@
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                73
+                74
                 <span>posts</span>
             </div>
             <div class="article-info-block">
-                20
+                21
                 <span>tags</span>
             </div>
         </div>
@@ -210,6 +210,268 @@
 
             
             <section id="main">
+    <article id="post-node/books/7days/05_process" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2016/03/23/node/books/7days/05_process/">七天学会NodeJS - 进程管理</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2016/03/23/node/books/7days/05_process/">
+            <time datetime="2016-03-22T22:06:34.000Z" itemprop="datePublished">2016-03-23</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/node/">node</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/node/7days/">7days</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/node/">node</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>NodeJS可以感知和控制自身进程的运行环境和状态，也可以创建子进程并与其协同工作，这使得NodeJS可以把多个程序组合在一起共同完成某项工作，并在其中充当胶水和调度器的作用。本章除了介绍与之相关的NodeJS内置模块外，还会重点介绍典型的使用场景。</p>
+<h3 id="开门红"><a href="#开门红" class="headerlink" title="开门红"></a>开门红</h3><p>我们已经知道了NodeJS自带的<code>fs</code>模块比较基础，把一个目录里的所有文件和子目录都拷贝到另一个目录里需要写不少代码。另外我们也知道，终端下的<code>cp</code>命令比较好用，一条<code>cp -r source/* target</code>命令就能搞定目录拷贝。那我们首先看看如何使用NodeJS调用终端命令来简化目录拷贝，示例代码如下：</p>
+<pre><code>var child_process = require(&apos;child_process&apos;);
+var util = require(&apos;util&apos;);
+
+function copy(source, target, callback) {
+    child_process.exec(
+        util.format(&apos;cp -r %s/* %s&apos;, source, target), callback);
+}
+
+copy(&apos;a&apos;, &apos;b&apos;, function (err) {
+    // ...
+});
+</code></pre><p>从以上代码中可以看到，子进程是异步运行的，通过回调函数返回执行结果。</p>
+<h3 id="API走马观花"><a href="#API走马观花" class="headerlink" title="API走马观花"></a>API走马观花</h3><p>我们先大致看看NodeJS提供了哪些和进程管理有关的API。这里并不逐一介绍每个API的使用方法，官方文档已经做得很好了。</p>
+<h4 id="Process"><a href="#Process" class="headerlink" title="Process"></a>Process</h4><blockquote>
+<p>   <strong>官方文档： </strong> <a href="http://nodejs.org/api/process.html" target="_blank" rel="external">http://nodejs.org/api/process.html</a></p>
+</blockquote>
+<p>任何一个进程都有启动进程时使用的命令行参数，有标准输入标准输出，有运行权限，有运行环境和运行状态。在NodeJS中，可以通过<code>process</code>对象感知和控制NodeJS自身进程的方方面面。另外需要注意的是，<code>process</code>不是内置模块，而是一个全局对象，因此在任何地方都可以直接使用。</p>
+<h4 id="Child-Process"><a href="#Child-Process" class="headerlink" title="Child Process"></a>Child Process</h4><blockquote>
+<p>   <strong>官方文档： </strong> <a href="http://nodejs.org/api/child_process.html" target="_blank" rel="external">http://nodejs.org/api/child_process.html</a></p>
+</blockquote>
+<p>使用<code>child_process</code>模块可以创建和控制子进程。该模块提供的API中最核心的是<code>.spawn</code>，其余API都是针对特定使用场景对它的进一步封装，算是一种语法糖。</p>
+<h4 id="Cluster"><a href="#Cluster" class="headerlink" title="Cluster"></a>Cluster</h4><blockquote>
+<p>   <strong>官方文档： </strong> <a href="http://nodejs.org/api/cluster.html" target="_blank" rel="external">http://nodejs.org/api/cluster.html</a></p>
+</blockquote>
+<p><code>cluster</code>模块是对<code>child_process</code>模块的进一步封装，专用于解决单进程NodeJS Web服务器无法充分利用多核CPU的问题。使用该模块可以简化多进程服务器程序的开发，让每个核上运行一个工作进程，并统一通过主进程监听端口和分发请求。</p>
+<h3 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h3><p>和进程管理相关的API单独介绍起来比较枯燥，因此这里从一些典型的应用场景出发，分别介绍一些重要API的使用方法。</p>
+<h4 id="如何获取命令行参数"><a href="#如何获取命令行参数" class="headerlink" title="如何获取命令行参数"></a>如何获取命令行参数</h4><p>在NodeJS中可以通过<code>process.argv</code>获取命令行参数。但是比较意外的是，<code>node</code>执行程序路径和主模块文件路径固定占据了<code>argv[0]</code>和<code>argv[1]</code>两个位置，而第一个命令行参数从<code>argv[2]</code>开始。为了让<code>argv</code>使用起来更加自然，可以按照以下方式处理。</p>
+<pre><code>function main(argv) {
+    // ...
+}
+
+main(process.argv.slice(2));
+</code></pre><h4 id="如何退出程序"><a href="#如何退出程序" class="headerlink" title="如何退出程序"></a>如何退出程序</h4><p>通常一个程序做完所有事情后就正常退出了，这时程序的退出状态码为<code>0</code>。或者一个程序运行时发生了异常后就挂了，这时程序的退出状态码不等于<code>0</code>。如果我们在代码中捕获了某个异常，但是觉得程序不应该继续运行下去，需要立即退出，并且需要把退出状态码设置为指定数字，比如<code>1</code>，就可以按照以下方式：</p>
+<pre><code>try {
+    // ...
+} catch (err) {
+    // ...
+    process.exit(1);
+}
+</code></pre><h4 id="如何控制输入输出"><a href="#如何控制输入输出" class="headerlink" title="如何控制输入输出"></a>如何控制输入输出</h4><p>NodeJS程序的标准输入流（stdin）、一个标准输出流（stdout）、一个标准错误流（stderr）分别对应<code>process.stdin</code>、<code>process.stdout</code>和<code>process.stderr</code>，第一个是只读数据流，后边两个是只写数据流，对它们的操作按照对数据流的操作方式即可。例如，<code>console.log</code>可以按照以下方式实现。</p>
+<pre><code>function log() {
+    process.stdout.write(
+        util.format.apply(util, arguments) + &apos;\n&apos;);
+}
+</code></pre><h4 id="如何降权"><a href="#如何降权" class="headerlink" title="如何降权"></a>如何降权</h4><p>在Linux系统下，我们知道需要使用root权限才能监听1024以下端口。但是一旦完成端口监听后，继续让程序运行在root权限下存在安全隐患，因此最好能把权限降下来。以下是这样一个例子。</p>
+<pre><code>http.createServer(callback).listen(80, function () {
+    var env = process.env,
+        uid = parseInt(env[&apos;SUDO_UID&apos;] || process.getuid(), 10),
+        gid = parseInt(env[&apos;SUDO_GID&apos;] || process.getgid(), 10);
+
+    process.setgid(gid);
+    process.setuid(uid);
+});
+</code></pre><p>上例中有几点需要注意：</p>
+<ol>
+<li><p>如果是通过<code>sudo</code>获取root权限的，运行程序的用户的UID和GID保存在环境变量<code>SUDO_UID</code>和<code>SUDO_GID</code>里边。如果是通过<code>chmod +s</code>方式获取root权限的，运行程序的用户的UID和GID可直接通过<code>process.getuid</code>和<code>process.getgid</code>方法获取。</p>
+</li>
+<li><p><code>process.setuid</code>和<code>process.setgid</code>方法只接受<code>number</code>类型的参数。</p>
+</li>
+<li><p>降权时必须先降GID再降UID，否则顺序反过来的话就没权限更改程序的GID了。</p>
+</li>
+</ol>
+<h4 id="如何创建子进程"><a href="#如何创建子进程" class="headerlink" title="如何创建子进程"></a>如何创建子进程</h4><p>以下是一个创建NodeJS子进程的例子。</p>
+<pre><code>var child = child_process.spawn(&apos;node&apos;, [ &apos;xxx.js&apos; ]);
+
+child.stdout.on(&apos;data&apos;, function (data) {
+    console.log(&apos;stdout: &apos; + data);
+});
+
+child.stderr.on(&apos;data&apos;, function (data) {
+    console.log(&apos;stderr: &apos; + data);
+});
+
+child.on(&apos;close&apos;, function (code) {
+    console.log(&apos;child process exited with code &apos; + code);
+});
+</code></pre><p>上例中使用了<code>.spawn(exec, args, options)</code>方法，该方法支持三个参数。第一个参数是执行文件路径，可以是执行文件的相对或绝对路径，也可以是根据PATH环境变量能找到的执行文件名。第二个参数中，数组中的每个成员都按顺序对应一个命令行参数。第三个参数可选，用于配置子进程的执行环境与行为。</p>
+<p>另外，上例中虽然通过子进程对象的<code>.stdout</code>和<code>.stderr</code>访问子进程的输出，但通过<code>options.stdio</code>字段的不同配置，可以将子进程的输入输出重定向到任何数据流上，或者让子进程共享父进程的标准输入输出流，或者直接忽略子进程的输入输出。</p>
+<h4 id="进程间如何通讯"><a href="#进程间如何通讯" class="headerlink" title="进程间如何通讯"></a>进程间如何通讯</h4><p>在Linux系统下，进程之间可以通过信号互相通信。以下是一个例子。</p>
+<pre><code>/* parent.js */
+var child = child_process.spawn(&apos;node&apos;, [ &apos;child.js&apos; ]);
+
+child.kill(&apos;SIGTERM&apos;);
+
+/* child.js */
+process.on(&apos;SIGTERM&apos;, function () {
+    cleanUp();
+    process.exit(0);
+});
+</code></pre><p>在上例中，父进程通过<code>.kill</code>方法向子进程发送<code>SIGTERM</code>信号，子进程监听<code>process</code>对象的<code>SIGTERM</code>事件响应信号。不要被<code>.kill</code>方法的名称迷惑了，该方法本质上是用来给进程发送信号的，进程收到信号后具体要做啥，完全取决于信号的种类和进程自身的代码。</p>
+<p>另外，如果父子进程都是NodeJS进程，就可以通过IPC（进程间通讯）双向传递数据。以下是一个例子。</p>
+<pre><code>/* parent.js */
+var child = child_process.spawn(&apos;node&apos;, [ &apos;child.js&apos; ], {
+        stdio: [ 0, 1, 2, &apos;ipc&apos; ]
+    });
+
+child.on(&apos;message&apos;, function (msg) {
+    console.log(msg);
+});
+
+child.send({ hello: &apos;hello&apos; });
+
+/* child.js */
+process.on(&apos;message&apos;, function (msg) {
+    msg.hello = msg.hello.toUpperCase();
+    process.send(msg);
+});
+</code></pre><p>可以看到，父进程在创建子进程时，在<code>options.stdio</code>字段中通过<code>ipc</code>开启了一条IPC通道，之后就可以监听子进程对象的<code>message</code>事件接收来自子进程的消息，并通过<code>.send</code>方法给子进程发送消息。在子进程这边，可以在<code>process</code>对象上监听<code>message</code>事件接收来自父进程的消息，并通过<code>.send</code>方法向父进程发送消息。数据在传递过程中，会先在发送端使用<code>JSON.stringify</code>方法序列化，再在接收端使用<code>JSON.parse</code>方法反序列化。</p>
+<h4 id="如何守护子进程"><a href="#如何守护子进程" class="headerlink" title="如何守护子进程"></a>如何守护子进程</h4><p>守护进程一般用于监控工作进程的运行状态，在工作进程不正常退出时重启工作进程，保障工作进程不间断运行。以下是一种实现方式。</p>
+<pre><code>/* daemon.js */
+function spawn(mainModule) {
+    var worker = child_process.spawn(&apos;node&apos;, [ mainModule ]);
+
+    worker.on(&apos;exit&apos;, function (code) {
+        if (code !== 0) {
+            spawn(mainModule);
+        }
+    });
+}
+
+spawn(&apos;worker.js&apos;);
+</code></pre><p>可以看到，工作进程非正常退出时，守护进程立即重启工作进程。</p>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>本章介绍了使用NodeJS管理进程时需要的API以及主要的应用场景，总结起来有以下几点：</p>
+<ul>
+<li><p>使用<code>process</code>对象管理自身。</p>
+</li>
+<li><p>使用<code>child_process</code>模块创建和管理子进程。</p>
+</li>
+</ul>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2016/03/23/node/books/7days/05_process/" data-id="cj76wnr9c0035enpj9y3wzgv0" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2016/03/23/node/books/7days/05_process/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
     <article id="post-node/books/7days/06_async_programming" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
@@ -1056,7 +1318,7 @@ fi
 
 
 
-    <article id="post-node/books/7days/01_getting_started" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-node/books/7days/04_network" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
         
@@ -1064,7 +1326,7 @@ fi
                 
     
         <h1 itemprop="name">
-            <a class="article-title" href="/2016/03/23/node/books/7days/01_getting_started/">七天学会NodeJS - NodeJS基础</a>
+            <a class="article-title" href="/2016/03/23/node/books/7days/04_network/">七天学会NodeJS - 网络操作</a>
         </h1>
     
 
@@ -1073,7 +1335,7 @@ fi
                         
     <div class="article-date">
         <i class="fa fa-calendar"></i>
-        <a href="/2016/03/23/node/books/7days/01_getting_started/">
+        <a href="/2016/03/23/node/books/7days/04_network/">
             <time datetime="2016-03-22T22:06:34.000Z" itemprop="datePublished">2016-03-23</time>
         </a>
     </div>
@@ -1099,105 +1361,359 @@ fi
         <div class="article-entry" itemprop="articleBody">
         
             
-            <h2 id="七天学会NodeJS-NodeJS基础"><a href="#七天学会NodeJS-NodeJS基础" class="headerlink" title="七天学会NodeJS - NodeJS基础"></a>七天学会NodeJS - NodeJS基础</h2><h3 id="什么是NodeJS"><a href="#什么是NodeJS" class="headerlink" title="什么是NodeJS"></a>什么是NodeJS</h3><p>JS是脚本语言，脚本语言都需要一个解析器才能运行。对于写在HTML页面里的JS，浏览器充当了解析器的角色。而对于需要独立运行的JS，NodeJS就是一个解析器。</p>
-<p>每一种解析器都是一个运行环境，不但允许JS定义各种数据结构，进行各种计算，还允许JS使用运行环境提供的内置对象和方法做一些事情。例如运行在浏览器中的JS的用途是操作DOM，浏览器就提供了<code>document</code>之类的内置对象。而运行在NodeJS中的JS的用途是操作磁盘文件或搭建HTTP服务器，NodeJS就相应提供了<code>fs</code>、<code>http</code>等内置对象。</p>
-<h3 id="有啥用处"><a href="#有啥用处" class="headerlink" title="有啥用处"></a>有啥用处</h3><p>尽管存在一听说可以直接运行JS文件就觉得很酷的同学，但大多数同学在接触新东西时首先关心的是有啥用处，以及能带来啥价值。</p>
-<p>NodeJS的作者说，他创造NodeJS的目的是为了实现高性能Web服务器，他首先看重的是事件机制和异步IO模型的优越性，而不是JS。但是他需要选择一种编程语言实现他的想法，这种编程语言不能自带IO功能，并且需要能良好支持事件机制。JS没有自带IO功能，天生就用于处理浏览器中的DOM事件，并且拥有一大群程序员，因此就成为了天然的选择。</p>
-<p>如他所愿，NodeJS在服务端活跃起来，出现了大批基于NodeJS的Web服务。而另一方面，NodeJS让前端众如获神器，终于可以让自己的能力覆盖范围跳出浏览器窗口，更大批的前端工具如雨后春笋。</p>
-<p>因此，对于前端而言，虽然不是人人都要拿NodeJS写一个服务器程序，但简单可至使用命令交互模式调试JS代码片段，复杂可至编写工具提升工作效率。</p>
-<p>NodeJS生态圈正欣欣向荣。</p>
-<h3 id="如何安装"><a href="#如何安装" class="headerlink" title="如何安装"></a>如何安装</h3><h4 id="安装程序"><a href="#安装程序" class="headerlink" title="安装程序"></a>安装程序</h4><p>NodeJS提供了一些安装程序，都可以在<a href="http://nodejs.org/download/" target="_blank" rel="external">nodejs.org</a>这里下载并安装。</p>
-<p>Windows系统下，选择和系统版本匹配的<code>.msi</code>后缀的安装文件。Mac OS X系统下，选择<code>.pkg</code>后缀的安装文件。</p>
-<h4 id="编译安装"><a href="#编译安装" class="headerlink" title="编译安装"></a>编译安装</h4><p>Linux系统下没有现成的安装程序可用，虽然一些发行版可以使用<code>apt-get</code>之类的方式安装，但不一定能安装到最新版。因此Linux系统下一般使用以下方式编译方式安装NodeJS。</p>
-<ol>
-<li><p>确保系统下g++版本在4.6以上，python版本在2.6以上。</p>
-</li>
-<li><p>从<a href="http://nodejs.org/download/" target="_blank" rel="external">nodejs.org</a>下载<code>tar.gz</code>后缀的NodeJS最新版源代码包并解压到某个位置。</p>
-</li>
-<li><p>进入解压到的目录，使用以下命令编译和安装。</p>
-<pre><code>$ ./configure
-$ make
-$ sudo make install
-</code></pre></li>
-</ol>
-<h3 id="如何运行"><a href="#如何运行" class="headerlink" title="如何运行"></a>如何运行</h3><p>打开终端，键入<code>node</code>进入命令交互模式，可以输入一条代码语句后立即执行并显示结果，例如：</p>
-<pre><code>$ node
-&gt; console.log(&apos;Hello World!&apos;);
-Hello World!
-</code></pre><p>如果要运行一大段代码的话，可以先写一个JS文件再运行。例如有以下<code>hello.js</code>。</p>
-<pre><code>function hello() {
-    console.log(&apos;Hello World!&apos;);
-}
-hello();
-</code></pre><p>写好后在终端下键入<code>node hello.js</code>运行，结果如下：</p>
-<pre><code>$ node hello.js
-Hello World!
-</code></pre><h4 id="权限问题"><a href="#权限问题" class="headerlink" title="权限问题"></a>权限问题</h4><p>在Linux系统下，使用NodeJS监听80或443端口提供HTTP(S)服务时需要root权限，有两种方式可以做到。</p>
-<p>一种方式是使用<code>sudo</code>命令运行NodeJS。例如通过以下命令运行的<code>server.js</code>中有权限使用80和443端口。一般推荐这种方式，可以保证仅为有需要的JS脚本提供root权限。</p>
-<pre><code>$ sudo node server.js
-</code></pre><p>另一种方式是使用<code>chmod +s</code>命令让NodeJS总是以root权限运行，具体做法如下。因为这种方式让任何JS脚本都有了root权限，不太安全，因此在需要很考虑安全的系统下不推荐使用。</p>
-<pre><code>$ sudo chown root /usr/local/bin/node
-$ sudo chmod +s /usr/local/bin/node
-</code></pre><h3 id="模块"><a href="#模块" class="headerlink" title="模块"></a>模块</h3><p>编写稍大一点的程序时一般都会将代码模块化。在NodeJS中，一般将代码合理拆分到不同的JS文件中，每一个文件就是一个模块，而文件路径就是模块名。</p>
-<p>在编写每个模块时，都有<code>require</code>、<code>exports</code>、<code>module</code>三个预先定义好的变量可供使用。</p>
-<h4 id="require"><a href="#require" class="headerlink" title="require"></a>require</h4><p><code>require</code>函数用于在当前模块中加载和使用别的模块，传入一个模块名，返回一个模块导出对象。模块名可使用相对路径（以<code>./</code>开头），或者是绝对路径（以<code>/</code>或<code>C:</code>之类的盘符开头）。另外，模块名中的<code>.js</code>扩展名可以省略。以下是一个例子。</p>
-<pre><code>var foo1 = require(&apos;./foo&apos;);
-var foo2 = require(&apos;./foo.js&apos;);
-var foo3 = require(&apos;/home/user/foo&apos;);
-var foo4 = require(&apos;/home/user/foo.js&apos;);
+            <p>不了解网络编程的程序员不是好前端，而NodeJS恰好提供了一扇了解网络编程的窗口。通过NodeJS，除了可以编写一些服务端程序来协助前端开发和测试外，还能够学习一些HTTP协议与Socket协议的相关知识，这些知识在优化前端性能和排查前端故障时说不定能派上用场。本章将介绍与之相关的NodeJS内置模块。</p>
+<h3 id="开门红"><a href="#开门红" class="headerlink" title="开门红"></a>开门红</h3><p>NodeJS本来的用途是编写高性能Web服务器。我们首先在这里重复一下官方文档里的例子，使用NodeJS内置的<code>http</code>模块简单实现一个HTTP服务器。</p>
+<pre><code>var http = require(&apos;http&apos;);
 
-// foo1至foo4中保存的是同一个模块的导出对象。
-</code></pre><p>另外，可以使用以下方式加载和使用一个JSON文件。</p>
-<pre><code>var data = require(&apos;./data.json&apos;);
-</code></pre><h4 id="exports"><a href="#exports" class="headerlink" title="exports"></a>exports</h4><p><code>exports</code>对象是当前模块的导出对象，用于导出模块公有方法和属性。别的模块通过<code>require</code>函数使用当前模块时得到的就是当前模块的<code>exports</code>对象。以下例子中导出了一个公有方法。</p>
-<pre><code>exports.hello = function () {
-    console.log(&apos;Hello World!&apos;);
-};
-</code></pre><h4 id="module"><a href="#module" class="headerlink" title="module"></a>module</h4><p>通过<code>module</code>对象可以访问到当前模块的一些相关信息，但最多的用途是替换当前模块的导出对象。例如模块导出对象默认是一个普通对象，如果想改成一个函数的话，可以使用以下方式。</p>
-<pre><code>module.exports = function () {
-    console.log(&apos;Hello World!&apos;);
-};
-</code></pre><p>以上代码中，模块默认导出对象被替换为一个函数。</p>
-<h4 id="模块初始化"><a href="#模块初始化" class="headerlink" title="模块初始化"></a>模块初始化</h4><p>一个模块中的JS代码仅在模块第一次被使用时执行一次，并在执行过程中初始化模块的导出对象。之后，缓存起来的导出对象被重复利用。</p>
-<h4 id="主模块"><a href="#主模块" class="headerlink" title="主模块"></a>主模块</h4><p>通过命令行参数传递给NodeJS以启动程序的模块被称为主模块。主模块负责调度组成整个程序的其它模块完成工作。例如通过以下命令启动程序时，<code>main.js</code>就是主模块。</p>
-<pre><code>$ node main.js
-</code></pre><h4 id="完整示例"><a href="#完整示例" class="headerlink" title="完整示例"></a>完整示例</h4><p>例如有以下目录。</p>
-<pre><code>- /home/user/hello/
-    - util/
-        counter.js
-    main.js
-</code></pre><p>其中<code>counter.js</code>内容如下：</p>
-<pre><code>var i = 0;
-
-function count() {
-    return ++i;
-}
-
-exports.count = count;
-</code></pre><p>该模块内部定义了一个私有变量<code>i</code>，并在<code>exports</code>对象导出了一个公有方法<code>count</code>。</p>
-<p>主模块<code>main.js</code>内容如下：</p>
-<pre><code>var counter1 = require(&apos;./util/counter&apos;);
-var    counter2 = require(&apos;./util/counter&apos;);
-
-console.log(counter1.count());
-console.log(counter2.count());
-console.log(counter2.count());
-</code></pre><p>运行该程序的结果如下：</p>
-<pre><code>$ node main.js
-1
-2
-3
-</code></pre><p>可以看到，<code>counter.js</code>并没有因为被require了两次而初始化两次。</p>
-<h3 id="二进制模块"><a href="#二进制模块" class="headerlink" title="二进制模块"></a>二进制模块</h3><p>虽然一般我们使用JS编写模块，但NodeJS也支持使用C/C++编写二进制模块。编译好的二进制模块除了文件扩展名是<code>.node</code>外，和JS模块的使用方式相同。虽然二进制模块能使用操作系统提供的所有功能，拥有无限的潜能，但对于前端同学而言编写过于困难，并且难以跨平台使用，因此不在本教程的覆盖范围内。</p>
-<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>本章介绍了有关NodeJS的基本概念和使用方法，总结起来有以下知识点：</p>
+http.createServer(function (request, response) {
+    response.writeHead(200, { &apos;Content-Type&apos;: &apos;text-plain&apos; });
+    response.end(&apos;Hello World\n&apos;);
+}).listen(8124);
+</code></pre><p>以上程序创建了一个HTTP服务器并监听<code>8124</code>端口，打开浏览器访问该端口<code>http://127.0.0.1:8124/</code>就能够看到效果。</p>
+<blockquote>
+<p>   <strong>豆知识：</strong> 在Linux系统下，监听1024以下端口需要root权限。因此，如果想监听80或443端口的话，需要使用<code>sudo</code>命令启动程序。</p>
+</blockquote>
+<h3 id="API走马观花"><a href="#API走马观花" class="headerlink" title="API走马观花"></a>API走马观花</h3><p>我们先大致看看NodeJS提供了哪些和网络操作有关的API。这里并不逐一介绍每个API的使用方法，官方文档已经做得很好了。</p>
+<h4 id="HTTP"><a href="#HTTP" class="headerlink" title="HTTP"></a>HTTP</h4><blockquote>
+<p>   <strong>官方文档： </strong> <a href="http://nodejs.org/api/http.html" target="_blank" rel="external">http://nodejs.org/api/http.html</a></p>
+</blockquote>
+<p>‘http’模块提供两种使用方式：</p>
 <ul>
-<li><p>NodeJS是一个JS脚本解析器，任何操作系统下安装NodeJS本质上做的事情都是把NodeJS执行程序复制到一个目录，然后保证这个目录在系统PATH环境变量下，以便终端下可以使用<code>node</code>命令。</p>
+<li><p>作为服务端使用时，创建一个HTTP服务器，监听HTTP客户端请求并返回响应。</p>
 </li>
-<li><p>终端下直接输入<code>node</code>命令可进入命令交互模式，很适合用来测试一些JS代码片段，比如正则表达式。</p>
+<li><p>作为客户端使用时，发起一个HTTP客户端请求，获取服务端响应。</p>
 </li>
-<li><p>NodeJS使用<a href="http://wiki.commonjs.org/" target="_blank" rel="external">CMD</a>模块系统，主模块作为程序入口点，所有模块在执行过程中只初始化一次。</p>
+</ul>
+<p>首先我们来看看服务端模式下如何工作。如开门红中的例子所示，首先需要使用<code>.createServer</code>方法创建一个服务器，然后调用<code>.listen</code>方法监听端口。之后，每当来了一个客户端请求，创建服务器时传入的回调函数就被调用一次。可以看出，这是一种事件机制。</p>
+<p>HTTP请求本质上是一个数据流，由请求头（headers）和请求体（body）组成。例如以下是一个完整的HTTP请求数据内容。</p>
+<pre><code>POST / HTTP/1.1
+User-Agent: curl/7.26.0
+Host: localhost
+Accept: */*
+Content-Length: 11
+Content-Type: application/x-www-form-urlencoded
+
+Hello World
+</code></pre><p>可以看到，空行之上是请求头，之下是请求体。HTTP请求在发送给服务器时，可以认为是按照从头到尾的顺序一个字节一个字节地以数据流方式发送的。而<code>http</code>模块创建的HTTP服务器在接收到完整的请求头后，就会调用回调函数。在回调函数中，除了可以使用<code>request</code>对象访问请求头数据外，还能把<code>request</code>对象当作一个只读数据流来访问请求体数据。以下是一个例子。</p>
+<pre><code>http.createServer(function (request, response) {
+    var body = [];
+
+    console.log(request.method);
+    console.log(request.headers);
+
+    request.on(&apos;data&apos;, function (chunk) {
+        body.push(chunk);
+    });
+
+    request.on(&apos;end&apos;, function () {
+        body = Buffer.concat(body);
+        console.log(body.toString());
+    });
+}).listen(80);
+
+------------------------------------
+POST
+{ &apos;user-agent&apos;: &apos;curl/7.26.0&apos;,
+  host: &apos;localhost&apos;,
+  accept: &apos;*/*&apos;,
+  &apos;content-length&apos;: &apos;11&apos;,
+  &apos;content-type&apos;: &apos;application/x-www-form-urlencoded&apos; }
+Hello World
+</code></pre><p>HTTP响应本质上也是一个数据流，同样由响应头（headers）和响应体（body）组成。例如以下是一个完整的HTTP请求数据内容。</p>
+<pre><code>HTTP/1.1 200 OK
+Content-Type: text/plain
+Content-Length: 11
+Date: Tue, 05 Nov 2013 05:31:38 GMT
+Connection: keep-alive
+
+Hello World
+</code></pre><p>在回调函数中，除了可以使用<code>response</code>对象来写入响应头数据外，还能把<code>response</code>对象当作一个只写数据流来写入响应体数据。例如在以下例子中，服务端原样将客户端请求的请求体数据返回给客户端。</p>
+<pre><code>http.createServer(function (request, response) {
+    response.writeHead(200, { &apos;Content-Type&apos;: &apos;text/plain&apos; });
+
+    request.on(&apos;data&apos;, function (chunk) {
+        response.write(chunk);
+    });
+
+    request.on(&apos;end&apos;, function () {
+        response.end();
+    });
+}).listen(80);
+</code></pre><p>接下来我们看看客户端模式下如何工作。为了发起一个客户端HTTP请求，我们需要指定目标服务器的位置并发送请求头和请求体，以下示例演示了具体做法。</p>
+<pre><code>var options = {
+        hostname: &apos;www.example.com&apos;,
+        port: 80,
+        path: &apos;/upload&apos;,
+        method: &apos;POST&apos;,
+        headers: {
+            &apos;Content-Type&apos;: &apos;application/x-www-form-urlencoded&apos;
+        }
+    };
+
+var request = http.request(options, function (response) {});
+
+request.write(&apos;Hello World&apos;);
+request.end();
+</code></pre><p>可以看到，<code>.request</code>方法创建了一个客户端，并指定请求目标和请求头数据。之后，就可以把<code>request</code>对象当作一个只写数据流来写入请求体数据和结束请求。另外，由于HTTP请求中<code>GET</code>请求是最常见的一种，并且不需要请求体，因此<code>http</code>模块也提供了以下便捷API。</p>
+<pre><code>http.get(&apos;http://www.example.com/&apos;, function (response) {});
+</code></pre><p>当客户端发送请求并接收到完整的服务端响应头时，就会调用回调函数。在回调函数中，除了可以使用<code>response</code>对象访问响应头数据外，还能把<code>response</code>对象当作一个只读数据流来访问响应体数据。以下是一个例子。</p>
+<pre><code>http.get(&apos;http://www.example.com/&apos;, function (response) {
+    var body = [];
+
+    console.log(response.statusCode);
+    console.log(response.headers);
+
+    response.on(&apos;data&apos;, function (chunk) {
+        body.push(chunk);
+    });
+
+    response.on(&apos;end&apos;, function () {
+        body = Buffer.concat(body);
+        console.log(body.toString());
+    });
+});
+
+------------------------------------
+200
+{ &apos;content-type&apos;: &apos;text/html&apos;,
+  server: &apos;Apache&apos;,
+  &apos;content-length&apos;: &apos;801&apos;,
+  date: &apos;Tue, 05 Nov 2013 06:08:41 GMT&apos;,
+  connection: &apos;keep-alive&apos; }
+&lt;!DOCTYPE html&gt;
+...
+</code></pre><h4 id="HTTPS"><a href="#HTTPS" class="headerlink" title="HTTPS"></a>HTTPS</h4><blockquote>
+<p>   <strong>官方文档： </strong> <a href="http://nodejs.org/api/https.html" target="_blank" rel="external">http://nodejs.org/api/https.html</a></p>
+</blockquote>
+<p><code>https</code>模块与<code>http</code>模块极为类似，区别在于<code>https</code>模块需要额外处理SSL证书。</p>
+<p>在服务端模式下，创建一个HTTPS服务器的示例如下。</p>
+<pre><code>var options = {
+        key: fs.readFileSync(&apos;./ssl/default.key&apos;),
+        cert: fs.readFileSync(&apos;./ssl/default.cer&apos;)
+    };
+
+var server = https.createServer(options, function (request, response) {
+        // ...
+    });
+</code></pre><p>可以看到，与创建HTTP服务器相比，多了一个<code>options</code>对象，通过<code>key</code>和<code>cert</code>字段指定了HTTPS服务器使用的私钥和公钥。 </p>
+<p>另外，NodeJS支持SNI技术，可以根据HTTPS客户端请求使用的域名动态使用不同的证书，因此同一个HTTPS服务器可以使用多个域名提供服务。接着上例，可以使用以下方法为HTTPS服务器添加多组证书。</p>
+<pre><code>server.addContext(&apos;foo.com&apos;, {
+    key: fs.readFileSync(&apos;./ssl/foo.com.key&apos;),
+    cert: fs.readFileSync(&apos;./ssl/foo.com.cer&apos;)
+});
+
+server.addContext(&apos;bar.com&apos;, {
+    key: fs.readFileSync(&apos;./ssl/bar.com.key&apos;),
+    cert: fs.readFileSync(&apos;./ssl/bar.com.cer&apos;)
+});
+</code></pre><p>在客户端模式下，发起一个HTTPS客户端请求与<code>http</code>模块几乎相同，示例如下。</p>
+<pre><code>var options = {
+        hostname: &apos;www.example.com&apos;,
+        port: 443,
+        path: &apos;/&apos;,
+        method: &apos;GET&apos;
+    };
+
+var request = https.request(options, function (response) {});
+
+request.end();
+</code></pre><p>但如果目标服务器使用的SSL证书是自制的，不是从颁发机构购买的，默认情况下<code>https</code>模块会拒绝连接，提示说有证书安全问题。在<code>options</code>里加入<code>rejectUnauthorized: false</code>字段可以禁用对证书有效性的检查，从而允许<code>https</code>模块请求开发环境下使用自制证书的HTTPS服务器。</p>
+<h4 id="URL"><a href="#URL" class="headerlink" title="URL"></a>URL</h4><blockquote>
+<p>   <strong>官方文档： </strong> <a href="http://nodejs.org/api/url.html" target="_blank" rel="external">http://nodejs.org/api/url.html</a></p>
+</blockquote>
+<p>处理HTTP请求时<code>url</code>模块使用率超高，因为该模块允许解析URL、生成URL，以及拼接URL。首先我们来看看一个完整的URL的各组成部分。</p>
+<pre><code>                           href
+ -----------------------------------------------------------------
+                            host              path
+                      --------------- ----------------------------
+ http: // user:pass @ host.com : 8080 /p/a/t/h ?query=string #hash
+ -----    ---------   --------   ---- -------- ------------- -----
+protocol     auth     hostname   port pathname     search     hash
+                                                ------------
+                                                   query
+</code></pre><p>我们可以使用<code>.parse</code>方法来将一个URL字符串转换为URL对象，示例如下。</p>
+<pre><code>url.parse(&apos;http://user:pass@host.com:8080/p/a/t/h?query=string#hash&apos;);
+/* =&gt;
+{ protocol: &apos;http:&apos;,
+  auth: &apos;user:pass&apos;,
+  host: &apos;host.com:8080&apos;,
+  port: &apos;8080&apos;,
+  hostname: &apos;host.com&apos;,
+  hash: &apos;#hash&apos;,
+  search: &apos;?query=string&apos;,
+  query: &apos;query=string&apos;,
+  pathname: &apos;/p/a/t/h&apos;,
+  path: &apos;/p/a/t/h?query=string&apos;,
+  href: &apos;http://user:pass@host.com:8080/p/a/t/h?query=string#hash&apos; }
+*/
+</code></pre><p>传给<code>.parse</code>方法的不一定要是一个完整的URL，例如在HTTP服务器回调函数中，<code>request.url</code>不包含协议头和域名，但同样可以用<code>.parse</code>方法解析。</p>
+<pre><code>http.createServer(function (request, response) {
+    var tmp = request.url; // =&gt; &quot;/foo/bar?a=b&quot;
+    url.parse(tmp);
+    /* =&gt;
+    { protocol: null,
+      slashes: null,
+      auth: null,
+      host: null,
+      port: null,
+      hostname: null,
+      hash: null,
+      search: &apos;?a=b&apos;,
+      query: &apos;a=b&apos;,
+      pathname: &apos;/foo/bar&apos;,
+      path: &apos;/foo/bar?a=b&apos;,
+      href: &apos;/foo/bar?a=b&apos; }
+    */
+}).listen(80);
+</code></pre><p><code>.parse</code>方法还支持第二个和第三个布尔类型可选参数。第二个参数等于<code>true</code>时，该方法返回的URL对象中，<code>query</code>字段不再是一个字符串，而是一个经过<code>querystring</code>模块转换后的参数对象。第三个参数等于<code>true</code>时，该方法可以正确解析不带协议头的URL，例如<code>//www.example.com/foo/bar</code>。</p>
+<p>反过来，<code>format</code>方法允许将一个URL对象转换为URL字符串，示例如下。</p>
+<pre><code>url.format({
+    protocol: &apos;http:&apos;,
+    host: &apos;www.example.com&apos;,
+    pathname: &apos;/p/a/t/h&apos;,
+    search: &apos;query=string&apos;
+});
+/* =&gt;
+&apos;http://www.example.com/p/a/t/h?query=string&apos;
+*/
+</code></pre><p>另外，<code>.resolve</code>方法可以用于拼接URL，示例如下。</p>
+<pre><code>url.resolve(&apos;http://www.example.com/foo/bar&apos;, &apos;../baz&apos;);
+/* =&gt;
+http://www.example.com/baz
+*/
+</code></pre><h4 id="Query-String"><a href="#Query-String" class="headerlink" title="Query String"></a>Query String</h4><blockquote>
+<p>   <strong>官方文档： </strong> <a href="http://nodejs.org/api/querystring.html" target="_blank" rel="external">http://nodejs.org/api/querystring.html</a></p>
+</blockquote>
+<p><code>querystring</code>模块用于实现URL参数字符串与参数对象的互相转换，示例如下。</p>
+<pre><code>querystring.parse(&apos;foo=bar&amp;baz=qux&amp;baz=quux&amp;corge&apos;);
+/* =&gt;
+{ foo: &apos;bar&apos;, baz: [&apos;qux&apos;, &apos;quux&apos;], corge: &apos;&apos; }
+*/
+
+querystring.stringify({ foo: &apos;bar&apos;, baz: [&apos;qux&apos;, &apos;quux&apos;], corge: &apos;&apos; });
+/* =&gt;
+&apos;foo=bar&amp;baz=qux&amp;baz=quux&amp;corge=&apos;
+*/
+</code></pre><h4 id="Zlib"><a href="#Zlib" class="headerlink" title="Zlib"></a>Zlib</h4><blockquote>
+<p>   <strong>官方文档： </strong> <a href="http://nodejs.org/api/zlib.html" target="_blank" rel="external">http://nodejs.org/api/zlib.html</a></p>
+</blockquote>
+<p><code>zlib</code>模块提供了数据压缩和解压的功能。当我们处理HTTP请求和响应时，可能需要用到这个模块。</p>
+<p>首先我们看一个使用<code>zlib</code>模块压缩HTTP响应体数据的例子。这个例子中，判断了客户端是否支持gzip，并在支持的情况下使用<code>zlib</code>模块返回gzip之后的响应体数据。</p>
+<pre><code>http.createServer(function (request, response) {
+    var i = 1024,
+        data = &apos;&apos;;
+
+    while (i--) {
+        data += &apos;.&apos;;
+    }
+
+    if ((request.headers[&apos;accept-encoding&apos;] || &apos;&apos;).indexOf(&apos;gzip&apos;) !== -1) {
+        zlib.gzip(data, function (err, data) {
+            response.writeHead(200, {
+                &apos;Content-Type&apos;: &apos;text/plain&apos;,
+                &apos;Content-Encoding&apos;: &apos;gzip&apos;
+            });
+            response.end(data);
+        });
+    } else {
+        response.writeHead(200, {
+            &apos;Content-Type&apos;: &apos;text/plain&apos;
+        });
+        response.end(data);
+    }
+}).listen(80);
+</code></pre><p>接着我们看一个使用<code>zlib</code>模块解压HTTP响应体数据的例子。这个例子中，判断了服务端响应是否使用gzip压缩，并在压缩的情况下使用<code>zlib</code>模块解压响应体数据。</p>
+<pre><code>var options = {
+        hostname: &apos;www.example.com&apos;,
+        port: 80,
+        path: &apos;/&apos;,
+        method: &apos;GET&apos;,
+        headers: {
+            &apos;Accept-Encoding&apos;: &apos;gzip, deflate&apos;
+        }
+    };
+
+http.request(options, function (response) {
+    var body = [];
+
+    response.on(&apos;data&apos;, function (chunk) {
+        body.push(chunk);
+    });
+
+    response.on(&apos;end&apos;, function () {
+        body = Buffer.concat(body);
+
+        if (response.headers[&apos;content-encoding&apos;] === &apos;gzip&apos;) {
+            zlib.gunzip(body, function (err, data) {
+                console.log(data.toString());
+            });
+        } else {
+            console.log(data.toString());
+        }
+    });
+}).end();
+</code></pre><h4 id="Net"><a href="#Net" class="headerlink" title="Net"></a>Net</h4><blockquote>
+<p>   <strong>官方文档： </strong> <a href="http://nodejs.org/api/net.html" target="_blank" rel="external">http://nodejs.org/api/net.html</a></p>
+</blockquote>
+<p><code>net</code>模块可用于创建Socket服务器或Socket客户端。由于Socket在前端领域的使用范围还不是很广，这里先不涉及到WebSocket的介绍，仅仅简单演示一下如何从Socket层面来实现HTTP请求和响应。</p>
+<p>首先我们来看一个使用Socket搭建一个很不严谨的HTTP服务器的例子。这个HTTP服务器不管收到啥请求，都固定返回相同的响应。</p>
+<pre><code>net.createServer(function (conn) {
+    conn.on(&apos;data&apos;, function (data) {
+        conn.write([
+            &apos;HTTP/1.1 200 OK&apos;,
+            &apos;Content-Type: text/plain&apos;,
+            &apos;Content-Length: 11&apos;,
+            &apos;&apos;,
+            &apos;Hello World&apos;
+        ].join(&apos;\n&apos;));
+    });
+}).listen(80);
+</code></pre><p>接着我们来看一个使用Socket发起HTTP客户端请求的例子。这个例子中，Socket客户端在建立连接后发送了一个HTTP GET请求，并通过<code>data</code>事件监听函数来获取服务器响应。</p>
+<pre><code>var options = {
+        port: 80,
+        host: &apos;www.example.com&apos;
+    };
+
+var client = net.connect(options, function () {
+        client.write([
+            &apos;GET / HTTP/1.1&apos;,
+            &apos;User-Agent: curl/7.26.0&apos;,
+            &apos;Host: www.baidu.com&apos;,
+            &apos;Accept: */*&apos;,
+            &apos;&apos;,
+            &apos;&apos;
+        ].join(&apos;\n&apos;));
+    });
+
+client.on(&apos;data&apos;, function (data) {
+    console.log(data.toString());
+    client.end();
+});
+</code></pre><h3 id="灵机一点"><a href="#灵机一点" class="headerlink" title="灵机一点"></a>灵机一点</h3><p>使用NodeJS操作网络，特别是操作HTTP请求和响应时会遇到一些惊喜，这里对一些常见问题做解答。</p>
+<ul>
+<li><p>问： 为什么通过<code>headers</code>对象访问到的HTTP请求头或响应头字段不是驼峰的？</p>
+<p>  答： 从规范上讲，HTTP请求头和响应头字段都应该是驼峰的。但现实是残酷的，不是每个HTTP服务端或客户端程序都严格遵循规范，所以NodeJS在处理从别的客户端或服务端收到的头字段时，都统一地转换为了小写字母格式，以便开发者能使用统一的方式来访问头字段，例如<code>headers[&#39;content-length&#39;]</code>。</p>
 </li>
-<li><p>除非JS模块不能满足需求，否则不要轻易使用二进制模块，否则你的用户会叫苦连天。</p>
+<li><p>问： 为什么<code>http</code>模块创建的HTTP服务器返回的响应是<code>chunked</code>传输方式的？</p>
+<p>  答： 因为默认情况下，使用<code>.writeHead</code>方法写入响应头后，允许使用<code>.write</code>方法写入任意长度的响应体数据，并使用<code>.end</code>方法结束一个响应。由于响应体数据长度不确定，因此NodeJS自动在响应头里添加了<code>Transfer-Encoding: chunked</code>字段，并采用<code>chunked</code>传输方式。但是当响应体数据长度确定时，可使用<code>.writeHead</code>方法在响应头里加上<code>Content-Length</code>字段，这样做之后NodeJS就不会自动添加<code>Transfer-Encoding</code>字段和使用<code>chunked</code>传输方式。</p>
+</li>
+<li><p>问： 为什么使用<code>http</code>模块发起HTTP客户端请求时，有时候会发生<code>socket hang up</code>错误？</p>
+<p>  答： 发起客户端HTTP请求前需要先创建一个客户端。<code>http</code>模块提供了一个全局客户端<code>http.globalAgent</code>，可以让我们使用<code>.request</code>或<code>.get</code>方法时不用手动创建客户端。但是全局客户端默认只允许5个并发Socket连接，当某一个时刻HTTP客户端请求创建过多，超过这个数字时，就会发生<code>socket hang up</code>错误。解决方法也很简单，通过<code>http.globalAgent.maxSockets</code>属性把这个数字改大些即可。另外，<code>https</code>模块遇到这个问题时也一样通过<code>https.globalAgent.maxSockets</code>属性来处理。</p>
+</li>
+</ul>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>本章介绍了使用NodeJS操作网络时需要的API以及一些坑回避技巧，总结起来有以下几点：</p>
+<ul>
+<li><p><code>http</code>和<code>https</code>模块支持服务端模式和客户端模式两种使用方式。</p>
+</li>
+<li><p><code>request</code>和<code>response</code>对象除了用于读写头数据外，都可以当作数据流来操作。</p>
+</li>
+<li><p><code>url.parse</code>方法加上<code>request.url</code>属性是处理HTTP请求时的固定搭配。</p>
+</li>
+<li><p>使用<code>zlib</code>模块可以减少使用HTTP协议时的数据传输量。</p>
+</li>
+<li><p>通过<code>net</code>模块的Socket服务器与客户端可对HTTP协议做底层操作。</p>
+</li>
+<li><p>小心踩坑。</p>
 </li>
 </ul>
 
@@ -1210,7 +1726,7 @@ console.log(counter2.count());
 
 </div>
 
-    <a data-url="http://yoursite.com/2016/03/23/node/books/7days/01_getting_started/" data-id="cj76wnr95002zenpj4yjg8bd1" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+    <a data-url="http://yoursite.com/2016/03/23/node/books/7days/04_network/" data-id="cj76wnr9b0034enpj6q9vtini" class="article-share-link"><i class="fa fa-share"></i>Share</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1278,7 +1794,7 @@ console.log(counter2.count());
 
             
     
-        <a href="http://yoursite.com/2016/03/23/node/books/7days/01_getting_started/#comments" class="article-comment-link">Comments</a>
+        <a href="http://yoursite.com/2016/03/23/node/books/7days/04_network/#comments" class="article-comment-link">Comments</a>
     
 
         </footer>
@@ -1301,6 +1817,15 @@ console.log(counter2.count());
         <h3 class="widget-title">recent</h3>
         <div class="widget">
             <ul id="recent-post" class="no-thumbnail">
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/ssh/">ssh</a></p>
+                            <p class="item-title"><a href="/2017/09/20/other/Gitlab权限说明/" class="title">Gitlab权限说明</a></p>
+                            <p class="item-date"><time datetime="2017-09-20T09:54:25.000Z" itemprop="datePublished">2017-09-20</time></p>
+                        </div>
+                    </li>
                 
                     <li>
                         
@@ -1338,15 +1863,6 @@ console.log(counter2.count());
                         </div>
                     </li>
                 
-                    <li>
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/glide/">glide</a></p>
-                            <p class="item-title"><a href="/2017/09/20/android/github/glide解析1_基本用法/" class="title">Glide解析1_基本用法</a></p>
-                            <p class="item-date"><time datetime="2017-09-20T08:38:10.000Z" itemprop="datePublished">2017-09-20</time></p>
-                        </div>
-                    </li>
-                
             </ul>
         </div>
     </div>
@@ -1356,7 +1872,7 @@ console.log(counter2.count());
     <div class="widget-wrap">
         <h3 class="widget-title">categories</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">43</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/glide/">glide</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">2</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">43</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/glide/">glide</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/ssh/">ssh</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -1365,7 +1881,7 @@ console.log(counter2.count());
     <div class="widget-wrap">
         <h3 class="widget-title">archives</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">52</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">53</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
         </div>
     </div>
 
@@ -1374,7 +1890,7 @@ console.log(counter2.count());
     <div class="widget-wrap">
         <h3 class="widget-title">tags</h3>
         <div class="widget">
-            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">37</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">37</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/">ssh</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -1383,7 +1899,7 @@ console.log(counter2.count());
     <div class="widget-wrap">
         <h3 class="widget-title">tag cloud</h3>
         <div class="widget tagcloud">
-            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 16.67px;">code</a> <a href="/tags/git/" style="font-size: 11.67px;">git</a> <a href="/tags/github/" style="font-size: 18.33px;">github</a> <a href="/tags/glide/" style="font-size: 15px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 13.33px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.67px;">markdown</a> <a href="/tags/mysql/" style="font-size: 16.67px;">mysql</a> <a href="/tags/node/" style="font-size: 18.33px;">node</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.67px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.67px;">设计模式</a>
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 16.67px;">code</a> <a href="/tags/git/" style="font-size: 11.67px;">git</a> <a href="/tags/github/" style="font-size: 18.33px;">github</a> <a href="/tags/glide/" style="font-size: 15px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 13.33px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.67px;">markdown</a> <a href="/tags/mysql/" style="font-size: 16.67px;">mysql</a> <a href="/tags/node/" style="font-size: 18.33px;">node</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/ssh/" style="font-size: 10px;">ssh</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.67px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.67px;">设计模式</a>
         </div>
     </div>
 
