@@ -1,3 +1,16 @@
+title: Glide解析2_执行流程
+date: 
+
+categories: 
+- android
+- glide
+
+tags: 
+- github
+- glide
+
+---
+
 >  本文出自[郭霖博客](http://blog.csdn.net/guolin_blog/article/details/53939176)
 
 在本系列的上一篇文章中，我们学习了Glide的基本用法，体验了这个图片加载框架的强大功能，以及它非常简便的API。还没有看过上一篇文章的朋友，建议先去阅读 [Android图片加载框架最全解析（一），Glide的基本用法](http://blog.csdn.net/guolin_blog/article/details/53759439) 。
