@@ -210,6 +210,458 @@
 
             
             <section id="main">
+    <article id="post-linux/Shell常用手册" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/09/12/linux/Shell常用手册/">Shell常用手册</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/09/12/linux/Shell常用手册/">
+            <time datetime="2017-09-12T01:26:25.000Z" itemprop="datePublished">2017-09-12</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/shell/">shell</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/shell/">shell</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <blockquote>
+<p>注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a></p>
+<h2 id="文件系统"><a href="#文件系统" class="headerlink" title="文件系统"></a>文件系统</h2></blockquote>
+<h3 id="遍历目录"><a href="#遍历目录" class="headerlink" title="遍历目录"></a>遍历目录</h3><blockquote>
+<p>格式: <code>cd destination</code></p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"># 绝对文件路径</div><div class="line">$ cd /usr/bin</div><div class="line"></div><div class="line"># 相对文件路径 进入当前目录下的doc文件夹</div><div class="line">$ cd doc</div><div class="line"></div><div class="line"># 进入当前文件夹的同级目录pics</div><div class="line">$ cd ../pics</div></pre></td></tr></table></figure>
+<h3 id="查看当前目录路径"><a href="#查看当前目录路径" class="headerlink" title="查看当前目录路径"></a>查看当前目录路径</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ pwd</div></pre></td></tr></table></figure>
+<h3 id="文件基本操作操作"><a href="#文件基本操作操作" class="headerlink" title="文件基本操作操作"></a>文件基本操作操作</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"># 显示当前目录下的文件和目录, 按字母排序, 展示顺序为按列</div><div class="line">$ ls</div><div class="line"></div><div class="line"># 如果想让文件夹变得更容易区分, -F参数可让显示文件夹后面追加一个 /</div><div class="line">$ ls -F</div><div class="line"></div><div class="line"># 如果查看包括隐藏文件, .开头的文件. 可使用 -a 参数</div><div class="line">$ ls -a</div><div class="line"></div><div class="line"># 默认ls只会显示指定目录下一个层级所有文件. 如果要显示指定目录下的所有所有子层级</div><div class="line">$ ls -R</div></pre></td></tr></table></figure>
+<h3 id="文件的长列表"><a href="#文件的长列表" class="headerlink" title="文件的长列表"></a>文件的长列表</h3><p>如果需要查看更多的信息, 比如<strong>文件类型</strong>,<strong>文件权限</strong>,<strong>属组或属主</strong>,<strong>大小</strong>等</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ ls -l</div><div class="line"></div><div class="line"># 一个连贯的展示习惯, 就是将参数组合, 例如展示隐藏 长列表的显示结果</div><div class="line">$ ls -la</div></pre></td></tr></table></figure>
+<h3 id="过滤输出信息"><a href="#过滤输出信息" class="headerlink" title="过滤输出信息"></a>过滤输出信息</h3><p>例如如果你只想想查找目录下的<code>test.java</code>文件的相关信息. 不想显示出其他信息干扰到你. 你可以这样</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"># 只显示过滤要求的文件相关信息</div><div class="line">$ ls -l test.java</div><div class="line"></div><div class="line"># 可以使用通配符 ? , 代表一个任意字符</div><div class="line">$ ls -l tes?.java</div><div class="line"></div><div class="line"># 可以使用通配符 * , 代表0或者多个任意字符</div><div class="line">$ ls -l tet*</div></pre></td></tr></table></figure>
+<p>上面的后两种使用<code>星号</code>或者<code>问号</code>被称为<code>文件扩展匹配</code>, 就是使用通配符进行模糊匹配的过程. 还有一些其他的通配符. 还是以<code>test.java</code>为例</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># 指定某个位置的的区间, [a-z], abc...xyz都可以</div><div class="line">$ ls -l tes[a-z].java</div></pre></td></tr></table></figure>
+<h3 id="文件创建"><a href="#文件创建" class="headerlink" title="文件创建"></a>文件创建</h3><blockquote>
+<p>创建一个空文件<code>touch</code>命令</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"># 创建一个名字为 Hello.java 的文件</div><div class="line">$ touch Hello.java</div><div class="line"></div><div class="line"># 当文件已经存在时, touch命令不会清空原有数据, 但是会更改文件的修改时间</div><div class="line">$ test ll *.js</div><div class="line">-rw-r--r--  1 suzeyu  staff   107B 10 26 16:36 test.js</div><div class="line">$ test touch test.js</div><div class="line">$ test ll *.js</div><div class="line">-rw-r--r--  1 suzeyu  staff   107B 12 26 16:51 test.js</div><div class="line"></div><div class="line"></div><div class="line"># 如果只想改变 访问时间 那么通过 -a 参数</div><div class="line">$ touch -a Hello.java</div></pre></td></tr></table></figure>
+<h3 id="复制文件"><a href="#复制文件" class="headerlink" title="复制文件"></a>复制文件</h3><blockquote>
+<p><code>cp source destination</code></p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"># 文件 -&gt; 文件的拷贝  </div><div class="line">$ cp test.cpp test_1.cpp</div><div class="line"></div><div class="line"></div><div class="line"># 如果目标文件文件已经存在可能会直接覆盖, 所以 -i 会让操作更加安全,警告提示</div><div class="line">$ cp -i test.cpp test_1.cpp</div><div class="line"></div><div class="line"># 文件 -&gt; /users/suzeyu 目录下</div><div class="line">$ cp test.cpp /users/suzeyu/    #注意最后的 / , 如果没有就代表users目录下suzeyu文件</div><div class="line"></div><div class="line"># /users/suzeyu/orgin.txt文件  -&gt; 当前目录下, 利用 . 可以代表当前目录</div><div class="line">$ cp /users/suzeyu/orgin.txt .</div><div class="line"></div><div class="line"></div><div class="line"># 当前目录下的olds文件夹 -&gt; 目录下的命为news的新文件夹</div><div class="line">$ cp -R olds/ news          # -R 可以递归遍历olds文件夹,  并创建新的news</div><div class="line"></div><div class="line"># 也可以使用通配符. 把所有的java文件复制出去</div><div class="line">$ cp *.java  javaDir/</div></pre></td></tr></table></figure>
+<h3 id="链接文件"><a href="#链接文件" class="headerlink" title="链接文件"></a>链接文件</h3><p>链接是目录中指向文件真实位置的占位符.</p>
+<ul>
+<li><code>符号链接</code>: 一个真实的文件. 指向存放在虚拟目录结构中的一个文件.</li>
+<li><code>硬链接</code>: 会创建独立的虚拟文件, 包含原始文件的信息及位置. 但他们根本而言是一个文件</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"># 符号链接</div><div class="line"># 为一个文件创建符号链接 使用 ln 命令和 -s 选项</div><div class="line">$ ln -s filename  linkname</div><div class="line"></div><div class="line"># 通过 ls -l *name, 查看文件信息, 会发现linkname -&gt; filename. 这两个文件是完全不同的文件, </div><div class="line"># 也可以通过文件唯一 inode 编码来证实</div><div class="line"></div><div class="line">$ ls -i *name</div><div class="line"></div><div class="line"></div><div class="line"># 硬链接</div><div class="line"># ln 命令, 不过不需要-s 选项</div><div class="line">$ ln filename hardname</div></pre></td></tr></table></figure>
+<h3 id="重命名文件"><a href="#重命名文件" class="headerlink" title="重命名文件"></a>重命名文件</h3><blockquote>
+<p>重命名也被称为<code>移动(moving)</code> , 主要是<code>mv</code>命令</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"># 修改文件 test.java 名为 new_test.java</div><div class="line">$ mv test.java new_test.java    # mv不会改变文件唯一inode编码和时间戳. </div><div class="line"></div><div class="line"># 也可以移动文件到某个文件夹</div><div class="line">$ mv test.java /Users/suzeyu/Desktop/</div><div class="line"></div><div class="line"># 同样可以在移动的时候, 添加 -i 参数, 同cp一样. 当覆盖已有文件时会警告提示</div><div class="line"></div><div class="line"></div><div class="line"># 或者移动整个目录及其内容</div><div class="line">$ mv oldDirs  newDirs</div></pre></td></tr></table></figure>
+<h3 id="删除文件"><a href="#删除文件" class="headerlink" title="删除文件"></a>删除文件</h3><blockquote>
+<p><code>rm</code> 删除也称为<code>移除removing</code>. 但要注意, 一旦删除了可以无法找回的. 所以删除前一定要确认好信息</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"># 删除文件 Hello.txt</div><div class="line">$ rm Hello.txt</div><div class="line"></div><div class="line"># 添加确认信息删除, 上面的会直接删除掉文件, 而如果加入了 -i 会有警告提示</div><div class="line">$ rm -i Hello.txt</div><div class="line"></div><div class="line"># 同样可以使用通配符进行批量删除, 例如当前目录的java文件</div><div class="line">$ rm *.java</div><div class="line"></div><div class="line"># 如果想删除整个文件夹, 那么需要配合使用 -R 进行递归遍历删除.</div><div class="line">$ rm -R dirsName</div><div class="line"></div><div class="line"># 如果有多个警告提示, 想强制关掉, 可以添加  -f 参数</div><div class="line"># rm 中的 -r -R 效果是一样</div></pre></td></tr></table></figure>
+<h3 id="创建目录"><a href="#创建目录" class="headerlink" title="创建目录"></a>创建目录</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"># 创建一个目录</div><div class="line">$ mkdir name</div><div class="line"></div><div class="line"># 如果需要批量的创建目录. 那么需要 -p 选项的配合</div><div class="line">$ mkdir -p parentDir/subDir/sunDir</div></pre></td></tr></table></figure>
+<h3 id="删除目录"><a href="#删除目录" class="headerlink" title="删除目录"></a>删除目录</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"># 删除一个目录</div><div class="line">$ rmdir name</div><div class="line"></div><div class="line"># 默认 rmdir 只能删除空目录. 可以使用 rm 来递归删除, </div><div class="line">$ rm -r name</div></pre></td></tr></table></figure>
+<h3 id="查看文件类型"><a href="#查看文件类型" class="headerlink" title="查看文件类型"></a>查看文件类型</h3><blockquote>
+<p><code>file</code>能够探测文件内部, 并决定文件时什么类型</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"># 查看文件的类型</div><div class="line">$ file name</div><div class="line"></div><div class="line"># 可以区分文本类型, 图片, 目录, 符号链接文件, 脚本, 可执行二进制等.</div></pre></td></tr></table></figure>
+<h3 id="查看整个文件"><a href="#查看整个文件" class="headerlink" title="查看整个文件"></a>查看整个文件</h3><blockquote>
+<p><code>cat</code>, <code>more</code>, <code>less</code>这是很便捷的工具</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"># 你想查看一个Hello.java的类的内容</div><div class="line">$ cat Hello.java</div><div class="line"></div><div class="line"># 也可以让显示的内容加上行号, 这也很简单</div><div class="line">$ cat -n Hello.java</div><div class="line"></div><div class="line"># 或许你的类里面充斥着各种空白行, 而你不需要空白行添加行号. 那么 -b 可以解决</div><div class="line">$ cat -b Hello.java</div></pre></td></tr></table></figure>
+<p>这里有一个问题, 如果打开的文本很大, 那么直接使用<code>cat</code>会加载全部的内容. 或许我们需要进行控制, 那么<code>more</code>命令<code>分页工具</code>现在就可以登场了.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># 分页显示</div><div class="line">$ more Hello.java</div></pre></td></tr></table></figure>
+<p>这回在显示一屏的内容之后停止下来. 你可以通过<code>上下方向键</code>控制. 也可以通过<code>空格</code>进行翻页. <code>q</code>键可推出预览模式.</p>
+<p><code>less</code>命令工具, 这是一个比<code>more</code>更高级一些的根据. 功能和使用很相似.</p>
+<h3 id="查看部分文件"><a href="#查看部分文件" class="headerlink" title="查看部分文件"></a>查看部分文件</h3><blockquote>
+<p>如果只关心头部和尾部的内容. 那么<code>tail</code>和<code>head</code>命令. 可以很好的解决这种场景</p>
+</blockquote>
+<hr>
+<p><code>tail</code>尾部查看</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"># 查看文件的尾部</div><div class="line">$ tail Hello.java </div><div class="line"></div><div class="line"># 默认 tail 显示文件的最后10行 , 通过 -n 参数来修改所显示的行数</div><div class="line">$ tail -n 5 Hello.java</div></pre></td></tr></table></figure>
+<hr>
+<p><code>head</code>头部查看</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"># 查看头部内容 , 默认显示前10行</div><div class="line">$ head Hello.java</div><div class="line"></div><div class="line"># 指定显示多少行的参数设置</div><div class="line">$ head -20 Hello.java</div></pre></td></tr></table></figure>
+<h2 id="检测程序"><a href="#检测程序" class="headerlink" title="检测程序"></a>检测程序</h2><h3 id="进程查看"><a href="#进程查看" class="headerlink" title="进程查看"></a>进程查看</h3><blockquote>
+<p><code>ps</code> 默认显示运行在当前控制台下属于当前用户的进程</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"># -e 参数可以显示所有运行在系统上的进程</div><div class="line"># -f 参数则扩展了输出</div><div class="line"># -l 会产生一个长格式的输出</div></pre></td></tr></table></figure>
+<p>关于<code>-f</code>的扩展出的选项的字段含义</p>
+<table>
+<thead>
+<tr>
+<th>UID</th>
+<th>启动这些进程的用户</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PID</td>
+<td>进程的进程ID</td>
+</tr>
+<tr>
+<td>PPID</td>
+<td>父进程的进程号</td>
+</tr>
+<tr>
+<td>C</td>
+<td>进程生命周期中的系统时间</td>
+</tr>
+<tr>
+<td>STIME</td>
+<td>进程启动时的系统时间</td>
+</tr>
+<tr>
+<td>TTY</td>
+<td>进程启动时的终端设备</td>
+</tr>
+<tr>
+<td>TIME</td>
+<td>运行进程需要的累积CPU时间</td>
+</tr>
+<tr>
+<td>CMD</td>
+<td>启动程序名称</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p>关于<code>-l</code>参数字段的含义</p>
+<table>
+<thead>
+<tr>
+<th>F</th>
+<th>内核分配给进程的系统标记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S</td>
+<td>进程的状态(O运行; S休眠; R可运行正在等待运行; Z僵化; 进程已结束但父进程不在; T停止)</td>
+</tr>
+<tr>
+<td>PRI</td>
+<td>进程的优先级, 数字越大优先级越低</td>
+</tr>
+<tr>
+<td>NI</td>
+<td>谦让度值用来参与决定优先级</td>
+</tr>
+<tr>
+<td>ADDR</td>
+<td>进程的内存地址</td>
+</tr>
+<tr>
+<td>SZ</td>
+<td>加入进程被换出, 所需要交换空间的大致大小</td>
+</tr>
+<tr>
+<td>WCHAN</td>
+<td>进程休眠的内核函数地址</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># 查看实时进程监测</div><div class="line">$ top</div></pre></td></tr></table></figure>
+<h2 id="磁盘空间"><a href="#磁盘空间" class="headerlink" title="磁盘空间"></a>磁盘空间</h2><h3 id="mount"><a href="#mount" class="headerlink" title="mount"></a>mount</h3><p>用来挂载媒体的命令叫做<code>mount</code>. 默认情况下, <code>mount</code>命令会输出当前系统上挂载的设备列表</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># 显示当前系统上挂载的设备列表</div><div class="line">$ mount</div></pre></td></tr></table></figure>
+<p>一般输入会是如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">/dev/disk1 on / (hfs, local, journaled)</div><div class="line"></div><div class="line">提供了四部分信息, 从前到后</div><div class="line">1. 媒体的设备文件名 </div><div class="line">2. 媒体挂载到虚拟目录的挂载点</div><div class="line">3. 文件的系统类型  hfs </div><div class="line">4. 已挂载媒体的访问状态</div></pre></td></tr></table></figure>
+<p>如果需要手动挂载, 需要root权限</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ mount -t type device directory</div><div class="line">|   |   |   |   |   |   |   |   |</div><div class="line">$ mount -t ntfs /dev/sdb1 /media/disk</div></pre></td></tr></table></figure>
+<hr>
+<p><strong>卸载设备umount</strong></p>
+<p>形式: <code>umount [ directory | device ]</code></p>
+<h3 id="df命令"><a href="#df命令" class="headerlink" title="df命令"></a>df命令</h3><blockquote>
+<p><code>df</code>可以快速的知道某个设备上还有多少磁盘空间, 方便查看所有已经挂载的磁盘情况</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># 配合 -h 可以把输出按照用户易读的形式表示. 如M, G</div><div class="line">$ df -h</div></pre></td></tr></table></figure>
+<h3 id="du命令"><a href="#du命令" class="headerlink" title="du命令"></a>du命令</h3><blockquote>
+<p><code>df</code>可以很容易发现那个磁盘的存储空间快没了. <code>du</code>就是接下来要处理问题的工具, 它可以显示某个特定目录下的磁盘使用情况. 这一方法可用来快速判断系统上某个目录下是不是有超大文件.</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"># 常规使用, 显示当前目录下所有的文件, 目录, 和子目录的使用情况</div><div class="line"># 会以磁盘块为单位显示占有空间</div><div class="line">$ du</div><div class="line"></div><div class="line"># 一般需要配合几个参数进行使用</div><div class="line">-c 显示所有已列出文件的总大小</div><div class="line">-h 以用户易读的方式显示占有大小, 如K, M, G</div></pre></td></tr></table></figure>
+<h3 id="数据的排序"><a href="#数据的排序" class="headerlink" title="数据的排序"></a>数据的排序</h3><blockquote>
+<p><code>sort</code>命令按照会话指定的默认语言的排序规则对文本文件中的数据进行排序</p>
+</blockquote>
+<p>例如:</p>
+<p><img src="http://szysky.com/2016/12/26/shell%E5%B8%B8%E7%94%A8%E5%B0%8F%E6%89%8B%E5%86%8C/sort_num.png" alt="img"></p>
+<p>如果你要排序的是数字, 那么需要通过<code>-n</code>让<code>sort</code>命令不要把数字当成字符处理. 这样对于100 &gt; 2的情况就可以避免</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"># 让sort命令识别数字, 而不是把每一个数字当成字符处理</div><div class="line">$ sort -n fileName</div><div class="line"></div><div class="line"># 如果需要排序的按照月份, 并且排序的值是Jan, Feb, Mar等三字符的月份, 那么使用-M</div><div class="line">$ sort -M fileName</div></pre></td></tr></table></figure>
+<p>不仅仅如此, 例如如果我们有这么一个键值表:</p>
+<p><img src="http://szysky.com/2016/12/26/shell%E5%B8%B8%E7%94%A8%E5%B0%8F%E6%89%8B%E5%86%8C/age_origin.png" alt="img"></p>
+<p>如果想进行年龄的排序, 那么使用<code>-k</code>和<code>-t</code>参数进行年龄字段的排序.</p>
+<ul>
+<li><code>-t</code>: 可以指定字段分隔符</li>
+<li><code>-k</code>: 指定排序的字段</li>
+</ul>
+<p>例如上面这个图, 分割字段就是<code>:</code>, 根据排序的条件是第<code>二</code>个字段</p>
+<p><img src="http://szysky.com/2016/12/26/shell%E5%B8%B8%E7%94%A8%E5%B0%8F%E6%89%8B%E5%86%8C/age_sort.png" alt="img"></p>
+<hr>
+<p>那么如果想查看目录下所有文件的占用排序, 就可以</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># 从大到小排序</div><div class="line">$ du -s * | sort -nr</div></pre></td></tr></table></figure>
+<h3 id="搜索数据"><a href="#搜索数据" class="headerlink" title="搜索数据"></a>搜索数据</h3><blockquote>
+<p>在大文件查找一条数据, 通过<code>grep</code>命令就可直接查找<br><code>grep</code>会在输入或者指定的文件中查找包含匹配指定模式的字符的行</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line"># 查找文件中的张三的行</div><div class="line">$  test grep 张三 age.txt</div><div class="line">张三:40</div><div class="line"></div><div class="line"># 查找文件中的 : 的行</div><div class="line">$  test grep : age.txt</div><div class="line">张三:40</div><div class="line">李四:20</div><div class="line">王五:18</div><div class="line">赵六:79</div><div class="line"></div><div class="line"></div><div class="line"># 反向搜索, 除张三之外的人的行</div><div class="line">$  test grep -v 张三 age.txt</div><div class="line">李四:20</div><div class="line">王五:18</div><div class="line">赵六:79</div><div class="line"></div><div class="line"></div><div class="line"># 显示匹配的行号, -n</div><div class="line">$  test grep -vn 张三 age.txt</div><div class="line">2:李四:20</div><div class="line">3:王五:18</div><div class="line">4:赵六:79</div><div class="line"></div><div class="line"></div><div class="line"># 如果只想知道含有多少行, 满足条件 -c</div><div class="line">$  test grep -c 张三 age.txt</div><div class="line">1</div><div class="line"></div><div class="line"></div><div class="line"># 如果要指定多个模式, 通过 -e 参数</div><div class="line">$  test grep -e 张三 -e 王五 age.txt</div><div class="line">张三:40</div><div class="line">王五:18</div><div class="line"></div><div class="line"></div><div class="line"># 默认,grep用基本的Unix风格的正则表达式来匹配模式</div><div class="line"># 搜索行中有8或者9的行</div><div class="line">$  test grep [89] age.txt</div><div class="line">王五:18</div><div class="line">赵六:79</div></pre></td></tr></table></figure>
+<p><code>grep</code>是一个基础的搜索工具, 衍生版本也是存在的</p>
+<ul>
+<li><code>egrep</code>: 是<code>grep</code>的衍生, 支持<code>POSIX</code>扩展正则表达式. 含有更多可以用来指定匹配的模式的字符</li>
+<li><code>fgrep</code>: 则是另外一个版本, 支持将匹配模式指定为用换行符分隔的一系列的固定长度的字符串. 这样就可以把这列字符串放到一个文件中.</li>
+</ul>
+<h2 id="压缩数据"><a href="#压缩数据" class="headerlink" title="压缩数据"></a>压缩数据</h2><blockquote>
+<p>压缩数据主要针对一个文件</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>文件扩展名</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>bzip2</td>
+<td>.bz2</td>
+<td>采用Burrows-Wheeler块排序文本压缩算法和霍夫曼编码</td>
+</tr>
+<tr>
+<td>compress</td>
+<td>.Z</td>
+<td>最早的Unix文件压缩工具, 基本没人用</td>
+</tr>
+<tr>
+<td>gzip</td>
+<td>.gz</td>
+<td>GNU压缩工具, 用Lempel-Ziv编码</td>
+</tr>
+<tr>
+<td>zip</td>
+<td>.zip</td>
+<td>Window上PKZIP工具的Unix实现</td>
+</tr>
+</tbody>
+</table>
+<p><code>gzip</code>软件包含以下工具:</p>
+<ul>
+<li><code>gzip</code>: 用来压缩文件</li>
+<li><code>gzcat</code>: 用来查看压缩过的文本文件的内容</li>
+<li><code>gunzip</code>: 用来解压文件</li>
+</ul>
+<p>用法和<code>bzip2</code>一样</p>
+<h2 id="归档数据"><a href="#归档数据" class="headerlink" title="归档数据"></a>归档数据</h2><blockquote>
+<p>在<code>Unix</code>和<code>Linux</code>上最广泛使用的归档工具是<code>tar</code>命令</p>
+</blockquote>
+<p><code>tar</code>命令的基本格式</p>
+<p><code>tar function [options] object1 object2 ...</code></p>
+<p><strong>function参数可选</strong></p>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>长名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-A</td>
+<td>–concatenate</td>
+<td>将一个已有tar归档文件追加到另一个已有tar归档文件</td>
+</tr>
+<tr>
+<td>-c</td>
+<td>–create</td>
+<td>创建一个新的tar归档文件</td>
+</tr>
+<tr>
+<td>-d</td>
+<td>–diff</td>
+<td>检查归档文件和文件系统的不同之处</td>
+</tr>
+<tr>
+<td></td>
+<td>–delete</td>
+<td>从已有tar归档文件中删除</td>
+</tr>
+<tr>
+<td>-r</td>
+<td>–append</td>
+<td>追加文件到已有tar归档文件末尾</td>
+</tr>
+<tr>
+<td>-t</td>
+<td>–list</td>
+<td>列出已有tar归档文件的内容</td>
+</tr>
+<tr>
+<td>-u</td>
+<td>–update</td>
+<td>将比tar归档文件中已有的同名文件,新的文件追加到该tar归档文件中</td>
+</tr>
+<tr>
+<td>-x</td>
+<td>–extract</td>
+<td>从已有tar归档文件中提取文件</td>
+</tr>
+</tbody>
+</table>
+<p><strong>option常用选项</strong></p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-C dir</td>
+<td>切换到指定目录</td>
+</tr>
+<tr>
+<td>-f file</td>
+<td>输出结果到文件或设备file</td>
+</tr>
+<tr>
+<td>-j</td>
+<td>将输出重定向给bzip2命令来压缩内容</td>
+</tr>
+<tr>
+<td>-p</td>
+<td>保留所有文件权限</td>
+</tr>
+<tr>
+<td>-v</td>
+<td>在处理文件时显示文件</td>
+</tr>
+<tr>
+<td>-z</td>
+<td>将输出重定向给gzip命令来压缩内容</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p>列举常用的方式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"># 创建归档, 把test/ test2/两个文件夹的内容进行归档</div><div class="line">$ tar -cvf test.tar  test/ test2/</div><div class="line"></div><div class="line"></div><div class="line"># 列出tar文件的内容, 但不提取</div><div class="line">$ tar -tf test.tar</div><div class="line"></div><div class="line"></div><div class="line"># 解压提取归档的内容</div><div class="line">$ tar -xvf test.tar</div></pre></td></tr></table></figure>
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/09/12/linux/Shell常用手册/" data-id="cj7hnifce00076opjwi1kj45r" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/09/12/linux/Shell常用手册/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
     <article id="post-android/code/Android Studio 常用手册" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
@@ -4320,167 +4772,6 @@
 
 
 
-    <article id="post-android/books/《Android 编程实战》Chap8_高级音频,视频及相机应用" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2017/09/12/android/books/《Android 编程实战》Chap8_高级音频,视频及相机应用/">《Android 编程实战》Chap8_高级音频,视频及相机应用</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2017/09/12/android/books/《Android 编程实战》Chap8_高级音频,视频及相机应用/">
-            <time datetime="2017-09-11T23:57:02.000Z" itemprop="datePublished">2017-09-12</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a>
-    </div>
-
-                        
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/android/">android</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <blockquote>
-<p>阅读《Android 编程实战》一书的随记笔记<br>注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a></p>
-</blockquote>
-<h2 id="高级音频应用"><a href="#高级音频应用" class="headerlink" title="高级音频应用"></a>高级音频应用</h2><p><code>Android</code>音频API提供了一些高级功能, 开发者可以把他们集成到自己的应用中. 有了这些API, 就可以很容易的实现<strong>VoIP网络电话</strong>, 构建定制的流媒体音乐客户端, 实现低延迟的游戏音效. 此外, 还有提供文本到语音转换以及语音识别API, 用户可以直接使用音频和用户交互, 而不需要使用用户界面或者触控技术.</p>
-<h3 id="低延迟音频"><a href="#低延迟音频" class="headerlink" title="低延迟音频"></a>低延迟音频</h3><p><code>Android</code>有四个用来播放音频的API(算上MIDI那么就是5个)和三个用来录音的API. 接下里会简要介绍这些API.</p>
-<hr>
-<p><strong>音频播放API</strong></p>
-<ul>
-<li>音频播放默认使用<code>MediaPlayer</code>. 该类适合播放音乐或者视频, 既能播放流式资源(比如在线网络收音机), 也可以播放本地文件. 每个<code>MediaPlayer</code>都有一个关联的状态机, 需要在应用程序中跟踪这些状态. 开发者可以使用<code>MediaPlayer</code>类的API在自己的应用中嵌入音乐或者视频播放功能, 而无需额外处理或者考虑延迟问题.</li>
-<li>第二种是<code>SoundPool</code>类, 它提供了低延迟的支持, 适合播放音效和其他比较短的音频, 比如可以使用<code>SoundPool</code>播放游戏声音. 但是, 它不支持音频流, 所以不适合那些需要实时音频流处理的应用如<code>VoIP</code>.</li>
-<li>第三种是<code>AudioTrack</code>类, 它允许把音频流缓冲到硬件中, 支持低延迟播放, 甚至适合流媒体场景. <code>AudioTrack</code>通常能提供足够低的延迟, 可在<code>VoIP</code>或类似应用中使用.</li>
-</ul>
-<p>下面代码展示如何在<code>VoIP</code>应用中使用<code>AudioTrack</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">public class AudioTrackDemo &#123;</div><div class="line"></div><div class="line">    private final AudioTrack mAudioTrack;</div><div class="line">    private final int mMinBufferSize;</div><div class="line"></div><div class="line">    public AudioTrackDemo() &#123;</div><div class="line"></div><div class="line">        // 确定音频流的最小缓冲区和大小</div><div class="line">        mMinBufferSize = AudioTrack.getMinBufferSize(16000, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);</div><div class="line"></div><div class="line">        mAudioTrack = new AudioTrack(AudioManager.STREAM_VOICE_CALL,</div><div class="line">                16000,</div><div class="line">                AudioFormat.CHANNEL_OUT_MONO,</div><div class="line">                AudioFormat.ENCODING_PCM_16BIT,</div><div class="line">                mMinBufferSize * 2,</div><div class="line">                AudioTrack.MODE_STREAM);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void playPcmPacket(byte[] pcmData)&#123;</div><div class="line">        if (mAudioTrack != null &amp;&amp; mAudioTrack.getState() == AudioTrack.STATE_INITIALIZED)&#123;</div><div class="line"></div><div class="line">            // 判断是否处在播放状态</div><div class="line">            if (mAudioTrack.getPlaybackRate() != AudioTrack.PLAYSTATE_PLAYING)&#123;</div><div class="line">                mAudioTrack.play();</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            mAudioTrack.write(pcmData, 0, pcmData.length);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    //  设置停止</div><div class="line">    public void stopPlayback()&#123;</div><div class="line">        if (mAudioTrack != null)&#123;</div><div class="line">            mAudioTrack.stop();</div><div class="line">            mAudioTrack.release();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>对这个类进行一下整理, 首先从构造函数开始. 最开始需要确定音频流的最小缓冲区大小. 要做到这一点, 需要知道采样率, 数据是单声道还是立体声, 以及是否使用8位或者16位<code>PCM</code>编码. 然后以采样率和采样大小作为参数调用<code>AudioTrack.getMinBufferSize()</code>, 该方法会以字节形式返回<code>AudioTrack</code>实例的最小缓冲区大小</p>
-<p>接下来, 根据使用正确的参数创建<code>AudioTrack</code>实例, 第一个参数为音频的类型, 不同的应用使用不同的值. 对于<code>VoIP</code>这种应用来说使用<code>STREAM_VOICE_CALL</code>, 而对流媒体音乐应用则使用<code>STREAM_MUSIC</code>.</p>
-<p>对于参数2,3,4会根据使用场景而有所不同. 这些参数跟别表示<code>采样率</code>, <code>立体声/单声道</code>, <code>采样大小</code>. 一般而言, 一个<code>VoIP</code>会使用<code>16kHz</code>的16位单声道, 而常规的音乐CD可能采用<code>44.1kHz</code>的16位立体声. 16位立体声采样率需要更大的缓冲区以及更多的数据传输, 但是音质会更好. 所有的<code>Android</code>设备都支持<code>PCM</code>以<code>8kHz</code>,<code>16kHz</code>,<code>44.1kHz</code>的采样率播放8位或者16位的立体声.</p>
-<p>缓冲区大小参数应该是最小缓冲区大小的倍数, 实际取决于具体的需求, 有时网络延迟等因素也会影响缓冲区大小. <strong>注意: 任何时候都应该避免使用空的缓冲区, 因为可能导致播放出现故障</strong></p>
-<p>最后一个参数决定只发送一次音频数据<code>MODE_STATIC</code>还是连续发送数据流<code>MODE_STREAM</code>. 第一种情况需要一次发送整个音频剪辑. 对于持续发送音频流的情况, 可以发送任意大小块的<code>PCM数据</code>, 处理流媒体音乐或者VoIP通话时可能会使用这种方式.</p>
-<hr>
-<p><strong>2. 录音API</strong></p>
-<p>说道录制音频(也可能是视频), 首先要考虑的API是<code>MediaRecorder</code>. 和<code>MediaPlayer</code>类似, 需要在应用代码中跟踪<code>MediaRecorder</code>类的内部状况. 由于<code>MediaRecorder</code>只能把录音保存在文件中, 所以他不适合录制流媒体.</p>
-<p>如果需要录制流媒体, 可以使用<code>AudioRecorder</code>, 它和之前描述的<code>AudioTrack</code>非常相似.</p>
-<p><a href="https://github.com/suzeyu1992/AndroidProgrammingPushingTheLimits/commit/0109285e016f34c5403195344987cee5a7b791e0" target="_blank" rel="external">链接代码演示了如何创建<code>AudioRecorder</code>实例录制16位单声道16kHz的音频采样</a></p>
-<p>其实和<code>AudioTrack</code>的创建过程非常给你相似, 在使用<code>VoIP</code>或者类似应用时可以很方便地把他们结合起来.</p>
-<h3 id="OpenSL-ES"><a href="#OpenSL-ES" class="headerlink" title="OpenSL ES"></a>OpenSL ES</h3><p>前面说了3播放API和2个录制API. 还有最后一个API <code>OpenSL ES</code>, 它同时支持播放和录制. 该API是科纳斯组织(Khronos Group)的一个标准, 这个组织还负责<code>OpenGL API</code></p>
-<p><code>OpenSL ES</code>提供了低级别的音频硬件访问和低延迟特性来处理音频播放和录制. 虽然<code>Android</code>中其他音频API都有方便的Java API, 但是<code>OpenSL ES</code>目前仅支持在<code>Android NDK</code>中使用本地C代码访问.</p>
-<blockquote>
-<p><code>= =!!! 到这里能力受限, 无法实现出效果...所以此章抄书就此太监. 后续包括OpenGL 串联Surface用于视频MediaPlayer的渲染层或者相机处理把预览画面的流连接到纹理流, 并实施处理画面实现现实AR应用等.</code></p>
-</blockquote>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="http://yoursite.com/2017/09/12/android/books/《Android 编程实战》Chap8_高级音频,视频及相机应用/" data-id="cj7hnifdy001a6opjtajn6b8f" class="article-share-link"><i class="fa fa-share"></i>Share</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-        <a href="http://yoursite.com/2017/09/12/android/books/《Android 编程实战》Chap8_高级音频,视频及相机应用/#comments" class="article-comment-link">Comments</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
     <nav id="page-nav">
         <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
     </nav>
@@ -4498,6 +4789,15 @@
                     <li>
                         
                         <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/other/">other</a></p>
+                            <p class="item-title"><a href="/2017/09/20/other/github hexo 博客迁移 /" class="title">github hexo博客多电脑迁移</a></p>
+                            <p class="item-date"><time datetime="2017-09-20T09:58:30.000Z" itemprop="datePublished">2017-09-20</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
                             <p class="item-category"><a class="article-category-link" href="/categories/ssh/">ssh</a></p>
                             <p class="item-title"><a href="/2017/09/20/other/Gitlab权限说明/" class="title">Gitlab权限说明</a></p>
                             <p class="item-date"><time datetime="2017-09-20T09:54:25.000Z" itemprop="datePublished">2017-09-20</time></p>
@@ -4507,7 +4807,7 @@
                     <li>
                         
                         <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/glide/">glide</a></p>
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/github/">github</a></p>
                             <p class="item-title"><a href="/2017/09/20/android/github/glide解析5_图片变换/" class="title">Glide解析5_图片变换</a></p>
                             <p class="item-date"><time datetime="2017-09-20T08:53:48.000Z" itemprop="datePublished">2017-09-20</time></p>
                         </div>
@@ -4516,7 +4816,7 @@
                     <li>
                         
                         <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/glide/">glide</a></p>
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/github/">github</a></p>
                             <p class="item-title"><a href="/2017/09/20/android/github/glide解析4_回调监听/" class="title">Glide解析4_回调监听</a></p>
                             <p class="item-date"><time datetime="2017-09-20T08:46:52.000Z" itemprop="datePublished">2017-09-20</time></p>
                         </div>
@@ -4525,18 +4825,9 @@
                     <li>
                         
                         <div class="item-inner">
-                            <p class="item-category"></p>
-                            <p class="item-title"><a href="/2017/09/20/android/github/glide解析3_缓存流程/" class="title"></a></p>
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/github/">github</a></p>
+                            <p class="item-title"><a href="/2017/09/20/android/github/glide解析3_缓存流程/" class="title">Glide解析3_缓存流程</a></p>
                             <p class="item-date"><time datetime="2017-09-20T08:42:24.000Z" itemprop="datePublished">2017-09-20</time></p>
-                        </div>
-                    </li>
-                
-                    <li>
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/glide/">glide</a></p>
-                            <p class="item-title"><a href="/2017/09/20/android/github/glide解析2_执行流程/" class="title">Glide解析2_执行流程</a></p>
-                            <p class="item-date"><time datetime="2017-09-20T08:40:45.000Z" itemprop="datePublished">2017-09-20</time></p>
                         </div>
                     </li>
                 
@@ -4549,7 +4840,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">categories</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">43</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/glide/">glide</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/ssh/">ssh</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">2</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">44</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/ssh/">ssh</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -4567,7 +4858,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">tags</h3>
         <div class="widget">
-            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">37</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/">ssh</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">37</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/">ssh</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -4576,7 +4867,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">tag cloud</h3>
         <div class="widget tagcloud">
-            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 16.67px;">code</a> <a href="/tags/git/" style="font-size: 11.67px;">git</a> <a href="/tags/github/" style="font-size: 18.33px;">github</a> <a href="/tags/glide/" style="font-size: 15px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 13.33px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.67px;">markdown</a> <a href="/tags/mysql/" style="font-size: 16.67px;">mysql</a> <a href="/tags/node/" style="font-size: 18.33px;">node</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/ssh/" style="font-size: 11.67px;">ssh</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.67px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.67px;">设计模式</a>
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 15px;">code</a> <a href="/tags/git/" style="font-size: 11.67px;">git</a> <a href="/tags/github/" style="font-size: 18.33px;">github</a> <a href="/tags/glide/" style="font-size: 15px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 13.33px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.67px;">markdown</a> <a href="/tags/mysql/" style="font-size: 15px;">mysql</a> <a href="/tags/node/" style="font-size: 16.67px;">node</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/ssh/" style="font-size: 11.67px;">ssh</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.67px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.67px;">设计模式</a>
         </div>
     </div>
 

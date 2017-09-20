@@ -660,1114 +660,6 @@ function readGBKText(pathname) {
 
 
 
-    <article id="post-node/books/7days/05_process" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2016/03/23/node/books/7days/05_process/">七天学会NodeJS - 进程管理</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2016/03/23/node/books/7days/05_process/">
-            <time datetime="2016-03-22T22:06:34.000Z" itemprop="datePublished">2016-03-23</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/node/">node</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/node/7days/">7days</a>
-    </div>
-
-                        
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/node/">node</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <p>NodeJS可以感知和控制自身进程的运行环境和状态，也可以创建子进程并与其协同工作，这使得NodeJS可以把多个程序组合在一起共同完成某项工作，并在其中充当胶水和调度器的作用。本章除了介绍与之相关的NodeJS内置模块外，还会重点介绍典型的使用场景。</p>
-<h3 id="开门红"><a href="#开门红" class="headerlink" title="开门红"></a>开门红</h3><p>我们已经知道了NodeJS自带的<code>fs</code>模块比较基础，把一个目录里的所有文件和子目录都拷贝到另一个目录里需要写不少代码。另外我们也知道，终端下的<code>cp</code>命令比较好用，一条<code>cp -r source/* target</code>命令就能搞定目录拷贝。那我们首先看看如何使用NodeJS调用终端命令来简化目录拷贝，示例代码如下：</p>
-<pre><code>var child_process = require(&apos;child_process&apos;);
-var util = require(&apos;util&apos;);
-
-function copy(source, target, callback) {
-    child_process.exec(
-        util.format(&apos;cp -r %s/* %s&apos;, source, target), callback);
-}
-
-copy(&apos;a&apos;, &apos;b&apos;, function (err) {
-    // ...
-});
-</code></pre><p>从以上代码中可以看到，子进程是异步运行的，通过回调函数返回执行结果。</p>
-<h3 id="API走马观花"><a href="#API走马观花" class="headerlink" title="API走马观花"></a>API走马观花</h3><p>我们先大致看看NodeJS提供了哪些和进程管理有关的API。这里并不逐一介绍每个API的使用方法，官方文档已经做得很好了。</p>
-<h4 id="Process"><a href="#Process" class="headerlink" title="Process"></a>Process</h4><blockquote>
-<p>   <strong>官方文档： </strong> <a href="http://nodejs.org/api/process.html" target="_blank" rel="external">http://nodejs.org/api/process.html</a></p>
-</blockquote>
-<p>任何一个进程都有启动进程时使用的命令行参数，有标准输入标准输出，有运行权限，有运行环境和运行状态。在NodeJS中，可以通过<code>process</code>对象感知和控制NodeJS自身进程的方方面面。另外需要注意的是，<code>process</code>不是内置模块，而是一个全局对象，因此在任何地方都可以直接使用。</p>
-<h4 id="Child-Process"><a href="#Child-Process" class="headerlink" title="Child Process"></a>Child Process</h4><blockquote>
-<p>   <strong>官方文档： </strong> <a href="http://nodejs.org/api/child_process.html" target="_blank" rel="external">http://nodejs.org/api/child_process.html</a></p>
-</blockquote>
-<p>使用<code>child_process</code>模块可以创建和控制子进程。该模块提供的API中最核心的是<code>.spawn</code>，其余API都是针对特定使用场景对它的进一步封装，算是一种语法糖。</p>
-<h4 id="Cluster"><a href="#Cluster" class="headerlink" title="Cluster"></a>Cluster</h4><blockquote>
-<p>   <strong>官方文档： </strong> <a href="http://nodejs.org/api/cluster.html" target="_blank" rel="external">http://nodejs.org/api/cluster.html</a></p>
-</blockquote>
-<p><code>cluster</code>模块是对<code>child_process</code>模块的进一步封装，专用于解决单进程NodeJS Web服务器无法充分利用多核CPU的问题。使用该模块可以简化多进程服务器程序的开发，让每个核上运行一个工作进程，并统一通过主进程监听端口和分发请求。</p>
-<h3 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h3><p>和进程管理相关的API单独介绍起来比较枯燥，因此这里从一些典型的应用场景出发，分别介绍一些重要API的使用方法。</p>
-<h4 id="如何获取命令行参数"><a href="#如何获取命令行参数" class="headerlink" title="如何获取命令行参数"></a>如何获取命令行参数</h4><p>在NodeJS中可以通过<code>process.argv</code>获取命令行参数。但是比较意外的是，<code>node</code>执行程序路径和主模块文件路径固定占据了<code>argv[0]</code>和<code>argv[1]</code>两个位置，而第一个命令行参数从<code>argv[2]</code>开始。为了让<code>argv</code>使用起来更加自然，可以按照以下方式处理。</p>
-<pre><code>function main(argv) {
-    // ...
-}
-
-main(process.argv.slice(2));
-</code></pre><h4 id="如何退出程序"><a href="#如何退出程序" class="headerlink" title="如何退出程序"></a>如何退出程序</h4><p>通常一个程序做完所有事情后就正常退出了，这时程序的退出状态码为<code>0</code>。或者一个程序运行时发生了异常后就挂了，这时程序的退出状态码不等于<code>0</code>。如果我们在代码中捕获了某个异常，但是觉得程序不应该继续运行下去，需要立即退出，并且需要把退出状态码设置为指定数字，比如<code>1</code>，就可以按照以下方式：</p>
-<pre><code>try {
-    // ...
-} catch (err) {
-    // ...
-    process.exit(1);
-}
-</code></pre><h4 id="如何控制输入输出"><a href="#如何控制输入输出" class="headerlink" title="如何控制输入输出"></a>如何控制输入输出</h4><p>NodeJS程序的标准输入流（stdin）、一个标准输出流（stdout）、一个标准错误流（stderr）分别对应<code>process.stdin</code>、<code>process.stdout</code>和<code>process.stderr</code>，第一个是只读数据流，后边两个是只写数据流，对它们的操作按照对数据流的操作方式即可。例如，<code>console.log</code>可以按照以下方式实现。</p>
-<pre><code>function log() {
-    process.stdout.write(
-        util.format.apply(util, arguments) + &apos;\n&apos;);
-}
-</code></pre><h4 id="如何降权"><a href="#如何降权" class="headerlink" title="如何降权"></a>如何降权</h4><p>在Linux系统下，我们知道需要使用root权限才能监听1024以下端口。但是一旦完成端口监听后，继续让程序运行在root权限下存在安全隐患，因此最好能把权限降下来。以下是这样一个例子。</p>
-<pre><code>http.createServer(callback).listen(80, function () {
-    var env = process.env,
-        uid = parseInt(env[&apos;SUDO_UID&apos;] || process.getuid(), 10),
-        gid = parseInt(env[&apos;SUDO_GID&apos;] || process.getgid(), 10);
-
-    process.setgid(gid);
-    process.setuid(uid);
-});
-</code></pre><p>上例中有几点需要注意：</p>
-<ol>
-<li><p>如果是通过<code>sudo</code>获取root权限的，运行程序的用户的UID和GID保存在环境变量<code>SUDO_UID</code>和<code>SUDO_GID</code>里边。如果是通过<code>chmod +s</code>方式获取root权限的，运行程序的用户的UID和GID可直接通过<code>process.getuid</code>和<code>process.getgid</code>方法获取。</p>
-</li>
-<li><p><code>process.setuid</code>和<code>process.setgid</code>方法只接受<code>number</code>类型的参数。</p>
-</li>
-<li><p>降权时必须先降GID再降UID，否则顺序反过来的话就没权限更改程序的GID了。</p>
-</li>
-</ol>
-<h4 id="如何创建子进程"><a href="#如何创建子进程" class="headerlink" title="如何创建子进程"></a>如何创建子进程</h4><p>以下是一个创建NodeJS子进程的例子。</p>
-<pre><code>var child = child_process.spawn(&apos;node&apos;, [ &apos;xxx.js&apos; ]);
-
-child.stdout.on(&apos;data&apos;, function (data) {
-    console.log(&apos;stdout: &apos; + data);
-});
-
-child.stderr.on(&apos;data&apos;, function (data) {
-    console.log(&apos;stderr: &apos; + data);
-});
-
-child.on(&apos;close&apos;, function (code) {
-    console.log(&apos;child process exited with code &apos; + code);
-});
-</code></pre><p>上例中使用了<code>.spawn(exec, args, options)</code>方法，该方法支持三个参数。第一个参数是执行文件路径，可以是执行文件的相对或绝对路径，也可以是根据PATH环境变量能找到的执行文件名。第二个参数中，数组中的每个成员都按顺序对应一个命令行参数。第三个参数可选，用于配置子进程的执行环境与行为。</p>
-<p>另外，上例中虽然通过子进程对象的<code>.stdout</code>和<code>.stderr</code>访问子进程的输出，但通过<code>options.stdio</code>字段的不同配置，可以将子进程的输入输出重定向到任何数据流上，或者让子进程共享父进程的标准输入输出流，或者直接忽略子进程的输入输出。</p>
-<h4 id="进程间如何通讯"><a href="#进程间如何通讯" class="headerlink" title="进程间如何通讯"></a>进程间如何通讯</h4><p>在Linux系统下，进程之间可以通过信号互相通信。以下是一个例子。</p>
-<pre><code>/* parent.js */
-var child = child_process.spawn(&apos;node&apos;, [ &apos;child.js&apos; ]);
-
-child.kill(&apos;SIGTERM&apos;);
-
-/* child.js */
-process.on(&apos;SIGTERM&apos;, function () {
-    cleanUp();
-    process.exit(0);
-});
-</code></pre><p>在上例中，父进程通过<code>.kill</code>方法向子进程发送<code>SIGTERM</code>信号，子进程监听<code>process</code>对象的<code>SIGTERM</code>事件响应信号。不要被<code>.kill</code>方法的名称迷惑了，该方法本质上是用来给进程发送信号的，进程收到信号后具体要做啥，完全取决于信号的种类和进程自身的代码。</p>
-<p>另外，如果父子进程都是NodeJS进程，就可以通过IPC（进程间通讯）双向传递数据。以下是一个例子。</p>
-<pre><code>/* parent.js */
-var child = child_process.spawn(&apos;node&apos;, [ &apos;child.js&apos; ], {
-        stdio: [ 0, 1, 2, &apos;ipc&apos; ]
-    });
-
-child.on(&apos;message&apos;, function (msg) {
-    console.log(msg);
-});
-
-child.send({ hello: &apos;hello&apos; });
-
-/* child.js */
-process.on(&apos;message&apos;, function (msg) {
-    msg.hello = msg.hello.toUpperCase();
-    process.send(msg);
-});
-</code></pre><p>可以看到，父进程在创建子进程时，在<code>options.stdio</code>字段中通过<code>ipc</code>开启了一条IPC通道，之后就可以监听子进程对象的<code>message</code>事件接收来自子进程的消息，并通过<code>.send</code>方法给子进程发送消息。在子进程这边，可以在<code>process</code>对象上监听<code>message</code>事件接收来自父进程的消息，并通过<code>.send</code>方法向父进程发送消息。数据在传递过程中，会先在发送端使用<code>JSON.stringify</code>方法序列化，再在接收端使用<code>JSON.parse</code>方法反序列化。</p>
-<h4 id="如何守护子进程"><a href="#如何守护子进程" class="headerlink" title="如何守护子进程"></a>如何守护子进程</h4><p>守护进程一般用于监控工作进程的运行状态，在工作进程不正常退出时重启工作进程，保障工作进程不间断运行。以下是一种实现方式。</p>
-<pre><code>/* daemon.js */
-function spawn(mainModule) {
-    var worker = child_process.spawn(&apos;node&apos;, [ mainModule ]);
-
-    worker.on(&apos;exit&apos;, function (code) {
-        if (code !== 0) {
-            spawn(mainModule);
-        }
-    });
-}
-
-spawn(&apos;worker.js&apos;);
-</code></pre><p>可以看到，工作进程非正常退出时，守护进程立即重启工作进程。</p>
-<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>本章介绍了使用NodeJS管理进程时需要的API以及主要的应用场景，总结起来有以下几点：</p>
-<ul>
-<li><p>使用<code>process</code>对象管理自身。</p>
-</li>
-<li><p>使用<code>child_process</code>模块创建和管理子进程。</p>
-</li>
-</ul>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="http://yoursite.com/2016/03/23/node/books/7days/05_process/" data-id="cj76wnr9c0035enpj9y3wzgv0" class="article-share-link"><i class="fa fa-share"></i>Share</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-        <a href="http://yoursite.com/2016/03/23/node/books/7days/05_process/#comments" class="article-comment-link">Comments</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-node/books/7days/06_async_programming" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2016/03/23/node/books/7days/06_async_programming/">七天学会NodeJS - 异步编程</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2016/03/23/node/books/7days/06_async_programming/">
-            <time datetime="2016-03-22T22:06:34.000Z" itemprop="datePublished">2016-03-23</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/node/">node</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/node/7days/">7days</a>
-    </div>
-
-                        
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/node/">node</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <p>NodeJS最大的卖点——事件机制和异步IO，对开发者并不是透明的。开发者需要按异步方式编写代码才用得上这个卖点，而这一点也遭到了一些NodeJS反对者的抨击。但不管怎样，异步编程确实是NodeJS最大的特点，没有掌握异步编程就不能说是真正学会了NodeJS。本章将介绍与异步编程相关的各种知识。</p>
-<h3 id="回调"><a href="#回调" class="headerlink" title="回调"></a>回调</h3><p>在代码中，异步编程的直接体现就是回调。异步编程依托于回调来实现，但不能说使用了回调后程序就异步化了。我们首先可以看看以下代码。</p>
-<pre><code>function heavyCompute(n, callback) {
-    var count = 0,
-        i, j;
-
-    for (i = n; i &gt; 0; --i) {
-        for (j = n; j &gt; 0; --j) {
-            count += 1;
-        }
-    }
-
-    callback(count);
-}
-
-heavyCompute(10000, function (count) {
-    console.log(count);
-});
-
-console.log(&apos;hello&apos;);
-
--- Console ------------------------------
-100000000
-hello
-</code></pre><p>可以看到，以上代码中的回调函数仍然先于后续代码执行。JS本身是单线程运行的，不可能在一段代码还未结束运行时去运行别的代码，因此也就不存在异步执行的概念。</p>
-<p>但是，如果某个函数做的事情是创建一个别的线程或进程，并与JS主线程并行地做一些事情，并在事情做完后通知JS主线程，那情况又不一样了。我们接着看看以下代码。</p>
-<pre><code>setTimeout(function () {
-    console.log(&apos;world&apos;);
-}, 1000);
-
-console.log(&apos;hello&apos;);
-
--- Console ------------------------------
-hello
-world
-</code></pre><p>这次可以看到，回调函数后于后续代码执行了。如同上边所说，JS本身是单线程的，无法异步执行，因此我们可以认为<code>setTimeout</code>这类JS规范之外的由运行环境提供的特殊函数做的事情是创建一个平行线程后立即返回，让JS主进程可以接着执行后续代码，并在收到平行进程的通知后再执行回调函数。除了<code>setTimeout</code>、<code>setInterval</code>这些常见的，这类函数还包括NodeJS提供的诸如<code>fs.readFile</code>之类的异步API。</p>
-<p>另外，我们仍然回到JS是单线程运行的这个事实上，这决定了JS在执行完一段代码之前无法执行包括回调函数在内的别的代码。也就是说，即使平行线程完成工作了，通知JS主线程执行回调函数了，回调函数也要等到JS主线程空闲时才能开始执行。以下就是这么一个例子。</p>
-<pre><code>function heavyCompute(n) {
-    var count = 0,
-        i, j;
-
-    for (i = n; i &gt; 0; --i) {
-        for (j = n; j &gt; 0; --j) {
-            count += 1;
-        }
-    }
-}
-
-var t = new Date();
-
-setTimeout(function () {
-    console.log(new Date() - t);
-}, 1000);
-
-heavyCompute(50000);
-
--- Console ------------------------------
-8520
-</code></pre><p>可以看到，本来应该在1秒后被调用的回调函数因为JS主线程忙于运行其它代码，实际执行时间被大幅延迟。</p>
-<h3 id="代码设计模式"><a href="#代码设计模式" class="headerlink" title="代码设计模式"></a>代码设计模式</h3><p>异步编程有很多特有的代码设计模式，为了实现同样的功能，使用同步方式和异步方式编写的代码会有很大差异。以下分别介绍一些常见的模式。</p>
-<h4 id="函数返回值"><a href="#函数返回值" class="headerlink" title="函数返回值"></a>函数返回值</h4><p>使用一个函数的输出作为另一个函数的输入是很常见的需求，在同步方式下一般按以下方式编写代码：</p>
-<pre><code>var output = fn1(fn2(&apos;input&apos;));
-// Do something.
-</code></pre><p>而在异步方式下，由于函数执行结果不是通过返回值，而是通过回调函数传递，因此一般按以下方式编写代码：</p>
-<pre><code>fn2(&apos;input&apos;, function (output2) {
-    fn1(output2, function (output1) {
-        // Do something.
-    });
-});
-</code></pre><p>可以看到，这种方式就是一个回调函数套一个回调函多，套得太多了很容易写出<code>&gt;</code>形状的代码。</p>
-<h4 id="遍历数组"><a href="#遍历数组" class="headerlink" title="遍历数组"></a>遍历数组</h4><p>在遍历数组时，使用某个函数依次对数据成员做一些处理也是常见的需求。如果函数是同步执行的，一般就会写出以下代码：</p>
-<pre><code>var len = arr.length,
-    i = 0;
-
-for (; i &lt; len; ++i) {
-    arr[i] = sync(arr[i]);
-}
-
-// All array items have processed.
-</code></pre><p>如果函数是异步执行的，以上代码就无法保证循环结束后所有数组成员都处理完毕了。如果数组成员必须一个接一个串行处理，则一般按照以下方式编写异步代码：</p>
-<pre><code>(function next(i, len, callback) {
-    if (i &lt; len) {
-        async(arr[i], function (value) {
-            arr[i] = value;
-            next(i + 1, len, callback);
-        });
-    } else {
-        callback();
-    }
-}(0, arr.length, function () {
-    // All array items have processed.
-}));
-</code></pre><p>可以看到，以上代码在异步函数执行一次并返回执行结果后才传入下一个数组成员并开始下一轮执行，直到所有数组成员处理完毕后，通过回调的方式触发后续代码的执行。</p>
-<p>如果数组成员可以并行处理，但后续代码仍然需要所有数组成员处理完毕后才能执行的话，则异步代码会调整成以下形式：</p>
-<pre><code>(function (i, len, count, callback) {
-    for (; i &lt; len; ++i) {
-        (function (i) {
-            async(arr[i], function (value) {
-                arr[i] = value;
-                if (++count === len) {
-                    callback();
-                }
-            });
-        }(i));
-    }
-}(0, arr.length, 0, function () {
-    // All array items have processed.
-}));
-</code></pre><p>可以看到，与异步串行遍历的版本相比，以上代码并行处理所有数组成员，并通过计数器变量来判断什么时候所有数组成员都处理完毕了。</p>
-<h4 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h4><p>JS自身提供的异常捕获和处理机制——<code>try..catch..</code>，只能用于同步执行的代码。以下是一个例子。</p>
-<pre><code>function sync(fn) {
-    return fn();
-}
-
-try {
-    sync(null);
-    // Do something.
-} catch (err) {
-    console.log(&apos;Error: %s&apos;, err.message);
-}
-
--- Console ------------------------------
-Error: object is not a function
-</code></pre><p>可以看到，异常会沿着代码执行路径一直冒泡，直到遇到第一个<code>try</code>语句时被捕获住。但由于异步函数会打断代码执行路径，异步函数执行过程中以及执行之后产生的异常冒泡到执行路径被打断的位置时，如果一直没有遇到<code>try</code>语句，就作为一个全局异常抛出。以下是一个例子。</p>
-<pre><code>function async(fn, callback) {
-    // Code execution path breaks here.
-    setTimeout(function ()　{
-        callback(fn());
-    }, 0);
-}
-
-try {
-    async(null, function (data) {
-        // Do something.
-    });
-} catch (err) {
-    console.log(&apos;Error: %s&apos;, err.message);
-}
-
--- Console ------------------------------
-/home/user/test.js:4
-        callback(fn());
-                 ^
-TypeError: object is not a function
-    at null._onTimeout (/home/user/test.js:4:13)
-    at Timer.listOnTimeout [as ontimeout] (timers.js:110:15)
-</code></pre><p>因为代码执行路径被打断了，我们就需要在异常冒泡到断点之前用<code>try</code>语句把异常捕获住，并通过回调函数传递被捕获的异常。于是我们可以像下边这样改造上边的例子。</p>
-<pre><code>function async(fn, callback) {
-    // Code execution path breaks here.
-    setTimeout(function ()　{
-        try {
-            callback(null, fn());
-        } catch (err) {
-            callback(err);
-        }
-    }, 0);
-}
-
-async(null, function (err, data) {
-    if (err) {
-        console.log(&apos;Error: %s&apos;, err.message);
-    } else {
-        // Do something.
-    }
-});
-
--- Console ------------------------------
-Error: object is not a function
-</code></pre><p>可以看到，异常再次被捕获住了。在NodeJS中，几乎所有异步API都按照以上方式设计，回调函数中第一个参数都是<code>err</code>。因此我们在编写自己的异步函数时，也可以按照这种方式来处理异常，与NodeJS的设计风格保持一致。</p>
-<p>有了异常处理方式后，我们接着可以想一想一般我们是怎么写代码的。基本上，我们的代码都是做一些事情，然后调用一个函数，然后再做一些事情，然后再调用一个函数，如此循环。如果我们写的是同步代码，只需要在代码入口点写一个<code>try</code>语句就能捕获所有冒泡上来的异常，示例如下。</p>
-<pre><code>function main() {
-    // Do something.
-    syncA();
-    // Do something.
-    syncB();
-    // Do something.
-    syncC();
-}
-
-try {
-    main();
-} catch (err) {
-    // Deal with exception.
-}
-</code></pre><p>但是，如果我们写的是异步代码，就只有呵呵了。由于每次异步函数调用都会打断代码执行路径，只能通过回调函数来传递异常，于是我们就需要在每个回调函数里判断是否有异常发生，于是只用三次异步函数调用，就会产生下边这种代码。</p>
-<pre><code>function main(callback) {
-    // Do something.
-    asyncA(function (err, data) {
-        if (err) {
-            callback(err);
-        } else {
-            // Do something
-            asyncB(function (err, data) {
-                if (err) {
-                    callback(err);
-                } else {
-                    // Do something
-                    asyncC(function (err, data) {
-                        if (err) {
-                            callback(err);
-                        } else {
-                            // Do something
-                            callback(null);
-                        }
-                    });
-                }
-            });
-        }
-    });
-}
-
-main(function (err) {
-    if (err) {
-        // Deal with exception.
-    }
-});
-</code></pre><p>可以看到，回调函数已经让代码变得复杂了，而异步方式下对异常的处理更加剧了代码的复杂度。如果NodeJS的最大卖点最后变成这个样子，那就没人愿意用NodeJS了，因此接下来会介绍NodeJS提供的一些解决方案。</p>
-<h3 id="域（Domain）"><a href="#域（Domain）" class="headerlink" title="域（Domain）"></a>域（Domain）</h3><blockquote>
-<p>   <strong>官方文档： </strong> <a href="http://nodejs.org/api/domain.html" target="_blank" rel="external">http://nodejs.org/api/domain.html</a></p>
-</blockquote>
-<p>NodeJS提供了<code>domain</code>模块，可以简化异步代码的异常处理。在介绍该模块之前，我们需要首先理解“域”的概念。简单的讲，一个域就是一个JS运行环境，在一个运行环境中，如果一个异常没有被捕获，将作为一个全局异常被抛出。NodeJS通过<code>process</code>对象提供了捕获全局异常的方法，示例代码如下</p>
-<pre><code>process.on(&apos;uncaughtException&apos;, function (err) {
-    console.log(&apos;Error: %s&apos;, err.message);
-});
-
-setTimeout(function (fn) {
-    fn();
-});
-
--- Console ------------------------------
-Error: undefined is not a function
-</code></pre><p>虽然全局异常有个地方可以捕获了，但是对于大多数异常，我们希望尽早捕获，并根据结果决定代码的执行路径。我们用以下HTTP服务器代码作为例子：</p>
-<pre><code>function async(request, callback) {
-    // Do something.
-    asyncA(request, function (err, data) {
-        if (err) {
-            callback(err);
-        } else {
-            // Do something
-            asyncB(request, function (err, data) {
-                if (err) {
-                    callback(err);
-                } else {
-                    // Do something
-                    asyncC(request, function (err, data) {
-                        if (err) {
-                            callback(err);
-                        } else {
-                            // Do something
-                            callback(null, data);
-                        }
-                    });
-                }
-            });
-        }
-    });
-}
-
-http.createServer(function (request, response) {
-    async(request, function (err, data) {
-        if (err) {
-            response.writeHead(500);
-            response.end();
-        } else {
-            response.writeHead(200);
-            response.end(data);
-        }
-    });
-});
-</code></pre><p>以上代码将请求对象交给异步函数处理后，再根据处理结果返回响应。这里采用了使用回调函数传递异常的方案，因此<code>async</code>函数内部如果再多几个异步函数调用的话，代码就变成上边这副鬼样子了。为了让代码好看点，我们可以在每处理一个请求时，使用<code>domain</code>模块创建一个子域（JS子运行环境）。在子域内运行的代码可以随意抛出异常，而这些异常可以通过子域对象的<code>error</code>事件统一捕获。于是以上代码可以做如下改造：</p>
-<pre><code>function async(request, callback) {
-    // Do something.
-    asyncA(request, function (data) {
-        // Do something
-        asyncB(request, function (data) {
-            // Do something
-            asyncC(request, function (data) {
-                // Do something
-                callback(data);
-            });
-        });
-    });
-}
-
-http.createServer(function (request, response) {
-    var d = domain.create();
-
-    d.on(&apos;error&apos;, function () {
-        response.writeHead(500);
-        response.end();
-    });
-
-    d.run(function () {
-        async(request, function (data) {
-            response.writeHead(200);
-            response.end(data);
-        });
-    });
-});
-</code></pre><p>可以看到，我们使用<code>.create</code>方法创建了一个子域对象，并通过<code>.run</code>方法进入需要在子域中运行的代码的入口点。而位于子域中的异步函数回调函数由于不再需要捕获异常，代码一下子瘦身很多。</p>
-<h4 id="陷阱"><a href="#陷阱" class="headerlink" title="陷阱"></a>陷阱</h4><p>无论是通过<code>process</code>对象的<code>uncaughtException</code>事件捕获到全局异常，还是通过子域对象的<code>error</code>事件捕获到了子域异常，在NodeJS官方文档里都强烈建议处理完异常后立即重启程序，而不是让程序继续运行。按照官方文档的说法，发生异常后的程序处于一个不确定的运行状态，如果不立即退出的话，程序可能会发生严重内存泄漏，也可能表现得很奇怪。</p>
-<p>但这里需要澄清一些事实。JS本身的<code>throw..try..catch</code>异常处理机制并不会导致内存泄漏，也不会让程序的执行结果出乎意料，但NodeJS并不是存粹的JS。NodeJS里大量的API内部是用C/C++实现的，因此NodeJS程序的运行过程中，代码执行路径穿梭于JS引擎内部和外部，而JS的异常抛出机制可能会打断正常的代码执行流程，导致C/C++部分的代码表现异常，进而导致内存泄漏等问题。</p>
-<p>因此，使用<code>uncaughtException</code>或<code>domain</code>捕获异常，代码执行路径里涉及到了C/C++部分的代码时，如果不能确定是否会导致内存泄漏等问题，最好在处理完异常后重启程序比较妥当。而使用<code>try</code>语句捕获异常时一般捕获到的都是JS本身的异常，不用担心上诉问题。</p>
-<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>本章介绍了JS异步编程相关的知识，总结起来有以下几点：</p>
-<ul>
-<li><p>不掌握异步编程就不算学会NodeJS。</p>
-</li>
-<li><p>异步编程依托于回调来实现，而使用回调不一定就是异步编程。</p>
-</li>
-<li><p>异步编程下的函数间数据传递、数组遍历和异常处理与同步编程有很大差别。</p>
-</li>
-<li><p>使用<code>domain</code>模块简化异步代码的异常处理，并小心陷阱。</p>
-</li>
-</ul>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="http://yoursite.com/2016/03/23/node/books/7days/06_async_programming/" data-id="cj76wnr9q003uenpjd56qtv9b" class="article-share-link"><i class="fa fa-share"></i>Share</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-        <a href="http://yoursite.com/2016/03/23/node/books/7days/06_async_programming/#comments" class="article-comment-link">Comments</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-node/books/7days/07_example" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2016/03/23/node/books/7days/07_example/">七天学会NodeJS - 大示例</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2016/03/23/node/books/7days/07_example/">
-            <time datetime="2016-03-22T22:06:34.000Z" itemprop="datePublished">2016-03-23</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/node/">node</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/node/7days/">7days</a>
-    </div>
-
-                        
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/node/">node</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <p>学习讲究的是学以致用和融会贯通。至此我们已经分别介绍了NodeJS的很多知识点，本章作为最后一章，将完整地介绍一个使用NodeJS开发Web服务器的示例。</p>
-<h3 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h3><p>我们要开发的是一个简单的静态文件合并服务器，该服务器需要支持类似以下格式的JS或CSS文件合并请求。</p>
-<pre><code>http://assets.example.com/foo/??bar.js,baz.js
-</code></pre><p>在以上URL中，<code>??</code>是一个分隔符，之前是需要合并的多个文件的URL的公共部分，之后是使用<code>,</code>分隔的差异部分。因此服务器处理这个URL时，返回的是以下两个文件按顺序合并后的内容。</p>
-<pre><code>/foo/bar.js
-/foo/baz.js
-</code></pre><p>另外，服务器也需要能支持类似以下格式的普通的JS或CSS文件请求。</p>
-<pre><code>http://assets.example.com/foo/bar.js
-</code></pre><p>以上就是整个需求。</p>
-<h3 id="第一次迭代"><a href="#第一次迭代" class="headerlink" title="第一次迭代"></a>第一次迭代</h3><p>快速迭代是一种不错的开发方式，因此我们在第一次迭代时先实现服务器的基本功能。</p>
-<h4 id="设计"><a href="#设计" class="headerlink" title="设计"></a>设计</h4><p>简单分析了需求之后，我们大致会得到以下的设计方案。</p>
-<pre><code>           +---------+   +-----------+   +----------+
-request --&gt;|  parse  |--&gt;|  combine  |--&gt;|  output  |--&gt; response
-           +---------+   +-----------+   +----------+
-</code></pre><p>也就是说，服务器会首先分析URL，得到请求的文件的路径和类型（MIME）。然后，服务器会读取请求的文件，并按顺序合并文件内容。最后，服务器返回响应，完成对一次请求的处理。</p>
-<p>另外，服务器在读取文件时需要有个根目录，并且服务器监听的HTTP端口最好也不要写死在代码里，因此服务器需要是可配置的。</p>
-<h4 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h4><p>根据以上设计，我们写出了第一版代码如下。</p>
-<pre><code>var fs = require(&apos;fs&apos;),
-    path = require(&apos;path&apos;),
-    http = require(&apos;http&apos;);
-
-var MIME = {
-    &apos;.css&apos;: &apos;text/css&apos;,
-    &apos;.js&apos;: &apos;application/javascript&apos;
-};
-
-function combineFiles(pathnames, callback) {
-    var output = [];
-
-    (function next(i, len) {
-        if (i &lt; len) {
-            fs.readFile(pathnames[i], function (err, data) {
-                if (err) {
-                    callback(err);
-                } else {
-                    output.push(data);
-                    next(i + 1, len);
-                }
-            });
-        } else {
-            callback(null, Buffer.concat(output));
-        }
-    }(0, pathnames.length));
-}
-
-function main(argv) {
-    var config = JSON.parse(fs.readFileSync(argv[0], &apos;utf-8&apos;)),
-        root = config.root || &apos;.&apos;,
-        port = config.port || 80;
-
-    http.createServer(function (request, response) {
-        var urlInfo = parseURL(root, request.url);
-
-        combineFiles(urlInfo.pathnames, function (err, data) {
-            if (err) {
-                response.writeHead(404);
-                response.end(err.message);
-            } else {
-                response.writeHead(200, {
-                    &apos;Content-Type&apos;: urlInfo.mime
-                });
-                response.end(data);
-            }
-        });
-    }).listen(port);
-}
-
-function parseURL(root, url) {
-    var base, pathnames, parts;
-
-    if (url.indexOf(&apos;??&apos;) === -1) {
-        url = url.replace(&apos;/&apos;, &apos;/??&apos;);
-    }
-
-    parts = url.split(&apos;??&apos;);
-    base = parts[0];
-    pathnames = parts[1].split(&apos;,&apos;).map(function (value) {
-        return path.join(root, base, value);
-    });
-
-    return {
-        mime: MIME[path.extname(pathnames[0])] || &apos;text/plain&apos;,
-        pathnames: pathnames
-    };
-}
-
-main(process.argv.slice(2));
-</code></pre><p>以上代码完整实现了服务器所需的功能，并且有以下几点值得注意：</p>
-<ol>
-<li><p>使用命令行参数传递JSON配置文件路径，入口函数负责读取配置并创建服务器。</p>
-</li>
-<li><p>入口函数完整描述了程序的运行逻辑，其中解析URL和合并文件的具体实现封装在其它两个函数里。</p>
-</li>
-<li><p>解析URL时先将普通URL转换为了文件合并URL，使得两种URL的处理方式可以一致。</p>
-</li>
-<li><p>合并文件时使用异步API读取文件，避免服务器因等待磁盘IO而发生阻塞。</p>
-</li>
-</ol>
-<p>我们可以把以上代码保存为<code>server.js</code>，之后就可以通过<code>node server.js config.json</code>命令启动程序，于是我们的第一版静态文件合并服务器就顺利完工了。</p>
-<p>另外，以上代码存在一个不那么明显的逻辑缺陷。例如，使用以下URL请求服务器时会有惊喜。</p>
-<pre><code>http://assets.example.com/foo/bar.js,foo/baz.js
-</code></pre><p>经过分析之后我们会发现问题出在<code>/</code>被自动替换<code>/??</code>这个行为上，而这个问题我们可以到第二次迭代时再解决。</p>
-<h3 id="第二次迭代"><a href="#第二次迭代" class="headerlink" title="第二次迭代"></a>第二次迭代</h3><p>在第一次迭代之后，我们已经有了一个可工作的版本，满足了功能需求。接下来我们需要从性能的角度出发，看看代码还有哪些改进余地。</p>
-<h4 id="设计-1"><a href="#设计-1" class="headerlink" title="设计"></a>设计</h4><p>把<code>map</code>方法换成<code>for</code>循环或许会更快一些，但第一版代码最大的性能问题存在于从读取文件到输出响应的过程当中。我们以处理<code>/??a.js,b.js,c.js</code>这个请求为例，看看整个处理过程中耗时在哪儿。</p>
-<pre><code> 发送请求       等待服务端响应         接收响应
----------+----------------------+-------------&gt;
-         --                                        解析请求
-           ------                                  读取a.js
-                 ------                            读取b.js
-                       ------                      读取c.js
-                             --                    合并数据
-                               --                  输出响应
-</code></pre><p>可以看到，第一版代码依次把请求的文件读取到内存中之后，再合并数据和输出响应。这会导致以下两个问题：</p>
-<ol>
-<li><p>当请求的文件比较多比较大时，串行读取文件会比较耗时，从而拉长了服务端响应等待时间。</p>
-</li>
-<li><p>由于每次响应输出的数据都需要先完整地缓存在内存里，当服务器请求并发数较大时，会有较大的内存开销。</p>
-</li>
-</ol>
-<p>对于第一个问题，很容易想到把读取文件的方式从串行改为并行。但是别这样做，因为对于机械磁盘而言，因为只有一个磁头，尝试并行读取文件只会造成磁头频繁抖动，反而降低IO效率。而对于固态硬盘，虽然的确存在多个并行IO通道，但是对于服务器并行处理的多个请求而言，硬盘已经在做并行IO了，对单个请求采用并行IO无异于拆东墙补西墙。因此，正确的做法不是改用并行IO，而是一边读取文件一边输出响应，把响应输出时机提前至读取第一个文件的时刻。这样调整后，整个请求处理过程变成下边这样。</p>
-<pre><code>发送请求 等待服务端响应 接收响应
----------+----+-------------------------------&gt;
-         --                                        解析请求
-           --                                      检查文件是否存在
-             --                                    输出响应头
-               ------                              读取和输出a.js
-                     ------                        读取和输出b.js
-                           ------                  读取和输出c.js
-</code></pre><p>按上述方式解决第一个问题后，因为服务器不需要完整地缓存每个请求的输出数据了，第二个问题也迎刃而解。</p>
-<h4 id="实现-1"><a href="#实现-1" class="headerlink" title="实现"></a>实现</h4><p>根据以上设计，第二版代码按以下方式调整了部分函数。</p>
-<pre><code>function main(argv) {
-    var config = JSON.parse(fs.readFileSync(argv[0], &apos;utf-8&apos;)),
-        root = config.root || &apos;.&apos;,
-        port = config.port || 80;
-
-    http.createServer(function (request, response) {
-        var urlInfo = parseURL(root, request.url);
-
-        validateFiles(urlInfo.pathnames, function (err, pathnames) {
-            if (err) {
-                response.writeHead(404);
-                response.end(err.message);
-            } else {
-                response.writeHead(200, {
-                    &apos;Content-Type&apos;: urlInfo.mime
-                });
-                outputFiles(pathnames, response);
-            }
-        });
-    }).listen(port);
-}
-
-function outputFiles(pathnames, writer) {
-    (function next(i, len) {
-        if (i &lt; len) {
-            var reader = fs.createReadStream(pathnames[i]);
-
-            reader.pipe(writer, { end: false });
-            reader.on(&apos;end&apos;, function() {
-                next(i + 1, len);
-            });
-        } else {
-            writer.end();
-        }
-    }(0, pathnames.length));
-}
-
-function validateFiles(pathnames, callback) {
-    (function next(i, len) {
-        if (i &lt; len) {
-            fs.stat(pathnames[i], function (err, stats) {
-                if (err) {
-                    callback(err);
-                } else if (!stats.isFile()) {
-                    callback(new Error());
-                } else {
-                    next(i + 1, len);
-                }
-            });
-        } else {
-            callback(null, pathnames);
-        }
-    }(0, pathnames.length));
-}
-</code></pre><p>可以看到，第二版代码在检查了请求的所有文件是否有效之后，立即就输出了响应头，并接着一边按顺序读取文件一边输出响应内容。并且，在读取文件时，第二版代码直接使用了只读数据流来简化代码。</p>
-<h3 id="第三次迭代"><a href="#第三次迭代" class="headerlink" title="第三次迭代"></a>第三次迭代</h3><p>第二次迭代之后，服务器本身的功能和性能已经得到了初步满足。接下来我们需要从稳定性的角度重新审视一下代码，看看还需要做些什么。</p>
-<h4 id="设计-2"><a href="#设计-2" class="headerlink" title="设计"></a>设计</h4><p>从工程角度上讲，没有绝对可靠的系统。即使第二次迭代的代码经过反复检查后能确保没有bug，也很难说是否会因为NodeJS本身，或者是操作系统本身，甚至是硬件本身导致我们的服务器程序在某一天挂掉。因此一般生产环境下的服务器程序都配有一个守护进程，在服务挂掉的时候立即重启服务。一般守护进程的代码会远比服务进程的代码简单，从概率上可以保证守护进程更难挂掉。如果再做得严谨一些，甚至守护进程自身可以在自己挂掉时重启自己，从而实现双保险。</p>
-<p>因此在本次迭代时，我们先利用NodeJS的进程管理机制，将守护进程作为父进程，将服务器程序作为子进程，并让父进程监控子进程的运行状态，在其异常退出时重启子进程。</p>
-<h4 id="实现-2"><a href="#实现-2" class="headerlink" title="实现"></a>实现</h4><p>根据以上设计，我们编写了守护进程需要的代码。</p>
-<pre><code>var cp = require(&apos;child_process&apos;);
-
-var worker;
-
-function spawn(server, config) {
-    worker = cp.spawn(&apos;node&apos;, [ server, config ]);
-    worker.on(&apos;exit&apos;, function (code) {
-        if (code !== 0) {
-            spawn(server, config);
-        }
-    });
-}
-
-function main(argv) {
-    spawn(&apos;server.js&apos;, argv[0]);
-    process.on(&apos;SIGTERM&apos;, function () {
-        worker.kill();
-        process.exit(0);
-    });
-}
-
-main(process.argv.slice(2));
-</code></pre><p>此外，服务器代码本身的入口函数也要做以下调整。</p>
-<pre><code>function main(argv) {
-    var config = JSON.parse(fs.readFileSync(argv[0], &apos;utf-8&apos;)),
-        root = config.root || &apos;.&apos;,
-        port = config.port || 80,
-        server;
-
-    server = http.createServer(function (request, response) {
-        ...
-    }).listen(port);
-
-    process.on(&apos;SIGTERM&apos;, function () {
-        server.close(function () {
-            process.exit(0);
-        });
-    });
-}
-</code></pre><p>我们可以把守护进程的代码保存为<code>daemon.js</code>，之后我们可以通过<code>node daemon.js config.json</code>启动服务，而守护进程会进一步启动和监控服务器进程。此外，为了能够正常终止服务，我们让守护进程在接收到<code>SIGTERM</code>信号时终止服务器进程。而在服务器进程这一端，同样在收到<code>SIGTERM</code>信号时先停掉HTTP服务再正常退出。至此，我们的服务器程序就靠谱很多了。</p>
-<h3 id="第四次迭代"><a href="#第四次迭代" class="headerlink" title="第四次迭代"></a>第四次迭代</h3><p>在我们解决了服务器本身的功能、性能和可靠性的问题后，接着我们需要考虑一下代码部署的问题，以及服务器控制的问题。</p>
-<h4 id="设计-3"><a href="#设计-3" class="headerlink" title="设计"></a>设计</h4><p>一般而言，程序在服务器上有一个固定的部署目录，每次程序有更新后，都重新发布到部署目录里。而一旦完成部署后，一般也可以通过固定的服务控制脚本启动和停止服务。因此我们的服务器程序部署目录可以做如下设计。</p>
-<pre><code>- deploy/
-    - bin/
-        startws.sh
-        killws.sh
-    + conf/
-        config.json
-    + lib/
-        daemon.js
-        server.js
-</code></pre><p>在以上目录结构中，我们分类存放了服务控制脚本、配置文件和服务器代码。</p>
-<h4 id="实现-3"><a href="#实现-3" class="headerlink" title="实现"></a>实现</h4><p>按以上目录结构分别存放对应的文件之后，接下来我们看看控制脚本怎么写。首先是<code>start.sh</code>。</p>
-<pre><code>#!/bin/sh
-if [ ! -f &quot;pid&quot; ]
-then
-    node ../lib/daemon.js ../conf/config.json &amp;
-    echo $! &gt; pid
-fi
-</code></pre><p>然后是<code>killws.sh</code>。</p>
-<pre><code>#!/bin/sh
-if [ -f &quot;pid&quot; ]
-then
-    kill $(tr -d &apos;\r\n&apos; &lt; pid)
-    rm pid
-fi
-</code></pre><p>于是这样我们就有了一个简单的代码部署目录和服务控制脚本，我们的服务器程序就可以上线工作了。</p>
-<h3 id="后续迭代"><a href="#后续迭代" class="headerlink" title="后续迭代"></a>后续迭代</h3><p>我们的服务器程序正式上线工作后，我们接下来或许会发现还有很多可以改进的点。比如服务器程序在合并JS文件时可以自动在JS文件之间插入一个<code>;</code>来避免一些语法问题，比如服务器程序需要提供日志来统计访问量，比如服务器程序需要能充分利用多核CPU，等等。而此时的你，在学习了这么久NodeJS之后，应该已经知道该怎么做了。</p>
-<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>本章将之前零散介绍的知识点串了起来，完整地演示了一个使用NodeJS开发程序的例子，至此我们的课程就全部结束了。以下是对新诞生的NodeJSer的一些建议。</p>
-<ul>
-<li><p>要熟悉官方API文档。并不是说要熟悉到能记住每个API的名称和用法，而是要熟悉NodeJS提供了哪些功能，一旦需要时知道查询API文档的哪块地方。</p>
-</li>
-<li><p>要先设计再实现。在开发一个程序前首先要有一个全局的设计，不一定要很周全，但要足够能写出一些代码。</p>
-</li>
-<li><p>要实现后再设计。在写了一些代码，有了一些具体的东西后，一定会发现一些之前忽略掉的细节。这时再反过来改进之前的设计，为第二轮迭代做准备。</p>
-</li>
-<li><p>要充分利用三方包。NodeJS有一个庞大的生态圈，在写代码之前先看看有没有现成的三方包能节省不少时间。</p>
-</li>
-<li><p>不要迷信三方包。任何事情做过头了就不好了，三方包也是一样。三方包是一个黑盒，每多使用一个三方包，就为程序增加了一份潜在风险。并且三方包很难恰好只提供程序需要的功能，每多使用一个三方包，就让程序更加臃肿一些。因此在决定使用某个三方包之前，最好三思而后行。</p>
-</li>
-</ul>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="http://yoursite.com/2016/03/23/node/books/7days/07_example/" data-id="cj76wnr9q003venpjfavx2lo4" class="article-share-link"><i class="fa fa-share"></i>Share</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-        <a href="http://yoursite.com/2016/03/23/node/books/7days/07_example/#comments" class="article-comment-link">Comments</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
     <article id="post-node/books/7days/04_network" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
@@ -2254,6 +1146,1114 @@ client.on(&apos;data&apos;, function (data) {
 
 
 
+    <article id="post-node/books/7days/05_process" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2016/03/23/node/books/7days/05_process/">七天学会NodeJS - 进程管理</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2016/03/23/node/books/7days/05_process/">
+            <time datetime="2016-03-22T22:06:34.000Z" itemprop="datePublished">2016-03-23</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/node/">node</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/node/7days/">7days</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/node/">node</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>NodeJS可以感知和控制自身进程的运行环境和状态，也可以创建子进程并与其协同工作，这使得NodeJS可以把多个程序组合在一起共同完成某项工作，并在其中充当胶水和调度器的作用。本章除了介绍与之相关的NodeJS内置模块外，还会重点介绍典型的使用场景。</p>
+<h3 id="开门红"><a href="#开门红" class="headerlink" title="开门红"></a>开门红</h3><p>我们已经知道了NodeJS自带的<code>fs</code>模块比较基础，把一个目录里的所有文件和子目录都拷贝到另一个目录里需要写不少代码。另外我们也知道，终端下的<code>cp</code>命令比较好用，一条<code>cp -r source/* target</code>命令就能搞定目录拷贝。那我们首先看看如何使用NodeJS调用终端命令来简化目录拷贝，示例代码如下：</p>
+<pre><code>var child_process = require(&apos;child_process&apos;);
+var util = require(&apos;util&apos;);
+
+function copy(source, target, callback) {
+    child_process.exec(
+        util.format(&apos;cp -r %s/* %s&apos;, source, target), callback);
+}
+
+copy(&apos;a&apos;, &apos;b&apos;, function (err) {
+    // ...
+});
+</code></pre><p>从以上代码中可以看到，子进程是异步运行的，通过回调函数返回执行结果。</p>
+<h3 id="API走马观花"><a href="#API走马观花" class="headerlink" title="API走马观花"></a>API走马观花</h3><p>我们先大致看看NodeJS提供了哪些和进程管理有关的API。这里并不逐一介绍每个API的使用方法，官方文档已经做得很好了。</p>
+<h4 id="Process"><a href="#Process" class="headerlink" title="Process"></a>Process</h4><blockquote>
+<p>   <strong>官方文档： </strong> <a href="http://nodejs.org/api/process.html" target="_blank" rel="external">http://nodejs.org/api/process.html</a></p>
+</blockquote>
+<p>任何一个进程都有启动进程时使用的命令行参数，有标准输入标准输出，有运行权限，有运行环境和运行状态。在NodeJS中，可以通过<code>process</code>对象感知和控制NodeJS自身进程的方方面面。另外需要注意的是，<code>process</code>不是内置模块，而是一个全局对象，因此在任何地方都可以直接使用。</p>
+<h4 id="Child-Process"><a href="#Child-Process" class="headerlink" title="Child Process"></a>Child Process</h4><blockquote>
+<p>   <strong>官方文档： </strong> <a href="http://nodejs.org/api/child_process.html" target="_blank" rel="external">http://nodejs.org/api/child_process.html</a></p>
+</blockquote>
+<p>使用<code>child_process</code>模块可以创建和控制子进程。该模块提供的API中最核心的是<code>.spawn</code>，其余API都是针对特定使用场景对它的进一步封装，算是一种语法糖。</p>
+<h4 id="Cluster"><a href="#Cluster" class="headerlink" title="Cluster"></a>Cluster</h4><blockquote>
+<p>   <strong>官方文档： </strong> <a href="http://nodejs.org/api/cluster.html" target="_blank" rel="external">http://nodejs.org/api/cluster.html</a></p>
+</blockquote>
+<p><code>cluster</code>模块是对<code>child_process</code>模块的进一步封装，专用于解决单进程NodeJS Web服务器无法充分利用多核CPU的问题。使用该模块可以简化多进程服务器程序的开发，让每个核上运行一个工作进程，并统一通过主进程监听端口和分发请求。</p>
+<h3 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h3><p>和进程管理相关的API单独介绍起来比较枯燥，因此这里从一些典型的应用场景出发，分别介绍一些重要API的使用方法。</p>
+<h4 id="如何获取命令行参数"><a href="#如何获取命令行参数" class="headerlink" title="如何获取命令行参数"></a>如何获取命令行参数</h4><p>在NodeJS中可以通过<code>process.argv</code>获取命令行参数。但是比较意外的是，<code>node</code>执行程序路径和主模块文件路径固定占据了<code>argv[0]</code>和<code>argv[1]</code>两个位置，而第一个命令行参数从<code>argv[2]</code>开始。为了让<code>argv</code>使用起来更加自然，可以按照以下方式处理。</p>
+<pre><code>function main(argv) {
+    // ...
+}
+
+main(process.argv.slice(2));
+</code></pre><h4 id="如何退出程序"><a href="#如何退出程序" class="headerlink" title="如何退出程序"></a>如何退出程序</h4><p>通常一个程序做完所有事情后就正常退出了，这时程序的退出状态码为<code>0</code>。或者一个程序运行时发生了异常后就挂了，这时程序的退出状态码不等于<code>0</code>。如果我们在代码中捕获了某个异常，但是觉得程序不应该继续运行下去，需要立即退出，并且需要把退出状态码设置为指定数字，比如<code>1</code>，就可以按照以下方式：</p>
+<pre><code>try {
+    // ...
+} catch (err) {
+    // ...
+    process.exit(1);
+}
+</code></pre><h4 id="如何控制输入输出"><a href="#如何控制输入输出" class="headerlink" title="如何控制输入输出"></a>如何控制输入输出</h4><p>NodeJS程序的标准输入流（stdin）、一个标准输出流（stdout）、一个标准错误流（stderr）分别对应<code>process.stdin</code>、<code>process.stdout</code>和<code>process.stderr</code>，第一个是只读数据流，后边两个是只写数据流，对它们的操作按照对数据流的操作方式即可。例如，<code>console.log</code>可以按照以下方式实现。</p>
+<pre><code>function log() {
+    process.stdout.write(
+        util.format.apply(util, arguments) + &apos;\n&apos;);
+}
+</code></pre><h4 id="如何降权"><a href="#如何降权" class="headerlink" title="如何降权"></a>如何降权</h4><p>在Linux系统下，我们知道需要使用root权限才能监听1024以下端口。但是一旦完成端口监听后，继续让程序运行在root权限下存在安全隐患，因此最好能把权限降下来。以下是这样一个例子。</p>
+<pre><code>http.createServer(callback).listen(80, function () {
+    var env = process.env,
+        uid = parseInt(env[&apos;SUDO_UID&apos;] || process.getuid(), 10),
+        gid = parseInt(env[&apos;SUDO_GID&apos;] || process.getgid(), 10);
+
+    process.setgid(gid);
+    process.setuid(uid);
+});
+</code></pre><p>上例中有几点需要注意：</p>
+<ol>
+<li><p>如果是通过<code>sudo</code>获取root权限的，运行程序的用户的UID和GID保存在环境变量<code>SUDO_UID</code>和<code>SUDO_GID</code>里边。如果是通过<code>chmod +s</code>方式获取root权限的，运行程序的用户的UID和GID可直接通过<code>process.getuid</code>和<code>process.getgid</code>方法获取。</p>
+</li>
+<li><p><code>process.setuid</code>和<code>process.setgid</code>方法只接受<code>number</code>类型的参数。</p>
+</li>
+<li><p>降权时必须先降GID再降UID，否则顺序反过来的话就没权限更改程序的GID了。</p>
+</li>
+</ol>
+<h4 id="如何创建子进程"><a href="#如何创建子进程" class="headerlink" title="如何创建子进程"></a>如何创建子进程</h4><p>以下是一个创建NodeJS子进程的例子。</p>
+<pre><code>var child = child_process.spawn(&apos;node&apos;, [ &apos;xxx.js&apos; ]);
+
+child.stdout.on(&apos;data&apos;, function (data) {
+    console.log(&apos;stdout: &apos; + data);
+});
+
+child.stderr.on(&apos;data&apos;, function (data) {
+    console.log(&apos;stderr: &apos; + data);
+});
+
+child.on(&apos;close&apos;, function (code) {
+    console.log(&apos;child process exited with code &apos; + code);
+});
+</code></pre><p>上例中使用了<code>.spawn(exec, args, options)</code>方法，该方法支持三个参数。第一个参数是执行文件路径，可以是执行文件的相对或绝对路径，也可以是根据PATH环境变量能找到的执行文件名。第二个参数中，数组中的每个成员都按顺序对应一个命令行参数。第三个参数可选，用于配置子进程的执行环境与行为。</p>
+<p>另外，上例中虽然通过子进程对象的<code>.stdout</code>和<code>.stderr</code>访问子进程的输出，但通过<code>options.stdio</code>字段的不同配置，可以将子进程的输入输出重定向到任何数据流上，或者让子进程共享父进程的标准输入输出流，或者直接忽略子进程的输入输出。</p>
+<h4 id="进程间如何通讯"><a href="#进程间如何通讯" class="headerlink" title="进程间如何通讯"></a>进程间如何通讯</h4><p>在Linux系统下，进程之间可以通过信号互相通信。以下是一个例子。</p>
+<pre><code>/* parent.js */
+var child = child_process.spawn(&apos;node&apos;, [ &apos;child.js&apos; ]);
+
+child.kill(&apos;SIGTERM&apos;);
+
+/* child.js */
+process.on(&apos;SIGTERM&apos;, function () {
+    cleanUp();
+    process.exit(0);
+});
+</code></pre><p>在上例中，父进程通过<code>.kill</code>方法向子进程发送<code>SIGTERM</code>信号，子进程监听<code>process</code>对象的<code>SIGTERM</code>事件响应信号。不要被<code>.kill</code>方法的名称迷惑了，该方法本质上是用来给进程发送信号的，进程收到信号后具体要做啥，完全取决于信号的种类和进程自身的代码。</p>
+<p>另外，如果父子进程都是NodeJS进程，就可以通过IPC（进程间通讯）双向传递数据。以下是一个例子。</p>
+<pre><code>/* parent.js */
+var child = child_process.spawn(&apos;node&apos;, [ &apos;child.js&apos; ], {
+        stdio: [ 0, 1, 2, &apos;ipc&apos; ]
+    });
+
+child.on(&apos;message&apos;, function (msg) {
+    console.log(msg);
+});
+
+child.send({ hello: &apos;hello&apos; });
+
+/* child.js */
+process.on(&apos;message&apos;, function (msg) {
+    msg.hello = msg.hello.toUpperCase();
+    process.send(msg);
+});
+</code></pre><p>可以看到，父进程在创建子进程时，在<code>options.stdio</code>字段中通过<code>ipc</code>开启了一条IPC通道，之后就可以监听子进程对象的<code>message</code>事件接收来自子进程的消息，并通过<code>.send</code>方法给子进程发送消息。在子进程这边，可以在<code>process</code>对象上监听<code>message</code>事件接收来自父进程的消息，并通过<code>.send</code>方法向父进程发送消息。数据在传递过程中，会先在发送端使用<code>JSON.stringify</code>方法序列化，再在接收端使用<code>JSON.parse</code>方法反序列化。</p>
+<h4 id="如何守护子进程"><a href="#如何守护子进程" class="headerlink" title="如何守护子进程"></a>如何守护子进程</h4><p>守护进程一般用于监控工作进程的运行状态，在工作进程不正常退出时重启工作进程，保障工作进程不间断运行。以下是一种实现方式。</p>
+<pre><code>/* daemon.js */
+function spawn(mainModule) {
+    var worker = child_process.spawn(&apos;node&apos;, [ mainModule ]);
+
+    worker.on(&apos;exit&apos;, function (code) {
+        if (code !== 0) {
+            spawn(mainModule);
+        }
+    });
+}
+
+spawn(&apos;worker.js&apos;);
+</code></pre><p>可以看到，工作进程非正常退出时，守护进程立即重启工作进程。</p>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>本章介绍了使用NodeJS管理进程时需要的API以及主要的应用场景，总结起来有以下几点：</p>
+<ul>
+<li><p>使用<code>process</code>对象管理自身。</p>
+</li>
+<li><p>使用<code>child_process</code>模块创建和管理子进程。</p>
+</li>
+</ul>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2016/03/23/node/books/7days/05_process/" data-id="cj76wnr9c0035enpj9y3wzgv0" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2016/03/23/node/books/7days/05_process/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-node/books/7days/07_example" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2016/03/23/node/books/7days/07_example/">七天学会NodeJS - 大示例</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2016/03/23/node/books/7days/07_example/">
+            <time datetime="2016-03-22T22:06:34.000Z" itemprop="datePublished">2016-03-23</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/node/">node</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/node/7days/">7days</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/node/">node</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>学习讲究的是学以致用和融会贯通。至此我们已经分别介绍了NodeJS的很多知识点，本章作为最后一章，将完整地介绍一个使用NodeJS开发Web服务器的示例。</p>
+<h3 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h3><p>我们要开发的是一个简单的静态文件合并服务器，该服务器需要支持类似以下格式的JS或CSS文件合并请求。</p>
+<pre><code>http://assets.example.com/foo/??bar.js,baz.js
+</code></pre><p>在以上URL中，<code>??</code>是一个分隔符，之前是需要合并的多个文件的URL的公共部分，之后是使用<code>,</code>分隔的差异部分。因此服务器处理这个URL时，返回的是以下两个文件按顺序合并后的内容。</p>
+<pre><code>/foo/bar.js
+/foo/baz.js
+</code></pre><p>另外，服务器也需要能支持类似以下格式的普通的JS或CSS文件请求。</p>
+<pre><code>http://assets.example.com/foo/bar.js
+</code></pre><p>以上就是整个需求。</p>
+<h3 id="第一次迭代"><a href="#第一次迭代" class="headerlink" title="第一次迭代"></a>第一次迭代</h3><p>快速迭代是一种不错的开发方式，因此我们在第一次迭代时先实现服务器的基本功能。</p>
+<h4 id="设计"><a href="#设计" class="headerlink" title="设计"></a>设计</h4><p>简单分析了需求之后，我们大致会得到以下的设计方案。</p>
+<pre><code>           +---------+   +-----------+   +----------+
+request --&gt;|  parse  |--&gt;|  combine  |--&gt;|  output  |--&gt; response
+           +---------+   +-----------+   +----------+
+</code></pre><p>也就是说，服务器会首先分析URL，得到请求的文件的路径和类型（MIME）。然后，服务器会读取请求的文件，并按顺序合并文件内容。最后，服务器返回响应，完成对一次请求的处理。</p>
+<p>另外，服务器在读取文件时需要有个根目录，并且服务器监听的HTTP端口最好也不要写死在代码里，因此服务器需要是可配置的。</p>
+<h4 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h4><p>根据以上设计，我们写出了第一版代码如下。</p>
+<pre><code>var fs = require(&apos;fs&apos;),
+    path = require(&apos;path&apos;),
+    http = require(&apos;http&apos;);
+
+var MIME = {
+    &apos;.css&apos;: &apos;text/css&apos;,
+    &apos;.js&apos;: &apos;application/javascript&apos;
+};
+
+function combineFiles(pathnames, callback) {
+    var output = [];
+
+    (function next(i, len) {
+        if (i &lt; len) {
+            fs.readFile(pathnames[i], function (err, data) {
+                if (err) {
+                    callback(err);
+                } else {
+                    output.push(data);
+                    next(i + 1, len);
+                }
+            });
+        } else {
+            callback(null, Buffer.concat(output));
+        }
+    }(0, pathnames.length));
+}
+
+function main(argv) {
+    var config = JSON.parse(fs.readFileSync(argv[0], &apos;utf-8&apos;)),
+        root = config.root || &apos;.&apos;,
+        port = config.port || 80;
+
+    http.createServer(function (request, response) {
+        var urlInfo = parseURL(root, request.url);
+
+        combineFiles(urlInfo.pathnames, function (err, data) {
+            if (err) {
+                response.writeHead(404);
+                response.end(err.message);
+            } else {
+                response.writeHead(200, {
+                    &apos;Content-Type&apos;: urlInfo.mime
+                });
+                response.end(data);
+            }
+        });
+    }).listen(port);
+}
+
+function parseURL(root, url) {
+    var base, pathnames, parts;
+
+    if (url.indexOf(&apos;??&apos;) === -1) {
+        url = url.replace(&apos;/&apos;, &apos;/??&apos;);
+    }
+
+    parts = url.split(&apos;??&apos;);
+    base = parts[0];
+    pathnames = parts[1].split(&apos;,&apos;).map(function (value) {
+        return path.join(root, base, value);
+    });
+
+    return {
+        mime: MIME[path.extname(pathnames[0])] || &apos;text/plain&apos;,
+        pathnames: pathnames
+    };
+}
+
+main(process.argv.slice(2));
+</code></pre><p>以上代码完整实现了服务器所需的功能，并且有以下几点值得注意：</p>
+<ol>
+<li><p>使用命令行参数传递JSON配置文件路径，入口函数负责读取配置并创建服务器。</p>
+</li>
+<li><p>入口函数完整描述了程序的运行逻辑，其中解析URL和合并文件的具体实现封装在其它两个函数里。</p>
+</li>
+<li><p>解析URL时先将普通URL转换为了文件合并URL，使得两种URL的处理方式可以一致。</p>
+</li>
+<li><p>合并文件时使用异步API读取文件，避免服务器因等待磁盘IO而发生阻塞。</p>
+</li>
+</ol>
+<p>我们可以把以上代码保存为<code>server.js</code>，之后就可以通过<code>node server.js config.json</code>命令启动程序，于是我们的第一版静态文件合并服务器就顺利完工了。</p>
+<p>另外，以上代码存在一个不那么明显的逻辑缺陷。例如，使用以下URL请求服务器时会有惊喜。</p>
+<pre><code>http://assets.example.com/foo/bar.js,foo/baz.js
+</code></pre><p>经过分析之后我们会发现问题出在<code>/</code>被自动替换<code>/??</code>这个行为上，而这个问题我们可以到第二次迭代时再解决。</p>
+<h3 id="第二次迭代"><a href="#第二次迭代" class="headerlink" title="第二次迭代"></a>第二次迭代</h3><p>在第一次迭代之后，我们已经有了一个可工作的版本，满足了功能需求。接下来我们需要从性能的角度出发，看看代码还有哪些改进余地。</p>
+<h4 id="设计-1"><a href="#设计-1" class="headerlink" title="设计"></a>设计</h4><p>把<code>map</code>方法换成<code>for</code>循环或许会更快一些，但第一版代码最大的性能问题存在于从读取文件到输出响应的过程当中。我们以处理<code>/??a.js,b.js,c.js</code>这个请求为例，看看整个处理过程中耗时在哪儿。</p>
+<pre><code> 发送请求       等待服务端响应         接收响应
+---------+----------------------+-------------&gt;
+         --                                        解析请求
+           ------                                  读取a.js
+                 ------                            读取b.js
+                       ------                      读取c.js
+                             --                    合并数据
+                               --                  输出响应
+</code></pre><p>可以看到，第一版代码依次把请求的文件读取到内存中之后，再合并数据和输出响应。这会导致以下两个问题：</p>
+<ol>
+<li><p>当请求的文件比较多比较大时，串行读取文件会比较耗时，从而拉长了服务端响应等待时间。</p>
+</li>
+<li><p>由于每次响应输出的数据都需要先完整地缓存在内存里，当服务器请求并发数较大时，会有较大的内存开销。</p>
+</li>
+</ol>
+<p>对于第一个问题，很容易想到把读取文件的方式从串行改为并行。但是别这样做，因为对于机械磁盘而言，因为只有一个磁头，尝试并行读取文件只会造成磁头频繁抖动，反而降低IO效率。而对于固态硬盘，虽然的确存在多个并行IO通道，但是对于服务器并行处理的多个请求而言，硬盘已经在做并行IO了，对单个请求采用并行IO无异于拆东墙补西墙。因此，正确的做法不是改用并行IO，而是一边读取文件一边输出响应，把响应输出时机提前至读取第一个文件的时刻。这样调整后，整个请求处理过程变成下边这样。</p>
+<pre><code>发送请求 等待服务端响应 接收响应
+---------+----+-------------------------------&gt;
+         --                                        解析请求
+           --                                      检查文件是否存在
+             --                                    输出响应头
+               ------                              读取和输出a.js
+                     ------                        读取和输出b.js
+                           ------                  读取和输出c.js
+</code></pre><p>按上述方式解决第一个问题后，因为服务器不需要完整地缓存每个请求的输出数据了，第二个问题也迎刃而解。</p>
+<h4 id="实现-1"><a href="#实现-1" class="headerlink" title="实现"></a>实现</h4><p>根据以上设计，第二版代码按以下方式调整了部分函数。</p>
+<pre><code>function main(argv) {
+    var config = JSON.parse(fs.readFileSync(argv[0], &apos;utf-8&apos;)),
+        root = config.root || &apos;.&apos;,
+        port = config.port || 80;
+
+    http.createServer(function (request, response) {
+        var urlInfo = parseURL(root, request.url);
+
+        validateFiles(urlInfo.pathnames, function (err, pathnames) {
+            if (err) {
+                response.writeHead(404);
+                response.end(err.message);
+            } else {
+                response.writeHead(200, {
+                    &apos;Content-Type&apos;: urlInfo.mime
+                });
+                outputFiles(pathnames, response);
+            }
+        });
+    }).listen(port);
+}
+
+function outputFiles(pathnames, writer) {
+    (function next(i, len) {
+        if (i &lt; len) {
+            var reader = fs.createReadStream(pathnames[i]);
+
+            reader.pipe(writer, { end: false });
+            reader.on(&apos;end&apos;, function() {
+                next(i + 1, len);
+            });
+        } else {
+            writer.end();
+        }
+    }(0, pathnames.length));
+}
+
+function validateFiles(pathnames, callback) {
+    (function next(i, len) {
+        if (i &lt; len) {
+            fs.stat(pathnames[i], function (err, stats) {
+                if (err) {
+                    callback(err);
+                } else if (!stats.isFile()) {
+                    callback(new Error());
+                } else {
+                    next(i + 1, len);
+                }
+            });
+        } else {
+            callback(null, pathnames);
+        }
+    }(0, pathnames.length));
+}
+</code></pre><p>可以看到，第二版代码在检查了请求的所有文件是否有效之后，立即就输出了响应头，并接着一边按顺序读取文件一边输出响应内容。并且，在读取文件时，第二版代码直接使用了只读数据流来简化代码。</p>
+<h3 id="第三次迭代"><a href="#第三次迭代" class="headerlink" title="第三次迭代"></a>第三次迭代</h3><p>第二次迭代之后，服务器本身的功能和性能已经得到了初步满足。接下来我们需要从稳定性的角度重新审视一下代码，看看还需要做些什么。</p>
+<h4 id="设计-2"><a href="#设计-2" class="headerlink" title="设计"></a>设计</h4><p>从工程角度上讲，没有绝对可靠的系统。即使第二次迭代的代码经过反复检查后能确保没有bug，也很难说是否会因为NodeJS本身，或者是操作系统本身，甚至是硬件本身导致我们的服务器程序在某一天挂掉。因此一般生产环境下的服务器程序都配有一个守护进程，在服务挂掉的时候立即重启服务。一般守护进程的代码会远比服务进程的代码简单，从概率上可以保证守护进程更难挂掉。如果再做得严谨一些，甚至守护进程自身可以在自己挂掉时重启自己，从而实现双保险。</p>
+<p>因此在本次迭代时，我们先利用NodeJS的进程管理机制，将守护进程作为父进程，将服务器程序作为子进程，并让父进程监控子进程的运行状态，在其异常退出时重启子进程。</p>
+<h4 id="实现-2"><a href="#实现-2" class="headerlink" title="实现"></a>实现</h4><p>根据以上设计，我们编写了守护进程需要的代码。</p>
+<pre><code>var cp = require(&apos;child_process&apos;);
+
+var worker;
+
+function spawn(server, config) {
+    worker = cp.spawn(&apos;node&apos;, [ server, config ]);
+    worker.on(&apos;exit&apos;, function (code) {
+        if (code !== 0) {
+            spawn(server, config);
+        }
+    });
+}
+
+function main(argv) {
+    spawn(&apos;server.js&apos;, argv[0]);
+    process.on(&apos;SIGTERM&apos;, function () {
+        worker.kill();
+        process.exit(0);
+    });
+}
+
+main(process.argv.slice(2));
+</code></pre><p>此外，服务器代码本身的入口函数也要做以下调整。</p>
+<pre><code>function main(argv) {
+    var config = JSON.parse(fs.readFileSync(argv[0], &apos;utf-8&apos;)),
+        root = config.root || &apos;.&apos;,
+        port = config.port || 80,
+        server;
+
+    server = http.createServer(function (request, response) {
+        ...
+    }).listen(port);
+
+    process.on(&apos;SIGTERM&apos;, function () {
+        server.close(function () {
+            process.exit(0);
+        });
+    });
+}
+</code></pre><p>我们可以把守护进程的代码保存为<code>daemon.js</code>，之后我们可以通过<code>node daemon.js config.json</code>启动服务，而守护进程会进一步启动和监控服务器进程。此外，为了能够正常终止服务，我们让守护进程在接收到<code>SIGTERM</code>信号时终止服务器进程。而在服务器进程这一端，同样在收到<code>SIGTERM</code>信号时先停掉HTTP服务再正常退出。至此，我们的服务器程序就靠谱很多了。</p>
+<h3 id="第四次迭代"><a href="#第四次迭代" class="headerlink" title="第四次迭代"></a>第四次迭代</h3><p>在我们解决了服务器本身的功能、性能和可靠性的问题后，接着我们需要考虑一下代码部署的问题，以及服务器控制的问题。</p>
+<h4 id="设计-3"><a href="#设计-3" class="headerlink" title="设计"></a>设计</h4><p>一般而言，程序在服务器上有一个固定的部署目录，每次程序有更新后，都重新发布到部署目录里。而一旦完成部署后，一般也可以通过固定的服务控制脚本启动和停止服务。因此我们的服务器程序部署目录可以做如下设计。</p>
+<pre><code>- deploy/
+    - bin/
+        startws.sh
+        killws.sh
+    + conf/
+        config.json
+    + lib/
+        daemon.js
+        server.js
+</code></pre><p>在以上目录结构中，我们分类存放了服务控制脚本、配置文件和服务器代码。</p>
+<h4 id="实现-3"><a href="#实现-3" class="headerlink" title="实现"></a>实现</h4><p>按以上目录结构分别存放对应的文件之后，接下来我们看看控制脚本怎么写。首先是<code>start.sh</code>。</p>
+<pre><code>#!/bin/sh
+if [ ! -f &quot;pid&quot; ]
+then
+    node ../lib/daemon.js ../conf/config.json &amp;
+    echo $! &gt; pid
+fi
+</code></pre><p>然后是<code>killws.sh</code>。</p>
+<pre><code>#!/bin/sh
+if [ -f &quot;pid&quot; ]
+then
+    kill $(tr -d &apos;\r\n&apos; &lt; pid)
+    rm pid
+fi
+</code></pre><p>于是这样我们就有了一个简单的代码部署目录和服务控制脚本，我们的服务器程序就可以上线工作了。</p>
+<h3 id="后续迭代"><a href="#后续迭代" class="headerlink" title="后续迭代"></a>后续迭代</h3><p>我们的服务器程序正式上线工作后，我们接下来或许会发现还有很多可以改进的点。比如服务器程序在合并JS文件时可以自动在JS文件之间插入一个<code>;</code>来避免一些语法问题，比如服务器程序需要提供日志来统计访问量，比如服务器程序需要能充分利用多核CPU，等等。而此时的你，在学习了这么久NodeJS之后，应该已经知道该怎么做了。</p>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>本章将之前零散介绍的知识点串了起来，完整地演示了一个使用NodeJS开发程序的例子，至此我们的课程就全部结束了。以下是对新诞生的NodeJSer的一些建议。</p>
+<ul>
+<li><p>要熟悉官方API文档。并不是说要熟悉到能记住每个API的名称和用法，而是要熟悉NodeJS提供了哪些功能，一旦需要时知道查询API文档的哪块地方。</p>
+</li>
+<li><p>要先设计再实现。在开发一个程序前首先要有一个全局的设计，不一定要很周全，但要足够能写出一些代码。</p>
+</li>
+<li><p>要实现后再设计。在写了一些代码，有了一些具体的东西后，一定会发现一些之前忽略掉的细节。这时再反过来改进之前的设计，为第二轮迭代做准备。</p>
+</li>
+<li><p>要充分利用三方包。NodeJS有一个庞大的生态圈，在写代码之前先看看有没有现成的三方包能节省不少时间。</p>
+</li>
+<li><p>不要迷信三方包。任何事情做过头了就不好了，三方包也是一样。三方包是一个黑盒，每多使用一个三方包，就为程序增加了一份潜在风险。并且三方包很难恰好只提供程序需要的功能，每多使用一个三方包，就让程序更加臃肿一些。因此在决定使用某个三方包之前，最好三思而后行。</p>
+</li>
+</ul>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2016/03/23/node/books/7days/07_example/" data-id="cj76wnr9q003venpjfavx2lo4" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2016/03/23/node/books/7days/07_example/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-node/books/7days/06_async_programming" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2016/03/23/node/books/7days/06_async_programming/">七天学会NodeJS - 异步编程</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2016/03/23/node/books/7days/06_async_programming/">
+            <time datetime="2016-03-22T22:06:34.000Z" itemprop="datePublished">2016-03-23</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/node/">node</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/node/7days/">7days</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/node/">node</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>NodeJS最大的卖点——事件机制和异步IO，对开发者并不是透明的。开发者需要按异步方式编写代码才用得上这个卖点，而这一点也遭到了一些NodeJS反对者的抨击。但不管怎样，异步编程确实是NodeJS最大的特点，没有掌握异步编程就不能说是真正学会了NodeJS。本章将介绍与异步编程相关的各种知识。</p>
+<h3 id="回调"><a href="#回调" class="headerlink" title="回调"></a>回调</h3><p>在代码中，异步编程的直接体现就是回调。异步编程依托于回调来实现，但不能说使用了回调后程序就异步化了。我们首先可以看看以下代码。</p>
+<pre><code>function heavyCompute(n, callback) {
+    var count = 0,
+        i, j;
+
+    for (i = n; i &gt; 0; --i) {
+        for (j = n; j &gt; 0; --j) {
+            count += 1;
+        }
+    }
+
+    callback(count);
+}
+
+heavyCompute(10000, function (count) {
+    console.log(count);
+});
+
+console.log(&apos;hello&apos;);
+
+-- Console ------------------------------
+100000000
+hello
+</code></pre><p>可以看到，以上代码中的回调函数仍然先于后续代码执行。JS本身是单线程运行的，不可能在一段代码还未结束运行时去运行别的代码，因此也就不存在异步执行的概念。</p>
+<p>但是，如果某个函数做的事情是创建一个别的线程或进程，并与JS主线程并行地做一些事情，并在事情做完后通知JS主线程，那情况又不一样了。我们接着看看以下代码。</p>
+<pre><code>setTimeout(function () {
+    console.log(&apos;world&apos;);
+}, 1000);
+
+console.log(&apos;hello&apos;);
+
+-- Console ------------------------------
+hello
+world
+</code></pre><p>这次可以看到，回调函数后于后续代码执行了。如同上边所说，JS本身是单线程的，无法异步执行，因此我们可以认为<code>setTimeout</code>这类JS规范之外的由运行环境提供的特殊函数做的事情是创建一个平行线程后立即返回，让JS主进程可以接着执行后续代码，并在收到平行进程的通知后再执行回调函数。除了<code>setTimeout</code>、<code>setInterval</code>这些常见的，这类函数还包括NodeJS提供的诸如<code>fs.readFile</code>之类的异步API。</p>
+<p>另外，我们仍然回到JS是单线程运行的这个事实上，这决定了JS在执行完一段代码之前无法执行包括回调函数在内的别的代码。也就是说，即使平行线程完成工作了，通知JS主线程执行回调函数了，回调函数也要等到JS主线程空闲时才能开始执行。以下就是这么一个例子。</p>
+<pre><code>function heavyCompute(n) {
+    var count = 0,
+        i, j;
+
+    for (i = n; i &gt; 0; --i) {
+        for (j = n; j &gt; 0; --j) {
+            count += 1;
+        }
+    }
+}
+
+var t = new Date();
+
+setTimeout(function () {
+    console.log(new Date() - t);
+}, 1000);
+
+heavyCompute(50000);
+
+-- Console ------------------------------
+8520
+</code></pre><p>可以看到，本来应该在1秒后被调用的回调函数因为JS主线程忙于运行其它代码，实际执行时间被大幅延迟。</p>
+<h3 id="代码设计模式"><a href="#代码设计模式" class="headerlink" title="代码设计模式"></a>代码设计模式</h3><p>异步编程有很多特有的代码设计模式，为了实现同样的功能，使用同步方式和异步方式编写的代码会有很大差异。以下分别介绍一些常见的模式。</p>
+<h4 id="函数返回值"><a href="#函数返回值" class="headerlink" title="函数返回值"></a>函数返回值</h4><p>使用一个函数的输出作为另一个函数的输入是很常见的需求，在同步方式下一般按以下方式编写代码：</p>
+<pre><code>var output = fn1(fn2(&apos;input&apos;));
+// Do something.
+</code></pre><p>而在异步方式下，由于函数执行结果不是通过返回值，而是通过回调函数传递，因此一般按以下方式编写代码：</p>
+<pre><code>fn2(&apos;input&apos;, function (output2) {
+    fn1(output2, function (output1) {
+        // Do something.
+    });
+});
+</code></pre><p>可以看到，这种方式就是一个回调函数套一个回调函多，套得太多了很容易写出<code>&gt;</code>形状的代码。</p>
+<h4 id="遍历数组"><a href="#遍历数组" class="headerlink" title="遍历数组"></a>遍历数组</h4><p>在遍历数组时，使用某个函数依次对数据成员做一些处理也是常见的需求。如果函数是同步执行的，一般就会写出以下代码：</p>
+<pre><code>var len = arr.length,
+    i = 0;
+
+for (; i &lt; len; ++i) {
+    arr[i] = sync(arr[i]);
+}
+
+// All array items have processed.
+</code></pre><p>如果函数是异步执行的，以上代码就无法保证循环结束后所有数组成员都处理完毕了。如果数组成员必须一个接一个串行处理，则一般按照以下方式编写异步代码：</p>
+<pre><code>(function next(i, len, callback) {
+    if (i &lt; len) {
+        async(arr[i], function (value) {
+            arr[i] = value;
+            next(i + 1, len, callback);
+        });
+    } else {
+        callback();
+    }
+}(0, arr.length, function () {
+    // All array items have processed.
+}));
+</code></pre><p>可以看到，以上代码在异步函数执行一次并返回执行结果后才传入下一个数组成员并开始下一轮执行，直到所有数组成员处理完毕后，通过回调的方式触发后续代码的执行。</p>
+<p>如果数组成员可以并行处理，但后续代码仍然需要所有数组成员处理完毕后才能执行的话，则异步代码会调整成以下形式：</p>
+<pre><code>(function (i, len, count, callback) {
+    for (; i &lt; len; ++i) {
+        (function (i) {
+            async(arr[i], function (value) {
+                arr[i] = value;
+                if (++count === len) {
+                    callback();
+                }
+            });
+        }(i));
+    }
+}(0, arr.length, 0, function () {
+    // All array items have processed.
+}));
+</code></pre><p>可以看到，与异步串行遍历的版本相比，以上代码并行处理所有数组成员，并通过计数器变量来判断什么时候所有数组成员都处理完毕了。</p>
+<h4 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h4><p>JS自身提供的异常捕获和处理机制——<code>try..catch..</code>，只能用于同步执行的代码。以下是一个例子。</p>
+<pre><code>function sync(fn) {
+    return fn();
+}
+
+try {
+    sync(null);
+    // Do something.
+} catch (err) {
+    console.log(&apos;Error: %s&apos;, err.message);
+}
+
+-- Console ------------------------------
+Error: object is not a function
+</code></pre><p>可以看到，异常会沿着代码执行路径一直冒泡，直到遇到第一个<code>try</code>语句时被捕获住。但由于异步函数会打断代码执行路径，异步函数执行过程中以及执行之后产生的异常冒泡到执行路径被打断的位置时，如果一直没有遇到<code>try</code>语句，就作为一个全局异常抛出。以下是一个例子。</p>
+<pre><code>function async(fn, callback) {
+    // Code execution path breaks here.
+    setTimeout(function ()　{
+        callback(fn());
+    }, 0);
+}
+
+try {
+    async(null, function (data) {
+        // Do something.
+    });
+} catch (err) {
+    console.log(&apos;Error: %s&apos;, err.message);
+}
+
+-- Console ------------------------------
+/home/user/test.js:4
+        callback(fn());
+                 ^
+TypeError: object is not a function
+    at null._onTimeout (/home/user/test.js:4:13)
+    at Timer.listOnTimeout [as ontimeout] (timers.js:110:15)
+</code></pre><p>因为代码执行路径被打断了，我们就需要在异常冒泡到断点之前用<code>try</code>语句把异常捕获住，并通过回调函数传递被捕获的异常。于是我们可以像下边这样改造上边的例子。</p>
+<pre><code>function async(fn, callback) {
+    // Code execution path breaks here.
+    setTimeout(function ()　{
+        try {
+            callback(null, fn());
+        } catch (err) {
+            callback(err);
+        }
+    }, 0);
+}
+
+async(null, function (err, data) {
+    if (err) {
+        console.log(&apos;Error: %s&apos;, err.message);
+    } else {
+        // Do something.
+    }
+});
+
+-- Console ------------------------------
+Error: object is not a function
+</code></pre><p>可以看到，异常再次被捕获住了。在NodeJS中，几乎所有异步API都按照以上方式设计，回调函数中第一个参数都是<code>err</code>。因此我们在编写自己的异步函数时，也可以按照这种方式来处理异常，与NodeJS的设计风格保持一致。</p>
+<p>有了异常处理方式后，我们接着可以想一想一般我们是怎么写代码的。基本上，我们的代码都是做一些事情，然后调用一个函数，然后再做一些事情，然后再调用一个函数，如此循环。如果我们写的是同步代码，只需要在代码入口点写一个<code>try</code>语句就能捕获所有冒泡上来的异常，示例如下。</p>
+<pre><code>function main() {
+    // Do something.
+    syncA();
+    // Do something.
+    syncB();
+    // Do something.
+    syncC();
+}
+
+try {
+    main();
+} catch (err) {
+    // Deal with exception.
+}
+</code></pre><p>但是，如果我们写的是异步代码，就只有呵呵了。由于每次异步函数调用都会打断代码执行路径，只能通过回调函数来传递异常，于是我们就需要在每个回调函数里判断是否有异常发生，于是只用三次异步函数调用，就会产生下边这种代码。</p>
+<pre><code>function main(callback) {
+    // Do something.
+    asyncA(function (err, data) {
+        if (err) {
+            callback(err);
+        } else {
+            // Do something
+            asyncB(function (err, data) {
+                if (err) {
+                    callback(err);
+                } else {
+                    // Do something
+                    asyncC(function (err, data) {
+                        if (err) {
+                            callback(err);
+                        } else {
+                            // Do something
+                            callback(null);
+                        }
+                    });
+                }
+            });
+        }
+    });
+}
+
+main(function (err) {
+    if (err) {
+        // Deal with exception.
+    }
+});
+</code></pre><p>可以看到，回调函数已经让代码变得复杂了，而异步方式下对异常的处理更加剧了代码的复杂度。如果NodeJS的最大卖点最后变成这个样子，那就没人愿意用NodeJS了，因此接下来会介绍NodeJS提供的一些解决方案。</p>
+<h3 id="域（Domain）"><a href="#域（Domain）" class="headerlink" title="域（Domain）"></a>域（Domain）</h3><blockquote>
+<p>   <strong>官方文档： </strong> <a href="http://nodejs.org/api/domain.html" target="_blank" rel="external">http://nodejs.org/api/domain.html</a></p>
+</blockquote>
+<p>NodeJS提供了<code>domain</code>模块，可以简化异步代码的异常处理。在介绍该模块之前，我们需要首先理解“域”的概念。简单的讲，一个域就是一个JS运行环境，在一个运行环境中，如果一个异常没有被捕获，将作为一个全局异常被抛出。NodeJS通过<code>process</code>对象提供了捕获全局异常的方法，示例代码如下</p>
+<pre><code>process.on(&apos;uncaughtException&apos;, function (err) {
+    console.log(&apos;Error: %s&apos;, err.message);
+});
+
+setTimeout(function (fn) {
+    fn();
+});
+
+-- Console ------------------------------
+Error: undefined is not a function
+</code></pre><p>虽然全局异常有个地方可以捕获了，但是对于大多数异常，我们希望尽早捕获，并根据结果决定代码的执行路径。我们用以下HTTP服务器代码作为例子：</p>
+<pre><code>function async(request, callback) {
+    // Do something.
+    asyncA(request, function (err, data) {
+        if (err) {
+            callback(err);
+        } else {
+            // Do something
+            asyncB(request, function (err, data) {
+                if (err) {
+                    callback(err);
+                } else {
+                    // Do something
+                    asyncC(request, function (err, data) {
+                        if (err) {
+                            callback(err);
+                        } else {
+                            // Do something
+                            callback(null, data);
+                        }
+                    });
+                }
+            });
+        }
+    });
+}
+
+http.createServer(function (request, response) {
+    async(request, function (err, data) {
+        if (err) {
+            response.writeHead(500);
+            response.end();
+        } else {
+            response.writeHead(200);
+            response.end(data);
+        }
+    });
+});
+</code></pre><p>以上代码将请求对象交给异步函数处理后，再根据处理结果返回响应。这里采用了使用回调函数传递异常的方案，因此<code>async</code>函数内部如果再多几个异步函数调用的话，代码就变成上边这副鬼样子了。为了让代码好看点，我们可以在每处理一个请求时，使用<code>domain</code>模块创建一个子域（JS子运行环境）。在子域内运行的代码可以随意抛出异常，而这些异常可以通过子域对象的<code>error</code>事件统一捕获。于是以上代码可以做如下改造：</p>
+<pre><code>function async(request, callback) {
+    // Do something.
+    asyncA(request, function (data) {
+        // Do something
+        asyncB(request, function (data) {
+            // Do something
+            asyncC(request, function (data) {
+                // Do something
+                callback(data);
+            });
+        });
+    });
+}
+
+http.createServer(function (request, response) {
+    var d = domain.create();
+
+    d.on(&apos;error&apos;, function () {
+        response.writeHead(500);
+        response.end();
+    });
+
+    d.run(function () {
+        async(request, function (data) {
+            response.writeHead(200);
+            response.end(data);
+        });
+    });
+});
+</code></pre><p>可以看到，我们使用<code>.create</code>方法创建了一个子域对象，并通过<code>.run</code>方法进入需要在子域中运行的代码的入口点。而位于子域中的异步函数回调函数由于不再需要捕获异常，代码一下子瘦身很多。</p>
+<h4 id="陷阱"><a href="#陷阱" class="headerlink" title="陷阱"></a>陷阱</h4><p>无论是通过<code>process</code>对象的<code>uncaughtException</code>事件捕获到全局异常，还是通过子域对象的<code>error</code>事件捕获到了子域异常，在NodeJS官方文档里都强烈建议处理完异常后立即重启程序，而不是让程序继续运行。按照官方文档的说法，发生异常后的程序处于一个不确定的运行状态，如果不立即退出的话，程序可能会发生严重内存泄漏，也可能表现得很奇怪。</p>
+<p>但这里需要澄清一些事实。JS本身的<code>throw..try..catch</code>异常处理机制并不会导致内存泄漏，也不会让程序的执行结果出乎意料，但NodeJS并不是存粹的JS。NodeJS里大量的API内部是用C/C++实现的，因此NodeJS程序的运行过程中，代码执行路径穿梭于JS引擎内部和外部，而JS的异常抛出机制可能会打断正常的代码执行流程，导致C/C++部分的代码表现异常，进而导致内存泄漏等问题。</p>
+<p>因此，使用<code>uncaughtException</code>或<code>domain</code>捕获异常，代码执行路径里涉及到了C/C++部分的代码时，如果不能确定是否会导致内存泄漏等问题，最好在处理完异常后重启程序比较妥当。而使用<code>try</code>语句捕获异常时一般捕获到的都是JS本身的异常，不用担心上诉问题。</p>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>本章介绍了JS异步编程相关的知识，总结起来有以下几点：</p>
+<ul>
+<li><p>不掌握异步编程就不算学会NodeJS。</p>
+</li>
+<li><p>异步编程依托于回调来实现，而使用回调不一定就是异步编程。</p>
+</li>
+<li><p>异步编程下的函数间数据传递、数组遍历和异常处理与同步编程有很大差别。</p>
+</li>
+<li><p>使用<code>domain</code>模块简化异步代码的异常处理，并小心陷阱。</p>
+</li>
+</ul>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2016/03/23/node/books/7days/06_async_programming/" data-id="cj76wnr9q003uenpjd56qtv9b" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2016/03/23/node/books/7days/06_async_programming/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
     <nav id="page-nav">
         <a class="extend prev" rel="prev" href="/page/7/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span>
     </nav>
@@ -2271,6 +2271,15 @@ client.on(&apos;data&apos;, function (data) {
                     <li>
                         
                         <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/other/">other</a></p>
+                            <p class="item-title"><a href="/2017/09/20/other/github hexo 博客迁移 /" class="title">github hexo博客多电脑迁移</a></p>
+                            <p class="item-date"><time datetime="2017-09-20T09:58:30.000Z" itemprop="datePublished">2017-09-20</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
                             <p class="item-category"><a class="article-category-link" href="/categories/ssh/">ssh</a></p>
                             <p class="item-title"><a href="/2017/09/20/other/Gitlab权限说明/" class="title">Gitlab权限说明</a></p>
                             <p class="item-date"><time datetime="2017-09-20T09:54:25.000Z" itemprop="datePublished">2017-09-20</time></p>
@@ -2280,7 +2289,7 @@ client.on(&apos;data&apos;, function (data) {
                     <li>
                         
                         <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/glide/">glide</a></p>
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/github/">github</a></p>
                             <p class="item-title"><a href="/2017/09/20/android/github/glide解析5_图片变换/" class="title">Glide解析5_图片变换</a></p>
                             <p class="item-date"><time datetime="2017-09-20T08:53:48.000Z" itemprop="datePublished">2017-09-20</time></p>
                         </div>
@@ -2289,7 +2298,7 @@ client.on(&apos;data&apos;, function (data) {
                     <li>
                         
                         <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/glide/">glide</a></p>
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/github/">github</a></p>
                             <p class="item-title"><a href="/2017/09/20/android/github/glide解析4_回调监听/" class="title">Glide解析4_回调监听</a></p>
                             <p class="item-date"><time datetime="2017-09-20T08:46:52.000Z" itemprop="datePublished">2017-09-20</time></p>
                         </div>
@@ -2298,18 +2307,9 @@ client.on(&apos;data&apos;, function (data) {
                     <li>
                         
                         <div class="item-inner">
-                            <p class="item-category"></p>
-                            <p class="item-title"><a href="/2017/09/20/android/github/glide解析3_缓存流程/" class="title"></a></p>
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/github/">github</a></p>
+                            <p class="item-title"><a href="/2017/09/20/android/github/glide解析3_缓存流程/" class="title">Glide解析3_缓存流程</a></p>
                             <p class="item-date"><time datetime="2017-09-20T08:42:24.000Z" itemprop="datePublished">2017-09-20</time></p>
-                        </div>
-                    </li>
-                
-                    <li>
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/glide/">glide</a></p>
-                            <p class="item-title"><a href="/2017/09/20/android/github/glide解析2_执行流程/" class="title">Glide解析2_执行流程</a></p>
-                            <p class="item-date"><time datetime="2017-09-20T08:40:45.000Z" itemprop="datePublished">2017-09-20</time></p>
                         </div>
                     </li>
                 
@@ -2322,7 +2322,7 @@ client.on(&apos;data&apos;, function (data) {
     <div class="widget-wrap">
         <h3 class="widget-title">categories</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">43</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/glide/">glide</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/ssh/">ssh</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">2</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">44</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/ssh/">ssh</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -2340,7 +2340,7 @@ client.on(&apos;data&apos;, function (data) {
     <div class="widget-wrap">
         <h3 class="widget-title">tags</h3>
         <div class="widget">
-            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">37</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/">ssh</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">37</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/">ssh</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -2349,7 +2349,7 @@ client.on(&apos;data&apos;, function (data) {
     <div class="widget-wrap">
         <h3 class="widget-title">tag cloud</h3>
         <div class="widget tagcloud">
-            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 16.67px;">code</a> <a href="/tags/git/" style="font-size: 11.67px;">git</a> <a href="/tags/github/" style="font-size: 18.33px;">github</a> <a href="/tags/glide/" style="font-size: 15px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 13.33px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.67px;">markdown</a> <a href="/tags/mysql/" style="font-size: 16.67px;">mysql</a> <a href="/tags/node/" style="font-size: 18.33px;">node</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/ssh/" style="font-size: 11.67px;">ssh</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.67px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.67px;">设计模式</a>
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 15px;">code</a> <a href="/tags/git/" style="font-size: 11.67px;">git</a> <a href="/tags/github/" style="font-size: 18.33px;">github</a> <a href="/tags/glide/" style="font-size: 15px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 13.33px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.67px;">markdown</a> <a href="/tags/mysql/" style="font-size: 15px;">mysql</a> <a href="/tags/node/" style="font-size: 16.67px;">node</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/ssh/" style="font-size: 11.67px;">ssh</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.67px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.67px;">设计模式</a>
         </div>
     </div>
 
