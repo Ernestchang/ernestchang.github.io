@@ -1,6 +1,17 @@
+title: Glide解析1_基本用法
+date: 
 
+categories: 
+- android
+- glide
 
->  本文出自[郭霖的博客](http://blog.csdn.net/guolin_blog/article/details/53759439)
+tags: 
+- github
+- glide
+
+---
+
+>  本文出自[郭霖博客](http://blog.csdn.net/guolin_blog/article/details/5375943)
 
 现在Android上的图片加载框架非常成熟，从最早的老牌图片加载框架UniversalImageLoader，到后来Google推出的Volley，再到后来的新兴军Glide和Picasso，当然还有Facebook的Fresco。每一个都非常稳定，功能也都十分强大。但是它们的使用场景基本都是重合的，也就是说我们基本只需要选择其中一个来进行学习和使用就足够了，每一个框架都尝试去掌握的话则有些浪费时间。
 
@@ -9,8 +20,6 @@
 那么再拿Glide和Picasso对比呢，首先这两个框架的用法非常相似，但其实它们各有特色。Picasso比Glide更加简洁和轻量，Glide比Picasso功能更为丰富。之前已经有人对这两个框架进行过全方面的对比，大家如果想了解更多的话可以去参考一下 [这篇文章](http://www.jcodecraeer.com/a/anzhuokaifa/androidkaifa/2015/0327/2650.html) 。
 
 总之，没有最好的框架，只有最适合自己的框架。经过多方面对比之后，我还是决定选择了Glide来进行研究，并且这也是Google官方推荐的图片加载框架。
-
-说实话，关于Glide的文章我已经筹备了好久，去年这个时候本来就打算要写了，但是一直都没有动笔。因为去年我的大部分时间都放在了写[《第二行代码》](http://blog.csdn.net/guolin_blog/article/details/52032038)上面，只能用碎片时间来写写博客，但是Glide的难度远超出了我用碎片时间所能掌握的难度。当然，这里我说的是对它的源码进行解析的难度，不是使用上的难度，Glide的用法是很简单的。所以，我觉得去年我写不好Glide这个题材的文章，也就一直拖到了今年。
 
 而现在，我花费了大量的精力去研究Glide的源码和各种用法，相信现在已经可以将它非常好地掌握了，因此我准备将我掌握的这些知识整理成一个新的系列，帮忙大家更好地学习Glide。这个Glide系列大概会有8篇左右文章，预计花半年时间写完，将会包括Glide的基本用法、源码解析、高级用法、功能扩展等内容，可能会是目前互联网上最详尽的Glide教程。
 
@@ -27,7 +36,7 @@ Glide是一款由Bump Technologies开发的图片加载框架，使得我们可�
 ```
 dependencies {
     compile 'com.github.bumptech.glide:glide:3.7.0'
-}123
+}
 ```
 
 如果你还在使用Eclipse，可以点击 [这里](http://download.csdn.net/detail/sinyu890807/9781538) 下载Glide的jar包。
@@ -35,7 +44,7 @@ dependencies {
 另外，Glide中需要用到网络功能，因此你还得在AndroidManifest.xml中声明一下网络权限才行：
 
 ```
-<uses-permission android:name="android.permission.INTERNET" />1
+<uses-permission android:name="android.permission.INTERNET" />
 ```
 
 就是这么简单，然后我们就可以自由地使用Glide中的任意功能了。
@@ -44,9 +53,8 @@ dependencies {
 
 现在我们就来尝试一下如何使用Glide来加载图片吧。比如这是必应上一张首页美图的地址：
 
-```
-http://cn.bing.com/az/hprichbg/rb/Dongdaemun_ZH-CN10736487148_1920x1080.jpg1
-```
+
+![glide](http://cn.bing.com/az/hprichbg/rb/Dongdaemun_ZH-CN10736487148_1920x1080.jpg)
 
 然后我们想要在程序当中去加载这张图片。
 
@@ -71,7 +79,7 @@ http://cn.bing.com/az/hprichbg/rb/Dongdaemun_ZH-CN10736487148_1920x1080.jpg1
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-</LinearLayout>12345678910111213141516171819
+</LinearLayout>
 ```
 
 为了让用户点击Button的时候能够将刚才的图片显示在ImageView上，我们需要修改MainActivity中的代码，如下所示：
@@ -93,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         Glide.with(this).load(url).into(imageView);
     }
 
-}1234567891011121314151617
+}
 ```
 
 没错，就是这么简单。现在我们来运行一下程序，效果如下图所示：
@@ -105,8 +113,7 @@ public class MainActivity extends AppCompatActivity {
 而我们到底做了什么？实际上核心的代码就只有这一行而已：
 
 ```
-Glide.with(this).load(url).into(imageView);1
-
+Glide.with(this).load(url).into(imageView);
 ```
 
 千万不要小看这一行代码，实际上仅仅就这一行代码，你已经可以做非常非常多的事情了，包括加载网络上的图片、加载手机本地的图片、加载应用资源中的图片等等。
@@ -132,7 +139,7 @@ Glide.with(this).load(image).into(imageView);
 
 // 加载Uri对象
 Uri imageUri = getImageUri();
-Glide.with(this).load(imageUri).into(imageView);123456789101112131415
+Glide.with(this).load(imageUri).into(imageView);
 ```
 
 最后看一下into()方法，这个方法就很简单了，我们希望让图片显示在哪个ImageView上，把这个ImageView的实例传进去就可以了。当然，into()方法不仅仅是只能接收ImageView类型的参数，还支持很多更丰富的用法，不过那个属于高级技巧，我们会在后面的文章当中学习。
@@ -153,7 +160,7 @@ Glide.with(this).load(imageUri).into(imageView);123456789101112131415
 Glide.with(this)
      .load(url)
      .placeholder(R.drawable.loading)
-     .into(imageView);1234
+     .into(imageView);
 ```
 
 没错，就是这么简单。我们只是在刚才的三步走之间插入了一个placeholder()方法，然后将占位图片的资源id传入到这个方法中即可。另外，这个占位图的用法其实也演示了Glide当中绝大多数API的用法，其实就是在load()和into()方法之间串接任意想添加的功能就可以了。
@@ -167,7 +174,7 @@ Glide.with(this)
      .load(url)
      .placeholder(R.drawable.loading)
      .diskCacheStrategy(DiskCacheStrategy.NONE)
-     .into(imageView);12345
+     .into(imageView);
 ```
 
 可以看到，这里串接了一个diskCacheStrategy()方法，并传入DiskCacheStrategy.NONE参数，这样就可以禁用掉Glide的缓存功能。
@@ -190,7 +197,7 @@ Glide.with(this)
      .placeholder(R.drawable.loading)
      .error(R.drawable.error)
      .diskCacheStrategy(DiskCacheStrategy.NONE)
-     .into(imageView);123456
+     .into(imageView);
 ```
 
 很简单，这里又串接了一个error()方法就可以指定异常占位图了。
@@ -248,7 +255,7 @@ Glide.with(this)
      .placeholder(R.drawable.loading)
      .error(R.drawable.error)
      .diskCacheStrategy(DiskCacheStrategy.NONE)
-     .into(imageView);1234567
+     .into(imageView);
 ```
 
 这里调用了asGif()方法替代了asBitmap()方法，很好理解，相信不用我多做什么解释了。
@@ -282,7 +289,7 @@ Glide.with(this)
      .error(R.drawable.error)
      .diskCacheStrategy(DiskCacheStrategy.NONE)
      .override(100, 100)
-     .into(imageView);1234567
+     .into(imageView);
 ```
 
 仍然非常简单，这里使用override()方法指定了一个图片的尺寸，也就是说，Glide现在只会将图片加载成100*100像素的尺寸，而不会管你的ImageView的大小是多少了。
