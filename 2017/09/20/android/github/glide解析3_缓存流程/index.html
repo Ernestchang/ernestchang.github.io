@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <meta charset="utf-8">
+    
+    <title>The Old Man and the Sea</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="本文出自郭霖博客  在本系列的上一篇文章中，我带着大家一起阅读了一遍Glide的源码，初步了解了这个强大的图片加载框架的基本执行流程。 不过，上一篇文章只能说是比较粗略地阅读了Glide整个执行流程方面的源码，搞明白了Glide的基本工作原理，但并没有去深入分析每一处的细节（事实上也不可能在一篇文章中深入分析每一处源码的细节）。那么从本篇文章开始，我们就一篇篇地来针对Glide某一块功能进行深">
+<meta property="og:type" content="article">
+<meta property="og:title" content="The Old Man and the Sea">
+<meta property="og:url" content="http://yoursite.com/2017/09/20/android/github/glide解析3_缓存流程/index.html">
+<meta property="og:site_name" content="The Old Man and the Sea">
+<meta property="og:description" content="本文出自郭霖博客  在本系列的上一篇文章中，我带着大家一起阅读了一遍Glide的源码，初步了解了这个强大的图片加载框架的基本执行流程。 不过，上一篇文章只能说是比较粗略地阅读了Glide整个执行流程方面的源码，搞明白了Glide的基本工作原理，但并没有去深入分析每一处的细节（事实上也不可能在一篇文章中深入分析每一处源码的细节）。那么从本篇文章开始，我们就一篇篇地来针对Glide某一块功能进行深">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2017-09-20T09:48:10.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="The Old Man and the Sea">
+<meta name="twitter:description" content="本文出自郭霖博客  在本系列的上一篇文章中，我带着大家一起阅读了一遍Glide的源码，初步了解了这个强大的图片加载框架的基本执行流程。 不过，上一篇文章只能说是比较粗略地阅读了Glide整个执行流程方面的源码，搞明白了Glide的基本工作原理，但并没有去深入分析每一处的细节（事实上也不可能在一篇文章中深入分析每一处源码的细节）。那么从本篇文章开始，我们就一篇篇地来针对Glide某一块功能进行深">
+    
+
+    
+        <link rel="alternate" href="/" title="The Old Man and the Sea" type="application/atom+xml" />
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">The Old Man and the Sea</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/uploads/images/avert.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/uploads/images/avert.png" />
+            <h2 id="name">Ernest Chang</h2>
+            <h3 id="title">Developer &amp; Designer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Hangzhou, China</span>
+            <a id="follow" target="_blank" href="https://github.com/Ernestchang/">FOLLOW</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                72
+                <span>posts</span>
+            </div>
+            <div class="article-info-block">
+                20
+                <span>tags</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/Ernestchang/" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="facebook" class=tooltip>
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="dribbble" class=tooltip>
+                            <i class="fa fa-dribbble"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-android/github/glide解析3_缓存流程" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <blockquote>
+<p> 本文出自<a href="http://blog.csdn.net/guolin_blog/article/details/54895665" target="_blank" rel="external">郭霖博客</a></p>
+</blockquote>
+<p>在本系列的上一篇文章中，我带着大家一起阅读了一遍Glide的源码，初步了解了这个强大的图片加载框架的基本执行流程。</p>
+<p>不过，上一篇文章只能说是比较粗略地阅读了Glide整个执行流程方面的源码，搞明白了Glide的基本工作原理，但并没有去深入分析每一处的细节（事实上也不可能在一篇文章中深入分析每一处源码的细节）。那么从本篇文章开始，我们就一篇篇地来针对Glide某一块功能进行深入地分析，慢慢将Glide中的各项功能进行全面掌握。</p>
+<p>今天我们就先从缓存这一块内容开始入手吧。不过今天文章中的源码都建在上一篇源码分析的基础之上，还没有看过上一篇文章的朋友，建议先去阅读 <a href="http://blog.csdn.net/guolin_blog/article/details/53939176" target="_blank" rel="external">Android图片加载框架最全解析（二），从源码的角度理解Glide的执行流程</a> 。</p>
+<h1 id="Glide缓存简介"><a href="#Glide缓存简介" class="headerlink" title="Glide缓存简介"></a>Glide缓存简介</h1><p>Glide的缓存设计可以说是非常先进的，考虑的场景也很周全。在缓存这一功能上，Glide又将它分成了两个模块，一个是内存缓存，一个是硬盘缓存。</p>
+<p>这两个缓存模块的作用各不相同，内存缓存的主要作用是防止应用重复将图片数据读取到内存当中，而硬盘缓存的主要作用是防止应用重复从网络或其他地方重复下载和读取数据。</p>
+<p>内存缓存和硬盘缓存的相互结合才构成了Glide极佳的图片缓存效果，那么接下来我们就分别来分析一下这两种缓存的使用方法以及它们的实现原理。</p>
+<h1 id="缓存Key"><a href="#缓存Key" class="headerlink" title="缓存Key"></a>缓存Key</h1><p>既然是缓存功能，就必然会有用于进行缓存的Key。那么Glide的缓存Key是怎么生成的呢？我不得不说，Glide的缓存Key生成规则非常繁琐，决定缓存Key的参数竟然有10个之多。不过繁琐归繁琐，至少逻辑还是比较简单的，我们先来看一下Glide缓存Key的生成逻辑。</p>
+<p>生成缓存Key的代码在Engine类的load()方法当中，这部分代码我们在上一篇文章当中已经分析过了，只不过当时忽略了缓存相关的内容，那么我们现在重新来看一下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">public class Engine implements EngineJobListener,</div><div class="line">        MemoryCache.ResourceRemovedListener,</div><div class="line">        EngineResource.ResourceListener &#123;</div><div class="line"></div><div class="line">    public &lt;T, Z, R&gt; LoadStatus load(Key signature, int width, int height, DataFetcher&lt;T&gt; fetcher,</div><div class="line">            DataLoadProvider&lt;T, Z&gt; loadProvider, Transformation&lt;Z&gt; transformation, ResourceTranscoder&lt;Z, R&gt; transcoder,</div><div class="line">            Priority priority, boolean isMemoryCacheable, DiskCacheStrategy diskCacheStrategy, ResourceCallback cb) &#123;</div><div class="line">        Util.assertMainThread();</div><div class="line">        long startTime = LogTime.getLogTime();</div><div class="line"></div><div class="line">        final String id = fetcher.getId();</div><div class="line">        EngineKey key = keyFactory.buildKey(id, signature, width, height, loadProvider.getCacheDecoder(),</div><div class="line">                loadProvider.getSourceDecoder(), transformation, loadProvider.getEncoder(),</div><div class="line">                transcoder, loadProvider.getSourceEncoder());</div><div class="line"></div><div class="line">        ...</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看到，这里在第11行调用了fetcher.getId()方法获得了一个id字符串，这个字符串也就是我们要加载的图片的唯一标识，比如说如果是一张网络上的图片的话，那么这个id就是这张图片的url地址。</p>
+<p>接下来在第12行，将这个id连同着signature、width、height等等10个参数一起传入到EngineKeyFactory的buildKey()方法当中，从而构建出了一个EngineKey对象，这个EngineKey也就是Glide中的缓存Key了。</p>
+<p>可见，决定缓存Key的条件非常多，即使你用override()方法改变了一下图片的width或者height，也会生成一个完全不同的缓存Key。</p>
+<p>EngineKey类的源码大家有兴趣可以自己去看一下，其实主要就是重写了equals()和hashCode()方法，保证只有传入EngineKey的所有参数都相同的情况下才认为是同一个EngineKey对象，我就不在这里将源码贴出来了。</p>
+<h1 id="内存缓存"><a href="#内存缓存" class="headerlink" title="内存缓存"></a>内存缓存</h1><p>有了缓存Key，接下来就可以开始进行缓存了，那么我们先从内存缓存看起。</p>
+<p>首先你要知道，默认情况下，Glide自动就是开启内存缓存的。也就是说，当我们使用Glide加载了一张图片之后，这张图片就会被缓存到内存当中，只要在它还没从内存中被清除之前，下次使用Glide再加载这张图片都会直接从内存当中读取，而不用重新从网络或硬盘上读取了，这样无疑就可以大幅度提升图片的加载效率。比方说你在一个RecyclerView当中反复上下滑动，RecyclerView中只要是Glide加载过的图片都可以直接从内存当中迅速读取并展示出来，从而大大提升了用户体验。</p>
+<p>而Glide最为人性化的是，你甚至不需要编写任何额外的代码就能自动享受到这个极为便利的内存缓存功能，因为Glide默认就已经将它开启了。</p>
+<p>那么既然已经默认开启了这个功能，还有什么可讲的用法呢？只有一点，如果你有什么特殊的原因需要禁用内存缓存功能，Glide对此提供了接口：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Glide.with(this)</div><div class="line">     .load(url)</div><div class="line">     .skipMemoryCache(true)</div><div class="line">     .into(imageView);</div></pre></td></tr></table></figure>
+<p>可以看到，只需要调用skipMemoryCache()方法并传入true，就表示禁用掉Glide的内存缓存功能。</p>
+<p>没错，关于Glide内存缓存的用法就只有这么多，可以说是相当简单。但是我们不可能只停留在这么简单的层面上，接下来就让我们就通过阅读源码来分析一下Glide的内存缓存功能是如何实现的。</p>
+<p>其实说到内存缓存的实现，非常容易就让人想到LruCache算法（Least Recently Used），也叫近期最少使用算法。它的主要算法原理就是把最近使用的对象用强引用存储在LinkedHashMap中，并且把最近最少使用的对象在缓存值达到预设定值之前从内存中移除。LruCache的用法也比较简单，我在 <a href="http://blog.csdn.net/guolin_blog/article/details/9316683" target="_blank" rel="external">Android高效加载大图、多图解决方案，有效避免程序OOM</a> 这篇文章当中有提到过它的用法，感兴趣的朋友可以去参考一下。</p>
+<p>那么不必多说，Glide内存缓存的实现自然也是使用的LruCache算法。不过除了LruCache算法之外，Glide还结合了一种弱引用的机制，共同完成了内存缓存功能，下面就让我们来通过源码分析一下。</p>
+<p>首先回忆一下，在上一篇文章的第二步load()方法中，我们当时分析到了在loadGeneric()方法中会调用Glide.buildStreamModelLoader()方法来获取一个ModelLoader对象。当时没有再跟进到这个方法的里面再去分析，那么我们现在来看下它的源码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line">public class Glide &#123;</div><div class="line"></div><div class="line">    public static &lt;T, Y&gt; ModelLoader&lt;T, Y&gt; buildModelLoader(Class&lt;T&gt; modelClass, Class&lt;Y&gt; resourceClass,</div><div class="line">            Context context) &#123;</div><div class="line">         if (modelClass == null) &#123;</div><div class="line">            if (Log.isLoggable(TAG, Log.DEBUG)) &#123;</div><div class="line">                Log.d(TAG, &quot;Unable to load null model, setting placeholder only&quot;);</div><div class="line">            &#125;</div><div class="line">            return null;</div><div class="line">        &#125;</div><div class="line">        return Glide.get(context).getLoaderFactory().buildModelLoader(modelClass, resourceClass);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static Glide get(Context context) &#123;</div><div class="line">        if (glide == null) &#123;</div><div class="line">            synchronized (Glide.class) &#123;</div><div class="line">                if (glide == null) &#123;</div><div class="line">                    Context applicationContext = context.getApplicationContext();</div><div class="line">                    List&lt;GlideModule&gt; modules = new ManifestParser(applicationContext).parse();</div><div class="line">                    GlideBuilder builder = new GlideBuilder(applicationContext);</div><div class="line">                    for (GlideModule module : modules) &#123;</div><div class="line">                        module.applyOptions(applicationContext, builder);</div><div class="line">                    &#125;</div><div class="line">                    glide = builder.createGlide();</div><div class="line">                    for (GlideModule module : modules) &#123;</div><div class="line">                        module.registerComponents(applicationContext, glide);</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        return glide;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里我们还是只看关键，在第11行去构建ModelLoader对象的时候，先调用了一个Glide.get()方法，而这个方法就是关键。我们可以看到，get()方法中实现的是一个单例功能，而创建Glide对象则是在第24行调用GlideBuilder的createGlide()方法来创建的，那么我们跟到这个方法当中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line">public class GlideBuilder &#123;</div><div class="line">    ...</div><div class="line"></div><div class="line">    Glide createGlide() &#123;</div><div class="line">        if (sourceService == null) &#123;</div><div class="line">            final int cores = Math.max(1, Runtime.getRuntime().availableProcessors());</div><div class="line">            sourceService = new FifoPriorityThreadPoolExecutor(cores);</div><div class="line">        &#125;</div><div class="line">        if (diskCacheService == null) &#123;</div><div class="line">            diskCacheService = new FifoPriorityThreadPoolExecutor(1);</div><div class="line">        &#125;</div><div class="line">        MemorySizeCalculator calculator = new MemorySizeCalculator(context);</div><div class="line">        if (bitmapPool == null) &#123;</div><div class="line">            if (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.HONEYCOMB) &#123;</div><div class="line">                int size = calculator.getBitmapPoolSize();</div><div class="line">                bitmapPool = new LruBitmapPool(size);</div><div class="line">            &#125; else &#123;</div><div class="line">                bitmapPool = new BitmapPoolAdapter();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        if (memoryCache == null) &#123;</div><div class="line">            memoryCache = new LruResourceCache(calculator.getMemoryCacheSize());</div><div class="line">        &#125;</div><div class="line">        if (diskCacheFactory == null) &#123;</div><div class="line">            diskCacheFactory = new InternalCacheDiskCacheFactory(context);</div><div class="line">        &#125;</div><div class="line">        if (engine == null) &#123;</div><div class="line">            engine = new Engine(memoryCache, diskCacheFactory, diskCacheService, sourceService);</div><div class="line">        &#125;</div><div class="line">        if (decodeFormat == null) &#123;</div><div class="line">            decodeFormat = DecodeFormat.DEFAULT;</div><div class="line">        &#125;</div><div class="line">        return new Glide(engine, memoryCache, bitmapPool, context, decodeFormat);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里也就是构建Glide对象的地方了。那么观察第22行，你会发现这里new出了一个LruResourceCache，并把它赋值到了memoryCache这个对象上面。你没有猜错，这个就是Glide实现内存缓存所使用的LruCache对象了。不过我这里并不打算展开来讲LruCache算法的具体实现，如果你感兴趣的话可以自己研究一下它的源码。</p>
+<p>现在创建好了LruResourceCache对象只能说是把准备工作做好了，接下来我们就一步步研究Glide中的内存缓存到底是如何实现的。</p>
+<p>刚才在Engine的load()方法中我们已经看到了生成缓存Key的代码，而内存缓存的代码其实也是在这里实现的，那么我们重新来看一下Engine类load()方法的完整源码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div></pre></td><td class="code"><pre><div class="line">public class Engine implements EngineJobListener,</div><div class="line">        MemoryCache.ResourceRemovedListener,</div><div class="line">        EngineResource.ResourceListener &#123;</div><div class="line">    ...    </div><div class="line"></div><div class="line">    public &lt;T, Z, R&gt; LoadStatus load(Key signature, int width, int height, DataFetcher&lt;T&gt; fetcher,</div><div class="line">            DataLoadProvider&lt;T, Z&gt; loadProvider, Transformation&lt;Z&gt; transformation, ResourceTranscoder&lt;Z, R&gt; transcoder,</div><div class="line">            Priority priority, boolean isMemoryCacheable, DiskCacheStrategy diskCacheStrategy, ResourceCallback cb) &#123;</div><div class="line">        Util.assertMainThread();</div><div class="line">        long startTime = LogTime.getLogTime();</div><div class="line"></div><div class="line">        final String id = fetcher.getId();</div><div class="line">        EngineKey key = keyFactory.buildKey(id, signature, width, height, loadProvider.getCacheDecoder(),</div><div class="line">                loadProvider.getSourceDecoder(), transformation, loadProvider.getEncoder(),</div><div class="line">                transcoder, loadProvider.getSourceEncoder());</div><div class="line"></div><div class="line">        EngineResource&lt;?&gt; cached = loadFromCache(key, isMemoryCacheable);</div><div class="line">        if (cached != null) &#123;</div><div class="line">            cb.onResourceReady(cached);</div><div class="line">            if (Log.isLoggable(TAG, Log.VERBOSE)) &#123;</div><div class="line">                logWithTimeAndKey(&quot;Loaded resource from cache&quot;, startTime, key);</div><div class="line">            &#125;</div><div class="line">            return null;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        EngineResource&lt;?&gt; active = loadFromActiveResources(key, isMemoryCacheable);</div><div class="line">        if (active != null) &#123;</div><div class="line">            cb.onResourceReady(active);</div><div class="line">            if (Log.isLoggable(TAG, Log.VERBOSE)) &#123;</div><div class="line">                logWithTimeAndKey(&quot;Loaded resource from active resources&quot;, startTime, key);</div><div class="line">            &#125;</div><div class="line">            return null;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        EngineJob current = jobs.get(key);</div><div class="line">        if (current != null) &#123;</div><div class="line">            current.addCallback(cb);</div><div class="line">            if (Log.isLoggable(TAG, Log.VERBOSE)) &#123;</div><div class="line">                logWithTimeAndKey(&quot;Added to existing load&quot;, startTime, key);</div><div class="line">            &#125;</div><div class="line">            return new LoadStatus(cb, current);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        EngineJob engineJob = engineJobFactory.build(key, isMemoryCacheable);</div><div class="line">        DecodeJob&lt;T, Z, R&gt; decodeJob = new DecodeJob&lt;T, Z, R&gt;(key, width, height, fetcher, loadProvider, transformation,</div><div class="line">                transcoder, diskCacheProvider, diskCacheStrategy, priority);</div><div class="line">        EngineRunnable runnable = new EngineRunnable(engineJob, decodeJob, priority);</div><div class="line">        jobs.put(key, engineJob);</div><div class="line">        engineJob.addCallback(cb);</div><div class="line">        engineJob.start(runnable);</div><div class="line"></div><div class="line">        if (Log.isLoggable(TAG, Log.VERBOSE)) &#123;</div><div class="line">            logWithTimeAndKey(&quot;Started new load&quot;, startTime, key);</div><div class="line">        &#125;</div><div class="line">        return new LoadStatus(cb, engineJob);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看到，这里在第17行调用了loadFromCache()方法来获取缓存图片，如果获取到就直接调用cb.onResourceReady()方法进行回调。如果没有获取到，则会在第26行调用loadFromActiveResources()方法来获取缓存图片，获取到的话也直接进行回调。只有在两个方法都没有获取到缓存的情况下，才会继续向下执行，从而开启线程来加载图片。</p>
+<p>也就是说，Glide的图片加载过程中会调用两个方法来获取内存缓存，loadFromCache()和loadFromActiveResources()。这两个方法中一个使用的就是LruCache算法，另一个使用的就是弱引用。我们来看一下它们的源码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div></pre></td><td class="code"><pre><div class="line">public class Engine implements EngineJobListener,</div><div class="line">        MemoryCache.ResourceRemovedListener,</div><div class="line">        EngineResource.ResourceListener &#123;</div><div class="line"></div><div class="line">    private final MemoryCache cache;</div><div class="line">    private final Map&lt;Key, WeakReference&lt;EngineResource&lt;?&gt;&gt;&gt; activeResources;</div><div class="line">    ...</div><div class="line"></div><div class="line">    private EngineResource&lt;?&gt; loadFromCache(Key key, boolean isMemoryCacheable) &#123;</div><div class="line">        if (!isMemoryCacheable) &#123;</div><div class="line">            return null;</div><div class="line">        &#125;</div><div class="line">        EngineResource&lt;?&gt; cached = getEngineResourceFromCache(key);</div><div class="line">        if (cached != null) &#123;</div><div class="line">            cached.acquire();</div><div class="line">            activeResources.put(key, new ResourceWeakReference(key, cached, getReferenceQueue()));</div><div class="line">        &#125;</div><div class="line">        return cached;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private EngineResource&lt;?&gt; getEngineResourceFromCache(Key key) &#123;</div><div class="line">        Resource&lt;?&gt; cached = cache.remove(key);</div><div class="line">        final EngineResource result;</div><div class="line">        if (cached == null) &#123;</div><div class="line">            result = null;</div><div class="line">        &#125; else if (cached instanceof EngineResource) &#123;</div><div class="line">            result = (EngineResource) cached;</div><div class="line">        &#125; else &#123;</div><div class="line">            result = new EngineResource(cached, true /*isCacheable*/);</div><div class="line">        &#125;</div><div class="line">        return result;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private EngineResource&lt;?&gt; loadFromActiveResources(Key key, boolean isMemoryCacheable) &#123;</div><div class="line">        if (!isMemoryCacheable) &#123;</div><div class="line">            return null;</div><div class="line">        &#125;</div><div class="line">        EngineResource&lt;?&gt; active = null;</div><div class="line">        WeakReference&lt;EngineResource&lt;?&gt;&gt; activeRef = activeResources.get(key);</div><div class="line">        if (activeRef != null) &#123;</div><div class="line">            active = activeRef.get();</div><div class="line">            if (active != null) &#123;</div><div class="line">                active.acquire();</div><div class="line">            &#125; else &#123;</div><div class="line">                activeResources.remove(key);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        return active;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在loadFromCache()方法的一开始，首先就判断了isMemoryCacheable是不是false，如果是false的话就直接返回null。这是什么意思呢？其实很简单，我们刚刚不是学了一个skipMemoryCache()方法吗？如果在这个方法中传入true，那么这里的isMemoryCacheable就会是false，表示内存缓存已被禁用。</p>
+<p>我们继续住下看，接着调用了getEngineResourceFromCache()方法来获取缓存。在这个方法中，会使用缓存Key来从cache当中取值，而这里的cache对象就是在构建Glide对象时创建的LruResourceCache，那么说明这里其实使用的就是LruCache算法了。</p>
+<p>但是呢，观察第22行，当我们从LruResourceCache中获取到缓存图片之后会将它从缓存中移除，然后在第16行将这个缓存图片存储到activeResources当中。activeResources就是一个弱引用的HashMap，用来缓存正在使用中的图片，我们可以看到，loadFromActiveResources()方法就是从activeResources这个HashMap当中取值的。使用activeResources来缓存正在使用中的图片，可以保护这些图片不会被LruCache算法回收掉。</p>
+<p>好的，从内存缓存中读取数据的逻辑大概就是这些了。概括一下来说，就是如果能从内存缓存当中读取到要加载的图片，那么就直接进行回调，如果读取不到的话，才会开启线程执行后面的图片加载逻辑。</p>
+<p>现在我们已经搞明白了内存缓存读取的原理，接下来的问题就是内存缓存是在哪里写入的呢？这里我们又要回顾一下上一篇文章中的内容了。还记不记得我们之前分析过，当图片加载完成之后，会在EngineJob当中通过Handler发送一条消息将执行逻辑切回到主线程当中，从而执行handleResultOnMainThread()方法。那么我们现在重新来看一下这个方法，代码如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">class EngineJob implements EngineRunnable.EngineRunnableManager &#123;</div><div class="line"></div><div class="line">    private final EngineResourceFactory engineResourceFactory;</div><div class="line">    ...</div><div class="line"></div><div class="line">    private void handleResultOnMainThread() &#123;</div><div class="line">        if (isCancelled) &#123;</div><div class="line">            resource.recycle();</div><div class="line">            return;</div><div class="line">        &#125; else if (cbs.isEmpty()) &#123;</div><div class="line">            throw new IllegalStateException(&quot;Received a resource without any callbacks to notify&quot;);</div><div class="line">        &#125;</div><div class="line">        engineResource = engineResourceFactory.build(resource, isCacheable);</div><div class="line">        hasResource = true;</div><div class="line">        engineResource.acquire();</div><div class="line">        listener.onEngineJobComplete(key, engineResource);</div><div class="line">        for (ResourceCallback cb : cbs) &#123;</div><div class="line">            if (!isInIgnoredCallbacks(cb)) &#123;</div><div class="line">                engineResource.acquire();</div><div class="line">                cb.onResourceReady(engineResource);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        engineResource.release();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    static class EngineResourceFactory &#123;</div><div class="line">        public &lt;R&gt; EngineResource&lt;R&gt; build(Resource&lt;R&gt; resource, boolean isMemoryCacheable) &#123;</div><div class="line">            return new EngineResource&lt;R&gt;(resource, isMemoryCacheable);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在第13行，这里通过EngineResourceFactory构建出了一个包含图片资源的EngineResource对象，然后会在第16行将这个对象回调到Engine的onEngineJobComplete()方法当中，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">public class Engine implements EngineJobListener,</div><div class="line">        MemoryCache.ResourceRemovedListener,</div><div class="line">        EngineResource.ResourceListener &#123;</div><div class="line">    ...    </div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void onEngineJobComplete(Key key, EngineResource&lt;?&gt; resource) &#123;</div><div class="line">        Util.assertMainThread();</div><div class="line">        // A null resource indicates that the load failed, usually due to an exception.</div><div class="line">        if (resource != null) &#123;</div><div class="line">            resource.setResourceListener(key, this);</div><div class="line">            if (resource.isCacheable()) &#123;</div><div class="line">                activeResources.put(key, new ResourceWeakReference(key, resource, getReferenceQueue()));</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        jobs.remove(key);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>现在就非常明显了，可以看到，在第13行，回调过来的EngineResource被put到了activeResources当中，也就是在这里写入的缓存。</p>
+<p>那么这只是弱引用缓存，还有另外一种LruCache缓存是在哪里写入的呢？这就要介绍一下EngineResource中的一个引用机制了。观察刚才的handleResultOnMainThread()方法，在第15行和第19行有调用EngineResource的acquire()方法，在第23行有调用它的release()方法。其实，EngineResource是用一个acquired变量用来记录图片被引用的次数，调用acquire()方法会让变量加1，调用release()方法会让变量减1，代码如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">class EngineResource&lt;Z&gt; implements Resource&lt;Z&gt; &#123;</div><div class="line"></div><div class="line">    private int acquired;</div><div class="line">    ...</div><div class="line"></div><div class="line">    void acquire() &#123;</div><div class="line">        if (isRecycled) &#123;</div><div class="line">            throw new IllegalStateException(&quot;Cannot acquire a recycled resource&quot;);</div><div class="line">        &#125;</div><div class="line">        if (!Looper.getMainLooper().equals(Looper.myLooper())) &#123;</div><div class="line">            throw new IllegalThreadStateException(&quot;Must call acquire on the main thread&quot;);</div><div class="line">        &#125;</div><div class="line">        ++acquired;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    void release() &#123;</div><div class="line">        if (acquired &lt;= 0) &#123;</div><div class="line">            throw new IllegalStateException(&quot;Cannot release a recycled or not yet acquired resource&quot;);</div><div class="line">        &#125;</div><div class="line">        if (!Looper.getMainLooper().equals(Looper.myLooper())) &#123;</div><div class="line">            throw new IllegalThreadStateException(&quot;Must call release on the main thread&quot;);</div><div class="line">        &#125;</div><div class="line">        if (--acquired == 0) &#123;</div><div class="line">            listener.onResourceReleased(key, this);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>也就是说，当acquired变量大于0的时候，说明图片正在使用中，也就应该放到activeResources弱引用缓存当中。而经过release()之后，如果acquired变量等于0了，说明图片已经不再被使用了，那么此时会在第24行调用listener的onResourceReleased()方法来释放资源，这个listener就是Engine对象，我们来看下它的onResourceReleased()方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">public class Engine implements EngineJobListener,</div><div class="line">        MemoryCache.ResourceRemovedListener,</div><div class="line">        EngineResource.ResourceListener &#123;</div><div class="line"></div><div class="line">    private final MemoryCache cache;</div><div class="line">    private final Map&lt;Key, WeakReference&lt;EngineResource&lt;?&gt;&gt;&gt; activeResources;</div><div class="line">    ...    </div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void onResourceReleased(Key cacheKey, EngineResource resource) &#123;</div><div class="line">        Util.assertMainThread();</div><div class="line">        activeResources.remove(cacheKey);</div><div class="line">        if (resource.isCacheable()) &#123;</div><div class="line">            cache.put(cacheKey, resource);</div><div class="line">        &#125; else &#123;</div><div class="line">            resourceRecycler.recycle(resource);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看到，这里首先会将缓存图片从activeResources中移除，然后再将它put到LruResourceCache当中。这样也就实现了正在使用中的图片使用弱引用来进行缓存，不在使用中的图片使用LruCache来进行缓存的功能。</p>
+<p>这就是Glide内存缓存的实现原理。</p>
+<h1 id="硬盘缓存"><a href="#硬盘缓存" class="headerlink" title="硬盘缓存"></a>硬盘缓存</h1><p>接下来我们开始学习硬盘缓存方面的内容。</p>
+<p>不知道你还记不记得，在本系列的第一篇文章中我们就使用过硬盘缓存的功能了。当时为了禁止Glide对图片进行硬盘缓存而使用了如下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Glide.with(this)</div><div class="line">     .load(url)</div><div class="line">     .diskCacheStrategy(DiskCacheStrategy.NONE)</div><div class="line">     .into(imageView);</div></pre></td></tr></table></figure>
+<p>调用diskCacheStrategy()方法并传入DiskCacheStrategy.NONE，就可以禁用掉Glide的硬盘缓存功能了。</p>
+<p>这个diskCacheStrategy()方法基本上就是Glide硬盘缓存功能的一切，它可以接收四种参数：</p>
+<ul>
+<li>DiskCacheStrategy.NONE： 表示不缓存任何内容。</li>
+<li>DiskCacheStrategy.SOURCE： 表示只缓存原始图片。</li>
+<li>DiskCacheStrategy.RESULT： 表示只缓存转换过后的图片（默认选项）。</li>
+<li>DiskCacheStrategy.ALL ： 表示既缓存原始图片，也缓存转换过后的图片。</li>
+</ul>
+<p>上面四种参数的解释本身并没有什么难理解的地方，但是有一个概念大家需要了解，就是当我们使用Glide去加载一张图片的时候，Glide默认并不会将原始图片展示出来，而是会对图片进行压缩和转换（我们会在后面学习这方面的内容）。总之就是经过种种一系列操作之后得到的图片，就叫转换过后的图片。而Glide默认情况下在硬盘缓存的就是转换过后的图片，我们通过调用diskCacheStrategy()方法则可以改变这一默认行为。</p>
+<p>好的，关于Glide硬盘缓存的用法也就只有这么多，那么接下来还是老套路，我们通过阅读源码来分析一下，Glide的硬盘缓存功能是如何实现的。</p>
+<p>首先，和内存缓存类似，硬盘缓存的实现也是使用的LruCache算法，而且Google还提供了一个现成的工具类DiskLruCache。我之前也专门写过一篇文章对这个DiskLruCache工具进行了比较全面的分析，感兴趣的朋友可以参考一下 <a href="http://blog.csdn.net/guolin_blog/article/details/28863651" target="_blank" rel="external">Android DiskLruCache完全解析，硬盘缓存的最佳方案</a> 。当然，Glide是使用的自己编写的DiskLruCache工具类，但是基本的实现原理都是差不多的。</p>
+<p>接下来我们看一下Glide是在哪里读取硬盘缓存的。这里又需要回忆一下上篇文章中的内容了，Glide开启线程来加载图片后会执行EngineRunnable的run()方法，run()方法中又会调用一个decode()方法，那么我们重新再来看一下这个decode()方法的源码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">private Resource&lt;?&gt; decode() throws Exception &#123;</div><div class="line">    if (isDecodingFromCache()) &#123;</div><div class="line">        return decodeFromCache();</div><div class="line">    &#125; else &#123;</div><div class="line">        return decodeFromSource();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看到，这里会分为两种情况，一种是调用decodeFromCache()方法从硬盘缓存当中读取图片，一种是调用decodeFromSource()来读取原始图片。默认情况下Glide会优先从缓存当中读取，只有缓存中不存在要读取的图片时，才会去读取原始图片。那么我们现在来看一下decodeFromCache()方法的源码，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">private Resource&lt;?&gt; decodeFromCache() throws Exception &#123;</div><div class="line">    Resource&lt;?&gt; result = null;</div><div class="line">    try &#123;</div><div class="line">        result = decodeJob.decodeResultFromCache();</div><div class="line">    &#125; catch (Exception e) &#123;</div><div class="line">        if (Log.isLoggable(TAG, Log.DEBUG)) &#123;</div><div class="line">            Log.d(TAG, &quot;Exception decoding result from cache: &quot; + e);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    if (result == null) &#123;</div><div class="line">        result = decodeJob.decodeSourceFromCache();</div><div class="line">    &#125;</div><div class="line">    return result;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看到，这里会先去调用DecodeJob的decodeResultFromCache()方法来获取缓存，如果获取不到，会再调用decodeSourceFromCache()方法获取缓存，这两个方法的区别其实就是DiskCacheStrategy.RESULT和DiskCacheStrategy.SOURCE这两个参数的区别，相信不需要我再做什么解释吧。</p>
+<p>那么我们来看一下这两个方法的源码吧，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">public Resource&lt;Z&gt; decodeResultFromCache() throws Exception &#123;</div><div class="line">    if (!diskCacheStrategy.cacheResult()) &#123;</div><div class="line">        return null;</div><div class="line">    &#125;</div><div class="line">    long startTime = LogTime.getLogTime();</div><div class="line">    Resource&lt;T&gt; transformed = loadFromCache(resultKey);</div><div class="line">    startTime = LogTime.getLogTime();</div><div class="line">    Resource&lt;Z&gt; result = transcode(transformed);</div><div class="line">    return result;</div><div class="line">&#125;</div><div class="line"></div><div class="line">public Resource&lt;Z&gt; decodeSourceFromCache() throws Exception &#123;</div><div class="line">    if (!diskCacheStrategy.cacheSource()) &#123;</div><div class="line">        return null;</div><div class="line">    &#125;</div><div class="line">    long startTime = LogTime.getLogTime();</div><div class="line">    Resource&lt;T&gt; decoded = loadFromCache(resultKey.getOriginalKey());</div><div class="line">    return transformEncodeAndTranscode(decoded);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看到，它们都是调用了loadFromCache()方法从缓存当中读取数据，如果是decodeResultFromCache()方法就直接将数据解码并返回，如果是decodeSourceFromCache()方法，还要调用一下transformEncodeAndTranscode()方法先将数据转换一下再解码并返回。</p>
+<p>然而我们注意到，这两个方法中在调用loadFromCache()方法时传入的参数却不一样，一个传入的是resultKey，另外一个却又调用了resultKey的getOriginalKey()方法。这个其实非常好理解，刚才我们已经解释过了，Glide的缓存Key是由10个参数共同组成的，包括图片的width、height等等。但如果我们是缓存的原始图片，其实并不需要这么多的参数，因为不用对图片做任何的变化。那么我们来看一下getOriginalKey()方法的源码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">public Key getOriginalKey() &#123;</div><div class="line">    if (originalKey == null) &#123;</div><div class="line">        originalKey = new OriginalKey(id, signature);</div><div class="line">    &#125;</div><div class="line">    return originalKey;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看到，这里其实就是忽略了绝大部分的参数，只使用了id和signature这两个参数来构成缓存Key。而signature参数绝大多数情况下都是用不到的，因此基本上可以说就是由id（也就是图片url）来决定的Original缓存Key。</p>
+<p>搞明白了这两种缓存Key的区别，那么接下来我们看一下loadFromCache()方法的源码吧：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">private Resource&lt;T&gt; loadFromCache(Key key) throws IOException &#123;</div><div class="line">    File cacheFile = diskCacheProvider.getDiskCache().get(key);</div><div class="line">    if (cacheFile == null) &#123;</div><div class="line">        return null;</div><div class="line">    &#125;</div><div class="line">    Resource&lt;T&gt; result = null;</div><div class="line">    try &#123;</div><div class="line">        result = loadProvider.getCacheDecoder().decode(cacheFile, width, height);</div><div class="line">    &#125; finally &#123;</div><div class="line">        if (result == null) &#123;</div><div class="line">            diskCacheProvider.getDiskCache().delete(key);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    return result;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这个方法的逻辑非常简单，调用getDiskCache()方法获取到的就是Glide自己编写的DiskLruCache工具类的实例，然后调用它的get()方法并把缓存Key传入，就能得到硬盘缓存的文件了。如果文件为空就返回null，如果文件不为空则将它解码成Resource对象后返回即可。</p>
+<p>这样我们就将硬盘缓存读取的源码分析完了，那么硬盘缓存又是在哪里写入的呢？趁热打铁我们赶快继续分析下去。</p>
+<p>刚才已经分析过了，在没有缓存的情况下，会调用decodeFromSource()方法来读取原始图片。那么我们来看下这个方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">public Resource&lt;Z&gt; decodeFromSource() throws Exception &#123;</div><div class="line">    Resource&lt;T&gt; decoded = decodeSource();</div><div class="line">    return transformEncodeAndTranscode(decoded);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这个方法中只有两行代码，decodeSource()顾名思义是用来解析原图片的，而transformEncodeAndTranscode()则是用来对图片进行转换和转码的。我们先来看decodeSource()方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">private Resource&lt;T&gt; decodeSource() throws Exception &#123;</div><div class="line">    Resource&lt;T&gt; decoded = null;</div><div class="line">    try &#123;</div><div class="line">        long startTime = LogTime.getLogTime();</div><div class="line">        final A data = fetcher.loadData(priority);</div><div class="line">        if (isCancelled) &#123;</div><div class="line">            return null;</div><div class="line">        &#125;</div><div class="line">        decoded = decodeFromSourceData(data);</div><div class="line">    &#125; finally &#123;</div><div class="line">        fetcher.cleanup();</div><div class="line">    &#125;</div><div class="line">    return decoded;</div><div class="line">&#125;</div><div class="line"></div><div class="line">private Resource&lt;T&gt; decodeFromSourceData(A data) throws IOException &#123;</div><div class="line">    final Resource&lt;T&gt; decoded;</div><div class="line">    if (diskCacheStrategy.cacheSource()) &#123;</div><div class="line">        decoded = cacheAndDecodeSourceData(data);</div><div class="line">    &#125; else &#123;</div><div class="line">        long startTime = LogTime.getLogTime();</div><div class="line">        decoded = loadProvider.getSourceDecoder().decode(data, width, height);</div><div class="line">    &#125;</div><div class="line">    return decoded;</div><div class="line">&#125;</div><div class="line"></div><div class="line">private Resource&lt;T&gt; cacheAndDecodeSourceData(A data) throws IOException &#123;</div><div class="line">    long startTime = LogTime.getLogTime();</div><div class="line">    SourceWriter&lt;A&gt; writer = new SourceWriter&lt;A&gt;(loadProvider.getSourceEncoder(), data);</div><div class="line">    diskCacheProvider.getDiskCache().put(resultKey.getOriginalKey(), writer);</div><div class="line">    startTime = LogTime.getLogTime();</div><div class="line">    Resource&lt;T&gt; result = loadFromCache(resultKey.getOriginalKey());</div><div class="line">    return result;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里会在第5行先调用fetcher的loadData()方法读取图片数据，然后在第9行调用decodeFromSourceData()方法来对图片进行解码。接下来会在第18行先判断是否允许缓存原始图片，如果允许的话又会调用cacheAndDecodeSourceData()方法。而在这个方法中同样调用了getDiskCache()方法来获取DiskLruCache实例，接着调用它的put()方法就可以写入硬盘缓存了，注意原始图片的缓存Key是用的resultKey.getOriginalKey()。</p>
+<p>好的，原始图片的缓存写入就是这么简单，接下来我们分析一下transformEncodeAndTranscode()方法的源码，来看看转换过后的图片缓存是怎么写入的。代码如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">private Resource&lt;Z&gt; transformEncodeAndTranscode(Resource&lt;T&gt; decoded) &#123;</div><div class="line">    long startTime = LogTime.getLogTime();</div><div class="line">    Resource&lt;T&gt; transformed = transform(decoded);</div><div class="line">    writeTransformedToCache(transformed);</div><div class="line">    startTime = LogTime.getLogTime();</div><div class="line">    Resource&lt;Z&gt; result = transcode(transformed);</div><div class="line">    return result;</div><div class="line">&#125;</div><div class="line"></div><div class="line">private void writeTransformedToCache(Resource&lt;T&gt; transformed) &#123;</div><div class="line">    if (transformed == null || !diskCacheStrategy.cacheResult()) &#123;</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line">    long startTime = LogTime.getLogTime();</div><div class="line">    SourceWriter&lt;Resource&lt;T&gt;&gt; writer = new SourceWriter&lt;Resource&lt;T&gt;&gt;(loadProvider.getEncoder(), transformed);</div><div class="line">    diskCacheProvider.getDiskCache().put(resultKey, writer);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里的逻辑就更加简单明了了。先是在第3行调用transform()方法来对图片进行转换，然后在writeTransformedToCache()方法中将转换过后的图片写入到硬盘缓存中，调用的同样是DiskLruCache实例的put()方法，不过这里用的缓存Key是resultKey。</p>
+<p>这样我们就将Glide硬盘缓存的实现原理也分析完了。虽然这些源码看上去如此的复杂，但是经过Glide出色的封装，使得我们只需要通过skipMemoryCache()和diskCacheStrategy()这两个方法就可以轻松自如地控制Glide的缓存功能了。</p>
+<p>了解了Glide缓存的实现原理之后，接下来我们再来学习一些Glide缓存的高级技巧吧。</p>
+<h1 id="高级技巧"><a href="#高级技巧" class="headerlink" title="高级技巧"></a>高级技巧</h1><p>虽说Glide将缓存功能高度封装之后，使得用法变得非常简单，但同时也带来了一些问题。</p>
+<p>比如之前有一位群里的朋友就跟我说过，他们项目的图片资源都是存放在七牛云上面的，而七牛云为了对图片资源进行保护，会在图片url地址的基础之上再加上一个token参数。也就是说，一张图片的url地址可能会是如下格式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://url.com/image.jpg?token=d9caa6e02c990b0a1</div></pre></td></tr></table></figure>
+<p>而使用Glide加载这张图片的话，也就会使用这个url地址来组成缓存Key。</p>
+<p>但是接下来问题就来了，token作为一个验证身份的参数并不是一成不变的，很有可能时时刻刻都在变化。而如果token变了，那么图片的url也就跟着变了，图片url变了，缓存Key也就跟着变了。结果就造成了，明明是同一张图片，就因为token不断在改变，导致Glide的缓存功能完全失效了。</p>
+<p>这其实是个挺棘手的问题，而且我相信绝对不仅仅是七牛云这一个个例，大家在使用Glide的时候很有可能都会遇到这个问题。</p>
+<p>那么该如何解决这个问题呢？我们还是从源码的层面进行分析，首先再来看一下Glide生成缓存Key这部分的代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">public class Engine implements EngineJobListener,</div><div class="line">        MemoryCache.ResourceRemovedListener,</div><div class="line">        EngineResource.ResourceListener &#123;</div><div class="line"></div><div class="line">    public &lt;T, Z, R&gt; LoadStatus load(Key signature, int width, int height, DataFetcher&lt;T&gt; fetcher,</div><div class="line">            DataLoadProvider&lt;T, Z&gt; loadProvider, Transformation&lt;Z&gt; transformation, ResourceTranscoder&lt;Z, R&gt; transcoder,</div><div class="line">            Priority priority, boolean isMemoryCacheable, DiskCacheStrategy diskCacheStrategy, ResourceCallback cb) &#123;</div><div class="line">        Util.assertMainThread();</div><div class="line">        long startTime = LogTime.getLogTime();</div><div class="line"></div><div class="line">        final String id = fetcher.getId();</div><div class="line">        EngineKey key = keyFactory.buildKey(id, signature, width, height, loadProvider.getCacheDecoder(),</div><div class="line">                loadProvider.getSourceDecoder(), transformation, loadProvider.getEncoder(),</div><div class="line">                transcoder, loadProvider.getSourceEncoder());</div><div class="line"></div><div class="line">        ...</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>来看一下第11行，刚才已经说过了，这个id其实就是图片的url地址。那么，这里是通过调用fetcher.getId()方法来获取的图片url地址，而我们在上一篇文章中已经知道了，fetcher就是HttpUrlFetcher的实例，我们就来看一下它的getId()方法的源码吧，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">public class HttpUrlFetcher implements DataFetcher&lt;InputStream&gt; &#123;</div><div class="line"></div><div class="line">    private final GlideUrl glideUrl;</div><div class="line">    ...</div><div class="line"></div><div class="line">    public HttpUrlFetcher(GlideUrl glideUrl) &#123;</div><div class="line">        this(glideUrl, DEFAULT_CONNECTION_FACTORY);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    HttpUrlFetcher(GlideUrl glideUrl, HttpUrlConnectionFactory connectionFactory) &#123;</div><div class="line">        this.glideUrl = glideUrl;</div><div class="line">        this.connectionFactory = connectionFactory;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public String getId() &#123;</div><div class="line">        return glideUrl.getCacheKey();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看到，getId()方法中又调用了GlideUrl的getCacheKey()方法。那么这个GlideUrl对象是从哪里来的呢？其实就是我们在load()方法中传入的图片url地址，然后Glide在内部把这个url地址包装成了一个GlideUrl对象。</p>
+<p>很明显，接下来我们就要看一下GlideUrl的getCacheKey()方法的源码了，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">public class GlideUrl &#123;</div><div class="line"></div><div class="line">    private final URL url;</div><div class="line">    private final String stringUrl;</div><div class="line">    ...</div><div class="line"></div><div class="line">    public GlideUrl(URL url) &#123;</div><div class="line">        this(url, Headers.DEFAULT);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public GlideUrl(String url) &#123;</div><div class="line">        this(url, Headers.DEFAULT);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public GlideUrl(URL url, Headers headers) &#123;</div><div class="line">        ...</div><div class="line">        this.url = url;</div><div class="line">        stringUrl = null;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public GlideUrl(String url, Headers headers) &#123;</div><div class="line">        ...</div><div class="line">        this.stringUrl = url;</div><div class="line">        this.url = null;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public String getCacheKey() &#123;</div><div class="line">        return stringUrl != null ? stringUrl : url.toString();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里我将代码稍微进行了一点简化，这样看上去更加简单明了。GlideUrl类的构造函数接收两种类型的参数，一种是url字符串，一种是URL对象。然后getCacheKey()方法中的判断逻辑非常简单，如果传入的是url字符串，那么就直接返回这个字符串本身，如果传入的是URL对象，那么就返回这个对象toString()后的结果。</p>
+<p>其实看到这里，我相信大家已经猜到解决方案了，因为getCacheKey()方法中的逻辑太直白了，直接就是将图片的url地址进行返回来作为缓存Key的。那么其实我们只需要重写这个getCacheKey()方法，加入一些自己的逻辑判断，就能轻松解决掉刚才的问题了。</p>
+<p>创建一个MyGlideUrl继承自GlideUrl，代码如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">public class MyGlideUrl extends GlideUrl &#123;</div><div class="line"></div><div class="line">    private String mUrl;</div><div class="line"></div><div class="line">    public MyGlideUrl(String url) &#123;</div><div class="line">        super(url);</div><div class="line">        mUrl = url;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public String getCacheKey() &#123;</div><div class="line">        return mUrl.replace(findTokenParam(), &quot;&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private String findTokenParam() &#123;</div><div class="line">        String tokenParam = &quot;&quot;;</div><div class="line">        int tokenKeyIndex = mUrl.indexOf(&quot;?token=&quot;) &gt;= 0 ? mUrl.indexOf(&quot;?token=&quot;) : mUrl.indexOf(&quot;&amp;token=&quot;);</div><div class="line">        if (tokenKeyIndex != -1) &#123;</div><div class="line">            int nextAndIndex = mUrl.indexOf(&quot;&amp;&quot;, tokenKeyIndex + 1);</div><div class="line">            if (nextAndIndex != -1) &#123;</div><div class="line">                tokenParam = mUrl.substring(tokenKeyIndex + 1, nextAndIndex + 1);</div><div class="line">            &#125; else &#123;</div><div class="line">                tokenParam = mUrl.substring(tokenKeyIndex);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        return tokenParam;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看到，这里我们重写了getCacheKey()方法，在里面加入了一段逻辑用于将图片url地址中token参数的这一部分移除掉。这样getCacheKey()方法得到的就是一个没有token参数的url地址，从而不管token怎么变化，最终Glide的缓存Key都是固定不变的了。</p>
+<p>当然，定义好了MyGlideUrl，我们还得使用它才行，将加载图片的代码改成如下方式即可：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Glide.with(this)</div><div class="line">     .load(new MyGlideUrl(url))</div><div class="line">     .into(imageView);123</div></pre></td></tr></table></figure>
+<p>也就是说，我们需要在load()方法中传入这个自定义的MyGlideUrl对象，而不能再像之前那样直接传入url字符串了。不然的话Glide在内部还是会使用原始的GlideUrl类，而不是我们自定义的MyGlideUrl类。</p>
+<p>这样我们就将这个棘手的缓存问题给解决掉了。</p>
+<p>好了，关于Glide缓存方面的内容今天就分析到这里，现在我们不光掌握了Glide缓存的基本用法和高级技巧，还了解了它背后的实现原理，又是收获满满的一篇文章啊。下一篇文章当中，我会继续带着大家深入分析Glide的其他功能模块，讲一讲回调方面的知识，敬请期待。</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/09/20/android/github/glide解析3_缓存流程/" data-id="cj7sum2xf0007wapjfrdfwux7" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/09/20/android/github/glide解析3_缓存流程/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/09/20/android/github/glide解析4_回调监听/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    Glide解析4_回调监听
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2017/09/20/android/github/glide解析2_执行流程/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title"></div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="uyan_frame"></div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">recent</h3>
+        <div class="widget">
+            <ul id="recent-post" class="no-thumbnail">
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/glide/">glide</a></p>
+                            <p class="item-title"><a href="/2017/09/20/android/github/glide解析5_图片变换/" class="title">Glide解析5_图片变换</a></p>
+                            <p class="item-date"><time datetime="2017-09-20T08:53:48.000Z" itemprop="datePublished">2017-09-20</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/glide/">glide</a></p>
+                            <p class="item-title"><a href="/2017/09/20/android/github/glide解析4_回调监听/" class="title">Glide解析4_回调监听</a></p>
+                            <p class="item-date"><time datetime="2017-09-20T08:46:52.000Z" itemprop="datePublished">2017-09-20</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/09/20/android/github/glide解析3_缓存流程/" class="title"></a></p>
+                            <p class="item-date"><time datetime="2017-09-20T08:42:24.000Z" itemprop="datePublished">2017-09-20</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/09/20/android/github/glide解析2_执行流程/" class="title"></a></p>
+                            <p class="item-date"><time datetime="2017-09-20T08:40:45.000Z" itemprop="datePublished">2017-09-20</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/glide/">glide</a></p>
+                            <p class="item-title"><a href="/2017/09/20/android/github/glide解析1_基本用法/" class="title">Glide解析1_基本用法</a></p>
+                            <p class="item-date"><time datetime="2017-09-20T08:38:10.000Z" itemprop="datePublished">2017-09-20</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">categories</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">41</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/glide/">glide</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">2</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">archives</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">51</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tags</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">36</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tag cloud</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 14.29px;">code</a> <a href="/tags/git/" style="font-size: 11.43px;">git</a> <a href="/tags/github/" style="font-size: 17.14px;">github</a> <a href="/tags/glide/" style="font-size: 12.86px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 12.86px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.43px;">markdown</a> <a href="/tags/mysql/" style="font-size: 15.71px;">mysql</a> <a href="/tags/node/" style="font-size: 18.57px;">node</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.43px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.43px;">设计模式</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">links</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 Ernest Chang<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2142274"></script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

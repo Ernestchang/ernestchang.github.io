@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <meta charset="utf-8">
+    
+    <title>Glide解析5_图片变换 | The Old Man and the Sea</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="本文出自郭霖博客  大家好，又到了学习Glide的时间了。前段时间由于项目开发紧张，再加上后来又生病了，所以停更了一个月，不过现在终于又可以恢复正常更新了。今天是这个系列的第五篇文章，在前面四篇文章的当中，我们已经学习了Glide的基本用法、Glide的工作原理和执行流程、Glide的缓存机制、以及Glide的回调机制等内容。如果你能将前面的四篇文章都掌握好了，那么恭喜你，现在你已经是一名Gli">
+<meta name="keywords" content="github,glide">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Glide解析5_图片变换">
+<meta property="og:url" content="http://yoursite.com/2017/09/20/android/github/glide解析5_图片变换/index.html">
+<meta property="og:site_name" content="The Old Man and the Sea">
+<meta property="og:description" content="本文出自郭霖博客  大家好，又到了学习Glide的时间了。前段时间由于项目开发紧张，再加上后来又生病了，所以停更了一个月，不过现在终于又可以恢复正常更新了。今天是这个系列的第五篇文章，在前面四篇文章的当中，我们已经学习了Glide的基本用法、Glide的工作原理和执行流程、Glide的缓存机制、以及Glide的回调机制等内容。如果你能将前面的四篇文章都掌握好了，那么恭喜你，现在你已经是一名Gli">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://img.blog.csdn.net/20170809205829589?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZ3VvbGluX2Jsb2c=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170809211645334">
+<meta property="og:image" content="http://img.blog.csdn.net/20170810213840362?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZ3VvbGluX2Jsb2c=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170816204655787?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZ3VvbGluX2Jsb2c=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170816205304104?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZ3VvbGluX2Jsb2c=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170816211113917?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZ3VvbGluX2Jsb2c=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170823204448719?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZ3VvbGluX2Jsb2c=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170823205319689?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZ3VvbGluX2Jsb2c=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170823205616112?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZ3VvbGluX2Jsb2c=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170823205854058?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZ3VvbGluX2Jsb2c=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:updated_time" content="2017-09-20T09:48:22.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Glide解析5_图片变换">
+<meta name="twitter:description" content="本文出自郭霖博客  大家好，又到了学习Glide的时间了。前段时间由于项目开发紧张，再加上后来又生病了，所以停更了一个月，不过现在终于又可以恢复正常更新了。今天是这个系列的第五篇文章，在前面四篇文章的当中，我们已经学习了Glide的基本用法、Glide的工作原理和执行流程、Glide的缓存机制、以及Glide的回调机制等内容。如果你能将前面的四篇文章都掌握好了，那么恭喜你，现在你已经是一名Gli">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20170809205829589?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZ3VvbGluX2Jsb2c=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+    
+
+    
+        <link rel="alternate" href="/" title="The Old Man and the Sea" type="application/atom+xml" />
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">The Old Man and the Sea</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/uploads/images/avert.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/uploads/images/avert.png" />
+            <h2 id="name">Ernest Chang</h2>
+            <h3 id="title">Developer &amp; Designer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Hangzhou, China</span>
+            <a id="follow" target="_blank" href="https://github.com/Ernestchang/">FOLLOW</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                72
+                <span>posts</span>
+            </div>
+            <div class="article-info-block">
+                20
+                <span>tags</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/Ernestchang/" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="facebook" class=tooltip>
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="dribbble" class=tooltip>
+                            <i class="fa fa-dribbble"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-android/github/glide解析5_图片变换" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            Glide解析5_图片变换
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/09/20/android/github/glide解析5_图片变换/">
+            <time datetime="2017-09-20T08:53:48.000Z" itemprop="datePublished">2017-09-20</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/glide/">glide</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/github/">github</a>, <a class="tag-link" href="/tags/glide/">glide</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <blockquote>
+<p>本文出自<a href="http://blog.csdn.net/guolin_blog/article/details/71524668" target="_blank" rel="external">郭霖博客</a></p>
+</blockquote>
+<p>大家好，又到了学习Glide的时间了。前段时间由于项目开发紧张，再加上后来又生病了，所以停更了一个月，不过现在终于又可以恢复正常更新了。今天是这个系列的第五篇文章，在前面四篇文章的当中，我们已经学习了Glide的基本用法、Glide的工作原理和执行流程、Glide的缓存机制、以及Glide的回调机制等内容。如果你能将前面的四篇文章都掌握好了，那么恭喜你，现在你已经是一名Glide好手了。</p>
+<p>如果你还没有阅读过前面四篇文章的话，那么可以点击后面的链接，依次向前阅读 <a href="http://blog.csdn.net/guolin_blog/article/details/70215985" target="_blank" rel="external">Android图片加载框架最全解析（四），玩转Glide的回调与监听</a>。</p>
+<p>不过Glide的这个框架的功能实在是太强大了，它所能做的事情远远不止于目前我们所学的这些。因此，今天我们就再来学习一个新的功能模块，并且是一个非常重要的模块——Glide的图片变化功能。</p>
+<h1 id="一个问题"><a href="#一个问题" class="headerlink" title="一个问题"></a>一个问题</h1><p>在正式开始学习Glide的图片变化功能之前，我们先来看一个问题，这个问题可能有不少人都在使用Glide的时候都遇到过，正好在本篇内容的主题之下我们顺带着将这个问题给解决了。</p>
+<p>首先我们尝试使用Glide来加载一张图片，图片URL地址是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">https://www.baidu.com/img/bd_logo1.png1</div></pre></td></tr></table></figure>
+<p>这是百度首页logo的一张图片，图片尺寸是540*258像素。</p>
+<p>接下来我们编写一个非常简单的布局文件，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">&lt;LinearLayout</div><div class="line">    xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    android:layout_width=&quot;match_parent&quot;</div><div class="line">    android:layout_height=&quot;match_parent&quot;</div><div class="line">    android:orientation=&quot;vertical&quot;&gt;</div><div class="line"></div><div class="line">    &lt;Button</div><div class="line">        android:layout_width=&quot;wrap_content&quot;</div><div class="line">        android:layout_height=&quot;wrap_content&quot;</div><div class="line">        android:text=&quot;Load Image&quot;</div><div class="line">        android:onClick=&quot;loadImage&quot;</div><div class="line">        /&gt;</div><div class="line"></div><div class="line">    &lt;ImageView</div><div class="line">        android:id=&quot;@+id/image_view&quot;</div><div class="line">        android:layout_width=&quot;wrap_content&quot;</div><div class="line">        android:layout_height=&quot;wrap_content&quot;</div><div class="line">        /&gt;</div><div class="line">&lt;/LinearLayout&gt;</div></pre></td></tr></table></figure>
+<p>布局文件中只有一个按钮和一个用于显示图片的ImageView。注意，ImageView的宽和高这里设置的都是wrap_content。</p>
+<p>然后编写如下的代码来加载图片：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">public class MainActivity extends AppCompatActivity &#123;</div><div class="line"></div><div class="line">    ImageView imageView;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    protected void onCreate(Bundle savedInstanceState) &#123;</div><div class="line">        super.onCreate(savedInstanceState);</div><div class="line">        setContentView(R.layout.activity_main);</div><div class="line">        imageView = (ImageView) findViewById(R.id.image_view);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void loadImage(View view) &#123;</div><div class="line">        String url = &quot;https://www.baidu.com/img/bd_logo1.png&quot;;</div><div class="line">        Glide.with(this)</div><div class="line">             .load(url)</div><div class="line">             .into(imageView);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这些简单的代码对于现在的你而言应该都是小儿科了，相信我也不用再做什么解释。现在运行一下程序并点击加载图片按钮，效果如下图所示。</p>
+<p><img src="http://img.blog.csdn.net/20170809205829589?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZ3VvbGluX2Jsb2c=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="img"></p>
+<p>图片是正常加载出来了，不过大家有没有发现一个问题。百度这张logo图片的尺寸只有540<em>258像素，但是我的手机的分辨率却是1080</em>1920像素，而我们将ImageView的宽高设置的都是wrap_content，那么图片的宽度应该只有手机屏幕宽度的一半而已，但是这里却充满了全屏，这是为什么呢？</p>
+<p>如果你之前也被这个问题困扰过，那么恭喜，本篇文章正是你所需要的。之所以会出现这个现象，就是因为Glide的图片变换功能所导致的。那么接下来我们会先分析如何解决这个问题，然后再深入学习Glide图片变化的更多功能。</p>
+<p>稍微对Android有点了解的人应该都知道ImageView有scaleType这个属性，但是可能大多数人却不知道，如果在没有指定scaleType属性的情况下，ImageView默认的scaleType是什么？</p>
+<p>这个问题如果直接问我，我也答不上来。不过动手才是检验真理的唯一标准，想知道答案，自己动手试一下就知道了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">public class MainActivity extends AppCompatActivity &#123;</div><div class="line"></div><div class="line">    private static final String TAG = &quot;MainActivity&quot;;</div><div class="line"></div><div class="line">    ImageView imageView;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    protected void onCreate(Bundle savedInstanceState) &#123;</div><div class="line">        super.onCreate(savedInstanceState);</div><div class="line">        setContentView(R.layout.activity_main);</div><div class="line">        imageView = (ImageView) findViewById(R.id.image_view);</div><div class="line">        Log.d(TAG, &quot;imageView scaleType is &quot; + imageView.getScaleType());</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看到，我们在onCreate()方法中打印了ImageView默认的scaleType，然后重新运行一下程序，结果如下图所示：</p>
+<p><img src="http://img.blog.csdn.net/20170809211645334" alt="img"></p>
+<p>由此我们可以得知，在没有明确指定的情况下，ImageView默认的scaleType是FIT_CENTER。</p>
+<p>有了这个前提条件，我们就可以继续去分析Glide的源码了。当然，本文中的源码还是建在第二篇源码分析的基础之上，还没有看过这篇文章的朋友，建议先去阅读 <a href="http://blog.csdn.net/guolin_blog/article/details/53939176" target="_blank" rel="external">Android图片加载框架最全解析（二），从源码的角度理解Glide的执行流程</a> 。</p>
+<p>回顾一下第二篇文章中我们分析过的into()方法，它是在GenericRequestBuilder类当中的，代码如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">public Target&lt;TranscodeType&gt; into(ImageView view) &#123;</div><div class="line">    Util.assertMainThread();</div><div class="line">    if (view == null) &#123;</div><div class="line">        throw new IllegalArgumentException(&quot;You must pass in a non null View&quot;);</div><div class="line">    &#125;</div><div class="line">    if (!isTransformationSet &amp;&amp; view.getScaleType() != null) &#123;</div><div class="line">        switch (view.getScaleType()) &#123;</div><div class="line">            case CENTER_CROP:</div><div class="line">                applyCenterCrop();</div><div class="line">                break;</div><div class="line">            case FIT_CENTER:</div><div class="line">            case FIT_START:</div><div class="line">            case FIT_END:</div><div class="line">                applyFitCenter();</div><div class="line">                break;</div><div class="line">            //$CASES-OMITTED$</div><div class="line">            default:</div><div class="line">                // Do nothing.</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    return into(glide.buildImageViewTarget(view, transcodeClass));</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>还记得我们当初分析这段代码的时候，直接跳过前面的所有代码，直奔最后一行。因为那个时候我们的主要任务是分析Glide的主线执行流程，而不去仔细阅读它的细节，但是现在我们是时候应该阅读一下细节了。</p>
+<p>可以看到，这里在第7行会进行一个switch判断，如果ImageView的scaleType是CENTER_CROP，则会去调用applyCenterCrop()方法，如果scaleType是FIT_CENTER、FIT_START或FIT_END，则会去调用applyFitCenter()方法。这里的applyCenterCrop()和applyFitCenter()方法其实就是向Glide的加载流程中添加了一个图片变换操作，具体的源码我们就不跟进去看了。</p>
+<p>那么现在我们就基本清楚了，由于ImageView默认的scaleType是FIT_CENTER，因此会自动添加一个FitCenter的图片变换，而在这个图片变换过程中做了某些操作，导致图片充满了全屏。</p>
+<p>那么我们该如何解决这个问题呢？最直白的一种办法就是看着源码来改。当ImageView的scaleType是CENTER_CROP、FIT_CENTER、FIT_START或FIT_END时不是会自动添加一个图片变换操作吗？那我们把scaleType改成其他值不就可以了。ImageView的scaleType可选值还有CENTER、CENTER_INSIDE、FIT_XY等。这当然是一种解决方案，不过只能说是一种比较笨的解决方案，因为我们为了解决这个问题而去改动了ImageView原有的scaleType，那如果你真的需要ImageView的scaleType为CENTER_CROP或FIT_CENTER时可能就傻眼了。</p>
+<p>上面只是我们通过分析源码得到的一种解决方案，并不推荐大家使用。实际上，Glide给我们提供了专门的API来添加和取消图片变换，想要解决这个问题只需要使用如下代码即可：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Glide.with(this)</div><div class="line">     .load(url)</div><div class="line">     .dontTransform()</div><div class="line">     .into(imageView);</div></pre></td></tr></table></figure>
+<p>可以看到，这里调用了一个dontTransform()方法，表示让Glide在加载图片的过程中不进行图片变换，这样刚才调用的applyCenterCrop()、applyFitCenter()就统统无效了。</p>
+<p>现在我们重新运行一下代码，效果如下图所示：</p>
+<p><img src="http://img.blog.csdn.net/20170810213840362?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZ3VvbGluX2Jsb2c=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="img"></p>
+<p>这样图片就只会占据半个屏幕的宽度了，说明我们的代码奏效了。</p>
+<p>但是使用dontTransform()方法存在着一个问题，就是调用这个方法之后，所有的图片变换操作就全部失效了，那如果我有一些图片变换操作是必须要执行的该怎么办呢？不用担心，总归是有办法的，这种情况下我们只需要借助override()方法强制将图片尺寸指定成原始大小就可以了，代码如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Glide.with(this)</div><div class="line">     .load(url)</div><div class="line">     .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)</div><div class="line">     .into(imageView);</div></pre></td></tr></table></figure>
+<p>通过override()方法将图片的宽和高都指定成Target.SIZE_ORIGINAL，问题同样被解决了。程序的最终运行结果和上图是完全一样的，我就不再重新截图了。</p>
+<p>由此我们可以看出，之所以会出现这个问题，和Glide的图片变换功能是撇不开关系的。那么也是通过这个问题，我们对Glide的图片变换有了一个最基本的认识。接下来，就让我们正式开始进入本篇文章的正题吧。</p>
+<h1 id="图片变换的基本用法"><a href="#图片变换的基本用法" class="headerlink" title="图片变换的基本用法"></a>图片变换的基本用法</h1><p>顾名思义，图片变换的意思就是说，Glide从加载了原始图片到最终展示给用户之前，又进行了一些变换处理，从而能够实现一些更加丰富的图片效果，如图片圆角化、圆形化、模糊化等等。</p>
+<p>添加图片变换的用法非常简单，我们只需要调用transform()方法，并将想要执行的图片变换操作作为参数传入transform()方法即可，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Glide.with(this)</div><div class="line">     .load(url)</div><div class="line">     .transform(...)</div><div class="line">     .into(imageView);</div></pre></td></tr></table></figure>
+<p>至于具体要进行什么样的图片变换操作，这个通常都是需要我们自己来写的。不过Glide已经内置了两种图片变换操作，我们可以直接拿来使用，一个是CenterCrop，一个是FitCenter。</p>
+<p>但这两种内置的图片变换操作其实都不需要使用transform()方法，Glide为了方便我们使用直接提供了现成的API：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">Glide.with(this)</div><div class="line">     .load(url)</div><div class="line">     .centerCrop()</div><div class="line">     .into(imageView);</div><div class="line"></div><div class="line">Glide.with(this)</div><div class="line">     .load(url)</div><div class="line">     .fitCenter()</div><div class="line">     .into(imageView);</div></pre></td></tr></table></figure>
+<p>当然，centerCrop()和fitCenter()方法其实也只是对transform()方法进行了一层封装而已，它们背后的源码仍然还是借助transform()方法来实现的，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line">public class DrawableRequestBuilder&lt;ModelType&gt;</div><div class="line">        extends GenericRequestBuilder&lt;ModelType, ImageVideoWrapper, GifBitmapWrapper, GlideDrawable&gt;</div><div class="line">        implements BitmapOptions, DrawableOptions &#123;</div><div class="line">    ...</div><div class="line"></div><div class="line">    /**</div><div class="line">     * Transform &#123;@link GlideDrawable&#125;s using &#123;@link com.bumptech.glide.load.resource.bitmap.CenterCrop&#125;.</div><div class="line">     *</div><div class="line">     * @see #fitCenter()</div><div class="line">     * @see #transform(BitmapTransformation...)</div><div class="line">     * @see #bitmapTransform(Transformation[])</div><div class="line">     * @see #transform(Transformation[])</div><div class="line">     *</div><div class="line">     * @return This request builder.</div><div class="line">     */</div><div class="line">    @SuppressWarnings(&quot;unchecked&quot;)</div><div class="line">    public DrawableRequestBuilder&lt;ModelType&gt; centerCrop() &#123;</div><div class="line">        return transform(glide.getDrawableCenterCrop());</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * Transform &#123;@link GlideDrawable&#125;s using &#123;@link com.bumptech.glide.load.resource.bitmap.FitCenter&#125;.</div><div class="line">     *</div><div class="line">     * @see #centerCrop()</div><div class="line">     * @see #transform(BitmapTransformation...)</div><div class="line">     * @see #bitmapTransform(Transformation[])</div><div class="line">     * @see #transform(Transformation[])</div><div class="line">     *</div><div class="line">     * @return This request builder.</div><div class="line">     */</div><div class="line">    @SuppressWarnings(&quot;unchecked&quot;)</div><div class="line">    public DrawableRequestBuilder&lt;ModelType&gt; fitCenter() &#123;</div><div class="line">        return transform(glide.getDrawableFitCenter());</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>那么这两种内置的图片变换操作到底能实现什么样的效果呢？FitCenter的效果其实刚才我们已经见识过了，就是会将图片按照原始的长宽比充满全屏。那么CenterCrop又是什么样的效果呢？我们来动手试一下就知道了。</p>
+<p>为了让效果更加明显，这里我就不使用百度首页的Logo图了，而是换成必应首页的一张美图。在不应用任何图片变换的情况下，使用Glide加载必应这张图片效果如下所示。</p>
+<p><img src="http://img.blog.csdn.net/20170816204655787?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZ3VvbGluX2Jsb2c=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="img"></p>
+<p>现在我们添加一个CenterCrop的图片变换操作，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">String url = &quot;http://cn.bing.com/az/hprichbg/rb/AvalancheCreek_ROW11173354624_1920x1080.jpg&quot;;</div><div class="line">Glide.with(this)</div><div class="line">     .load(url)</div><div class="line">     .centerCrop()</div><div class="line">     .into(imageView);</div></pre></td></tr></table></figure>
+<p>重新运行一下程序并点击加载图片按钮，效果如下图所示。</p>
+<p><img src="http://img.blog.csdn.net/20170816205304104?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZ3VvbGluX2Jsb2c=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="img"></p>
+<p>可以看到，现在展示的图片是对原图的中心区域进行裁剪后得到的图片。</p>
+<p>另外，centerCrop()方法还可以配合override()方法来实现更加丰富的效果，比如指定图片裁剪的比例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">String url = &quot;http://cn.bing.com/az/hprichbg/rb/AvalancheCreek_ROW11173354624_1920x1080.jpg&quot;;</div><div class="line">Glide.with(this)</div><div class="line">     .load(url)</div><div class="line">     .override(500, 500)</div><div class="line">     .centerCrop()</div><div class="line">     .into(imageView);</div></pre></td></tr></table></figure>
+<p>可以看到，这里我们将图片的尺寸设定为500*500像素，那么裁剪的比例也就变成1：1了，现在重新运行一下程序，效果如下图所示。</p>
+<p><img src="http://img.blog.csdn.net/20170816211113917?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZ3VvbGluX2Jsb2c=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="img"></p>
+<p>这样我们就把Glide内置的图片变换接口的用法都掌握了。不过不得不说，Glide内置的图片变换接口功能十分单一且有限，完全没有办法满足我们平时的开发需求。因此，掌握自定义图片变换功能就显得尤为重要了。</p>
+<p>不过，在正式开始学习自定义图片变换功能之前，我们先来探究一下CenterCrop这种图片变换的源码，理解了它的源码我们再来进行自定义图片变换就能更加得心应手了。</p>
+<h1 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h1><p>那么就话不多说，我们直接打开CenterCrop类来看一下它的源码吧，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">public class CenterCrop extends BitmapTransformation &#123;</div><div class="line"></div><div class="line">    public CenterCrop(Context context) &#123;</div><div class="line">        super(context);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public CenterCrop(BitmapPool bitmapPool) &#123;</div><div class="line">        super(bitmapPool);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    // Bitmap doesn&apos;t implement equals, so == and .equals are equivalent here.</div><div class="line">    @SuppressWarnings(&quot;PMD.CompareObjectsWithEquals&quot;)</div><div class="line">    @Override</div><div class="line">    protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) &#123;</div><div class="line">        final Bitmap toReuse = pool.get(outWidth, outHeight, toTransform.getConfig() != null</div><div class="line">                ? toTransform.getConfig() : Bitmap.Config.ARGB_8888);</div><div class="line">        Bitmap transformed = TransformationUtils.centerCrop(toReuse, toTransform, outWidth, outHeight);</div><div class="line">        if (toReuse != null &amp;&amp; toReuse != transformed &amp;&amp; !pool.put(toReuse)) &#123;</div><div class="line">            toReuse.recycle();</div><div class="line">        &#125;</div><div class="line">        return transformed;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public String getId() &#123;</div><div class="line">        return &quot;CenterCrop.com.bumptech.glide.load.resource.bitmap&quot;;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这段代码并不长，但是我还是要划下重点，这样大家看起来的时候会更加轻松。</p>
+<p>首先，CenterCrop是继承自BitmapTransformation的，这个是重中之重，因为整个图片变换功能都是建立在这个继承结构基础上的。</p>
+<p>接下来CenterCrop中最重要的就是transform()方法，其他的方法我们可以暂时忽略。transform()方法中有四个参数，每一个都很重要，我们来一一解读下。第一个参数pool，这个是Glide中的一个Bitmap缓存池，用于对Bitmap对象进行重用，否则每次图片变换都重新创建Bitmap对象将会非常消耗内存。第二个参数toTransform，这个是原始图片的Bitmap对象，我们就是要对它来进行图片变换。第三和第四个参数比较简单，分别代表图片变换后的宽度和高度，其实也就是override()方法中传入的宽和高的值了。</p>
+<p>下面我们来看一下transform()方法的细节，首先第一行就从Bitmap缓存池中尝试获取一个可重用的Bitmap对象，然后把这个对象连同toTransform、outWidth、outHeight参数一起传入到了TransformationUtils.centerCrop()方法当中。那么我们就跟进去来看一下这个方法的源码，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line">public final class TransformationUtils &#123;</div><div class="line">    ...</div><div class="line"></div><div class="line">    public static Bitmap centerCrop(Bitmap recycled, Bitmap toCrop, int width, int height) &#123;</div><div class="line">        if (toCrop == null) &#123;</div><div class="line">            return null;</div><div class="line">        &#125; else if (toCrop.getWidth() == width &amp;&amp; toCrop.getHeight() == height) &#123;</div><div class="line">            return toCrop;</div><div class="line">        &#125;</div><div class="line">        // From ImageView/Bitmap.createScaledBitmap.</div><div class="line">        final float scale;</div><div class="line">        float dx = 0, dy = 0;</div><div class="line">        Matrix m = new Matrix();</div><div class="line">        if (toCrop.getWidth() * height &gt; width * toCrop.getHeight()) &#123;</div><div class="line">            scale = (float) height / (float) toCrop.getHeight();</div><div class="line">            dx = (width - toCrop.getWidth() * scale) * 0.5f;</div><div class="line">        &#125; else &#123;</div><div class="line">            scale = (float) width / (float) toCrop.getWidth();</div><div class="line">            dy = (height - toCrop.getHeight() * scale) * 0.5f;</div><div class="line">        &#125;</div><div class="line">        m.setScale(scale, scale);</div><div class="line">        m.postTranslate((int) (dx + 0.5f), (int) (dy + 0.5f));</div><div class="line"></div><div class="line">        final Bitmap result;</div><div class="line">        if (recycled != null) &#123;</div><div class="line">            result = recycled;</div><div class="line">        &#125; else &#123;</div><div class="line">            result = Bitmap.createBitmap(width, height, getSafeConfig(toCrop));</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        // We don&apos;t add or remove alpha, so keep the alpha setting of the Bitmap we were given.</div><div class="line">        TransformationUtils.setAlpha(toCrop, result);</div><div class="line"></div><div class="line">        Canvas canvas = new Canvas(result);</div><div class="line">        Paint paint = new Paint(PAINT_FLAGS);</div><div class="line">        canvas.drawBitmap(toCrop, m, paint);</div><div class="line">        return result;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这段代码就是整个图片变换功能的核心代码了。可以看到，第5-9行主要是先做了一些校验，如果原图为空，或者原图的尺寸和目标裁剪尺寸相同，那么就放弃裁剪。接下来第11-22行是通过数学计算来算出画布的缩放的比例以及偏移值。第24-29行是判断缓存池中取出的Bitmap对象是否为空，如果不为空就可以直接使用，如果为空则要创建一个新的Bitmap对象。第32行是将原图Bitmap对象的alpha值复制到裁剪Bitmap对象上面。最后第34-37行是裁剪Bitmap对象进行绘制，并将最终的结果进行返回。全部的逻辑就是这样，总体来说还是比较简单的，可能也就是数学计算那边需要稍微动下脑筋。</p>
+<p>那么现在得到了裁剪后的Bitmap对象，我们再回到CenterCrop当中，你会看到，在最终返回这个Bitmap对象之前，还会尝试将复用的Bitmap对象重新放回到缓存池当中，以便下次继续使用。</p>
+<p>好的，这样我们就将CenterCrop图片变换的工作原理完整地分析了一遍，FitCenter的源码也是基本类似的，这里就不再重复分析了。了解了这些内容之后，接下来我们就可以开始学习自定义图片变换功能了。</p>
+<h1 id="自定义图片变换"><a href="#自定义图片变换" class="headerlink" title="自定义图片变换"></a>自定义图片变换</h1><p>Glide给我们定制好了一个图片变换的框架，大致的流程是我们可以获取到原始的图片，然后对图片进行变换，再将变换完成后的图片返回给Glide，最终由Glide将图片显示出来。理论上，在对图片进行变换这个步骤中我们可以进行任何的操作，你想对图片怎么样都可以。包括圆角化、圆形化、黑白化、模糊化等等，甚至你将原图片完全替换成另外一张图都是可以的。</p>
+<p>但是这里显然我不可能向大家演示所有图片变换的可能，图片变换的可能性也是无限的。因此这里我们就选择一种常用的图片变换效果来进行自定义吧——对图片进行圆形化变换。</p>
+<p>图片圆形化的功能现在在手机应用中非常常见，比如手机QQ就会将用户的头像进行圆形化变换，从而使得界面变得更加好看。</p>
+<p>自定义图片变换功能的实现逻辑比较固定，我们刚才看过CenterCrop的源码之后，相信你已经基本了解整个自定义的过程了。其实就是自定义一个类让它继承自BitmapTransformation ，然后重写transform()方法，并在这里去实现具体的图片变换逻辑就可以了。一个空的图片变换实现大概如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">public class CircleCrop extends BitmapTransformation &#123;</div><div class="line"></div><div class="line">    public CircleCrop(Context context) &#123;</div><div class="line">        super(context);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public CircleCrop(BitmapPool bitmapPool) &#123;</div><div class="line">        super(bitmapPool);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public String getId() &#123;</div><div class="line">        return &quot;com.example.glidetest.CircleCrop&quot;;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) &#123;</div><div class="line">        return null;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里有一点需要注意，就是getId()方法中要求返回一个唯一的字符串来作为id，以和其他的图片变换做区分。通常情况下，我们直接返回当前类的完整类名就可以了。</p>
+<p>另外，这里我们选择继承BitmapTransformation还有一个限制，就是只能对静态图进行图片变换。当然，这已经足够覆盖日常95%以上的开发需求了。如果你有特殊的需求要对GIF图进行图片变换，那就得去自己实现Transformation接口才可以了。不过这个就非常复杂了，不在我们今天的讨论范围。</p>
+<p>好了，那么我们继续实现对图片进行圆形化变换的功能，接下来只需要在transform()方法中去做具体的逻辑实现就可以了，代码如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line">public class CircleCrop extends BitmapTransformation &#123;</div><div class="line"></div><div class="line">    public CircleCrop(Context context) &#123;</div><div class="line">        super(context);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public CircleCrop(BitmapPool bitmapPool) &#123;</div><div class="line">        super(bitmapPool);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public String getId() &#123;</div><div class="line">        return &quot;com.example.glidetest.CircleCrop&quot;;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) &#123;</div><div class="line">        int diameter = Math.min(toTransform.getWidth(), toTransform.getHeight());</div><div class="line"></div><div class="line">        final Bitmap toReuse = pool.get(outWidth, outHeight, Bitmap.Config.ARGB_8888);</div><div class="line">        final Bitmap result;</div><div class="line">        if (toReuse != null) &#123;</div><div class="line">            result = toReuse;</div><div class="line">        &#125; else &#123;</div><div class="line">            result = Bitmap.createBitmap(diameter, diameter, Bitmap.Config.ARGB_8888);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        int dx = (toTransform.getWidth() - diameter) / 2;</div><div class="line">        int dy = (toTransform.getHeight() - diameter) / 2;</div><div class="line">        Canvas canvas = new Canvas(result);</div><div class="line">        Paint paint = new Paint();</div><div class="line">        BitmapShader shader = new BitmapShader(toTransform, BitmapShader.TileMode.CLAMP, </div><div class="line">                                            BitmapShader.TileMode.CLAMP);</div><div class="line">        if (dx != 0 || dy != 0) &#123;</div><div class="line">            Matrix matrix = new Matrix();</div><div class="line">            matrix.setTranslate(-dx, -dy);</div><div class="line">            shader.setLocalMatrix(matrix);</div><div class="line">        &#125;</div><div class="line">        paint.setShader(shader);</div><div class="line">        paint.setAntiAlias(true);</div><div class="line">        float radius = diameter / 2f;</div><div class="line">        canvas.drawCircle(radius, radius, radius, paint);</div><div class="line"></div><div class="line">        if (toReuse != null &amp;&amp; !pool.put(toReuse)) &#123;</div><div class="line">            toReuse.recycle();</div><div class="line">        &#125;</div><div class="line">        return result;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>下面我来对transform()方法中的逻辑做下简单的解释。首先第18行先算出原图宽度和高度中较小的值，因为对图片进行圆形化变换肯定要以较小的那个值作为直径来进行裁剪。第20-26行则和刚才一样，从Bitmap缓存池中尝试获取一个Bitmap对象来进行重用，如果没有可重用的Bitmap对象的话就创建一个。第28-41行是具体进行圆形化变换的部分，这里算出了画布的偏移值，并且根据刚才得到的直径算出半径来进行画圆。最后，尝试将复用的Bitmap对象重新放回到缓存池当中，并将圆形化变换后的Bitmap对象进行返回。</p>
+<p>这样，一个自定义图片变换的功能就写好了，那么现在我们就来尝试使用一下它吧。使用方法非常简单，刚才已经介绍过了，就是把这个自定义图片变换的实例传入到transform()方法中即可，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Glide.with(this)</div><div class="line">     .load(url)</div><div class="line">     .transform(new CircleCrop(this))</div><div class="line">     .into(imageView);</div></pre></td></tr></table></figure>
+<p>现在我们重新运行一下程序，效果如下图所示。</p>
+<p><img src="http://img.blog.csdn.net/20170823204448719?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZ3VvbGluX2Jsb2c=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="img"></p>
+<h1 id="更多图片变换功能"><a href="#更多图片变换功能" class="headerlink" title="更多图片变换功能"></a>更多图片变换功能</h1><p>虽说Glide的图片变换功能框架已经很强大了，使得我们可以轻松地自定义图片变换效果，但是如果每一种图片变换都要我们自己去写还是蛮吃力的。事实上，确实也没有必要完全靠自己去实现各种各样的图片变换效果，因为大多数的图片变换都是比较通用的，各个项目会用到的效果都差不多，我们每一个都自己去重新实现无异于重复造轮子。</p>
+<p>也正是因此，网上出现了很多Glide的图片变换开源库，其中做的最出色的应该要数glide-transformations这个库了。它实现了很多通用的图片变换效果，如裁剪变换、颜色变换、模糊变换等等，使得我们可以非常轻松地进行各种各样的图片变换。</p>
+<p>glide-transformations的项目主页地址是 <a href="https://github.com/wasabeef/glide-transformations" target="_blank" rel="external">https://github.com/wasabeef/glide-transformations</a> 。</p>
+<p>下面我们就来体验一下这个库的强大功能吧。首先需要将这个库引入到我们的项目当中，在app/build.gradle文件当中添加如下依赖：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">dependencies &#123;</div><div class="line">    compile &apos;jp.wasabeef:glide-transformations:2.0.2&apos;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>现在如果我想对图片进行模糊化处理，那么就可以使用glide-transformations库中的BlurTransformation这个类，代码如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Glide.with(this)</div><div class="line">     .load(url)</div><div class="line">     .bitmapTransform(new BlurTransformation(this))</div><div class="line">     .into(imageView);</div></pre></td></tr></table></figure>
+<p>注意这里我们调用的是bitmapTransform()方法而不是transform()方法，因为glide-transformations库都是专门针对静态图片变换来进行设计的。现在重新运行一下程度，效果如下图所示。</p>
+<p><img src="http://img.blog.csdn.net/20170823205319689?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZ3VvbGluX2Jsb2c=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="img"></p>
+<p>没错，我们就这样轻松地实现模糊化的效果了。</p>
+<p>接下来我们再试一下图片黑白化的效果，使用的是GrayscaleTransformation这个类，代码如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Glide.with(this)</div><div class="line">     .load(url)</div><div class="line">     .bitmapTransform(new GrayscaleTransformation(this))</div><div class="line">     .into(imageView);</div></pre></td></tr></table></figure>
+<p>现在重新运行一下程度，效果如下图所示。</p>
+<p><img src="http://img.blog.csdn.net/20170823205616112?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZ3VvbGluX2Jsb2c=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="img"></p>
+<p>而且我们还可以将多个图片变换效果组合在一起使用，比如同时执行模糊化和黑白化的变换：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Glide.with(this)</div><div class="line">     .load(url)</div><div class="line">     .bitmapTransform(new BlurTransformation(this), new GrayscaleTransformation(this))</div><div class="line">     .into(imageView);</div></pre></td></tr></table></figure>
+<p>可以看到，同时执行多种图片变换的时候，只需要将它们都传入到bitmapTransform()方法中即可。现在重新运行一下程序，效果如下图所示。</p>
+<p><img src="http://img.blog.csdn.net/20170823205854058?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZ3VvbGluX2Jsb2c=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="img"></p>
+<p>当然，这些只是glide-transformations库的一小部分功能而已，更多的图片变换效果你可以到它的GitHub项目主页去学习，所有变换的用法都是这么简单哦。</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/09/20/android/github/glide解析5_图片变换/" data-id="cj7sum2xw000bwapjqvvllpkd" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/09/20/android/github/glide解析5_图片变换/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+    
+        <a href="/2017/09/20/android/github/glide解析4_回调监听/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">Glide解析4_回调监听</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="uyan_frame"></div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">recent</h3>
+        <div class="widget">
+            <ul id="recent-post" class="no-thumbnail">
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/glide/">glide</a></p>
+                            <p class="item-title"><a href="/2017/09/20/android/github/glide解析5_图片变换/" class="title">Glide解析5_图片变换</a></p>
+                            <p class="item-date"><time datetime="2017-09-20T08:53:48.000Z" itemprop="datePublished">2017-09-20</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/glide/">glide</a></p>
+                            <p class="item-title"><a href="/2017/09/20/android/github/glide解析4_回调监听/" class="title">Glide解析4_回调监听</a></p>
+                            <p class="item-date"><time datetime="2017-09-20T08:46:52.000Z" itemprop="datePublished">2017-09-20</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/09/20/android/github/glide解析3_缓存流程/" class="title"></a></p>
+                            <p class="item-date"><time datetime="2017-09-20T08:42:24.000Z" itemprop="datePublished">2017-09-20</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/09/20/android/github/glide解析2_执行流程/" class="title"></a></p>
+                            <p class="item-date"><time datetime="2017-09-20T08:40:45.000Z" itemprop="datePublished">2017-09-20</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/glide/">glide</a></p>
+                            <p class="item-title"><a href="/2017/09/20/android/github/glide解析1_基本用法/" class="title">Glide解析1_基本用法</a></p>
+                            <p class="item-date"><time datetime="2017-09-20T08:38:10.000Z" itemprop="datePublished">2017-09-20</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">categories</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">41</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/glide/">glide</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">2</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">archives</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">51</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tags</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">36</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tag cloud</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 14.29px;">code</a> <a href="/tags/git/" style="font-size: 11.43px;">git</a> <a href="/tags/github/" style="font-size: 17.14px;">github</a> <a href="/tags/glide/" style="font-size: 12.86px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 12.86px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.43px;">markdown</a> <a href="/tags/mysql/" style="font-size: 15.71px;">mysql</a> <a href="/tags/node/" style="font-size: 18.57px;">node</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.43px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.43px;">设计模式</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">links</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 Ernest Chang<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2142274"></script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>
