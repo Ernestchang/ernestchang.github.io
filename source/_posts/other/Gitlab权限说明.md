@@ -3,12 +3,9 @@ title: Gitlab权限说明
 date: 
 
 categories: 
-
-- ssh
-
+- other
 tags:  
-
-- ssh
+- gitlab
 
 ---
 

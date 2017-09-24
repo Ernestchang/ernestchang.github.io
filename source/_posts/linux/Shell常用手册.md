@@ -2,7 +2,7 @@ title: Shell常用手册
 date: 
 
 categories: 
-- shell
+- linux
 tags:  
 - shell
 ---

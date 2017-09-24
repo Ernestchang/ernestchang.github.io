@@ -1,13 +1,10 @@
 title: github hexo博客多电脑迁移
 date: 
-
 categories: 
 - other
-
 tags: 
 - github
 - hexo
-
 ---
 
 **利用github的不同分支来分别保存网站静态文件与hexo源码（md原始文件及主题等）**，实现在不同电脑上都可以自由写博客。

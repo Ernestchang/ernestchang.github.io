@@ -2,7 +2,7 @@ title: Vim入门
 date: 
 
 categories: 
-- vim
+- linux
 tags:  
 - vim
 ---

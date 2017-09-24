@@ -2,7 +2,7 @@
 title: Vim的常用命令
 date: 
 categories: 
-- vim 
+- linux 
 
 tags:  
 - vim

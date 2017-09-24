@@ -2,7 +2,7 @@ title: SSH创建与查看
 date: 
 
 categories: 
-- ssh
+- linux
 tags:  
 - ssh
 ---
