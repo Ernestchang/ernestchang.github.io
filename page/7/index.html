@@ -157,11 +157,11 @@
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                75
+                80
                 <span>posts</span>
             </div>
             <div class="article-info-block">
-                21
+                23
                 <span>tags</span>
             </div>
         </div>
@@ -210,6 +210,1089 @@
 
             
             <section id="main">
+    <article id="post-mysql/mac导出:导入mysql" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/08/22/mysql/mac导出:导入mysql/">mac导出/导入mysql</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/08/22/mysql/mac导出:导入mysql/">
+            <time datetime="2017-08-22T11:26:44.000Z" itemprop="datePublished">2017-08-22</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/mysql/">mysql</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/mysql/">mysql</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h2 id="mac-安装mysql"><a href="#mac-安装mysql" class="headerlink" title="mac 安装mysql"></a>mac 安装mysql</h2><p> 首先 <code>$ brew install mysql</code> 安装 mysql，之后可能需要重启一下终端，然后成功的话输入 <code>$ mysql</code> 再按 Tab 会提示一些和 mysql 相关的命令出来，如果有的话就 OK 了，如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$ mysql</div><div class="line">mysql                       mysql_zap</div><div class="line">mysql.server                mysqladmin</div><div class="line">mysql_client_test           mysqlbinlog</div><div class="line">mysql_client_test_embedded  mysqlbug</div></pre></td></tr></table></figure>
+<h2 id="配置和使用"><a href="#配置和使用" class="headerlink" title="配置和使用"></a>配置和使用</h2><p>MySQL 和直接使用的 SQLite 不同，需要有一个 MySQL server 在，之后通过 socket 去连接上 MySQL，然后再进行对数据库的相关操作。</p>
+<h3 id="启动服务和配置-root-用户"><a href="#启动服务和配置-root-用户" class="headerlink" title="启动服务和配置 root 用户"></a>启动服务和配置 root 用户</h3><ol>
+<li>靠下面的命令来启动服务器。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ mysql.server start</div><div class="line">Starting MySQL</div><div class="line">.. SUCCESS!</div></pre></td></tr></table></figure>
+<ol>
+<li>关闭服务器的命令也很简单：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ mysql.server stop</div><div class="line">Shutting down MySQL</div><div class="line">.. SUCCESS!</div></pre></td></tr></table></figure>
+<p>之后重新开启来进行后面的操作。</p>
+<ol>
+<li>设置初始密码。MySQL 也有自己的用户系统，所以后面提到的用户不要和操作系统的弄混了。默认的用户是 root，没有密码。可以通过下面命令来设置一个密码：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ mysqladmin -u root password</div><div class="line">New password:</div><div class="line">Confirm new password:</div></pre></td></tr></table></figure>
+<ol>
+<li>修改密码。包括 <code>mysqladmin</code> 在内，其他的 mysql 需要指明用户的时候加 <code>-u username</code>，如果该用户设置过密码需要添加 <code>-p</code> 指令，所以如果已经设置过 root 用户的密码了之后再想修改密码，用前面的指令会报错，如下：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ mysqladmin -u root password</div><div class="line">mysqladmin: connect to server at &apos;localhost&apos; failed</div><div class="line">error: &apos;Access denied for user &apos;root&apos;@&apos;localhost&apos; (using password: NO)&apos;</div></pre></td></tr></table></figure>
+<p>这时候只需要加上 <code>-p</code> 选项就好。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ mysqladmin -u root password -p</div><div class="line">Enter password:</div><div class="line">New password:</div><div class="line">Confirm new password:</div></pre></td></tr></table></figure>
+<h3 id="使用-root-用户连接数据库"><a href="#使用-root-用户连接数据库" class="headerlink" title="使用 root 用户连接数据库"></a>使用 root 用户连接数据库</h3><p>上面 root 用户已经 OK 了，赶快连接下数据库吧。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">$ mysql -u root -p</div><div class="line">Enter password:</div><div class="line">Welcome to the MySQL monitor.  Commands end with ; or \g.</div><div class="line">Your MySQL connection id is 15</div><div class="line">Server version: 5.6.26 Homebrew</div><div class="line"></div><div class="line">Copyright (c) 2000, 2015, Oracle and/or its affiliates. All rights reserved.</div><div class="line"></div><div class="line">Oracle is a registered trademark of Oracle Corporation and/or its</div><div class="line">affiliates. Other names may be trademarks of their respective</div><div class="line">owners.</div><div class="line"></div><div class="line">Type &apos;help;&apos; or &apos;\h&apos; for help. Type &apos;\c&apos; to clear the current input statement.</div><div class="line"></div><div class="line">mysql&gt;</div></pre></td></tr></table></figure>
+<p>接着执行一下命令，进行一些简单操作。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">mysql&gt; system pwd</div><div class="line">/usr/local/Cellar/mysql/5.6.26</div><div class="line">mysql&gt; SHOW DATABASES;</div><div class="line">+--------------------+</div><div class="line">| Database           |</div><div class="line">+--------------------+</div><div class="line">| information_schema |</div><div class="line">| mysql              |</div><div class="line">| performance_schema |</div><div class="line">| test               |</div><div class="line">+--------------------+</div><div class="line">mysql&gt; CREATE DATABASE mydb;</div><div class="line">mysql&gt; SHOW DATABASES;</div><div class="line">+--------------------+</div><div class="line">| Database           |</div><div class="line">+--------------------+</div><div class="line">| information_schema |</div><div class="line">| mydb               |</div><div class="line">| mysql              |</div><div class="line">| performance_schema |</div><div class="line">| test               |</div><div class="line">+--------------------+</div><div class="line">mysql&gt; use mydb;</div><div class="line">Database changed</div><div class="line">mysql&gt; SHOW TABLES;</div><div class="line">Empty set (0.00 sec)</div></pre></td></tr></table></figure>
+<h3 id="创建一个新用户"><a href="#创建一个新用户" class="headerlink" title="创建一个新用户"></a>创建一个新用户</h3><p>root 用户的权限一般不会随便拿去使用，所以创建一些用户，并分配对应的权限。下面的命令创建的是一个名字是 <code>user12</code>密码是 <code>34klq*</code> 的本地用户：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mysql&gt; CREATE USER user12@localhost IDENTIFIED BY &apos;34klq*&apos;;</div></pre></td></tr></table></figure>
+<p>之后给他分配 mydb 数据库的权限：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mysql&gt; GRANT ALL ON mydb.* to user12@localhost;</div></pre></td></tr></table></figure>
+<h2 id="简单上手使用"><a href="#简单上手使用" class="headerlink" title="简单上手使用"></a>简单上手使用</h2><ul>
+<li>mysql.server start</li>
+<li>设置 root 密码</li>
+<li>用 root 登陆，创建表</li>
+<li>创建新用户分配权限</li>
+<li>开始简单使用</li>
+</ul>
+<h2 id="导出-导入"><a href="#导出-导入" class="headerlink" title="导出/导入"></a>导出/导入</h2><h4 id="准备："><a href="#准备：" class="headerlink" title="准备："></a>准备：</h4><p>打开Terminal，输入mysqldump，</p>
+<p>发现Terminal提示《mysqldump: command not found》，需配置mysql全局环境变量如以下：</p>
+<p>打开terminal输入<code>vi ~/.bash_profile</code> 或者<code>open .bash_profile</code>添加如下三行代码:</p>
+<p><code>PATH=$PATH:/usr/local/mysql/bin</code> </p>
+<p>保存并退出后在terminal输入source ~/.bash_profile然后就成功了</p>
+<h4 id="导出："><a href="#导出：" class="headerlink" title="导出："></a>导出：</h4><pre><code>&gt; 打开『终端』输入：
+&gt; cd 『打开要将.sql文件生成的文件位置』
+&gt; 输入：mysqldump -u root -p database_name&gt;sql_name.sql
+&gt; 查看导出过程：tail -f /Users/admin/dump.sql
+</code></pre><p>下面是通过MySQL命令行导出数据库或表的方法：</p>
+<p><strong>MySQL命令行导出数据库：</strong></p>
+<p><code>mysqldump -u 用户名 -p 数据库名 &gt; 导出的地址/导出的文件名</code></p>
+<p>如我输入的命令行:</p>
+<p><code>mysqldump -u root -p Library &gt; &#39;/Users/lichen/Desktop/Library.sql&#39;</code></p>
+<p>输入后会让你输入进入MySQL的密码,输入密码即可看到hehe.sql出现在桌面上。</p>
+<p><strong>MySQL命令行导出一个表：</strong></p>
+<p><code>mysqldump -u 用户名 -p 数据库名 表名&gt; 导出的地址/导出的文件名</code></p>
+<p>如我输入的命令行：</p>
+<p><code>mysqldump -u root -p Library reader&gt; &#39;/Users/lichen/Desktop/Library_reader.sql&#39;</code></p>
+<p>输入后会让你输入进入MySQL的密码,输入密码即可看到Library_reader.sql出现在桌面上。</p>
+<h4 id="导入："><a href="#导入：" class="headerlink" title="导入："></a>导入：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; 打开终端输入：（前提是已经配置过MySQL环境变量）</div><div class="line">&gt; mysql -u root -p</div><div class="line">&gt; create database name;</div><div class="line">&gt; use name;</div><div class="line">&gt; source 『将.sql文件直接拖拽至终端，自动补全其文件目录』</div></pre></td></tr></table></figure>
+<h3 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h3><ol>
+<li>报错提示告诉我们，需要重新设置密码。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">**ERROR 1820 (HY000): You must reset your password using ALTER USER statement before executing this statement**</div></pre></td></tr></table></figure>
+<p>那我们就重新设置一下密码，命令如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">set password = password(&apos;123456&apos;);</div></pre></td></tr></table></figure>
+<p>这次，我们在再次执行 <code>show databases</code> 就没有问题了。</p>
+<h3 id="其他设置"><a href="#其他设置" class="headerlink" title="其他设置"></a>其他设置</h3><ol>
+<li><p>退出mysql提示符</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">mysql&gt; quit</div><div class="line"></div><div class="line">or control-D</div></pre></td></tr></table></figure>
+<p>​</p>
+</li>
+</ol>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/08/22/mysql/mac导出:导入mysql/" data-id="cj76wnr730008enpjz57snyf5" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/08/22/mysql/mac导出:导入mysql/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-linux/Vim的常用命令" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/08/18/linux/Vim的常用命令/">Vim的常用命令</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/08/18/linux/Vim的常用命令/">
+            <time datetime="2017-08-18T06:59:13.000Z" itemprop="datePublished">2017-08-18</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/linux/">linux</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/vim/">vim</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>Vim 指令笔记</p>
+<p>vim 的三种模式<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">- 输入模式：输入内文。</div><div class="line">- 指挥模式：也叫指令模式，主要是进入到可以对文件做修改，复製，剪下贴上，游标移动等动作。</div><div class="line">- 执行模式：文件存档，离开等等行為。</div></pre></td></tr></table></figure></p>
+<p>常用模式的切换<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">- 输入模式 -&gt; 指挥模式 : 键盘 Esc</div><div class="line">- 指挥模式 -&gt; 输入模式 : 键盘 i, a, o</div><div class="line">- 指挥模式 -&gt; 执行模式 : 键盘 :</div></pre></td></tr></table></figure></p>
+<p>如何进入 vim 编辑器</p>
+<pre><code>- 指令 vim 本身就可以开启 vim 编辑器，跳出请先到执行模式再按 q(:q) 然后 Enter 键。
+- 指令 vim 档名 可开启某档案。
+</code></pre><p>如何离开 vim</p>
+<pre><code>- :q : 直接离开（在文件没有被编辑过的情况下可以用）。
+- :q! : 强制离开（不储存你的修改强制离开）。
+- :wq : 储存并离开 (wq顺序不能反)。
+- :x : 储存并离开。
+</code></pre><p>进入输入模式的几个方式</p>
+<pre><code>- Append:
+  - a: 游标前插入文字。
+  - A: 游标移到此行最后一个字元。
+- Insert:
+  - i: 游标后插入文字。         
+  - I: 游标移到此行第一个字元。
+- Open a new line:
+  - o: 游标所在的那一行，向下插入新的一行。
+  - O: 游标所在的那一行，向上插入新的一行。
+</code></pre><p>指挥模式下的常用指令(注意大小写有别)</p>
+<pre><code>- 针对现在画面跳到上中下区域：
+  - H : 跳到画面上面。
+  - M : 跳到画面中间。
+  - L : 跳到画面下方。
+- 上下左右移动：
+  - h :    往左移动。
+  - j : 往下移动。
+  - k : 往上移动。
+  - l :往右移动。
+  - 数字 ＋ [h, j, k ,l] : 往左,下,右,上移动几个字元。
+- gg : 跳到第一行。
+- G : 跳到最后一行。
+- 数字 ＋ gg : 跳到该数字那一行。
+- 数字 ＋ G : 跳到该数字那一行。
+- b : 移动到上一个字的第一个字元。
+- w : 移动到下一个字的第一个字元。
+- W : 移动到下一个字的第一个字元(以空白键或是tab键当区隔的跳法)。
+- ctrl + f : 下一页（forward）。
+- ctrl + b : 上一页（back）。
+- ctrl + g : 显示你目前位於整份文件的哪一行。
+- ^ : 移到此行的第一个字元。
+- $ : 移到此行的最后一个字元。
+</code></pre><p>指令模式下的操作</p>
+<pre><code>- :q : 直接离开（在文件没有被编辑过的情况下可以用）。
+- :q! : 强制离开（不储存你的修改强制离开）。
+- :wq : 储存并离开 (wq顺序不能反)。
+- :x : 储存并离开。
+- :set nu : 显示行号（也有人说:set number，取消则為:set nonumber）。
+- :set list : 显示看不见的空白字元或tab键。
+- :set hlsearch : 搜寻到的字串反白。 
+- dd : 删除游标所在的那一行。
+- 数字 ＋ dd : 删除游标往下多少行。
+- x: 删除游标后的字元。
+- X: 删除游标前的字元。
+- 数字＋x(X) : 删除游标后（前）多少个字元。
+- u : 复原。
+- ctrl + r : 回复（redo）。
+- yy : 复製游标所在的那一行。
+- 数字 ＋ yy : 复製游标下几行。
+- p : 游标后贴上。
+- P : 游标前贴上。
+- /要搜寻的文字: 游标往下搜寻你要的文字。
+- ?要搜寻的文字 : 游标网上搜寻你要的文字。
+- n : 重复搜寻。
+- N : 反方向的重复搜寻。
+</code></pre><p>c9s teaching</p>
+<pre><code>- \ff 快速找到档案
+- \fb 找到 buffer 中的档案
+- \ff, \fb 搭配 ctrl + (w, P, N, L) 来操作上下左右
+- \ff, \fb 搭配 ctrl + c, **, */*/
+</code></pre><p>Text Object (change inner)</p>
+<pre><code>- c + i + (  
+- - a + {
+- - [
+- - &apos;
+</code></pre><p>视觉选取模式</p>
+<pre><code>- v
+</code></pre><p>补充</p>
+<pre><code>- V 是 line wise selection
+- \ff 的功能是 fuzzyfinder 提供的
+- &quot;\&quot; 通常叫做 leader key
+</code></pre><h2 id="打开-退出"><a href="#打开-退出" class="headerlink" title="打开/退出"></a>打开/退出</h2><pre><code>vim -R file1 只读打开
+:qall 退出所有文件
+:wq 写入并退出
+:q! 强制退出
+</code></pre><h2 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h2><pre><code>i 在当前位置生前插入
+I 在当前行首插入
+a 在当前位置后插入
+A 在当前行尾插入
+o 在当前行之后插入一行
+O 在当前行之前插入一行
+</code></pre><h2 id="移动"><a href="#移动" class="headerlink" title="移动"></a>移动</h2><pre><code>h 左移一个字符
+l 右移一个字符
+k 上移一个字符
+j 下移一个字符
+</code></pre><p>以上四个命令可以配合数字使用，比如20j就是向下移动20行，5h就是向左移动5个字符。</p>
+<h2 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h2><pre><code>dd 删除当前行
+dj 删除当前行和上一行
+dk 删除当前行和下一行
+10dd 删除当前行开始的共10行
+D 删除当前字符至行尾
+</code></pre><h2 id="跳转"><a href="#跳转" class="headerlink" title="跳转"></a>跳转</h2><pre><code>gg 跳转到文件头
+G 跳转到文件尾
+gg=G自动缩进 （非常有用）
+Ctrl + d 向下滚动半屏
+Ctrl + u 向上滚动半屏
+Ctrl + f 向下滚动一屏
+Ctrl + b 向上滚动一屏
+冒号+行号，跳转到指定行；比如:120，跳转到120行；
+$ 跳转到行尾
+0 跳转到行首
+</code></pre><h2 id="编辑"><a href="#编辑" class="headerlink" title="编辑"></a>编辑</h2><pre><code>u 撤销
+Ctrl + r 重做
+yy 复制当前行
+按v（逐字）或V（逐行）进入可视模式，然后用jklh命令移动即可选择某些行或字符，再按y即可复制任意部分
+p 粘贴在当前位置
+另外，删除在vim里面就是剪切的意思，所以dd就是剪切当前行，可以用v或V选择特定部分再按d就是任意剪切了
+</code></pre><h2 id="查找"><a href="#查找" class="headerlink" title="查找"></a>查找</h2><pre><code>/text　　查找text，按n健查找下一个，按N健查找前一个
+?text　　查找text，反向查找，按n健查找下一个，按N健查找前一个
+:set ignorecase　　忽略大小写的查找
+:set noignorecase　　不忽略大小写的查找
+</code></pre><h2 id="替换"><a href="#替换" class="headerlink" title="替换"></a>替换</h2><pre><code>:s/old/new/ 用old替换new，替换当前行的第一个匹配
+:s/old/new/g 用old替换new，替换当前行的所有匹配
+:%s/old/new/ 用old替换new，替换所有行的第一个匹配
+:%s/old/new/g 用old替换new，替换整个文件的所有匹配
+也可以用v或V选择指定行，然后执行
+</code></pre><h2 id="多文件操作"><a href="#多文件操作" class="headerlink" title="多文件操作"></a>多文件操作</h2><pre><code>vim file1 file2 file3 ... 同时编辑多个文件
+:split 将窗口分成上下两个子窗口，对应两个不同的文件
+:vsplit 将窗口分成左右两个子窗口，对应两个不同的文件
+:open file4 打开新文件
+:bn 切换到下一个文件（当前窗口）
+:bp 切换到上一个文件（当前窗口）
+Ctrl-w h    移动到窗口左边
+Ctrl-w j    移动到窗口下边
+Ctrl-w k    移动到窗口上边
+Ctrl-w l    移动到窗口右边
+</code></pre><h2 id="报错处理"><a href="#报错处理" class="headerlink" title="报错处理"></a>报错处理</h2><blockquote>
+<p>使用vim修改文件报错，系统提示如下：<br>E37: No write since last change (add ! to override)</p>
+</blockquote>
+<p>故障原因：<br>文件为只读文件，无法修改。</p>
+<p>解决办法：<br>使用命令:’w!’强制存盘即可，在vim模式下，键入以下命令：<br>    :w！<br>存盘后在使用vim命令检查是否保存，如未保存，编辑后重复以上操作。</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/08/18/linux/Vim的常用命令/" data-id="cj7hnifcg00096opjer4ayh96" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/08/18/linux/Vim的常用命令/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-git/git commit 编写风格模板" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/07/19/git/git commit 编写风格模板/">git commit 编写风格模板</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/07/19/git/git commit 编写风格模板/">
+            <time datetime="2017-07-19T12:15:00.000Z" itemprop="datePublished">2017-07-19</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/git/">git</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/git/">git</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>最近看了Ruan YiFeng写的<a href="http://www.ruanyifeng.com/blog/2016/01/commit_message_change_log.html" target="_blank" rel="external">Commit message 和 Change log 编写指南</a>。<br>了解了如何写规范的commit message。</p>
+<!-- * 目录
+{:toc} -->
+<h3 id="编写规范"><a href="#编写规范" class="headerlink" title="编写规范"></a>编写规范</h3><p>先简要记录一下编写规范，这部分内容可以直接看Ruan YiFeng的博客，要比我写的详细。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;type&gt;(&lt;scope&gt;): &lt;subject&gt;</div><div class="line">// 空一行</div><div class="line">&lt;body&gt;</div><div class="line">// 空一行</div><div class="line">&lt;footer&gt;</div></pre></td></tr></table></figure></p>
+<p>commit message包含三个部分，header, body和footer，其中header必须有，body和footer可以按情况省略。</p>
+<p><strong>type 字段</strong></p>
+<ul>
+<li>feat：新功能（feature）</li>
+<li>fix：修补bug</li>
+<li>docs：文档（documentation）</li>
+<li>style： 格式（不影响代码运行的变动）</li>
+<li>refactor：重构（即不是新增功能，也不是修改bug的代码变动）</li>
+<li>test：增加测试</li>
+<li>chore：构建过程或辅助工具的变动</li>
+</ul>
+<p><strong>scope用于说明 commit 影响的范围，比如数据层、控制层、视图层等等，视项目不同而不同。</strong></p>
+<p>也就是写用户会感觉到改变在哪个地方。</p>
+<p><strong>subject是 commit 目的的简短描述，不超过50个字符</strong></p>
+<ul>
+<li>以动词开头，使用第一人称现在时，比如change，而不是changed或changes</li>
+<li>第一个字母小写</li>
+<li>结尾不加句号（.）</li>
+</ul>
+<p><strong>Body 部分是对本次 commit 的详细描述，可以分成多行</strong></p>
+<ul>
+<li>使用第一人称现在时，比如使用change而不是changed或changes。</li>
+<li>应该说明代码变动的动机，以及与以前行为的对比。</li>
+</ul>
+<p><strong>Footer</strong></p>
+<ul>
+<li>如果当前代码与上一个版本不兼容，则 Footer 部分以BREAKING CHANGE开头，后面是对变动的描述、以及变动理由和迁移方法。</li>
+<li>关闭 Issue</li>
+</ul>
+<p>另外，也可以包括JIRA issue references或者其他actions。</p>
+<p><q><strong>Revert</strong></q></p>
+<p>这是一种特殊情况，为了撤销前面的操作。</p>
+<p>如果当前 commit 用于撤销以前的 commit，则必须以revert:开头，后面跟着被撤销 Commit 的 Header。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">revert: feat(pencil): add &apos;graphiteWidth&apos; option</div><div class="line"></div><div class="line">This reverts commit 667ecc1654a317a13331b17617d973392f415f02.</div></pre></td></tr></table></figure>
+<p>Body部分的格式是固定的，必须写成<code>This reverts commit &amp;lt;hash&gt;.</code>，其中的<code>hash</code>是被撤销 commit 的 <code>SHA 标识符</code>。<br>如果当前 commit 与被撤销的 commit，在同一个发布（release）里面，<br>那么它们都不会出现在 Change log 里面。如果两者在不同的发布，那么当前 commit，会出现在 Change log 的Reverts小标题下面。</p>
+<p><a href="https://github.com/yulijia/cn/commit/e36d3ee657107623ff3fffc4bf8aec4b26a9bac0" target="_blank" rel="external">https://github.com/yulijia/cn/commit/e36d3ee657107623ff3fffc4bf8aec4b26a9bac0</a></p>
+<h3 id="修改git-message默认编辑器"><a href="#修改git-message默认编辑器" class="headerlink" title="修改git message默认编辑器"></a>修改git message默认编辑器</h3><p>说了这么多写作规范，如果有个模板可以直接拷贝，是再好不过的。</p>
+<p>使用模板之前，先对git message的默认编辑器做个修改，默认的是<code>nano</code>，但这个软件我不会用。</p>
+<p>用下面的命令，可以把默认编辑器改成<code>vim</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git config core.editor &quot;vim&quot;</div></pre></td></tr></table></figure>
+<h3 id="使用模板"><a href="#使用模板" class="headerlink" title="使用模板"></a>使用模板</h3><p>我采用了<a href="https://gist.github.com/Linell/bd8100c4e04348c7966d" target="_blank" rel="external">Linell编写的模板</a></p>
+<p>安装方式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">curl https://gist.githubusercontent.com/Linell/bd8100c4e04348c7966d/raw/84c0ea6e0f0a1431d406be6b7bb6e136949090cd/.git-commit-template.txt &gt;&gt; ~/.git-commit-template.txt</div><div class="line">git config --global commit.template ~/.git-commit-template.txt</div></pre></td></tr></table></figure>
+<p>另外，在这里也提供一个<a href="https://gist.github.com/yulijia/fe2522fe138b6ed41ff4" target="_blank" rel="external">中文的模板</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">curl https://gist.githubusercontent.com/yulijia/fe2522fe138b6ed41ff4/raw/5fa0007d1863f70cf4631f2dc1513c8676cd4ab8/.git-commit-template.txt &gt;&gt; ~/.git-commit-template.txt</div><div class="line">git config --global commit.template ~/.git-commit-template.txt</div></pre></td></tr></table></figure>
+<p>实际使用截图如下：</p>
+<p><img src="http://i.imgur.com/LMDCXdN.png" alt="Imgur"></p>
+<h3 id="写博客的commit-message应该怎么写？"><a href="#写博客的commit-message应该怎么写？" class="headerlink" title="写博客的commit message应该怎么写？"></a>写博客的commit message应该怎么写？</h3><p><u>这部分就是自娱自乐了</u>。查看了一下自己写博客提交的message，基本分为四类：1.提交一篇/多篇新内容；2.改错别字；3.修改/更新内容；4.修改/更新YAML说明；5.增加新页面。</p>
+<p>根据现有的git commit message写作规范，编写了自己的博客提交message规范。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;type&gt;(&lt;scope&gt;): &lt;subject&gt;</div><div class="line">// 空一行</div><div class="line">&lt;body&gt;</div><div class="line">// 空一行</div><div class="line">&lt;footer&gt;</div></pre></td></tr></table></figure>
+<p><strong>type</strong>为：</p>
+<ul>
+<li>add 增加新博客/页面（add new post/page）</li>
+<li>correct 改错别字/语法（correct spelling/grammar ）</li>
+<li>update 更新内容（update content）</li>
+<li>change 修改YAML说明（change YAML front-matter）</li>
+</ul>
+<p><strong>scope</strong>为：post/page, spelling/grammar, content, YAML front-matter</p>
+<p><strong>subject</strong>为：短描述，可以包含文件名等内容(如果名字过长，用首字母大写代替，省略连词)。（<code>add(post):20160121-postname.md</code>)</p>
+<p><strong>body</strong>为：具体的修改内容，如果是新增博客/页面，则可以省略。</p>
+<p><strong>footer</strong>为：空</p>
+<p>这个模板也放到<a href="https://gist.github.com/yulijia/fe2522fe138b6ed41ff4#file-git-commit-blog-txt" target="_blank" rel="external">gist</a>上。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">curl https://gist.githubusercontent.com/yulijia/fe2522fe138b6ed41ff4/raw/1e90ec272180dba299f5ad861e72dfab876c0c5b/.git-commit-blog.txt &gt;&gt; ~/.git-commit-template.txt</div><div class="line">git config --global commit.template ~/.git-commit-template.txt</div></pre></td></tr></table></figure>
+<p>实际使用时的截图如下</p>
+<p><img src="http://i.imgur.com/rVEhe7Z.png" alt="Imgur"></p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/07/19/git/git commit 编写风格模板/" data-id="cj76wnr6x0004enpjzrccax9w" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/07/19/git/git commit 编写风格模板/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-android/github/android indicator解析" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/07/19/android/github/android indicator解析/">android indicator解析</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/07/19/android/github/android indicator解析/">
+            <time datetime="2017-07-19T12:15:00.000Z" itemprop="datePublished">2017-07-19</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/github/">github</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/anslysis/">anslysis</a>, <a class="tag-link" href="/tags/github/">github</a>, <a class="tag-link" href="/tags/indicator/">indicator</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h3 id="解析对象"><a href="#解析对象" class="headerlink" title="解析对象"></a>解析对象</h3><ul>
+<li><a href="https://github.com/bingoogolapple/BGAIndicator-Android" target="_blank" rel="external">BGAIndicator-Android</a>  滑动指示器</li>
+</ul>
+<ul>
+<li><p><a href="https://github.com/ta893115871/PagerSlidingTabStrip" target="_blank" rel="external">PagerSlidingTabStrip</a> Android-导航栏特效，新闻类APP(仿iOS 版的网易，今日头条效果)，主要是导航栏字体大小和颜色的渐变特效</p>
+</li>
+<li><p><a href="https://github.com/LuckyJayce/ViewPagerIndicator" target="_blank" rel="external">ViewPagerIndicator</a> Indicator 取代 tabhost，实现网易顶部tab，新浪微博主页底部tab，引导页，无限轮播banner等效果，高度自定义tab和特效</p>
+</li>
+<li><p><a href="https://github.com/yewei02538/ColorTrackTabLayout" target="_blank" rel="external">ColorTrackTabLayout</a> 一个自适应Tab宽度，可以滑动文字逐渐变色的TabLayout</p>
+</li>
+<li><p><a href="https://github.com/hongyangAndroid/ColorTrackView" target="_blank" rel="external">ColorTrackView</a> 字体或者图片可以逐渐染色和逐渐褪色的动画效果</p>
+<p>​</p>
+</li>
+</ul>
+<h4 id="BGAIndicator-Android"><a href="#BGAIndicator-Android" class="headerlink" title="BGAIndicator-Android"></a><a href="https://github.com/bingoogolapple/BGAIndicator-Android" target="_blank" rel="external">BGAIndicator-Android</a></h4><p>支持Indicator和ViewPager宽度不相等时也能正确运行的滑动指示器</p>
+<ul>
+<li>效果图</li>
+</ul>
+<p><img src="http://bingoshare.u.qiniudn.com/BGAFixedIndicatorDemo.gif" alt="Image of BGAFixedIndicatorDemo"></p>
+<ul>
+<li>自定义属性说明</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&lt;declare-styleable name=&quot;BGAIndicator&quot;&gt;</div><div class="line">    &lt;attr name=&quot;indicator_textColor&quot; format=&quot;color|reference&quot; /&gt;</div><div class="line">    &lt;attr name=&quot;indicator_textSizeNormal&quot; format=&quot;dimension|reference&quot; /&gt;</div><div class="line">    &lt;attr name=&quot;indicator_textSizeSelected&quot; format=&quot;dimension|reference&quot; /&gt;</div><div class="line">    &lt;attr name=&quot;indicator_triangleHorizontalMargin&quot; format=&quot;dimension|reference&quot; /&gt;</div><div class="line">    &lt;attr name=&quot;indicator_triangleColor&quot; format=&quot;color|reference&quot; /&gt;</div><div class="line">    &lt;attr name=&quot;indicator_triangleHeight&quot; format=&quot;dimension|reference&quot; /&gt;</div><div class="line">    &lt;attr name=&quot;indicator_hasDivider&quot; format=&quot;boolean&quot; /&gt;</div><div class="line">    &lt;attr name=&quot;indicator_dividerColor&quot; format=&quot;color|reference&quot; /&gt;</div><div class="line">    &lt;attr name=&quot;indicator_dividerWidth&quot; format=&quot;dimension|reference&quot; /&gt;</div><div class="line">    &lt;attr name=&quot;indicator_dividerVerticalMargin&quot; format=&quot;dimension|reference&quot; /&gt;</div><div class="line">&lt;/declare-styleable&gt;</div></pre></td></tr></table></figure>
+<ul>
+<li><p>功能</p>
+<ul>
+<li>主要实现单屏viewpager滑动指示器展示</li>
+<li>不支持指示器超过一屏的滑动，（包裹HorizontalScrollView后，跟随页面切换，滑动指示器的联动亦是问题）</li>
+</ul>
+</li>
+<li><p>实现</p>
+<ul>
+<li><p>继承自LinearLayout</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">public class BGAFixedIndicator extends LinearLayout implements View.OnClickListener, View.OnFocusChangeListener &#123;</div><div class="line">    private static final String TAG = BGAFixedIndicator.class.getSimpleName();</div></pre></td></tr></table></figure>
+</li>
+<li><p>监听ViewPager滑动事件，实现滑动指示器绘制</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">// 初始化选项卡</div><div class="line">public void initData(int currentTab, ViewPager viewPager) &#123;</div><div class="line">    removeAllViews();</div><div class="line"></div><div class="line">    mViewPager = viewPager;</div><div class="line">    mTabCount = mViewPager.getAdapter().getCount();</div><div class="line"></div><div class="line">    mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() &#123;</div><div class="line">        @Override</div><div class="line">        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) &#123;</div><div class="line">            mTriangleLeftX = (int) (mItemWidth * (position + positionOffset));</div><div class="line">            postInvalidate();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public void onPageSelected(int position) &#123;</div><div class="line">            setCurrentTab(position);</div><div class="line">        &#125;</div><div class="line">    &#125;);</div><div class="line"></div><div class="line">    initTab(currentTab);</div><div class="line">    postInvalidate();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>初始化添加tabs</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line">private void initTab(int currentTab) &#123;</div><div class="line">    for (int index = 0; index &lt; mTabCount; index++) &#123;</div><div class="line">        View tabIndicator = mInflater.inflate(R.layout.view_indicator, this, false);</div><div class="line">        tabIndicator.setId(BSSEEID + index);</div><div class="line">        tabIndicator.setOnClickListener(this);</div><div class="line"></div><div class="line">        TextView titleTv = (TextView) tabIndicator.findViewById(R.id.tv_indicator_title);</div><div class="line">        if (mTextColor != null) &#123;</div><div class="line">            titleTv.setTextColor(mTextColor);</div><div class="line">        &#125;</div><div class="line">        titleTv.setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextSizeNormal);</div><div class="line">        titleTv.setText(mViewPager.getAdapter().getPageTitle(index));</div><div class="line"></div><div class="line">        LayoutParams tabLp = new LayoutParams(0, LayoutParams.MATCH_PARENT, 1);</div><div class="line">        tabLp.gravity = Gravity.CENTER;</div><div class="line">        tabIndicator.setLayoutParams(tabLp);</div><div class="line">        // 防止currentTab为0时，第一个tab文字颜色没变化</div><div class="line">        if (index == 0) &#123;</div><div class="line">            resetTab(tabIndicator, true);</div><div class="line">        &#125;</div><div class="line">        this.addView(tabIndicator);</div><div class="line"></div><div class="line">        if (index != mTabCount - 1 &amp;&amp; mHasDivider) &#123;</div><div class="line">            LayoutParams dividerLp = new LayoutParams(mDividerWidth, LayoutParams.MATCH_PARENT);</div><div class="line">            dividerLp.setMargins(0, mDividerVerticalMargin, 0, mDividerVerticalMargin);</div><div class="line">            View vLine = new View(getContext());</div><div class="line">            vLine.setBackgroundColor(mDividerColor);</div><div class="line">            vLine.setLayoutParams(dividerLp);</div><div class="line">            this.addView(vLine);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    setCurrentTab(currentTab);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>切换tabs</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">private void setCurrentTab(int index) &#123;</div><div class="line">    if (mCurrentTabIndex != index &amp;&amp; index &gt; -1 &amp;&amp; index &lt; mTabCount) &#123;</div><div class="line">        View oldTab = findViewById(BSSEEID + mCurrentTabIndex);</div><div class="line">        resetTab(oldTab, false);</div><div class="line"></div><div class="line">        mCurrentTabIndex = index;</div><div class="line">        View newTab = findViewById(BSSEEID + mCurrentTabIndex);</div><div class="line">        resetTab(newTab, true);</div><div class="line"></div><div class="line">        if (mViewPager.getCurrentItem() != mCurrentTabIndex) &#123;</div><div class="line">            mViewPager.setCurrentItem(mCurrentTabIndex, false);</div><div class="line">        &#125;</div><div class="line">        postInvalidate();</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">private void resetTab(View tab, boolean isSelected) &#123;</div><div class="line">    TextView tv = (TextView) tab.findViewById(R.id.tv_indicator_title);</div><div class="line">    tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, isSelected ? mTextSizeSelected : mTextSizeNormal);</div><div class="line">    tab.setSelected(isSelected);</div><div class="line">    tab.setPressed(isSelected);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>绘制滑动下划线</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">// 注意：必须要设置背景后，该方法才会被调用</div><div class="line">@Override</div><div class="line">protected void onDraw(Canvas canvas) &#123;</div><div class="line">    super.onDraw(canvas);</div><div class="line"></div><div class="line">    mPath.rewind();</div><div class="line">    float left_x = mTriangleHorizontalMargin + mTriangleLeftX;</div><div class="line">    float right_x = mTriangleLeftX + mItemWidth - mTriangleHorizontalMargin;</div><div class="line">    float top_y = getHeight() - mTriangleHeight;</div><div class="line">    float bottom_y = getHeight();</div><div class="line"></div><div class="line">    mPath.moveTo(left_x, top_y);</div><div class="line">    mPath.lineTo(right_x, top_y);</div><div class="line">    mPath.lineTo(right_x, bottom_y);</div><div class="line">    mPath.lineTo(left_x, bottom_y);</div><div class="line">    mPath.close();</div><div class="line"></div><div class="line">    canvas.drawPath(mPath, mPaintFooterTriangle);</div><div class="line">&#125;</div><div class="line"></div><div class="line">@Override</div><div class="line">protected void onSizeChanged(int w, int h, int oldw, int oldh) &#123;</div><div class="line">    super.onSizeChanged(w, h, oldw, oldh);</div><div class="line">    mItemWidth = getWidth();</div><div class="line">    if (mTabCount != 0) &#123;</div><div class="line">        mItemWidth = getWidth() / mTabCount;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>监听切换页面</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public void onClick(View v) &#123;</div><div class="line">    int currentTabIndex = v.getId() - BSSEEID;</div><div class="line">    setCurrentTab(currentTabIndex);</div><div class="line">&#125;</div><div class="line"></div><div class="line">// 当滑动指示器重新获取焦点时（比如从上一页返回当前页），立即初始化当前选中状态</div><div class="line">@Override</div><div class="line">public void onFocusChange(View v, boolean hasFocus) &#123;</div><div class="line">    if (v == this &amp;&amp; hasFocus) &#123;</div><div class="line">        findViewById(BSSEEID + mCurrentTabIndex).requestFocus();</div><div class="line">        return;</div><div class="line">    &#125; else if (hasFocus) &#123;</div><div class="line">        for (int i = 0; i &lt; mTabCount; i++) &#123;</div><div class="line">            if (getChildAt(i) == v) &#123;</div><div class="line">                setCurrentTab(i);</div><div class="line">                return;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="PagerSlidingTabStrip"><a href="#PagerSlidingTabStrip" class="headerlink" title="PagerSlidingTabStrip"></a><a href="https://github.com/ta893115871/PagerSlidingTabStrip" target="_blank" rel="external">PagerSlidingTabStrip</a></h4><p>Android-导航栏特效，主要是导航栏字体大小和颜色的渐变特效<br>可以是固定的几个,可也可以是水平滚动</p>
+<ul>
+<li><p>效果图<br><img src="http://img.blog.csdn.net/20160110124059659?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center"></p>
+</li>
+<li><p>自定义属性说明</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">app:pstsIndicatorColor  指示器的颜色</div><div class="line">app:pstsIndicatorHeight 指示器的高度</div><div class="line">app:pstsUnderlineColor 底部线的颜色</div><div class="line">app:pstsUnderlineHeight 底部线的高度</div><div class="line">app:pstsDividerColor 分割线的颜色</div><div class="line">app:pstsDividerPaddingTopBottom 分割线的上下间距</div><div class="line">app:pstsTabPaddingLeftRight 文本的左右间距</div><div class="line">app:pstsTextSelectedColor TAB选中的颜色</div><div class="line">app:pstsScrollOffset</div><div class="line">app:pstsTabBackground 每一个TAB的背景</div><div class="line">&lt;!--该属性表示里面的TAB是否均分整个PagerSlidingTabStrip控件的宽,true是,false不均分,从左到右排列,默认false--&gt;</div><div class="line">app:pstsShouldExpand</div><div class="line">app:pstsTextAllCaps 所有的小写英文文本自动大写 ,默认是true,默认大写</div><div class="line">&lt;!--缩放的最大值,0.3表示放大后最大是原来的0.3倍,默认为0.3--&gt;</div><div class="line">app:pstsScaleZoomMax</div><div class="line">android:textColor=&quot;@color/color_45c01a&quot; 正常状态的文字颜色</div><div class="line">android:textSize=&quot;16sp&quot; 正常状态的文字的大小</div><div class="line">app:pstsSmoothScrollWhenClickTab=&quot;false&quot; 当点击tab时内容区域Viewpager是否是左右滑动,默认是true</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&lt;com.gxz.PagerSlidingTabStrip</div><div class="line">    android:id=&quot;@+id/tabs&quot;</div><div class="line">    android:layout_width=&quot;match_parent&quot;</div><div class="line">    android:layout_height=&quot;40dp&quot;</div><div class="line">    android:textColor=&quot;@color/color_45c01a&quot;</div><div class="line">    android:textSize=&quot;16sp&quot;</div><div class="line">    app:pstsDividerColor=&quot;@android:color/transparent&quot;</div><div class="line">    app:pstsIndicatorColor=&quot;@color/accent_material_light&quot;</div><div class="line">    app:pstsIndicatorHeight=&quot;5dp&quot;</div><div class="line">    app:pstsShouldExpand=&quot;false&quot;</div><div class="line">    app:pstsTextSelectedColor=&quot;@color/accent_material_light&quot;</div><div class="line">    app:pstsUnderlineColor=&quot;@color/colorAccent&quot; /&gt;</div></pre></td></tr></table></figure>
+<ul>
+<li><p>功能</p>
+<ul>
+<li>基本实现类似头条滑动指示器，可多屏滑动展示</li>
+</ul>
+</li>
+<li><p>实现</p>
+<ul>
+<li><p>继承HorizonalScrollView</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">public class PagerSlidingTabStrip extends HorizontalScrollView &#123;</div><div class="line">    public interface IconTabProvider &#123;</div><div class="line">        int getPageIconResId(int position);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>监听viewpager滑动，绘制指示器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div></pre></td><td class="code"><pre><div class="line">private class PageListener implements OnPageChangeListener &#123;</div><div class="line">    private int oldPosition = 0;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) &#123;</div><div class="line">        currentPosition = position;</div><div class="line">        currentPositionOffset = positionOffset;</div><div class="line"></div><div class="line">        if (tabsContainer != null &amp;&amp; tabsContainer.getChildAt(position) != null) &#123;</div><div class="line">            scrollToChild(position, (int) (positionOffset * tabsContainer.getChildAt(position).getWidth()));</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        invalidate();</div><div class="line"></div><div class="line">        if (delegatePageListener != null) &#123;</div><div class="line">            delegatePageListener.onPageScrolled(position, positionOffset, positionOffsetPixels);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        if (mState == State.IDLE &amp;&amp; positionOffset &gt; 0) &#123;</div><div class="line">            oldPage = pager.getCurrentItem();</div><div class="line">            mState = position == oldPage ? State.GOING_RIGHT : State.GOING_LEFT;</div><div class="line">        &#125;</div><div class="line">        boolean goingRight = position == oldPage;</div><div class="line">        if (mState == State.GOING_RIGHT &amp;&amp; !goingRight)</div><div class="line">            mState = State.GOING_LEFT;</div><div class="line">        else if (mState == State.GOING_LEFT &amp;&amp; goingRight)</div><div class="line">            mState = State.GOING_RIGHT;</div><div class="line"></div><div class="line"></div><div class="line">        float effectOffset = isSmall(positionOffset) ? 0 : positionOffset;</div><div class="line"></div><div class="line"></div><div class="line">        View mLeft = tabsContainer.getChildAt(position);</div><div class="line">        View mRight = tabsContainer.getChildAt(position + 1);</div><div class="line"></div><div class="line"></div><div class="line">        if (effectOffset == 0) &#123;</div><div class="line">            mState = State.IDLE;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        if (mFadeEnabled)</div><div class="line">            animateFadeScale(mLeft, mRight, effectOffset, position);</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void onPageScrollStateChanged(int state) &#123;</div><div class="line">        if (state == ViewPager.SCROLL_STATE_IDLE) &#123;</div><div class="line">            scrollToChild(pager.getCurrentItem(), 0);</div><div class="line">            mFadeEnabled = true;</div><div class="line">        &#125;</div><div class="line">        if (delegatePageListener != null) &#123;</div><div class="line">            delegatePageListener.onPageScrollStateChanged(state);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void onPageSelected(int position) &#123;</div><div class="line">        selectedPosition = position;</div><div class="line"></div><div class="line">        //set old view statue</div><div class="line">        ViewHelper.setAlpha(tabViews.get(oldPosition).get(&quot;normal&quot;), 1);</div><div class="line">        ViewHelper.setAlpha(tabViews.get(oldPosition).get(&quot;selected&quot;), 0);</div><div class="line">        View v_old = tabsContainer.getChildAt(oldPosition);</div><div class="line">        ViewHelper.setPivotX(v_old, v_old.getMeasuredWidth() * 0.5f);</div><div class="line">        ViewHelper.setPivotY(v_old, v_old.getMeasuredHeight() * 0.5f);</div><div class="line">        ViewHelper.setScaleX(v_old, 1f);</div><div class="line">        ViewHelper.setScaleY(v_old, 1f);</div><div class="line"></div><div class="line">        //set new view statue</div><div class="line">        ViewHelper.setAlpha(tabViews.get(position).get(&quot;normal&quot;), 0);</div><div class="line">        ViewHelper.setAlpha(tabViews.get(position).get(&quot;selected&quot;), 1);</div><div class="line">        View v_new = tabsContainer.getChildAt(position);</div><div class="line">        ViewHelper.setPivotX(v_new, v_new.getMeasuredWidth() * 0.5f);</div><div class="line">        ViewHelper.setPivotY(v_new, v_new.getMeasuredHeight() * 0.5f);</div><div class="line">        ViewHelper.setScaleX(v_new, 1 + zoomMax);</div><div class="line">        ViewHelper.setScaleY(v_new, 1 + zoomMax);</div><div class="line"></div><div class="line">        if (delegatePageListener != null) &#123;</div><div class="line">            delegatePageListener.onPageSelected(position);</div><div class="line">        &#125;</div><div class="line">        oldPosition = selectedPosition;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="ColorTrackTabLayout"><a href="#ColorTrackTabLayout" class="headerlink" title="ColorTrackTabLayout"></a><a href="https://github.com/yewei02538/ColorTrackTabLayout" target="_blank" rel="external">ColorTrackTabLayout</a></h4><p>一个自适应Tab宽度，可以滑动文字逐渐变色的<code>TabLayout</code>,该控件继承自TabLayout做了一些扩展。</p>
+<ul>
+<li><p>效果<br><img src="https://raw.githubusercontent.com/yewei02538/ColorTrackTabLayout/master/screenshot/screenshot.gif" alt=""></p>
+</li>
+<li><p>自定义属性</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">&lt;LinearLayout</div><div class="line">    xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    xmlns:app=&quot;http://schemas.android.com/apk/res-auto&quot;</div><div class="line">    xmlns:tools=&quot;http://schemas.android.com/tools&quot;</div><div class="line">    android:id=&quot;@+id/activity_today_news_acitivty&quot;</div><div class="line">    android:layout_width=&quot;match_parent&quot;</div><div class="line">    android:layout_height=&quot;match_parent&quot;</div><div class="line">    android:orientation=&quot;vertical&quot;</div><div class="line">    tools:context=&quot;me.weyye.colortracktablayout.TodayNewsAcitivty&quot;&gt;</div><div class="line">    </div><div class="line">    &lt;me.weyye.library.colortrackview.ColorTrackTabLayout</div><div class="line">        android:id=&quot;@+id/tab&quot;</div><div class="line">        android:layout_width=&quot;match_parent&quot;</div><div class="line">        android:layout_height=&quot;40dp&quot;</div><div class="line">        android:background=&quot;#ffffff&quot;</div><div class="line">        app:tabIndicatorColor=&quot;@color/red&quot;</div><div class="line">        app:tabMode=&quot;scrollable&quot;</div><div class="line">        app:tabSelectedTextColor=&quot;@color/red&quot;</div><div class="line">        app:tabTextAppearance=&quot;@style/TabStyle&quot;</div><div class="line">        app:tabTextColor=&quot;@color/black&quot;/&gt;</div><div class="line">    </div><div class="line">    &lt;android.support.v4.view.ViewPager</div><div class="line">        android:id=&quot;@+id/viewPager&quot;</div><div class="line">        android:layout_width=&quot;match_parent&quot;</div><div class="line">        android:layout_height=&quot;match_parent&quot;/&gt;</div><div class="line">&lt;/LinearLayout&gt;</div></pre></td></tr></table></figure>
+<ul>
+<li><p>使用</p>
+<pre><code>  titles = new String[]{&quot;推荐&quot;, &quot;视频&quot;, &quot;社会&quot;};
+  final List&lt;Fragment&gt; fragments = new ArrayList&lt;&gt;();
+  for (int i = 0; i &lt; titles.length; i++) {
+      fragments.add(MyFragment.newInstance());
+  }
+
+  mViewPager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
+      @Override
+      public Fragment getItem(int position) {
+          return fragments.get(position);
+      }
+
+      @Override
+      public int getCount() {
+          return titles.length;
+      }
+
+      @Override
+      public CharSequence getPageTitle(int position) {
+          return titles[position];
+      }
+  });
+//隐藏指示器
+mTab.setSelectedTabIndicatorHeight(0);
+//设置每个Tab的内边距
+mTab.setTabPaddingLeftAndRight(20, 20);
+mTab.setupWithViewPager(mViewPager);
+</code></pre></li>
+<li><p>实现</p>
+<p>继承自TabLayout</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">public class ColorTrackTabLayout extends TabLayout &#123;</div><div class="line">    private int mTabTextSize;</div><div class="line">    private int mTabSelectedTextColor;</div><div class="line">    private int mTabTextColor;</div></pre></td></tr></table></figure>
+<p>既然是随着页面的滑动文字颜色渐变那么肯定少不了ViewPager的页面监听，这个在我们调用<code>setupWithViewPager</code>的时候TabLayout就已经添加监听。</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div></pre></td><td class="code"><pre><div class="line">private void setupWithViewPager(@Nullable final ViewPager viewPager, boolean autoRefresh,</div><div class="line">        boolean implicitSetup) &#123;</div><div class="line">    ....</div><div class="line"></div><div class="line">    if (viewPager != null) &#123;</div><div class="line">        mViewPager = viewPager;</div><div class="line"></div><div class="line">        // Add our custom OnPageChangeListener to the ViewPager</div><div class="line">        if (mPageChangeListener == null) &#123;</div><div class="line">            //添加了滑动监听</div><div class="line">            mPageChangeListener = new TabLayoutOnPageChangeListener(this);</div><div class="line">        &#125;</div><div class="line">        mPageChangeListener.reset();</div><div class="line">        viewPager.addOnPageChangeListener(mPageChangeListener);</div><div class="line"></div><div class="line">        // Now we&apos;ll add a tab selected listener to set ViewPager&apos;s current item</div><div class="line">        mCurrentVpSelectedListener = new ViewPagerOnTabSelectedListener(viewPager);</div><div class="line">        addOnTabSelectedListener(mCurrentVpSelectedListener);</div><div class="line"></div><div class="line">        final PagerAdapter adapter = viewPager.getAdapter();</div><div class="line">        if (adapter != null) &#123;</div><div class="line">            // Now we&apos;ll populate ourselves from the pager adapter, adding an observer if</div><div class="line">            // autoRefresh is enabled</div><div class="line">            setPagerAdapter(adapter, autoRefresh);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        // Add a listener so that we&apos;re notified of any adapter changes</div><div class="line">        if (mAdapterChangeListener == null) &#123;</div><div class="line">            mAdapterChangeListener = new AdapterChangeListener();</div><div class="line">        &#125;</div><div class="line">        mAdapterChangeListener.setAutoRefresh(autoRefresh);</div><div class="line">        viewPager.addOnAdapterChangeListener(mAdapterChangeListener);</div><div class="line"></div><div class="line">        // Now update the scroll position to match the ViewPager&apos;s current item</div><div class="line">        setScrollPosition(viewPager.getCurrentItem(), 0f, true);</div><div class="line">    &#125; else &#123;</div><div class="line">        // We&apos;ve been given a null ViewPager so we need to clear out the internal state,</div><div class="line">        // listeners and observers</div><div class="line">        mViewPager = null;</div><div class="line">        setPagerAdapter(null, false);</div><div class="line">    &#125;</div><div class="line">    ....</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>​    创建了mPageChangeListener并添加了监听</p>
+<p><code>mPageChangeListener = new TabLayoutOnPageChangeListener(this);</code>，所以我们必须要重写<code>setupWithViewPager</code>删除掉原来的监听，换成我们自己的监听</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public void setupWithViewPager(@Nullable ViewPager viewPager, boolean autoRefresh) &#123;</div><div class="line">    super.setupWithViewPager(viewPager, autoRefresh);</div><div class="line">    try &#123;</div><div class="line">        //通过反射找到mPageChangeListener</div><div class="line">        Field field = TabLayout.class.getDeclaredField(&quot;mPageChangeListener&quot;);</div><div class="line">        field.setAccessible(true);</div><div class="line">        TabLayoutOnPageChangeListener listener = (TabLayoutOnPageChangeListener) field.get(this);</div><div class="line">        if (listener != null) &#123;</div><div class="line">            //删除自带监听</div><div class="line">            viewPager.removeOnPageChangeListener(listener);</div><div class="line">            mPageChangeListenter = new ColorTrackTabLayoutOnPageChangeListener(this);</div><div class="line">            mPageChangeListenter.reset();</div><div class="line">            viewPager.addOnPageChangeListener(mPageChangeListenter);</div><div class="line">        &#125;</div><div class="line">    &#125; catch (Exception e) &#123;</div><div class="line">        e.printStackTrace();</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>​    还需要做的一点就是把TabLayout每一个的Tab布局替换成我们的。怎么替换呢？重写<code>addTab</code>，在添加的时候改成我们的布局</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public void addTab(@NonNull Tab tab, int position, boolean setSelected) &#123;</div><div class="line">    ColorTrackView colorTrackView = new ColorTrackView(getContext());</div><div class="line">    colorTrackView.setProgress(setSelected ? 1 : 0);</div><div class="line">    colorTrackView.setText(tab.getText() + &quot;&quot;);</div><div class="line">    colorTrackView.setTextSize(mTabTextSize);</div><div class="line">    colorTrackView.setTag(position);</div><div class="line">    colorTrackView.setTextChangeColor(mTabSelectedTextColor);</div><div class="line">    colorTrackView.setTextOriginColor(mTabTextColor);</div><div class="line">    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);</div><div class="line">    colorTrackView.setLayoutParams(layoutParams);</div><div class="line">    tab.setCustomView(colorTrackView);</div><div class="line"></div><div class="line">    super.addTab(tab, position, setSelected);</div><div class="line">    if (position == 0) &#123;</div><div class="line">        //默认选中第一个</div><div class="line">        setSelectedView(position);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    setTabWidth(position, colorTrackView);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>​    其关键就是将我们的布局利用setCustomView方法来设置上去。</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/07/19/android/github/android indicator解析/" data-id="cj76wnr8j001eenpj3y1a6kbu" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/07/19/android/github/android indicator解析/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-android/code/realm使用" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/04/13/android/code/realm使用/">Realm使用笔记</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/04/13/android/code/realm使用/">
+            <time datetime="2017-04-13T06:22:45.000Z" itemprop="datePublished">2017-04-13</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/code/">code</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/android/">android</a>, <a class="tag-link" href="/tags/code/">code</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>1.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">// Create a RealmConfiguration that saves the Realm file in the app&apos;s &quot;files&quot; directory.</div><div class="line">RealmConfiguration realmConfig = new RealmConfiguration.Builder(context).build();</div><div class="line">Realm.setDefaultConfiguration(realmConfig);</div><div class="line">// Get a Realm instance for this thread</div><div class="line">Realm realm = Realm.getDefaultInstance();</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">// The RealmConfiguration is created using the builder pattern.</div><div class="line">// The Realm file will be located in Context.getFilesDir() with name &quot;myrealm.realm&quot;</div><div class="line">RealmConfiguration config = new RealmConfiguration.Builder(context)</div><div class="line">  .name(&quot;myrealm.realm&quot;)</div><div class="line">  .encryptionKey(getKey())</div><div class="line">  .schemaVersion(42)</div><div class="line">  .modules(new MySchemaModule())</div><div class="line">  .migration(new MyMigration())</div><div class="line">  .build();</div><div class="line">// Use the config</div><div class="line">Realm realm = Realm.getInstance(config);</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">RealmConfiguration myConfig = new RealmConfiguration.Builder(context)</div><div class="line">  .name(&quot;myrealm.realm&quot;)</div><div class="line">  .schemaVersion(2)</div><div class="line">  .modules(new MyCustomSchema())</div><div class="line">  .build();</div><div class="line">RealmConfiguration otherConfig = new RealmConfiguration.Builder(context)</div><div class="line">  .name(&quot;otherrealm.realm&quot;)</div><div class="line">  .schemaVersion(5)</div><div class="line">  .modules(new MyOtherSchema())</div><div class="line">  .build();</div><div class="line">Realm myRealm = Realm.getInstance(myConfig);</div><div class="line">Realm otherRealm = Realm.getInstance(otherConfig);</div><div class="line">public class MyApplication extends Application &#123;</div><div class="line">  @Override</div><div class="line">  public void onCreate() &#123;</div><div class="line">    super.onCreate();</div><div class="line">    // The Realm file will be located in Context.getFilesDir() with name &quot;default.realm&quot;</div><div class="line">    RealmConfiguration config = new RealmConfiguration.Builder(this).build();</div><div class="line">    Realm.setDefaultConfiguration(config);</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">public class MyActivity extends Activity &#123;</div><div class="line">  @Override</div><div class="line">  protected void onCreate(Bundle savedInstanceState) &#123;</div><div class="line">    super.onCreate(savedInstanceState);</div><div class="line">    Realm realm = Realm.getDefaultInstance();</div><div class="line">    // ... Do something ...</div><div class="line">    realm.close();</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">​`</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">@RealmClass</div><div class="line">public class User implements RealmModel &#123;</div><div class="line">&#125;</div><div class="line">// With RealmObject</div><div class="line">user.isValid();</div><div class="line">user.addChangeListener(listener);</div><div class="line">// With RealmModel</div><div class="line">RealmObject.isValid(user);</div><div class="line">RealmObject.addChangeListener(user, listener);</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">final MyObject obj = new MyObject();</div><div class="line">obj.setId(42);</div><div class="line">obj.setName(&quot;Fish&quot;);</div><div class="line">realm.executeTransaction(new Realm.Transaction() &#123;</div><div class="line">    @Override</div><div class="line">    public void execute(Realm realm) &#123;</div><div class="line">        // This will create a new object in Realm or throw an exception if the</div><div class="line">        // object already exists (same primary key)</div><div class="line">        // realm.copyToRealm(obj);</div><div class="line">        // This will update an existing object with the same primary key</div><div class="line">        // or create a new object if an object with no primary key = 42</div><div class="line">        realm.copyToRealmOrUpdate(obj);</div><div class="line">    &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">realm.beginTransaction();</div><div class="line">User user = realm.createObject(User.class); // Create a new object</div><div class="line">user.setName(&quot;John&quot;);</div><div class="line">user.setEmail(&quot;john@corporation.com&quot;);</div><div class="line">realm.commitTransaction();</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">User user = new User(&quot;John&quot;);</div><div class="line">user.setEmail(&quot;john@corporation.com&quot;);</div><div class="line">// Copy the object to Realm. Any further changes must happen on realmUser</div><div class="line">realm.beginTransaction();</div><div class="line">User realmUser = realm.copyToRealm(user);</div><div class="line">realm.commitTransaction();</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">// Query Realm for all dogs younger than 2 years old</div><div class="line">final RealmResults&lt;Dog&gt; puppies = realm.where(Dog.class).lessThan(&quot;age&quot;, 2).findAll();</div><div class="line">puppies.size(); // =&gt; 0 because no dogs have been added to the Realm yet</div><div class="line">// Persist your data in a transaction</div><div class="line">realm.beginTransaction();</div><div class="line">final Dog managedDog = realm.copyToRealm(dog); // Persist unmanaged objects</div><div class="line">Person person = realm.createObject(Person.class); // Create managed objects directly</div><div class="line">person.getDogs().add(managedDog);</div><div class="line">realm.commitTransaction();</div><div class="line">public void onStop () &#123;</div><div class="line">    if (transaction != null &amp;&amp; !transaction.isCancelled()) &#123;</div><div class="line">        transaction.cancel();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>​<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">// Listeners will be notified when data changes</div><div class="line">puppies.addChangeListener(new RealmChangeListener&lt;RealmResults&lt;Dog&gt;&gt;() &#123;</div><div class="line">    @Override</div><div class="line">    public void onChange(RealmResults&lt;Dog&gt; results) &#123;</div><div class="line">        // Query results are updated in real time</div><div class="line">        puppies.size(); // =&gt; 1</div><div class="line">    &#125;</div><div class="line">&#125;);</div><div class="line"></div><div class="line">// Asynchronously update objects on a background thread</div><div class="line">realm.executeTransactionAsync(new Realm.Transaction() &#123;</div><div class="line">    @Override</div><div class="line">    public void execute(Realm bgRealm) &#123;</div><div class="line">        Dog dog = bgRealm.where(Dog.class).equalTo(&quot;age&quot;, 1).findFirst();</div><div class="line">        dog.setAge(3);</div><div class="line">    &#125;</div><div class="line">&#125;, new Realm.Transaction.OnSuccess() &#123;</div><div class="line">    @Override</div><div class="line">    public void onSuccess() &#123;</div><div class="line">    	// Original queries and Realm objects are automatically updated.</div><div class="line">    	puppies.size(); // =&gt; 0 because there are no more puppies younger than 2 years old</div><div class="line">    	managedDog.getAge();   // =&gt; 3 the dogs age is updated</div><div class="line">    &#125;</div><div class="line">&#125;);</div><div class="line"></div><div class="line">realm.executeTransaction(new Realm.Transaction() &#123;</div><div class="line">    @Override</div><div class="line">    public void execute(Realm realm) &#123;</div><div class="line">        Dog myDog = realm.createObject(Dog.class);</div><div class="line">        myDog.setName(&quot;Fido&quot;);</div><div class="line">        myDog.setAge(1);</div><div class="line">    &#125;</div><div class="line">&#125;);</div><div class="line">​</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">Dog myDog = realm.where(Dog.class).equalTo(&quot;age&quot;, 1).findFirst();</div><div class="line">realm.executeTransaction(new Realm.Transaction() &#123;</div><div class="line">    @Override</div><div class="line">    public void execute(Realm realm) &#123;</div><div class="line">        Dog myPuppy = realm.where(Dog.class).equalTo(&quot;age&quot;, 1).findFirst();</div><div class="line">        myPuppy.setAge(2);</div><div class="line">    &#125;</div><div class="line">&#125;);</div><div class="line">myDog.getAge(); // =&gt; 2</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">realm.executeTransactionAsync(new Realm.Transaction() &#123;</div><div class="line">            @Override</div><div class="line">            public void execute(Realm bgRealm) &#123;</div><div class="line">                User user = bgRealm.createObject(User.class);</div><div class="line">                user.setName(&quot;John&quot;);</div><div class="line">                user.setEmail(&quot;john@corporation.com&quot;);</div><div class="line">            &#125;</div><div class="line">        &#125;, new Realm.Transaction.OnSuccess() &#123;</div><div class="line">            @Override</div><div class="line">            public void onSuccess() &#123;</div><div class="line">                // Transaction was a success.</div><div class="line">            &#125;</div><div class="line">        &#125;, new Realm.Transaction.OnError() &#123;</div><div class="line">            @Override</div><div class="line">            public void onError(Throwable error) &#123;</div><div class="line">                // Transaction failed and was automatically canceled.</div><div class="line">            &#125;</div><div class="line">        &#125;);</div><div class="line">public void onStop () &#123;</div><div class="line">    if (transaction != null &amp;&amp; !transaction.isCancelled()) &#123;</div><div class="line">        transaction.cancel();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div></pre></td><td class="code"><pre><div class="line">// r1 =&gt; [U1,U2]</div><div class="line">RealmResults&lt;Person&gt; r1 = realm.where(Person.class)</div><div class="line">                             .equalTo(&quot;dogs.name&quot;, &quot;Fluffy&quot;)</div><div class="line">                             .equalTo(&quot;dogs.color&quot;, &quot;Brown&quot;)</div><div class="line">                             .findAll();</div><div class="line">// r2 =&gt; [U2]</div><div class="line">RealmResults&lt;Person&gt; r2 = realm.where(Person.class)</div><div class="line">                             .equalTo(&quot;dogs.name&quot;, &quot;Fluffy&quot;)</div><div class="line">                             .findAll()</div><div class="line">                             .where()</div><div class="line">                             .equalTo(&quot;dogs.color&quot;, &quot;Brown&quot;)</div><div class="line">                             .findAll();</div><div class="line">                             .where()</div><div class="line">                             .equalTo(&quot;dogs.color&quot;, &quot;Yellow&quot;)</div><div class="line">                             .findAll();</div><div class="line">// Build the query looking at all users:</div><div class="line">RealmQuery&lt;User&gt; query = realm.where(User.class);</div><div class="line">// Add query conditions:</div><div class="line">query.equalTo(&quot;name&quot;, &quot;John&quot;);</div><div class="line">query.or().equalTo(&quot;name&quot;, &quot;Peter&quot;);</div><div class="line">// Execute the query:</div><div class="line">RealmResults&lt;User&gt; result1 = query.findAll();</div><div class="line">// Or alternatively do the same all at once (the &quot;Fluent interface&quot;):</div><div class="line">RealmResults&lt;User&gt; result2 = realm.where(User.class)</div><div class="line">                                  .equalTo(&quot;name&quot;, &quot;John&quot;)</div><div class="line">                                  .or()</div><div class="line">                                  .equalTo(&quot;name&quot;, &quot;Peter&quot;)</div><div class="line">                                  .findAll();</div><div class="line">RealmResults&lt;User&gt; r = realm.where(User.class)</div><div class="line">                            .greaterThan(&quot;age&quot;, 10)  //implicit AND</div><div class="line">                            .beginGroup()</div><div class="line">                                .equalTo(&quot;name&quot;, &quot;Peter&quot;)</div><div class="line">                                .or()</div><div class="line">                                .contains(&quot;name&quot;, &quot;Jo&quot;)</div><div class="line">                            .endGroup()</div><div class="line">                            .findAll();</div><div class="line">// r1 =&gt; [U1,U2]</div><div class="line">RealmResults&lt;Person&gt; r1 = realm.where(Person.class)</div><div class="line">                             .equalTo(&quot;dogs.name&quot;, &quot;Fluffy&quot;)</div><div class="line">                             .equalTo(&quot;dogs.color&quot;, &quot;Brown&quot;)</div><div class="line">                             .findAll();</div><div class="line">// r2 =&gt; [U2]</div><div class="line">RealmResults&lt;Person&gt; r2 = realm.where(Person.class)</div><div class="line">                             .equalTo(&quot;dogs.name&quot;, &quot;Fluffy&quot;)</div><div class="line">                             .findAll()</div><div class="line">                             .where()</div><div class="line">                             .equalTo(&quot;dogs.color&quot;, &quot;Brown&quot;)</div><div class="line">                             .findAll();</div><div class="line">                             .where()</div><div class="line">                             .equalTo(&quot;dogs.color&quot;, &quot;Yellow&quot;)</div><div class="line">                             .findAll();</div><div class="line">6</div><div class="line">final RealmResults&lt;User&gt; users = getUsers();</div><div class="line">realm.executeTransaction(new Realm.Transaction() &#123;</div><div class="line">    @Override</div><div class="line">    public void execute(Realm realm) &#123;</div><div class="line">        users.deleteFromRealm(0); // Delete and remove object directly</div><div class="line">    &#125;</div><div class="line">&#125;);</div><div class="line">for (User user : users) &#123;</div><div class="line">    showUser(user); // Deleted user will not be shown</div><div class="line">&#125;</div><div class="line">// obtain the results of a query</div><div class="line">final RealmResults&lt;Dog&gt; results = realm.where(Dog.class).findAll();</div><div class="line">// All changes to data must happen in a transaction</div><div class="line">realm.executeTransaction(new Realm.Transaction() &#123;</div><div class="line">    @Override</div><div class="line">    public void execute(Realm realm) &#123;</div><div class="line">        // remove single match</div><div class="line">        results.deleteFirstFromRealm();</div><div class="line">        results.deleteLastFromRealm();</div><div class="line">        // remove a single object</div><div class="line">        Dog dog = results.get(5);</div><div class="line">        dog.deleteFromRealm();</div><div class="line">        // Delete all matches</div><div class="line">        results.deleteAllFromRealm();</div><div class="line">    &#125;</div><div class="line">&#125;);</div><div class="line">As</div><div class="line">7.</div><div class="line">/ Setup Realm in your Application</div><div class="line">public class MyApplication extends Application &#123;</div><div class="line">    @Override</div><div class="line">    public void onCreate() &#123;</div><div class="line">        super.onCreate();</div><div class="line">        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder(this).build();</div><div class="line">        Realm.setDefaultConfiguration(realmConfiguration);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">// onCreate()/onDestroy() overlap when switching between activities so onCreate()</div><div class="line">// on Activity 2 will be called before onDestroy() on Activity 1.</div><div class="line">public class MyActivity extends Activity &#123;</div><div class="line">    private Realm realm;</div><div class="line">    @Override</div><div class="line">    protected void onCreate(Bundle savedInstanceState) &#123;</div><div class="line">        super.onCreate(savedInstanceState);</div><div class="line">        realm = Realm.getDefaultInstance();</div><div class="line">    &#125;</div><div class="line">    @Override</div><div class="line">    protected void onDestroy() &#123;</div><div class="line">        super.onDestroy();</div><div class="line">        realm.close();</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">// Use onStart()/onStop() for Fragments as onDestroy() might not be called.</div><div class="line">public class MyFragment extends Fragment &#123;</div><div class="line">    private Realm realm;</div><div class="line">    @Override</div><div class="line">    public void onStart() &#123;</div><div class="line">        super.onStart();</div><div class="line">        realm = Realm.getDefaultInstance();</div><div class="line">    &#125;</div><div class="line">    @Override</div><div class="line">    public void onStop() &#123;</div><div class="line">        super.onStop();</div><div class="line">        realm.close();</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">.</div><div class="line">`</div></pre></td></tr></table></figure>
+<p>````</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/04/13/android/code/realm使用/" data-id="cj76wnr8g001aenpjv5zeqe5s" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/04/13/android/code/realm使用/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
     <article id="post-node/angular.js4.0 " class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
@@ -1147,989 +2230,6 @@
 
 
 
-    <article id="post-android/code/H5启动Android App" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2017/03/07/android/code/H5启动Android App/">H5启动Android App</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2017/03/07/android/code/H5启动Android App/">
-            <time datetime="2017-03-07T01:58:25.000Z" itemprop="datePublished">2017-03-07</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/code/">code</a>
-    </div>
-
-                        
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/android/">android</a>, <a class="tag-link" href="/tags/code/">code</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <blockquote>
-<p>首先明晰，<a href="http://lib.csdn.net/base/wechat" target="_blank" rel="external">微信</a>里屏蔽了schema协议。除非你是微信的合作伙伴之类的，他们专门给你配置进白名单。否则，我们就没办法通过这个协议在微信中直接唤起app。</p>
-<p>因此，我们需要先判断页面场景是否在微信中，如果在微信中，则会提示用户在浏览器中打开。</p>
-</blockquote>
-<h3 id="H5中间接判断应用是否安装"><a href="#H5中间接判断应用是否安装" class="headerlink" title="H5中间接判断应用是否安装"></a>H5中间接判断应用是否安装</h3><blockquote>
-<p>这里的逻辑很简单，当没有成功打开app的时候，新页面不会弹出则页面逻辑继续进行；否则如果进入了新页面，则页面逻辑便终止了。所以我们可以另开一个延时的线程来判断这个事情</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">if(...)&#123;</div><div class="line">document.location = &apos;&apos;;</div><div class="line">setTimeout(function()&#123;</div><div class="line">   //此处如果执行则表示没有app</div><div class="line">&#125;,200);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h3 id="通过H5唤起APP"><a href="#通过H5唤起APP" class="headerlink" title="通过H5唤起APP"></a>通过H5唤起APP</h3><blockquote>
-<p>编辑AndroidManifest.xml，主要是增加第二个<intent-filter>，launchapp用来标识schema，最好能保证手机系统唯一，那样就可以打开应用，而不是弹出一个选择框。可以附带自己的数据通过string传递到activity，比如完整url为 launchapp://?data=mydata</intent-filter></p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">&lt;activity    </div><div class="line">     android:name=&quot;com.robert.MainActivity&quot;    </div><div class="line">     android:configChanges=&quot;orientation|keyboardHidden|navigation|screenSize&quot;    </div><div class="line">     android:screenOrientation=&quot;landscape&quot;    </div><div class="line">     android:theme=&quot;@android:style/Theme.NoTitleBar.Fullscreen&quot; &gt;    </div><div class="line">     &lt;intent-filter&gt;    </div><div class="line">         &lt;action android:name=&quot;android.intent.action.MAIN&quot; /&gt;    </div><div class="line">         &lt;category android:name=&quot;android.intent.category.LAUNCHER&quot; /&gt;    </div><div class="line">     &lt;/intent-filter&gt;    </div><div class="line">     &lt;intent-filter&gt;    </div><div class="line">         &lt;action android:name=&quot;android.intent.action.VIEW&quot; /&gt;    </div><div class="line">         &lt;category android:name=&quot;android.intent.category.BROWSABLE&quot; /&gt;    </div><div class="line">         &lt;category android:name=&quot;android.intent.category.DEFAULT&quot;/&gt;    </div><div class="line">         &lt;data android:scheme=&quot;launchapp&quot; android:pathPrefix=&quot;/haha&quot; /&gt;    </div><div class="line">     &lt;/intent-filter&gt;    </div><div class="line">   &lt;/activity&gt;</div></pre></td></tr></table></figure>
-<blockquote>
-<p>然后通过activity获得data数据：</p>
-</blockquote>
-   <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">     public void onCreate(Bundle savedInstanceState) &#123;             </div><div class="line">     	Uri uridata = this.getIntent().getData();             </div><div class="line">     	String mydata = uridata.getQueryParameter(&quot;data&quot;);            </div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h3 id="编写html页面"><a href="#编写html页面" class="headerlink" title="编写html页面"></a>编写html页面</h3><blockquote>
-<p>整个页面也许是某个app的详细介绍，这里只写出关键的js代码：</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">&lt;activity  </div><div class="line">     android:name=&quot;com.robert.MainActivity&quot;    </div><div class="line">     android:configChanges=&quot;orientation|keyboardHidden|navigation|screenSize&quot;    </div><div class="line">     android:screenOrientation=&quot;landscape&quot;    </div><div class="line">     android:theme=&quot;@android:style/Theme.NoTitleBar.Fullscreen&quot; &gt;    </div><div class="line">     &lt;intent-filter&gt;    </div><div class="line">         &lt;action android:name=&quot;android.intent.action.MAIN&quot; /&gt;    </div><div class="line">         &lt;category android:name=&quot;android.intent.category.LAUNCHER&quot; /&gt;    </div><div class="line">     &lt;/intent-filter&gt;    </div><div class="line">     &lt;intent-filter&gt;    </div><div class="line">         &lt;action android:name=&quot;android.intent.action.VIEW&quot; /&gt;    </div><div class="line">         &lt;category android:name=&quot;android.intent.category.BROWSABLE&quot; /&gt;    </div><div class="line">         &lt;category android:name=&quot;android.intent.category.DEFAULT&quot;/&gt;    </div><div class="line">         &lt;data android:scheme=&quot;launchapp&quot; android:pathPrefix=&quot;/haha&quot; /&gt;    </div><div class="line">     &lt;/intent-filter&gt;    </div><div class="line">&lt;/activity&gt;</div></pre></td></tr></table></figure>
-<blockquote>
-<p>下面代码可以达到这样一个目的，先请求 launchapp:// ,如果系统能处理，或者说已经安装了myapp表示的应用，那么就可以打开，另外，如果不能打开，直接刷新一下当前页面，等于是重置location。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">function openApp() &#123;    </div><div class="line">       </div><div class="line">           if (/android/i.test(navigator.userAgent)) &#123;    </div><div class="line">                var isrefresh = getUrlParam(&apos;refresh&apos;); // 获得refresh参数    </div><div class="line">                if(isrefresh == 1) &#123;    </div><div class="line">                    return    </div><div class="line">                &#125;    </div><div class="line">                window.location.href = &apos;launchapp://haha?data=mydata&apos;;    </div><div class="line">                window.setTimeout(function () &#123;    </div><div class="line">                        window.location.href += &apos;&amp;refresh=1&apos; // 附加一个特殊参数，用来标识这次刷新不要再调用myapp:// 了    </div><div class="line">                &#125;, 500);    </div><div class="line">            &#125;    </div><div class="line">       </div><div class="line">   &#125;</div></pre></td></tr></table></figure>
-<h3 id="整体代码"><a href="#整体代码" class="headerlink" title="整体代码"></a>整体代码</h3><blockquote>
-<p>代码功能: 判断手机/平板是否安装app 如果安装 则调用app的scheme，传入url当作参数，来做后续操作 如果没有安装 则跳转到app store/google play 下载app</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">(function () &#123;</div><div class="line">    var openUrl = window.location.search;</div><div class="line">    try &#123;</div><div class="line">        openUrl = openUrl.substring(1, openUrl.length);</div><div class="line">    &#125; catch (e) &#123;&#125;</div><div class="line">    var isiOS = navigator.userAgent.match(&apos;iPad&apos;) || navigator.userAgent.match(&apos;iPhone&apos;) || navigator.userAgent.match(</div><div class="line">        &apos;iPod&apos;),</div><div class="line">        isAndroid = navigator.userAgent</div><div class="line">            .match(&apos;Android&apos;),</div><div class="line">        isDesktop = !isiOS &amp;&amp; !isAndroid;</div><div class="line">    if (isiOS) &#123;</div><div class="line">        setTimeout(function () &#123;</div><div class="line">            window.location = &quot;itms-apps://itunes.apple.com/app/[name]/[id]?mt=8&quot;;</div><div class="line">        &#125;, 25);</div><div class="line">        window.location = &quot;[scheme]://[host]?url=&quot; + openUrl;</div><div class="line">    &#125; else if (isAndroid) &#123;</div><div class="line">        window.location = &quot;intent://[host]/&quot; + &quot;url=&quot; + openUrl + &quot;#Intent;scheme=[scheme];package=[package_name];end&quot;;</div><div class="line">    &#125; else &#123;</div><div class="line">        window.location.href = openUrl;</div><div class="line">    &#125;</div><div class="line">&#125;)();</div></pre></td></tr></table></figure>
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="http://yoursite.com/2017/03/07/android/code/H5启动Android App/" data-id="cj76wnr8c0015enpj8s1tyb1n" class="article-share-link"><i class="fa fa-share"></i>Share</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-        <a href="http://yoursite.com/2017/03/07/android/code/H5启动Android App/#comments" class="article-comment-link">Comments</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-other/markdown转换教程" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2016/06/29/other/markdown转换教程/">markdown转换教程</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2016/06/29/other/markdown转换教程/">
-            <time datetime="2016-06-28T16:55:50.000Z" itemprop="datePublished">2016-06-29</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/markdown/">markdown</a>
-    </div>
-
-                        
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/markdown/">markdown</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <h1 id="markdown转换教程"><a href="#markdown转换教程" class="headerlink" title="markdown转换教程"></a>markdown转换教程</h1><p>Author：<a href="https://github.com/tmc9031" target="_blank" rel="external">tmc9031</a></p>
-<h2 id="HTML转markdown"><a href="#HTML转markdown" class="headerlink" title="HTML转markdown"></a>HTML转markdown</h2><h3 id="WHY"><a href="#WHY" class="headerlink" title="WHY"></a>WHY</h3><p>为提高翻译效率，推荐把原文的html格式先转换为markdown格式，可以简化手工整理原文的过程</p>
-<h3 id="INSTALL"><a href="#INSTALL" class="headerlink" title="INSTALL"></a>INSTALL</h3><p>这里介绍一款格式转换神器 <a href="http://pandoc.org" target="_blank" rel="external">pandoc.org</a></p>
-<p>Linux系统下的的安装</p>
-<pre><code>$ sudo apt-get install pandoc
-</code></pre><p>其它系统的详见官方 <a href="http://pandoc.org/installing.html" target="_blank" rel="external">installing</a></p>
-<h3 id="HOWTO"><a href="#HOWTO" class="headerlink" title="HOWTO"></a>HOWTO</h3><p>以下以该文章为例 <a href="https://medium.com/google-developer-experts/automating-android-development-6daca3a98396" target="_blank" rel="external">Automating Android development</a></p>
-<ol>
-<li>用浏览器打开另保存为aad.html，注意保存类型选择 <code>网页，仅 HTML</code></li>
-<li><p>使用pandoc工具，Linux系统下使用shell终端命令</p>
-<p> $ pandoc aad.html -o aad.md –from=html –to=markdown</p>
-</li>
-<li><p>接下来打开aad.md去除一些头尾的多余部分即可开始翻译</p>
-</li>
-</ol>
-<blockquote>
-<p>注意：<br>建议在翻译过程中善用git保存转换出来的原文markdown<br>另外保留中英双语方便校对，完成后再删除英文原文</p>
-</blockquote>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="http://yoursite.com/2016/06/29/other/markdown转换教程/" data-id="cj76wnr7e000henpjz6xu97w7" class="article-share-link"><i class="fa fa-share"></i>Share</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-        <a href="http://yoursite.com/2016/06/29/other/markdown转换教程/#comments" class="article-comment-link">Comments</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-other/about" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <h3 id="the-old-man-and-the-sea"><a href="#the-old-man-and-the-sea" class="headerlink" title="the old man and the sea"></a>the old man and the sea</h3><p>I am Ernest Chang.</p>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="http://yoursite.com/2016/06/29/other/about/" data-id="cj76wnr7b000eenpjew9bemd5" class="article-share-link"><i class="fa fa-share"></i>Share</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-        <a href="http://yoursite.com/2016/06/29/other/about/#comments" class="article-comment-link">Comments</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-node/books/7days/01_getting_started" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2016/03/23/node/books/7days/01_getting_started/">七天学会NodeJS - NodeJS基础</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2016/03/23/node/books/7days/01_getting_started/">
-            <time datetime="2016-03-22T22:06:34.000Z" itemprop="datePublished">2016-03-23</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/node/">node</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/node/7days/">7days</a>
-    </div>
-
-                        
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/node/">node</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <h2 id="七天学会NodeJS-NodeJS基础"><a href="#七天学会NodeJS-NodeJS基础" class="headerlink" title="七天学会NodeJS - NodeJS基础"></a>七天学会NodeJS - NodeJS基础</h2><h3 id="什么是NodeJS"><a href="#什么是NodeJS" class="headerlink" title="什么是NodeJS"></a>什么是NodeJS</h3><p>JS是脚本语言，脚本语言都需要一个解析器才能运行。对于写在HTML页面里的JS，浏览器充当了解析器的角色。而对于需要独立运行的JS，NodeJS就是一个解析器。</p>
-<p>每一种解析器都是一个运行环境，不但允许JS定义各种数据结构，进行各种计算，还允许JS使用运行环境提供的内置对象和方法做一些事情。例如运行在浏览器中的JS的用途是操作DOM，浏览器就提供了<code>document</code>之类的内置对象。而运行在NodeJS中的JS的用途是操作磁盘文件或搭建HTTP服务器，NodeJS就相应提供了<code>fs</code>、<code>http</code>等内置对象。</p>
-<h3 id="有啥用处"><a href="#有啥用处" class="headerlink" title="有啥用处"></a>有啥用处</h3><p>尽管存在一听说可以直接运行JS文件就觉得很酷的同学，但大多数同学在接触新东西时首先关心的是有啥用处，以及能带来啥价值。</p>
-<p>NodeJS的作者说，他创造NodeJS的目的是为了实现高性能Web服务器，他首先看重的是事件机制和异步IO模型的优越性，而不是JS。但是他需要选择一种编程语言实现他的想法，这种编程语言不能自带IO功能，并且需要能良好支持事件机制。JS没有自带IO功能，天生就用于处理浏览器中的DOM事件，并且拥有一大群程序员，因此就成为了天然的选择。</p>
-<p>如他所愿，NodeJS在服务端活跃起来，出现了大批基于NodeJS的Web服务。而另一方面，NodeJS让前端众如获神器，终于可以让自己的能力覆盖范围跳出浏览器窗口，更大批的前端工具如雨后春笋。</p>
-<p>因此，对于前端而言，虽然不是人人都要拿NodeJS写一个服务器程序，但简单可至使用命令交互模式调试JS代码片段，复杂可至编写工具提升工作效率。</p>
-<p>NodeJS生态圈正欣欣向荣。</p>
-<h3 id="如何安装"><a href="#如何安装" class="headerlink" title="如何安装"></a>如何安装</h3><h4 id="安装程序"><a href="#安装程序" class="headerlink" title="安装程序"></a>安装程序</h4><p>NodeJS提供了一些安装程序，都可以在<a href="http://nodejs.org/download/" target="_blank" rel="external">nodejs.org</a>这里下载并安装。</p>
-<p>Windows系统下，选择和系统版本匹配的<code>.msi</code>后缀的安装文件。Mac OS X系统下，选择<code>.pkg</code>后缀的安装文件。</p>
-<h4 id="编译安装"><a href="#编译安装" class="headerlink" title="编译安装"></a>编译安装</h4><p>Linux系统下没有现成的安装程序可用，虽然一些发行版可以使用<code>apt-get</code>之类的方式安装，但不一定能安装到最新版。因此Linux系统下一般使用以下方式编译方式安装NodeJS。</p>
-<ol>
-<li><p>确保系统下g++版本在4.6以上，python版本在2.6以上。</p>
-</li>
-<li><p>从<a href="http://nodejs.org/download/" target="_blank" rel="external">nodejs.org</a>下载<code>tar.gz</code>后缀的NodeJS最新版源代码包并解压到某个位置。</p>
-</li>
-<li><p>进入解压到的目录，使用以下命令编译和安装。</p>
-<pre><code>$ ./configure
-$ make
-$ sudo make install
-</code></pre></li>
-</ol>
-<h3 id="如何运行"><a href="#如何运行" class="headerlink" title="如何运行"></a>如何运行</h3><p>打开终端，键入<code>node</code>进入命令交互模式，可以输入一条代码语句后立即执行并显示结果，例如：</p>
-<pre><code>$ node
-&gt; console.log(&apos;Hello World!&apos;);
-Hello World!
-</code></pre><p>如果要运行一大段代码的话，可以先写一个JS文件再运行。例如有以下<code>hello.js</code>。</p>
-<pre><code>function hello() {
-    console.log(&apos;Hello World!&apos;);
-}
-hello();
-</code></pre><p>写好后在终端下键入<code>node hello.js</code>运行，结果如下：</p>
-<pre><code>$ node hello.js
-Hello World!
-</code></pre><h4 id="权限问题"><a href="#权限问题" class="headerlink" title="权限问题"></a>权限问题</h4><p>在Linux系统下，使用NodeJS监听80或443端口提供HTTP(S)服务时需要root权限，有两种方式可以做到。</p>
-<p>一种方式是使用<code>sudo</code>命令运行NodeJS。例如通过以下命令运行的<code>server.js</code>中有权限使用80和443端口。一般推荐这种方式，可以保证仅为有需要的JS脚本提供root权限。</p>
-<pre><code>$ sudo node server.js
-</code></pre><p>另一种方式是使用<code>chmod +s</code>命令让NodeJS总是以root权限运行，具体做法如下。因为这种方式让任何JS脚本都有了root权限，不太安全，因此在需要很考虑安全的系统下不推荐使用。</p>
-<pre><code>$ sudo chown root /usr/local/bin/node
-$ sudo chmod +s /usr/local/bin/node
-</code></pre><h3 id="模块"><a href="#模块" class="headerlink" title="模块"></a>模块</h3><p>编写稍大一点的程序时一般都会将代码模块化。在NodeJS中，一般将代码合理拆分到不同的JS文件中，每一个文件就是一个模块，而文件路径就是模块名。</p>
-<p>在编写每个模块时，都有<code>require</code>、<code>exports</code>、<code>module</code>三个预先定义好的变量可供使用。</p>
-<h4 id="require"><a href="#require" class="headerlink" title="require"></a>require</h4><p><code>require</code>函数用于在当前模块中加载和使用别的模块，传入一个模块名，返回一个模块导出对象。模块名可使用相对路径（以<code>./</code>开头），或者是绝对路径（以<code>/</code>或<code>C:</code>之类的盘符开头）。另外，模块名中的<code>.js</code>扩展名可以省略。以下是一个例子。</p>
-<pre><code>var foo1 = require(&apos;./foo&apos;);
-var foo2 = require(&apos;./foo.js&apos;);
-var foo3 = require(&apos;/home/user/foo&apos;);
-var foo4 = require(&apos;/home/user/foo.js&apos;);
-
-// foo1至foo4中保存的是同一个模块的导出对象。
-</code></pre><p>另外，可以使用以下方式加载和使用一个JSON文件。</p>
-<pre><code>var data = require(&apos;./data.json&apos;);
-</code></pre><h4 id="exports"><a href="#exports" class="headerlink" title="exports"></a>exports</h4><p><code>exports</code>对象是当前模块的导出对象，用于导出模块公有方法和属性。别的模块通过<code>require</code>函数使用当前模块时得到的就是当前模块的<code>exports</code>对象。以下例子中导出了一个公有方法。</p>
-<pre><code>exports.hello = function () {
-    console.log(&apos;Hello World!&apos;);
-};
-</code></pre><h4 id="module"><a href="#module" class="headerlink" title="module"></a>module</h4><p>通过<code>module</code>对象可以访问到当前模块的一些相关信息，但最多的用途是替换当前模块的导出对象。例如模块导出对象默认是一个普通对象，如果想改成一个函数的话，可以使用以下方式。</p>
-<pre><code>module.exports = function () {
-    console.log(&apos;Hello World!&apos;);
-};
-</code></pre><p>以上代码中，模块默认导出对象被替换为一个函数。</p>
-<h4 id="模块初始化"><a href="#模块初始化" class="headerlink" title="模块初始化"></a>模块初始化</h4><p>一个模块中的JS代码仅在模块第一次被使用时执行一次，并在执行过程中初始化模块的导出对象。之后，缓存起来的导出对象被重复利用。</p>
-<h4 id="主模块"><a href="#主模块" class="headerlink" title="主模块"></a>主模块</h4><p>通过命令行参数传递给NodeJS以启动程序的模块被称为主模块。主模块负责调度组成整个程序的其它模块完成工作。例如通过以下命令启动程序时，<code>main.js</code>就是主模块。</p>
-<pre><code>$ node main.js
-</code></pre><h4 id="完整示例"><a href="#完整示例" class="headerlink" title="完整示例"></a>完整示例</h4><p>例如有以下目录。</p>
-<pre><code>- /home/user/hello/
-    - util/
-        counter.js
-    main.js
-</code></pre><p>其中<code>counter.js</code>内容如下：</p>
-<pre><code>var i = 0;
-
-function count() {
-    return ++i;
-}
-
-exports.count = count;
-</code></pre><p>该模块内部定义了一个私有变量<code>i</code>，并在<code>exports</code>对象导出了一个公有方法<code>count</code>。</p>
-<p>主模块<code>main.js</code>内容如下：</p>
-<pre><code>var counter1 = require(&apos;./util/counter&apos;);
-var    counter2 = require(&apos;./util/counter&apos;);
-
-console.log(counter1.count());
-console.log(counter2.count());
-console.log(counter2.count());
-</code></pre><p>运行该程序的结果如下：</p>
-<pre><code>$ node main.js
-1
-2
-3
-</code></pre><p>可以看到，<code>counter.js</code>并没有因为被require了两次而初始化两次。</p>
-<h3 id="二进制模块"><a href="#二进制模块" class="headerlink" title="二进制模块"></a>二进制模块</h3><p>虽然一般我们使用JS编写模块，但NodeJS也支持使用C/C++编写二进制模块。编译好的二进制模块除了文件扩展名是<code>.node</code>外，和JS模块的使用方式相同。虽然二进制模块能使用操作系统提供的所有功能，拥有无限的潜能，但对于前端同学而言编写过于困难，并且难以跨平台使用，因此不在本教程的覆盖范围内。</p>
-<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>本章介绍了有关NodeJS的基本概念和使用方法，总结起来有以下知识点：</p>
-<ul>
-<li><p>NodeJS是一个JS脚本解析器，任何操作系统下安装NodeJS本质上做的事情都是把NodeJS执行程序复制到一个目录，然后保证这个目录在系统PATH环境变量下，以便终端下可以使用<code>node</code>命令。</p>
-</li>
-<li><p>终端下直接输入<code>node</code>命令可进入命令交互模式，很适合用来测试一些JS代码片段，比如正则表达式。</p>
-</li>
-<li><p>NodeJS使用<a href="http://wiki.commonjs.org/" target="_blank" rel="external">CMD</a>模块系统，主模块作为程序入口点，所有模块在执行过程中只初始化一次。</p>
-</li>
-<li><p>除非JS模块不能满足需求，否则不要轻易使用二进制模块，否则你的用户会叫苦连天。</p>
-</li>
-</ul>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="http://yoursite.com/2016/03/23/node/books/7days/01_getting_started/" data-id="cj76wnr95002zenpj4yjg8bd1" class="article-share-link"><i class="fa fa-share"></i>Share</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-        <a href="http://yoursite.com/2016/03/23/node/books/7days/01_getting_started/#comments" class="article-comment-link">Comments</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-node/books/7days/02_code_management_and_deployment" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2016/03/23/node/books/7days/02_code_management_and_deployment/">七天学会NodeJS - 代码的组织和部署</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2016/03/23/node/books/7days/02_code_management_and_deployment/">
-            <time datetime="2016-03-22T22:06:34.000Z" itemprop="datePublished">2016-03-23</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/node/">node</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/node/7days/">7days</a>
-    </div>
-
-                        
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/node/">node</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <p>有经验的C程序员在编写一个新程序时首先从make文件写起。同样的，使用NodeJS编写程序前，为了有个良好的开端，首先需要准备好代码的目录结构和部署方式，就如同修房子要先搭脚手架。本章将介绍与之相关的各种知识。</p>
-<h3 id="模块路径解析规则"><a href="#模块路径解析规则" class="headerlink" title="模块路径解析规则"></a>模块路径解析规则</h3><p>我们已经知道，<code>require</code>函数支持斜杠（<code>/</code>）或盘符（<code>C:</code>）开头的绝对路径，也支持<code>./</code>开头的相对路径。但这两种路径在模块之间建立了强耦合关系，一旦某个模块文件的存放位置需要变更，使用该模块的其它模块的代码也需要跟着调整，变得牵一发动全身。因此，<code>require</code>函数支持第三种形式的路径，写法类似于<code>foo/bar</code>，并依次按照以下规则解析路径，直到找到模块位置。</p>
-<ol>
-<li><p>内置模块</p>
-<p> 如果传递给<code>require</code>函数的是NodeJS内置模块名称，不做路径解析，直接返回内部模块的导出对象，例如<code>require(&#39;fs&#39;)</code>。</p>
-</li>
-<li><p>node_modules目录</p>
-<p> NodeJS定义了一个特殊的<code>node_modules</code>目录用于存放模块。例如某个模块的绝对路径是<code>/home/user/hello.js</code>，在该模块中使用<code>require(&#39;foo/bar&#39;)</code>方式加载模块时，则NodeJS依次尝试使用以下路径。</p>
-<pre><code>/home/user/node_modules/foo/bar
-/home/node_modules/foo/bar
-/node_modules/foo/bar
-</code></pre></li>
-<li><p>NODE_PATH环境变量</p>
-<p> 与PATH环境变量类似，NodeJS允许通过NODE_PATH环境变量来指定额外的模块搜索路径。NODE_PATH环境变量中包含一到多个目录路径，路径之间在Linux下使用<code>:</code>分隔，在Windows下使用<code>;</code>分隔。例如定义了以下NODE_PATH环境变量：</p>
-<pre><code>NODE_PATH=/home/user/lib:/home/lib
-</code></pre><p> 当使用<code>require(&#39;foo/bar&#39;)</code>的方式加载模块时，则NodeJS依次尝试以下路径。</p>
-<pre><code>/home/user/lib/foo/bar
-/home/lib/foo/bar
-</code></pre></li>
-</ol>
-<h3 id="包（package）"><a href="#包（package）" class="headerlink" title="包（package）"></a>包（package）</h3><p>我们已经知道了JS模块的基本单位是单个JS文件，但复杂些的模块往往由多个子模块组成。为了便于管理和使用，我们可以把由多个子模块组成的大模块称做<code>包</code>，并把所有子模块放在同一个目录里。</p>
-<p>在组成一个包的所有子模块中，需要有一个入口模块，入口模块的导出对象被作为包的导出对象。例如有以下目录结构。</p>
-<pre><code>- /home/user/lib/
-    - cat/
-        head.js
-        body.js
-        main.js
-</code></pre><p>其中<code>cat</code>目录定义了一个包，其中包含了3个子模块。<code>main.js</code>作为入口模块，其内容如下：</p>
-<pre><code>var head = require(&apos;./head&apos;);
-var body = require(&apos;./body&apos;);
-
-exports.create = function (name) {
-    return {
-        name: name,
-        head: head.create(),
-        body: body.create()
-    };
-};
-</code></pre><p>在其它模块里使用包的时候，需要加载包的入口模块。接着上例，使用<code>require(&#39;/home/user/lib/cat/main&#39;)</code>能达到目的，但是入口模块名称出现在路径里看上去不是个好主意。因此我们需要做点额外的工作，让包使用起来更像是单个模块。</p>
-<h4 id="index-js"><a href="#index-js" class="headerlink" title="index.js"></a>index.js</h4><p>当模块的文件名是<code>index.js</code>，加载模块时可以使用模块所在目录的路径代替模块文件路径，因此接着上例，以下两条语句等价。</p>
-<pre><code>var cat = require(&apos;/home/user/lib/cat&apos;);
-var cat = require(&apos;/home/user/lib/cat/index&apos;);
-</code></pre><p>这样处理后，就只需要把包目录路径传递给<code>require</code>函数，感觉上整个目录被当作单个模块使用，更有整体感。</p>
-<h4 id="package-json"><a href="#package-json" class="headerlink" title="package.json"></a>package.json</h4><p>如果想自定义入口模块的文件名和存放位置，就需要在包目录下包含一个<code>package.json</code>文件，并在其中指定入口模块的路径。上例中的<code>cat</code>模块可以重构如下。</p>
-<pre><code>- /home/user/lib/
-    - cat/
-        + doc/
-        - lib/
-            head.js
-            body.js
-            main.js
-        + tests/
-        package.json
-</code></pre><p>其中<code>package.json</code>内容如下。</p>
-<pre><code>{
-    &quot;name&quot;: &quot;cat&quot;,
-    &quot;main&quot;: &quot;./lib/main.js&quot;
-}
-</code></pre><p>如此一来，就同样可以使用<code>require(&#39;/home/user/lib/cat&#39;)</code>的方式加载模块。NodeJS会根据包目录下的<code>package.json</code>找到入口模块所在位置。</p>
-<h3 id="命令行程序"><a href="#命令行程序" class="headerlink" title="命令行程序"></a>命令行程序</h3><p>使用NodeJS编写的东西，要么是一个包，要么是一个命令行程序，而前者最终也会用于开发后者。因此我们在部署代码时需要一些技巧，让用户觉得自己是在使用一个命令行程序。</p>
-<p>例如我们用NodeJS写了个程序，可以把命令行参数原样打印出来。该程序很简单，在主模块内实现了所有功能。并且写好后，我们把该程序部署在<code>/home/user/bin/node-echo.js</code>这个位置。为了在任何目录下都能运行该程序，我们需要使用以下终端命令。</p>
-<pre><code>$ node /home/user/bin/node-echo.js Hello World
-Hello World
-</code></pre><p>这种使用方式看起来不怎么像是一个命令行程序，下边的才是我们期望的方式。</p>
-<pre><code>$ node-echo Hello World
-</code></pre><h4 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h4><p>在Linux系统下，我们可以把JS文件当作shell脚本来运行，从而达到上述目的，具体步骤如下：</p>
-<ol>
-<li><p>在shell脚本中，可以通过<code>#!</code>注释来指定当前脚本使用的解析器。所以我们首先在<code>node-echo.js</code>文件顶部增加以下一行注释，表明当前脚本使用NodeJS解析。</p>
-<pre><code>#! /usr/bin/env node
-</code></pre><p> NodeJS会忽略掉位于JS模块首行的<code>#!</code>注释，不必担心这行注释是非法语句。</p>
-</li>
-<li><p>然后，我们使用以下命令赋予<code>node-echo.js</code>文件执行权限。</p>
-<pre><code>$ chmod +x /home/user/bin/node-echo.js
-</code></pre></li>
-<li><p>最后，我们在PATH环境变量中指定的某个目录下，例如在<code>/usr/local/bin</code>下边创建一个软链文件，文件名与我们希望使用的终端命令同名，命令如下：</p>
-<pre><code>$ sudo ln -s /home/user/bin/node-echo.js /usr/local/bin/node-echo
-</code></pre></li>
-</ol>
-<p>这样处理后，我们就可以在任何目录下使用<code>node-echo</code>命令了。</p>
-<h4 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a>Windows</h4><p>在Windows系统下的做法完全不同，我们得靠<code>.cmd</code>文件来解决问题。假设<code>node-echo.js</code>存放在<code>C:\Users\user\bin</code>目录，并且该目录已经添加到PATH环境变量里了。接下来需要在该目录下新建一个名为<code>node-echo.cmd</code>的文件，文件内容如下：</p>
-<pre><code>@node &quot;C:\User\user\bin\node-echo.js&quot; %*
-</code></pre><p>这样处理后，我们就可以在任何目录下使用<code>node-echo</code>命令了。</p>
-<h3 id="工程目录"><a href="#工程目录" class="headerlink" title="工程目录"></a>工程目录</h3><p>了解了以上知识后，现在我们可以来完整地规划一个工程目录了。以编写一个命令行程序为例，一般我们会同时提供命令行模式和API模式两种使用方式，并且我们会借助三方包来编写代码。除了代码外，一个完整的程序也应该有自己的文档和测试用例。因此，一个标准的工程目录都看起来像下边这样。</p>
-<pre><code>- /home/user/workspace/node-echo/   # 工程目录
-    - bin/                          # 存放命令行相关代码
-        node-echo
-    + doc/                          # 存放文档
-    - lib/                          # 存放API相关代码
-        echo.js
-    - node_modules/                 # 存放三方包
-        + argv/
-    + tests/                        # 存放测试用例
-    package.json                    # 元数据文件
-    README.md                       # 说明文件
-</code></pre><p>其中部分文件内容如下：</p>
-<pre><code>/* bin/node-echo */
-var argv = require(&apos;argv&apos;),
-    echo = require(&apos;../lib/echo&apos;);
-console.log(echo(argv.join(&apos; &apos;)));
-
-/* lib/echo.js */
-module.exports = function (message) {
-    return message;
-};
-
-/* package.json */
-{
-    &quot;name&quot;: &quot;node-echo&quot;,
-    &quot;main&quot;: &quot;./lib/echo.js&quot;
-}
-</code></pre><p>以上例子中分类存放了不同类型的文件，并通过<code>node_moudles</code>目录直接使用三方包名加载模块。此外，定义了<code>package.json</code>之后，<code>node-echo</code>目录也可被当作一个包来使用。</p>
-<h3 id="NPM"><a href="#NPM" class="headerlink" title="NPM"></a>NPM</h3><p>NPM是随同NodeJS一起安装的包管理工具，能解决NodeJS代码部署上的很多问题，常见的使用场景有以下几种：</p>
-<ul>
-<li><p>允许用户从NPM服务器下载别人编写的三方包到本地使用。</p>
-</li>
-<li><p>允许用户从NPM服务器下载并安装别人编写的命令行程序到本地使用。</p>
-</li>
-<li><p>允许用户将自己编写的包或命令行程序上传到NPM服务器供别人使用。</p>
-</li>
-</ul>
-<p>可以看到，NPM建立了一个NodeJS生态圈，NodeJS开发者和用户可以在里边互通有无。以下分别介绍这三种场景下怎样使用NPM。</p>
-<h4 id="下载三方包"><a href="#下载三方包" class="headerlink" title="下载三方包"></a>下载三方包</h4><p>需要使用三方包时，首先得知道有哪些包可用。虽然<a href="https://npmjs.org/" target="_blank" rel="external">npmjs.org</a>提供了个搜索框可以根据包名来搜索，但如果连想使用的三方包的名字都不确定的话，就请百度一下吧。知道了包名后，比如上边例子中的<code>argv</code>，就可以在工程目录下打开终端，使用以下命令来下载三方包。</p>
-<pre><code>$ npm install argv
-...
-argv@0.0.2 node_modules\argv
-</code></pre><p>下载好之后，<code>argv</code>包就放在了工程目录下的<code>node_modules</code>目录中，因此在代码中只需要通过<code>require(&#39;argv&#39;)</code>的方式就好，无需指定三方包路径。</p>
-<p>以上命令默认下载最新版三方包，如果想要下载指定版本的话，可以在包名后边加上<code>@&lt;version&gt;</code>，例如通过以下命令可下载0.0.1版的<code>argv</code>。</p>
-<pre><code>$ npm install argv@0.0.1
-...
-argv@0.0.1 node_modules\argv
-</code></pre><p>如果使用到的三方包比较多，在终端下一个包一条命令地安装未免太人肉了。因此NPM对<code>package.json</code>的字段做了扩展，允许在其中申明三方包依赖。因此，上边例子中的<code>package.json</code>可以改写如下：</p>
-<pre><code>{
-    &quot;name&quot;: &quot;node-echo&quot;,
-    &quot;main&quot;: &quot;./lib/echo.js&quot;,
-    &quot;dependencies&quot;: {
-        &quot;argv&quot;: &quot;0.0.2&quot;
-    }
-}
-</code></pre><p>这样处理后，在工程目录下就可以使用<code>npm install</code>命令批量安装三方包了。更重要的是，当以后<code>node-echo</code>也上传到了NPM服务器，别人下载这个包时，NPM会根据包中申明的三方包依赖自动下载进一步依赖的三方包。例如，使用<code>npm install node-echo</code>命令时，NPM会自动创建以下目录结构。</p>
-<pre><code>- project/
-    - node_modules/
-        - node-echo/
-            - node_modules/
-                + argv/
-            ...
-    ...
-</code></pre><p>如此一来，用户只需关心自己直接使用的三方包，不需要自己去解决所有包的依赖关系。</p>
-<h4 id="安装命令行程序"><a href="#安装命令行程序" class="headerlink" title="安装命令行程序"></a>安装命令行程序</h4><p>从NPM服务上下载安装一个命令行程序的方法与三方包类似。例如上例中的<code>node-echo</code>提供了命令行使用方式，只要<code>node-echo</code>自己配置好了相关的<code>package.json</code>字段，对于用户而言，只需要使用以下命令安装程序。</p>
-<pre><code>$ npm install node-echo -g
-</code></pre><p>参数中的<code>-g</code>表示全局安装，因此<code>node-echo</code>会默认安装到以下位置，并且NPM会自动创建好Linux系统下需要的软链文件或Windows系统下需要的<code>.cmd</code>文件。</p>
-<pre><code>- /usr/local/               # Linux系统下
-    - lib/node_modules/
-        + node-echo/
-        ...
-    - bin/
-        node-echo
-        ...
-    ...
-
-- %APPDATA%\npm\            # Windows系统下
-    - node_modules\
-        + node-echo\
-        ...
-    node-echo.cmd
-    ...
-</code></pre><h4 id="发布代码"><a href="#发布代码" class="headerlink" title="发布代码"></a>发布代码</h4><p>第一次使用NPM发布代码前需要注册一个账号。终端下运行<code>npm adduser</code>，之后按照提示做即可。账号搞定后，接着我们需要编辑<code>package.json</code>文件，加入NPM必需的字段。接着上边<code>node-echo</code>的例子，<code>package.json</code>里必要的字段如下。</p>
-<pre><code>{
-    &quot;name&quot;: &quot;node-echo&quot;,           # 包名，在NPM服务器上须要保持唯一
-    &quot;version&quot;: &quot;1.0.0&quot;,            # 当前版本号
-    &quot;dependencies&quot;: {              # 三方包依赖，需要指定包名和版本号
-        &quot;argv&quot;: &quot;0.0.2&quot;
-      },
-    &quot;main&quot;: &quot;./lib/echo.js&quot;,       # 入口模块位置
-    &quot;bin&quot; : {
-        &quot;node-echo&quot;: &quot;./bin/node-echo&quot;      # 命令行程序名和主模块位置
-    }
-}
-</code></pre><p>之后，我们就可以在<code>package.json</code>所在目录下运行<code>npm publish</code>发布代码了。</p>
-<h4 id="版本号"><a href="#版本号" class="headerlink" title="版本号"></a>版本号</h4><p>使用NPM下载和发布代码时都会接触到版本号。NPM使用语义版本号来管理代码，这里简单介绍一下。</p>
-<p>语义版本号分为<code>X.Y.Z</code>三位，分别代表主版本号、次版本号和补丁版本号。当代码变更时，版本号按以下原则更新。</p>
-<pre><code>+ 如果只是修复bug，需要更新Z位。
-
-+ 如果是新增了功能，但是向下兼容，需要更新Y位。
-
-+ 如果有大变动，向下不兼容，需要更新X位。
-</code></pre><p>版本号有了这个保证后，在申明三方包依赖时，除了可依赖于一个固定版本号外，还可依赖于某个范围的版本号。例如<code>&quot;argv&quot;: &quot;0.0.x&quot;</code>表示依赖于<code>0.0.x</code>系列的最新版<code>argv</code>。NPM支持的所有版本号范围指定方式可以查看<a href="https://npmjs.org/doc/files/package.json.html#dependencies" target="_blank" rel="external">官方文档</a>。</p>
-<h4 id="灵机一点"><a href="#灵机一点" class="headerlink" title="灵机一点"></a>灵机一点</h4><p>除了本章介绍的部分外，NPM还提供了很多功能，<code>package.json</code>里也有很多其它有用的字段。除了可以在<a href="https://npmjs.org/doc/" target="_blank" rel="external">npmjs.org/doc/</a>查看官方文档外，这里再介绍一些NPM常用命令。</p>
-<ul>
-<li><p>NPM提供了很多命令，例如<code>install</code>和<code>publish</code>，使用<code>npm help</code>可查看所有命令。</p>
-</li>
-<li><p>使用<code>npm help &lt;command&gt;</code>可查看某条命令的详细帮助，例如<code>npm help install</code>。</p>
-</li>
-<li><p>在<code>package.json</code>所在目录下使用<code>npm install . -g</code>可先在本地安装当前命令行程序，可用于发布前的本地测试。</p>
-</li>
-<li><p>使用<code>npm update &lt;package&gt;</code>可以把当前目录下<code>node_modules</code>子目录里边的对应模块更新至最新版本。</p>
-</li>
-<li><p>使用<code>npm update &lt;package&gt; -g</code>可以把全局安装的对应命令行程序更新至最新版。</p>
-</li>
-<li><p>使用<code>npm cache clear</code>可以清空NPM本地缓存，用于对付使用相同版本号发布新版本代码的人。</p>
-</li>
-<li><p>使用<code>npm unpublish &lt;package&gt;@&lt;version&gt;</code>可以撤销发布自己发布过的某个版本代码。</p>
-</li>
-</ul>
-<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>本章介绍了使用NodeJS编写代码前需要做的准备工作，总结起来有以下几点：</p>
-<ul>
-<li><p>编写代码前先规划好目录结构，才能做到有条不紊。</p>
-</li>
-<li><p>稍大些的程序可以将代码拆分为多个模块管理，更大些的程序可以使用包来组织模块。</p>
-</li>
-<li><p>合理使用<code>node_modules</code>和<code>NODE_PATH</code>来解耦包的使用方式和物理路径。</p>
-</li>
-<li><p>使用NPM加入NodeJS生态圈互通有无。</p>
-</li>
-<li><p>想到了心仪的包名时请提前在NPM上抢注。</p>
-</li>
-</ul>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="http://yoursite.com/2016/03/23/node/books/7days/02_code_management_and_deployment/" data-id="cj76wnr970030enpj616048m4" class="article-share-link"><i class="fa fa-share"></i>Share</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-        <a href="http://yoursite.com/2016/03/23/node/books/7days/02_code_management_and_deployment/#comments" class="article-comment-link">Comments</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
     <nav id="page-nav">
         <a class="extend prev" rel="prev" href="/page/6/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/8/">Next &raquo;</a>
     </nav>
@@ -2147,45 +2247,45 @@ argv@0.0.1 node_modules\argv
                     <li>
                         
                         <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/other/">other</a></p>
-                            <p class="item-title"><a href="/2017/09/20/other/github hexo 博客迁移 /" class="title">github hexo博客多电脑迁移</a></p>
-                            <p class="item-date"><time datetime="2017-09-20T09:58:30.000Z" itemprop="datePublished">2017-09-20</time></p>
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a></p>
+                            <p class="item-title"><a href="/2017/09/24/react/第5篇React-Native布局实战2/" class="title">第5篇React-Native布局实战2</a></p>
+                            <p class="item-date"><time datetime="2017-09-24T14:12:33.000Z" itemprop="datePublished">2017-09-24</time></p>
                         </div>
                     </li>
                 
                     <li>
                         
                         <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/ssh/">ssh</a></p>
-                            <p class="item-title"><a href="/2017/09/20/other/Gitlab权限说明/" class="title">Gitlab权限说明</a></p>
-                            <p class="item-date"><time datetime="2017-09-20T09:54:25.000Z" itemprop="datePublished">2017-09-20</time></p>
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a></p>
+                            <p class="item-title"><a href="/2017/09/24/react/第4篇React-Native布局实战/" class="title">第4篇React-Native布局实战</a></p>
+                            <p class="item-date"><time datetime="2017-09-24T14:11:36.000Z" itemprop="datePublished">2017-09-24</time></p>
                         </div>
                     </li>
                 
                     <li>
                         
                         <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/github/">github</a></p>
-                            <p class="item-title"><a href="/2017/09/20/android/github/glide解析5_图片变换/" class="title">Glide解析5_图片变换</a></p>
-                            <p class="item-date"><time datetime="2017-09-20T08:53:48.000Z" itemprop="datePublished">2017-09-20</time></p>
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a></p>
+                            <p class="item-title"><a href="/2017/09/22/react/第3篇CSS和UI布局/" class="title">第3篇CSS和UI布局</a></p>
+                            <p class="item-date"><time datetime="2017-09-22T08:00:37.000Z" itemprop="datePublished">2017-09-22</time></p>
                         </div>
                     </li>
                 
                     <li>
                         
                         <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/github/">github</a></p>
-                            <p class="item-title"><a href="/2017/09/20/android/github/glide解析4_回调监听/" class="title">Glide解析4_回调监听</a></p>
-                            <p class="item-date"><time datetime="2017-09-20T08:46:52.000Z" itemprop="datePublished">2017-09-20</time></p>
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a></p>
+                            <p class="item-title"><a href="/2017/09/22/react/第2篇代码结构/" class="title">第2篇代码结构</a></p>
+                            <p class="item-date"><time datetime="2017-09-22T07:16:42.000Z" itemprop="datePublished">2017-09-22</time></p>
                         </div>
                     </li>
                 
                     <li>
                         
                         <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/github/">github</a></p>
-                            <p class="item-title"><a href="/2017/09/20/android/github/glide解析3_缓存流程/" class="title">Glide解析3_缓存流程</a></p>
-                            <p class="item-date"><time datetime="2017-09-20T08:42:24.000Z" itemprop="datePublished">2017-09-20</time></p>
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a></p>
+                            <p class="item-title"><a href="/2017/09/22/react/第1篇环境配置 & Hello World/" class="title">第1篇环境配置 &amp; Hello World</a></p>
+                            <p class="item-date"><time datetime="2017-09-22T07:15:10.000Z" itemprop="datePublished">2017-09-22</time></p>
                         </div>
                     </li>
                 
@@ -2198,7 +2298,7 @@ argv@0.0.1 node_modules\argv
     <div class="widget-wrap">
         <h3 class="widget-title">categories</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">44</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/ssh/">ssh</a><span class="category-list-count">1</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">44</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/react/">react</a><span class="category-list-count">5</span></li></ul>
         </div>
     </div>
 
@@ -2207,7 +2307,7 @@ argv@0.0.1 node_modules\argv
     <div class="widget-wrap">
         <h3 class="widget-title">archives</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">54</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">59</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
         </div>
     </div>
 
@@ -2216,7 +2316,7 @@ argv@0.0.1 node_modules\argv
     <div class="widget-wrap">
         <h3 class="widget-title">tags</h3>
         <div class="widget">
-            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">37</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/">ssh</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">37</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gitlab/">gitlab</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/">react</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/">ssh</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -2225,7 +2325,7 @@ argv@0.0.1 node_modules\argv
     <div class="widget-wrap">
         <h3 class="widget-title">tag cloud</h3>
         <div class="widget tagcloud">
-            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 15px;">code</a> <a href="/tags/git/" style="font-size: 11.67px;">git</a> <a href="/tags/github/" style="font-size: 18.33px;">github</a> <a href="/tags/glide/" style="font-size: 15px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 13.33px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.67px;">markdown</a> <a href="/tags/mysql/" style="font-size: 15px;">mysql</a> <a href="/tags/node/" style="font-size: 16.67px;">node</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/ssh/" style="font-size: 11.67px;">ssh</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.67px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.67px;">设计模式</a>
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 15px;">code</a> <a href="/tags/git/" style="font-size: 11.67px;">git</a> <a href="/tags/github/" style="font-size: 18.33px;">github</a> <a href="/tags/gitlab/" style="font-size: 10px;">gitlab</a> <a href="/tags/glide/" style="font-size: 15px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 13.33px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.67px;">markdown</a> <a href="/tags/mysql/" style="font-size: 15px;">mysql</a> <a href="/tags/node/" style="font-size: 16.67px;">node</a> <a href="/tags/react/" style="font-size: 15px;">react</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/ssh/" style="font-size: 10px;">ssh</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.67px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.67px;">设计模式</a>
         </div>
     </div>
 

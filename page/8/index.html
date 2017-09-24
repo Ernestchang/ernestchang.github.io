@@ -157,11 +157,11 @@
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                75
+                80
                 <span>posts</span>
             </div>
             <div class="article-info-block">
-                21
+                23
                 <span>tags</span>
             </div>
         </div>
@@ -210,6 +210,989 @@
 
             
             <section id="main">
+    <article id="post-android/code/H5启动Android App" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/03/07/android/code/H5启动Android App/">H5启动Android App</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/03/07/android/code/H5启动Android App/">
+            <time datetime="2017-03-07T01:58:25.000Z" itemprop="datePublished">2017-03-07</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/code/">code</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/android/">android</a>, <a class="tag-link" href="/tags/code/">code</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <blockquote>
+<p>首先明晰，<a href="http://lib.csdn.net/base/wechat" target="_blank" rel="external">微信</a>里屏蔽了schema协议。除非你是微信的合作伙伴之类的，他们专门给你配置进白名单。否则，我们就没办法通过这个协议在微信中直接唤起app。</p>
+<p>因此，我们需要先判断页面场景是否在微信中，如果在微信中，则会提示用户在浏览器中打开。</p>
+</blockquote>
+<h3 id="H5中间接判断应用是否安装"><a href="#H5中间接判断应用是否安装" class="headerlink" title="H5中间接判断应用是否安装"></a>H5中间接判断应用是否安装</h3><blockquote>
+<p>这里的逻辑很简单，当没有成功打开app的时候，新页面不会弹出则页面逻辑继续进行；否则如果进入了新页面，则页面逻辑便终止了。所以我们可以另开一个延时的线程来判断这个事情</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">if(...)&#123;</div><div class="line">document.location = &apos;&apos;;</div><div class="line">setTimeout(function()&#123;</div><div class="line">   //此处如果执行则表示没有app</div><div class="line">&#125;,200);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="通过H5唤起APP"><a href="#通过H5唤起APP" class="headerlink" title="通过H5唤起APP"></a>通过H5唤起APP</h3><blockquote>
+<p>编辑AndroidManifest.xml，主要是增加第二个<intent-filter>，launchapp用来标识schema，最好能保证手机系统唯一，那样就可以打开应用，而不是弹出一个选择框。可以附带自己的数据通过string传递到activity，比如完整url为 launchapp://?data=mydata</intent-filter></p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">&lt;activity    </div><div class="line">     android:name=&quot;com.robert.MainActivity&quot;    </div><div class="line">     android:configChanges=&quot;orientation|keyboardHidden|navigation|screenSize&quot;    </div><div class="line">     android:screenOrientation=&quot;landscape&quot;    </div><div class="line">     android:theme=&quot;@android:style/Theme.NoTitleBar.Fullscreen&quot; &gt;    </div><div class="line">     &lt;intent-filter&gt;    </div><div class="line">         &lt;action android:name=&quot;android.intent.action.MAIN&quot; /&gt;    </div><div class="line">         &lt;category android:name=&quot;android.intent.category.LAUNCHER&quot; /&gt;    </div><div class="line">     &lt;/intent-filter&gt;    </div><div class="line">     &lt;intent-filter&gt;    </div><div class="line">         &lt;action android:name=&quot;android.intent.action.VIEW&quot; /&gt;    </div><div class="line">         &lt;category android:name=&quot;android.intent.category.BROWSABLE&quot; /&gt;    </div><div class="line">         &lt;category android:name=&quot;android.intent.category.DEFAULT&quot;/&gt;    </div><div class="line">         &lt;data android:scheme=&quot;launchapp&quot; android:pathPrefix=&quot;/haha&quot; /&gt;    </div><div class="line">     &lt;/intent-filter&gt;    </div><div class="line">   &lt;/activity&gt;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>然后通过activity获得data数据：</p>
+</blockquote>
+   <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">     public void onCreate(Bundle savedInstanceState) &#123;             </div><div class="line">     	Uri uridata = this.getIntent().getData();             </div><div class="line">     	String mydata = uridata.getQueryParameter(&quot;data&quot;);            </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="编写html页面"><a href="#编写html页面" class="headerlink" title="编写html页面"></a>编写html页面</h3><blockquote>
+<p>整个页面也许是某个app的详细介绍，这里只写出关键的js代码：</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">&lt;activity  </div><div class="line">     android:name=&quot;com.robert.MainActivity&quot;    </div><div class="line">     android:configChanges=&quot;orientation|keyboardHidden|navigation|screenSize&quot;    </div><div class="line">     android:screenOrientation=&quot;landscape&quot;    </div><div class="line">     android:theme=&quot;@android:style/Theme.NoTitleBar.Fullscreen&quot; &gt;    </div><div class="line">     &lt;intent-filter&gt;    </div><div class="line">         &lt;action android:name=&quot;android.intent.action.MAIN&quot; /&gt;    </div><div class="line">         &lt;category android:name=&quot;android.intent.category.LAUNCHER&quot; /&gt;    </div><div class="line">     &lt;/intent-filter&gt;    </div><div class="line">     &lt;intent-filter&gt;    </div><div class="line">         &lt;action android:name=&quot;android.intent.action.VIEW&quot; /&gt;    </div><div class="line">         &lt;category android:name=&quot;android.intent.category.BROWSABLE&quot; /&gt;    </div><div class="line">         &lt;category android:name=&quot;android.intent.category.DEFAULT&quot;/&gt;    </div><div class="line">         &lt;data android:scheme=&quot;launchapp&quot; android:pathPrefix=&quot;/haha&quot; /&gt;    </div><div class="line">     &lt;/intent-filter&gt;    </div><div class="line">&lt;/activity&gt;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>下面代码可以达到这样一个目的，先请求 launchapp:// ,如果系统能处理，或者说已经安装了myapp表示的应用，那么就可以打开，另外，如果不能打开，直接刷新一下当前页面，等于是重置location。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">function openApp() &#123;    </div><div class="line">       </div><div class="line">           if (/android/i.test(navigator.userAgent)) &#123;    </div><div class="line">                var isrefresh = getUrlParam(&apos;refresh&apos;); // 获得refresh参数    </div><div class="line">                if(isrefresh == 1) &#123;    </div><div class="line">                    return    </div><div class="line">                &#125;    </div><div class="line">                window.location.href = &apos;launchapp://haha?data=mydata&apos;;    </div><div class="line">                window.setTimeout(function () &#123;    </div><div class="line">                        window.location.href += &apos;&amp;refresh=1&apos; // 附加一个特殊参数，用来标识这次刷新不要再调用myapp:// 了    </div><div class="line">                &#125;, 500);    </div><div class="line">            &#125;    </div><div class="line">       </div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<h3 id="整体代码"><a href="#整体代码" class="headerlink" title="整体代码"></a>整体代码</h3><blockquote>
+<p>代码功能: 判断手机/平板是否安装app 如果安装 则调用app的scheme，传入url当作参数，来做后续操作 如果没有安装 则跳转到app store/google play 下载app</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">(function () &#123;</div><div class="line">    var openUrl = window.location.search;</div><div class="line">    try &#123;</div><div class="line">        openUrl = openUrl.substring(1, openUrl.length);</div><div class="line">    &#125; catch (e) &#123;&#125;</div><div class="line">    var isiOS = navigator.userAgent.match(&apos;iPad&apos;) || navigator.userAgent.match(&apos;iPhone&apos;) || navigator.userAgent.match(</div><div class="line">        &apos;iPod&apos;),</div><div class="line">        isAndroid = navigator.userAgent</div><div class="line">            .match(&apos;Android&apos;),</div><div class="line">        isDesktop = !isiOS &amp;&amp; !isAndroid;</div><div class="line">    if (isiOS) &#123;</div><div class="line">        setTimeout(function () &#123;</div><div class="line">            window.location = &quot;itms-apps://itunes.apple.com/app/[name]/[id]?mt=8&quot;;</div><div class="line">        &#125;, 25);</div><div class="line">        window.location = &quot;[scheme]://[host]?url=&quot; + openUrl;</div><div class="line">    &#125; else if (isAndroid) &#123;</div><div class="line">        window.location = &quot;intent://[host]/&quot; + &quot;url=&quot; + openUrl + &quot;#Intent;scheme=[scheme];package=[package_name];end&quot;;</div><div class="line">    &#125; else &#123;</div><div class="line">        window.location.href = openUrl;</div><div class="line">    &#125;</div><div class="line">&#125;)();</div></pre></td></tr></table></figure>
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/03/07/android/code/H5启动Android App/" data-id="cj76wnr8c0015enpj8s1tyb1n" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/03/07/android/code/H5启动Android App/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-other/markdown转换教程" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2016/06/29/other/markdown转换教程/">markdown转换教程</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2016/06/29/other/markdown转换教程/">
+            <time datetime="2016-06-28T16:55:50.000Z" itemprop="datePublished">2016-06-29</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/markdown/">markdown</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/markdown/">markdown</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h1 id="markdown转换教程"><a href="#markdown转换教程" class="headerlink" title="markdown转换教程"></a>markdown转换教程</h1><p>Author：<a href="https://github.com/tmc9031" target="_blank" rel="external">tmc9031</a></p>
+<h2 id="HTML转markdown"><a href="#HTML转markdown" class="headerlink" title="HTML转markdown"></a>HTML转markdown</h2><h3 id="WHY"><a href="#WHY" class="headerlink" title="WHY"></a>WHY</h3><p>为提高翻译效率，推荐把原文的html格式先转换为markdown格式，可以简化手工整理原文的过程</p>
+<h3 id="INSTALL"><a href="#INSTALL" class="headerlink" title="INSTALL"></a>INSTALL</h3><p>这里介绍一款格式转换神器 <a href="http://pandoc.org" target="_blank" rel="external">pandoc.org</a></p>
+<p>Linux系统下的的安装</p>
+<pre><code>$ sudo apt-get install pandoc
+</code></pre><p>其它系统的详见官方 <a href="http://pandoc.org/installing.html" target="_blank" rel="external">installing</a></p>
+<h3 id="HOWTO"><a href="#HOWTO" class="headerlink" title="HOWTO"></a>HOWTO</h3><p>以下以该文章为例 <a href="https://medium.com/google-developer-experts/automating-android-development-6daca3a98396" target="_blank" rel="external">Automating Android development</a></p>
+<ol>
+<li>用浏览器打开另保存为aad.html，注意保存类型选择 <code>网页，仅 HTML</code></li>
+<li><p>使用pandoc工具，Linux系统下使用shell终端命令</p>
+<p> $ pandoc aad.html -o aad.md –from=html –to=markdown</p>
+</li>
+<li><p>接下来打开aad.md去除一些头尾的多余部分即可开始翻译</p>
+</li>
+</ol>
+<blockquote>
+<p>注意：<br>建议在翻译过程中善用git保存转换出来的原文markdown<br>另外保留中英双语方便校对，完成后再删除英文原文</p>
+</blockquote>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2016/06/29/other/markdown转换教程/" data-id="cj76wnr7e000henpjz6xu97w7" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2016/06/29/other/markdown转换教程/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-other/about" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h3 id="the-old-man-and-the-sea"><a href="#the-old-man-and-the-sea" class="headerlink" title="the old man and the sea"></a>the old man and the sea</h3><p>I am Ernest Chang.</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2016/06/29/other/about/" data-id="cj76wnr7b000eenpjew9bemd5" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2016/06/29/other/about/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-node/books/7days/01_getting_started" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2016/03/23/node/books/7days/01_getting_started/">七天学会NodeJS - NodeJS基础</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2016/03/23/node/books/7days/01_getting_started/">
+            <time datetime="2016-03-22T22:06:34.000Z" itemprop="datePublished">2016-03-23</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/node/">node</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/node/7days/">7days</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/node/">node</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h2 id="七天学会NodeJS-NodeJS基础"><a href="#七天学会NodeJS-NodeJS基础" class="headerlink" title="七天学会NodeJS - NodeJS基础"></a>七天学会NodeJS - NodeJS基础</h2><h3 id="什么是NodeJS"><a href="#什么是NodeJS" class="headerlink" title="什么是NodeJS"></a>什么是NodeJS</h3><p>JS是脚本语言，脚本语言都需要一个解析器才能运行。对于写在HTML页面里的JS，浏览器充当了解析器的角色。而对于需要独立运行的JS，NodeJS就是一个解析器。</p>
+<p>每一种解析器都是一个运行环境，不但允许JS定义各种数据结构，进行各种计算，还允许JS使用运行环境提供的内置对象和方法做一些事情。例如运行在浏览器中的JS的用途是操作DOM，浏览器就提供了<code>document</code>之类的内置对象。而运行在NodeJS中的JS的用途是操作磁盘文件或搭建HTTP服务器，NodeJS就相应提供了<code>fs</code>、<code>http</code>等内置对象。</p>
+<h3 id="有啥用处"><a href="#有啥用处" class="headerlink" title="有啥用处"></a>有啥用处</h3><p>尽管存在一听说可以直接运行JS文件就觉得很酷的同学，但大多数同学在接触新东西时首先关心的是有啥用处，以及能带来啥价值。</p>
+<p>NodeJS的作者说，他创造NodeJS的目的是为了实现高性能Web服务器，他首先看重的是事件机制和异步IO模型的优越性，而不是JS。但是他需要选择一种编程语言实现他的想法，这种编程语言不能自带IO功能，并且需要能良好支持事件机制。JS没有自带IO功能，天生就用于处理浏览器中的DOM事件，并且拥有一大群程序员，因此就成为了天然的选择。</p>
+<p>如他所愿，NodeJS在服务端活跃起来，出现了大批基于NodeJS的Web服务。而另一方面，NodeJS让前端众如获神器，终于可以让自己的能力覆盖范围跳出浏览器窗口，更大批的前端工具如雨后春笋。</p>
+<p>因此，对于前端而言，虽然不是人人都要拿NodeJS写一个服务器程序，但简单可至使用命令交互模式调试JS代码片段，复杂可至编写工具提升工作效率。</p>
+<p>NodeJS生态圈正欣欣向荣。</p>
+<h3 id="如何安装"><a href="#如何安装" class="headerlink" title="如何安装"></a>如何安装</h3><h4 id="安装程序"><a href="#安装程序" class="headerlink" title="安装程序"></a>安装程序</h4><p>NodeJS提供了一些安装程序，都可以在<a href="http://nodejs.org/download/" target="_blank" rel="external">nodejs.org</a>这里下载并安装。</p>
+<p>Windows系统下，选择和系统版本匹配的<code>.msi</code>后缀的安装文件。Mac OS X系统下，选择<code>.pkg</code>后缀的安装文件。</p>
+<h4 id="编译安装"><a href="#编译安装" class="headerlink" title="编译安装"></a>编译安装</h4><p>Linux系统下没有现成的安装程序可用，虽然一些发行版可以使用<code>apt-get</code>之类的方式安装，但不一定能安装到最新版。因此Linux系统下一般使用以下方式编译方式安装NodeJS。</p>
+<ol>
+<li><p>确保系统下g++版本在4.6以上，python版本在2.6以上。</p>
+</li>
+<li><p>从<a href="http://nodejs.org/download/" target="_blank" rel="external">nodejs.org</a>下载<code>tar.gz</code>后缀的NodeJS最新版源代码包并解压到某个位置。</p>
+</li>
+<li><p>进入解压到的目录，使用以下命令编译和安装。</p>
+<pre><code>$ ./configure
+$ make
+$ sudo make install
+</code></pre></li>
+</ol>
+<h3 id="如何运行"><a href="#如何运行" class="headerlink" title="如何运行"></a>如何运行</h3><p>打开终端，键入<code>node</code>进入命令交互模式，可以输入一条代码语句后立即执行并显示结果，例如：</p>
+<pre><code>$ node
+&gt; console.log(&apos;Hello World!&apos;);
+Hello World!
+</code></pre><p>如果要运行一大段代码的话，可以先写一个JS文件再运行。例如有以下<code>hello.js</code>。</p>
+<pre><code>function hello() {
+    console.log(&apos;Hello World!&apos;);
+}
+hello();
+</code></pre><p>写好后在终端下键入<code>node hello.js</code>运行，结果如下：</p>
+<pre><code>$ node hello.js
+Hello World!
+</code></pre><h4 id="权限问题"><a href="#权限问题" class="headerlink" title="权限问题"></a>权限问题</h4><p>在Linux系统下，使用NodeJS监听80或443端口提供HTTP(S)服务时需要root权限，有两种方式可以做到。</p>
+<p>一种方式是使用<code>sudo</code>命令运行NodeJS。例如通过以下命令运行的<code>server.js</code>中有权限使用80和443端口。一般推荐这种方式，可以保证仅为有需要的JS脚本提供root权限。</p>
+<pre><code>$ sudo node server.js
+</code></pre><p>另一种方式是使用<code>chmod +s</code>命令让NodeJS总是以root权限运行，具体做法如下。因为这种方式让任何JS脚本都有了root权限，不太安全，因此在需要很考虑安全的系统下不推荐使用。</p>
+<pre><code>$ sudo chown root /usr/local/bin/node
+$ sudo chmod +s /usr/local/bin/node
+</code></pre><h3 id="模块"><a href="#模块" class="headerlink" title="模块"></a>模块</h3><p>编写稍大一点的程序时一般都会将代码模块化。在NodeJS中，一般将代码合理拆分到不同的JS文件中，每一个文件就是一个模块，而文件路径就是模块名。</p>
+<p>在编写每个模块时，都有<code>require</code>、<code>exports</code>、<code>module</code>三个预先定义好的变量可供使用。</p>
+<h4 id="require"><a href="#require" class="headerlink" title="require"></a>require</h4><p><code>require</code>函数用于在当前模块中加载和使用别的模块，传入一个模块名，返回一个模块导出对象。模块名可使用相对路径（以<code>./</code>开头），或者是绝对路径（以<code>/</code>或<code>C:</code>之类的盘符开头）。另外，模块名中的<code>.js</code>扩展名可以省略。以下是一个例子。</p>
+<pre><code>var foo1 = require(&apos;./foo&apos;);
+var foo2 = require(&apos;./foo.js&apos;);
+var foo3 = require(&apos;/home/user/foo&apos;);
+var foo4 = require(&apos;/home/user/foo.js&apos;);
+
+// foo1至foo4中保存的是同一个模块的导出对象。
+</code></pre><p>另外，可以使用以下方式加载和使用一个JSON文件。</p>
+<pre><code>var data = require(&apos;./data.json&apos;);
+</code></pre><h4 id="exports"><a href="#exports" class="headerlink" title="exports"></a>exports</h4><p><code>exports</code>对象是当前模块的导出对象，用于导出模块公有方法和属性。别的模块通过<code>require</code>函数使用当前模块时得到的就是当前模块的<code>exports</code>对象。以下例子中导出了一个公有方法。</p>
+<pre><code>exports.hello = function () {
+    console.log(&apos;Hello World!&apos;);
+};
+</code></pre><h4 id="module"><a href="#module" class="headerlink" title="module"></a>module</h4><p>通过<code>module</code>对象可以访问到当前模块的一些相关信息，但最多的用途是替换当前模块的导出对象。例如模块导出对象默认是一个普通对象，如果想改成一个函数的话，可以使用以下方式。</p>
+<pre><code>module.exports = function () {
+    console.log(&apos;Hello World!&apos;);
+};
+</code></pre><p>以上代码中，模块默认导出对象被替换为一个函数。</p>
+<h4 id="模块初始化"><a href="#模块初始化" class="headerlink" title="模块初始化"></a>模块初始化</h4><p>一个模块中的JS代码仅在模块第一次被使用时执行一次，并在执行过程中初始化模块的导出对象。之后，缓存起来的导出对象被重复利用。</p>
+<h4 id="主模块"><a href="#主模块" class="headerlink" title="主模块"></a>主模块</h4><p>通过命令行参数传递给NodeJS以启动程序的模块被称为主模块。主模块负责调度组成整个程序的其它模块完成工作。例如通过以下命令启动程序时，<code>main.js</code>就是主模块。</p>
+<pre><code>$ node main.js
+</code></pre><h4 id="完整示例"><a href="#完整示例" class="headerlink" title="完整示例"></a>完整示例</h4><p>例如有以下目录。</p>
+<pre><code>- /home/user/hello/
+    - util/
+        counter.js
+    main.js
+</code></pre><p>其中<code>counter.js</code>内容如下：</p>
+<pre><code>var i = 0;
+
+function count() {
+    return ++i;
+}
+
+exports.count = count;
+</code></pre><p>该模块内部定义了一个私有变量<code>i</code>，并在<code>exports</code>对象导出了一个公有方法<code>count</code>。</p>
+<p>主模块<code>main.js</code>内容如下：</p>
+<pre><code>var counter1 = require(&apos;./util/counter&apos;);
+var    counter2 = require(&apos;./util/counter&apos;);
+
+console.log(counter1.count());
+console.log(counter2.count());
+console.log(counter2.count());
+</code></pre><p>运行该程序的结果如下：</p>
+<pre><code>$ node main.js
+1
+2
+3
+</code></pre><p>可以看到，<code>counter.js</code>并没有因为被require了两次而初始化两次。</p>
+<h3 id="二进制模块"><a href="#二进制模块" class="headerlink" title="二进制模块"></a>二进制模块</h3><p>虽然一般我们使用JS编写模块，但NodeJS也支持使用C/C++编写二进制模块。编译好的二进制模块除了文件扩展名是<code>.node</code>外，和JS模块的使用方式相同。虽然二进制模块能使用操作系统提供的所有功能，拥有无限的潜能，但对于前端同学而言编写过于困难，并且难以跨平台使用，因此不在本教程的覆盖范围内。</p>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>本章介绍了有关NodeJS的基本概念和使用方法，总结起来有以下知识点：</p>
+<ul>
+<li><p>NodeJS是一个JS脚本解析器，任何操作系统下安装NodeJS本质上做的事情都是把NodeJS执行程序复制到一个目录，然后保证这个目录在系统PATH环境变量下，以便终端下可以使用<code>node</code>命令。</p>
+</li>
+<li><p>终端下直接输入<code>node</code>命令可进入命令交互模式，很适合用来测试一些JS代码片段，比如正则表达式。</p>
+</li>
+<li><p>NodeJS使用<a href="http://wiki.commonjs.org/" target="_blank" rel="external">CMD</a>模块系统，主模块作为程序入口点，所有模块在执行过程中只初始化一次。</p>
+</li>
+<li><p>除非JS模块不能满足需求，否则不要轻易使用二进制模块，否则你的用户会叫苦连天。</p>
+</li>
+</ul>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2016/03/23/node/books/7days/01_getting_started/" data-id="cj76wnr95002zenpj4yjg8bd1" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2016/03/23/node/books/7days/01_getting_started/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-node/books/7days/02_code_management_and_deployment" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2016/03/23/node/books/7days/02_code_management_and_deployment/">七天学会NodeJS - 代码的组织和部署</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2016/03/23/node/books/7days/02_code_management_and_deployment/">
+            <time datetime="2016-03-22T22:06:34.000Z" itemprop="datePublished">2016-03-23</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/node/">node</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/node/7days/">7days</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/node/">node</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>有经验的C程序员在编写一个新程序时首先从make文件写起。同样的，使用NodeJS编写程序前，为了有个良好的开端，首先需要准备好代码的目录结构和部署方式，就如同修房子要先搭脚手架。本章将介绍与之相关的各种知识。</p>
+<h3 id="模块路径解析规则"><a href="#模块路径解析规则" class="headerlink" title="模块路径解析规则"></a>模块路径解析规则</h3><p>我们已经知道，<code>require</code>函数支持斜杠（<code>/</code>）或盘符（<code>C:</code>）开头的绝对路径，也支持<code>./</code>开头的相对路径。但这两种路径在模块之间建立了强耦合关系，一旦某个模块文件的存放位置需要变更，使用该模块的其它模块的代码也需要跟着调整，变得牵一发动全身。因此，<code>require</code>函数支持第三种形式的路径，写法类似于<code>foo/bar</code>，并依次按照以下规则解析路径，直到找到模块位置。</p>
+<ol>
+<li><p>内置模块</p>
+<p> 如果传递给<code>require</code>函数的是NodeJS内置模块名称，不做路径解析，直接返回内部模块的导出对象，例如<code>require(&#39;fs&#39;)</code>。</p>
+</li>
+<li><p>node_modules目录</p>
+<p> NodeJS定义了一个特殊的<code>node_modules</code>目录用于存放模块。例如某个模块的绝对路径是<code>/home/user/hello.js</code>，在该模块中使用<code>require(&#39;foo/bar&#39;)</code>方式加载模块时，则NodeJS依次尝试使用以下路径。</p>
+<pre><code>/home/user/node_modules/foo/bar
+/home/node_modules/foo/bar
+/node_modules/foo/bar
+</code></pre></li>
+<li><p>NODE_PATH环境变量</p>
+<p> 与PATH环境变量类似，NodeJS允许通过NODE_PATH环境变量来指定额外的模块搜索路径。NODE_PATH环境变量中包含一到多个目录路径，路径之间在Linux下使用<code>:</code>分隔，在Windows下使用<code>;</code>分隔。例如定义了以下NODE_PATH环境变量：</p>
+<pre><code>NODE_PATH=/home/user/lib:/home/lib
+</code></pre><p> 当使用<code>require(&#39;foo/bar&#39;)</code>的方式加载模块时，则NodeJS依次尝试以下路径。</p>
+<pre><code>/home/user/lib/foo/bar
+/home/lib/foo/bar
+</code></pre></li>
+</ol>
+<h3 id="包（package）"><a href="#包（package）" class="headerlink" title="包（package）"></a>包（package）</h3><p>我们已经知道了JS模块的基本单位是单个JS文件，但复杂些的模块往往由多个子模块组成。为了便于管理和使用，我们可以把由多个子模块组成的大模块称做<code>包</code>，并把所有子模块放在同一个目录里。</p>
+<p>在组成一个包的所有子模块中，需要有一个入口模块，入口模块的导出对象被作为包的导出对象。例如有以下目录结构。</p>
+<pre><code>- /home/user/lib/
+    - cat/
+        head.js
+        body.js
+        main.js
+</code></pre><p>其中<code>cat</code>目录定义了一个包，其中包含了3个子模块。<code>main.js</code>作为入口模块，其内容如下：</p>
+<pre><code>var head = require(&apos;./head&apos;);
+var body = require(&apos;./body&apos;);
+
+exports.create = function (name) {
+    return {
+        name: name,
+        head: head.create(),
+        body: body.create()
+    };
+};
+</code></pre><p>在其它模块里使用包的时候，需要加载包的入口模块。接着上例，使用<code>require(&#39;/home/user/lib/cat/main&#39;)</code>能达到目的，但是入口模块名称出现在路径里看上去不是个好主意。因此我们需要做点额外的工作，让包使用起来更像是单个模块。</p>
+<h4 id="index-js"><a href="#index-js" class="headerlink" title="index.js"></a>index.js</h4><p>当模块的文件名是<code>index.js</code>，加载模块时可以使用模块所在目录的路径代替模块文件路径，因此接着上例，以下两条语句等价。</p>
+<pre><code>var cat = require(&apos;/home/user/lib/cat&apos;);
+var cat = require(&apos;/home/user/lib/cat/index&apos;);
+</code></pre><p>这样处理后，就只需要把包目录路径传递给<code>require</code>函数，感觉上整个目录被当作单个模块使用，更有整体感。</p>
+<h4 id="package-json"><a href="#package-json" class="headerlink" title="package.json"></a>package.json</h4><p>如果想自定义入口模块的文件名和存放位置，就需要在包目录下包含一个<code>package.json</code>文件，并在其中指定入口模块的路径。上例中的<code>cat</code>模块可以重构如下。</p>
+<pre><code>- /home/user/lib/
+    - cat/
+        + doc/
+        - lib/
+            head.js
+            body.js
+            main.js
+        + tests/
+        package.json
+</code></pre><p>其中<code>package.json</code>内容如下。</p>
+<pre><code>{
+    &quot;name&quot;: &quot;cat&quot;,
+    &quot;main&quot;: &quot;./lib/main.js&quot;
+}
+</code></pre><p>如此一来，就同样可以使用<code>require(&#39;/home/user/lib/cat&#39;)</code>的方式加载模块。NodeJS会根据包目录下的<code>package.json</code>找到入口模块所在位置。</p>
+<h3 id="命令行程序"><a href="#命令行程序" class="headerlink" title="命令行程序"></a>命令行程序</h3><p>使用NodeJS编写的东西，要么是一个包，要么是一个命令行程序，而前者最终也会用于开发后者。因此我们在部署代码时需要一些技巧，让用户觉得自己是在使用一个命令行程序。</p>
+<p>例如我们用NodeJS写了个程序，可以把命令行参数原样打印出来。该程序很简单，在主模块内实现了所有功能。并且写好后，我们把该程序部署在<code>/home/user/bin/node-echo.js</code>这个位置。为了在任何目录下都能运行该程序，我们需要使用以下终端命令。</p>
+<pre><code>$ node /home/user/bin/node-echo.js Hello World
+Hello World
+</code></pre><p>这种使用方式看起来不怎么像是一个命令行程序，下边的才是我们期望的方式。</p>
+<pre><code>$ node-echo Hello World
+</code></pre><h4 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h4><p>在Linux系统下，我们可以把JS文件当作shell脚本来运行，从而达到上述目的，具体步骤如下：</p>
+<ol>
+<li><p>在shell脚本中，可以通过<code>#!</code>注释来指定当前脚本使用的解析器。所以我们首先在<code>node-echo.js</code>文件顶部增加以下一行注释，表明当前脚本使用NodeJS解析。</p>
+<pre><code>#! /usr/bin/env node
+</code></pre><p> NodeJS会忽略掉位于JS模块首行的<code>#!</code>注释，不必担心这行注释是非法语句。</p>
+</li>
+<li><p>然后，我们使用以下命令赋予<code>node-echo.js</code>文件执行权限。</p>
+<pre><code>$ chmod +x /home/user/bin/node-echo.js
+</code></pre></li>
+<li><p>最后，我们在PATH环境变量中指定的某个目录下，例如在<code>/usr/local/bin</code>下边创建一个软链文件，文件名与我们希望使用的终端命令同名，命令如下：</p>
+<pre><code>$ sudo ln -s /home/user/bin/node-echo.js /usr/local/bin/node-echo
+</code></pre></li>
+</ol>
+<p>这样处理后，我们就可以在任何目录下使用<code>node-echo</code>命令了。</p>
+<h4 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a>Windows</h4><p>在Windows系统下的做法完全不同，我们得靠<code>.cmd</code>文件来解决问题。假设<code>node-echo.js</code>存放在<code>C:\Users\user\bin</code>目录，并且该目录已经添加到PATH环境变量里了。接下来需要在该目录下新建一个名为<code>node-echo.cmd</code>的文件，文件内容如下：</p>
+<pre><code>@node &quot;C:\User\user\bin\node-echo.js&quot; %*
+</code></pre><p>这样处理后，我们就可以在任何目录下使用<code>node-echo</code>命令了。</p>
+<h3 id="工程目录"><a href="#工程目录" class="headerlink" title="工程目录"></a>工程目录</h3><p>了解了以上知识后，现在我们可以来完整地规划一个工程目录了。以编写一个命令行程序为例，一般我们会同时提供命令行模式和API模式两种使用方式，并且我们会借助三方包来编写代码。除了代码外，一个完整的程序也应该有自己的文档和测试用例。因此，一个标准的工程目录都看起来像下边这样。</p>
+<pre><code>- /home/user/workspace/node-echo/   # 工程目录
+    - bin/                          # 存放命令行相关代码
+        node-echo
+    + doc/                          # 存放文档
+    - lib/                          # 存放API相关代码
+        echo.js
+    - node_modules/                 # 存放三方包
+        + argv/
+    + tests/                        # 存放测试用例
+    package.json                    # 元数据文件
+    README.md                       # 说明文件
+</code></pre><p>其中部分文件内容如下：</p>
+<pre><code>/* bin/node-echo */
+var argv = require(&apos;argv&apos;),
+    echo = require(&apos;../lib/echo&apos;);
+console.log(echo(argv.join(&apos; &apos;)));
+
+/* lib/echo.js */
+module.exports = function (message) {
+    return message;
+};
+
+/* package.json */
+{
+    &quot;name&quot;: &quot;node-echo&quot;,
+    &quot;main&quot;: &quot;./lib/echo.js&quot;
+}
+</code></pre><p>以上例子中分类存放了不同类型的文件，并通过<code>node_moudles</code>目录直接使用三方包名加载模块。此外，定义了<code>package.json</code>之后，<code>node-echo</code>目录也可被当作一个包来使用。</p>
+<h3 id="NPM"><a href="#NPM" class="headerlink" title="NPM"></a>NPM</h3><p>NPM是随同NodeJS一起安装的包管理工具，能解决NodeJS代码部署上的很多问题，常见的使用场景有以下几种：</p>
+<ul>
+<li><p>允许用户从NPM服务器下载别人编写的三方包到本地使用。</p>
+</li>
+<li><p>允许用户从NPM服务器下载并安装别人编写的命令行程序到本地使用。</p>
+</li>
+<li><p>允许用户将自己编写的包或命令行程序上传到NPM服务器供别人使用。</p>
+</li>
+</ul>
+<p>可以看到，NPM建立了一个NodeJS生态圈，NodeJS开发者和用户可以在里边互通有无。以下分别介绍这三种场景下怎样使用NPM。</p>
+<h4 id="下载三方包"><a href="#下载三方包" class="headerlink" title="下载三方包"></a>下载三方包</h4><p>需要使用三方包时，首先得知道有哪些包可用。虽然<a href="https://npmjs.org/" target="_blank" rel="external">npmjs.org</a>提供了个搜索框可以根据包名来搜索，但如果连想使用的三方包的名字都不确定的话，就请百度一下吧。知道了包名后，比如上边例子中的<code>argv</code>，就可以在工程目录下打开终端，使用以下命令来下载三方包。</p>
+<pre><code>$ npm install argv
+...
+argv@0.0.2 node_modules\argv
+</code></pre><p>下载好之后，<code>argv</code>包就放在了工程目录下的<code>node_modules</code>目录中，因此在代码中只需要通过<code>require(&#39;argv&#39;)</code>的方式就好，无需指定三方包路径。</p>
+<p>以上命令默认下载最新版三方包，如果想要下载指定版本的话，可以在包名后边加上<code>@&lt;version&gt;</code>，例如通过以下命令可下载0.0.1版的<code>argv</code>。</p>
+<pre><code>$ npm install argv@0.0.1
+...
+argv@0.0.1 node_modules\argv
+</code></pre><p>如果使用到的三方包比较多，在终端下一个包一条命令地安装未免太人肉了。因此NPM对<code>package.json</code>的字段做了扩展，允许在其中申明三方包依赖。因此，上边例子中的<code>package.json</code>可以改写如下：</p>
+<pre><code>{
+    &quot;name&quot;: &quot;node-echo&quot;,
+    &quot;main&quot;: &quot;./lib/echo.js&quot;,
+    &quot;dependencies&quot;: {
+        &quot;argv&quot;: &quot;0.0.2&quot;
+    }
+}
+</code></pre><p>这样处理后，在工程目录下就可以使用<code>npm install</code>命令批量安装三方包了。更重要的是，当以后<code>node-echo</code>也上传到了NPM服务器，别人下载这个包时，NPM会根据包中申明的三方包依赖自动下载进一步依赖的三方包。例如，使用<code>npm install node-echo</code>命令时，NPM会自动创建以下目录结构。</p>
+<pre><code>- project/
+    - node_modules/
+        - node-echo/
+            - node_modules/
+                + argv/
+            ...
+    ...
+</code></pre><p>如此一来，用户只需关心自己直接使用的三方包，不需要自己去解决所有包的依赖关系。</p>
+<h4 id="安装命令行程序"><a href="#安装命令行程序" class="headerlink" title="安装命令行程序"></a>安装命令行程序</h4><p>从NPM服务上下载安装一个命令行程序的方法与三方包类似。例如上例中的<code>node-echo</code>提供了命令行使用方式，只要<code>node-echo</code>自己配置好了相关的<code>package.json</code>字段，对于用户而言，只需要使用以下命令安装程序。</p>
+<pre><code>$ npm install node-echo -g
+</code></pre><p>参数中的<code>-g</code>表示全局安装，因此<code>node-echo</code>会默认安装到以下位置，并且NPM会自动创建好Linux系统下需要的软链文件或Windows系统下需要的<code>.cmd</code>文件。</p>
+<pre><code>- /usr/local/               # Linux系统下
+    - lib/node_modules/
+        + node-echo/
+        ...
+    - bin/
+        node-echo
+        ...
+    ...
+
+- %APPDATA%\npm\            # Windows系统下
+    - node_modules\
+        + node-echo\
+        ...
+    node-echo.cmd
+    ...
+</code></pre><h4 id="发布代码"><a href="#发布代码" class="headerlink" title="发布代码"></a>发布代码</h4><p>第一次使用NPM发布代码前需要注册一个账号。终端下运行<code>npm adduser</code>，之后按照提示做即可。账号搞定后，接着我们需要编辑<code>package.json</code>文件，加入NPM必需的字段。接着上边<code>node-echo</code>的例子，<code>package.json</code>里必要的字段如下。</p>
+<pre><code>{
+    &quot;name&quot;: &quot;node-echo&quot;,           # 包名，在NPM服务器上须要保持唯一
+    &quot;version&quot;: &quot;1.0.0&quot;,            # 当前版本号
+    &quot;dependencies&quot;: {              # 三方包依赖，需要指定包名和版本号
+        &quot;argv&quot;: &quot;0.0.2&quot;
+      },
+    &quot;main&quot;: &quot;./lib/echo.js&quot;,       # 入口模块位置
+    &quot;bin&quot; : {
+        &quot;node-echo&quot;: &quot;./bin/node-echo&quot;      # 命令行程序名和主模块位置
+    }
+}
+</code></pre><p>之后，我们就可以在<code>package.json</code>所在目录下运行<code>npm publish</code>发布代码了。</p>
+<h4 id="版本号"><a href="#版本号" class="headerlink" title="版本号"></a>版本号</h4><p>使用NPM下载和发布代码时都会接触到版本号。NPM使用语义版本号来管理代码，这里简单介绍一下。</p>
+<p>语义版本号分为<code>X.Y.Z</code>三位，分别代表主版本号、次版本号和补丁版本号。当代码变更时，版本号按以下原则更新。</p>
+<pre><code>+ 如果只是修复bug，需要更新Z位。
+
++ 如果是新增了功能，但是向下兼容，需要更新Y位。
+
++ 如果有大变动，向下不兼容，需要更新X位。
+</code></pre><p>版本号有了这个保证后，在申明三方包依赖时，除了可依赖于一个固定版本号外，还可依赖于某个范围的版本号。例如<code>&quot;argv&quot;: &quot;0.0.x&quot;</code>表示依赖于<code>0.0.x</code>系列的最新版<code>argv</code>。NPM支持的所有版本号范围指定方式可以查看<a href="https://npmjs.org/doc/files/package.json.html#dependencies" target="_blank" rel="external">官方文档</a>。</p>
+<h4 id="灵机一点"><a href="#灵机一点" class="headerlink" title="灵机一点"></a>灵机一点</h4><p>除了本章介绍的部分外，NPM还提供了很多功能，<code>package.json</code>里也有很多其它有用的字段。除了可以在<a href="https://npmjs.org/doc/" target="_blank" rel="external">npmjs.org/doc/</a>查看官方文档外，这里再介绍一些NPM常用命令。</p>
+<ul>
+<li><p>NPM提供了很多命令，例如<code>install</code>和<code>publish</code>，使用<code>npm help</code>可查看所有命令。</p>
+</li>
+<li><p>使用<code>npm help &lt;command&gt;</code>可查看某条命令的详细帮助，例如<code>npm help install</code>。</p>
+</li>
+<li><p>在<code>package.json</code>所在目录下使用<code>npm install . -g</code>可先在本地安装当前命令行程序，可用于发布前的本地测试。</p>
+</li>
+<li><p>使用<code>npm update &lt;package&gt;</code>可以把当前目录下<code>node_modules</code>子目录里边的对应模块更新至最新版本。</p>
+</li>
+<li><p>使用<code>npm update &lt;package&gt; -g</code>可以把全局安装的对应命令行程序更新至最新版。</p>
+</li>
+<li><p>使用<code>npm cache clear</code>可以清空NPM本地缓存，用于对付使用相同版本号发布新版本代码的人。</p>
+</li>
+<li><p>使用<code>npm unpublish &lt;package&gt;@&lt;version&gt;</code>可以撤销发布自己发布过的某个版本代码。</p>
+</li>
+</ul>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>本章介绍了使用NodeJS编写代码前需要做的准备工作，总结起来有以下几点：</p>
+<ul>
+<li><p>编写代码前先规划好目录结构，才能做到有条不紊。</p>
+</li>
+<li><p>稍大些的程序可以将代码拆分为多个模块管理，更大些的程序可以使用包来组织模块。</p>
+</li>
+<li><p>合理使用<code>node_modules</code>和<code>NODE_PATH</code>来解耦包的使用方式和物理路径。</p>
+</li>
+<li><p>使用NPM加入NodeJS生态圈互通有无。</p>
+</li>
+<li><p>想到了心仪的包名时请提前在NPM上抢注。</p>
+</li>
+</ul>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2016/03/23/node/books/7days/02_code_management_and_deployment/" data-id="cj76wnr970030enpj616048m4" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2016/03/23/node/books/7days/02_code_management_and_deployment/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
     <article id="post-node/books/7days/03_file" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
@@ -2271,45 +3254,45 @@ http.createServer(function (request, response) {
                     <li>
                         
                         <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/other/">other</a></p>
-                            <p class="item-title"><a href="/2017/09/20/other/github hexo 博客迁移 /" class="title">github hexo博客多电脑迁移</a></p>
-                            <p class="item-date"><time datetime="2017-09-20T09:58:30.000Z" itemprop="datePublished">2017-09-20</time></p>
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a></p>
+                            <p class="item-title"><a href="/2017/09/24/react/第5篇React-Native布局实战2/" class="title">第5篇React-Native布局实战2</a></p>
+                            <p class="item-date"><time datetime="2017-09-24T14:12:33.000Z" itemprop="datePublished">2017-09-24</time></p>
                         </div>
                     </li>
                 
                     <li>
                         
                         <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/ssh/">ssh</a></p>
-                            <p class="item-title"><a href="/2017/09/20/other/Gitlab权限说明/" class="title">Gitlab权限说明</a></p>
-                            <p class="item-date"><time datetime="2017-09-20T09:54:25.000Z" itemprop="datePublished">2017-09-20</time></p>
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a></p>
+                            <p class="item-title"><a href="/2017/09/24/react/第4篇React-Native布局实战/" class="title">第4篇React-Native布局实战</a></p>
+                            <p class="item-date"><time datetime="2017-09-24T14:11:36.000Z" itemprop="datePublished">2017-09-24</time></p>
                         </div>
                     </li>
                 
                     <li>
                         
                         <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/github/">github</a></p>
-                            <p class="item-title"><a href="/2017/09/20/android/github/glide解析5_图片变换/" class="title">Glide解析5_图片变换</a></p>
-                            <p class="item-date"><time datetime="2017-09-20T08:53:48.000Z" itemprop="datePublished">2017-09-20</time></p>
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a></p>
+                            <p class="item-title"><a href="/2017/09/22/react/第3篇CSS和UI布局/" class="title">第3篇CSS和UI布局</a></p>
+                            <p class="item-date"><time datetime="2017-09-22T08:00:37.000Z" itemprop="datePublished">2017-09-22</time></p>
                         </div>
                     </li>
                 
                     <li>
                         
                         <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/github/">github</a></p>
-                            <p class="item-title"><a href="/2017/09/20/android/github/glide解析4_回调监听/" class="title">Glide解析4_回调监听</a></p>
-                            <p class="item-date"><time datetime="2017-09-20T08:46:52.000Z" itemprop="datePublished">2017-09-20</time></p>
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a></p>
+                            <p class="item-title"><a href="/2017/09/22/react/第2篇代码结构/" class="title">第2篇代码结构</a></p>
+                            <p class="item-date"><time datetime="2017-09-22T07:16:42.000Z" itemprop="datePublished">2017-09-22</time></p>
                         </div>
                     </li>
                 
                     <li>
                         
                         <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/github/">github</a></p>
-                            <p class="item-title"><a href="/2017/09/20/android/github/glide解析3_缓存流程/" class="title">Glide解析3_缓存流程</a></p>
-                            <p class="item-date"><time datetime="2017-09-20T08:42:24.000Z" itemprop="datePublished">2017-09-20</time></p>
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a></p>
+                            <p class="item-title"><a href="/2017/09/22/react/第1篇环境配置 & Hello World/" class="title">第1篇环境配置 &amp; Hello World</a></p>
+                            <p class="item-date"><time datetime="2017-09-22T07:15:10.000Z" itemprop="datePublished">2017-09-22</time></p>
                         </div>
                     </li>
                 
@@ -2322,7 +3305,7 @@ http.createServer(function (request, response) {
     <div class="widget-wrap">
         <h3 class="widget-title">categories</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">44</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/ssh/">ssh</a><span class="category-list-count">1</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">44</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/react/">react</a><span class="category-list-count">5</span></li></ul>
         </div>
     </div>
 
@@ -2331,7 +3314,7 @@ http.createServer(function (request, response) {
     <div class="widget-wrap">
         <h3 class="widget-title">archives</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">54</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">59</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
         </div>
     </div>
 
@@ -2340,7 +3323,7 @@ http.createServer(function (request, response) {
     <div class="widget-wrap">
         <h3 class="widget-title">tags</h3>
         <div class="widget">
-            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">37</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/">ssh</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">37</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gitlab/">gitlab</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/">react</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/">ssh</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -2349,7 +3332,7 @@ http.createServer(function (request, response) {
     <div class="widget-wrap">
         <h3 class="widget-title">tag cloud</h3>
         <div class="widget tagcloud">
-            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 15px;">code</a> <a href="/tags/git/" style="font-size: 11.67px;">git</a> <a href="/tags/github/" style="font-size: 18.33px;">github</a> <a href="/tags/glide/" style="font-size: 15px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 13.33px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.67px;">markdown</a> <a href="/tags/mysql/" style="font-size: 15px;">mysql</a> <a href="/tags/node/" style="font-size: 16.67px;">node</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/ssh/" style="font-size: 11.67px;">ssh</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.67px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.67px;">设计模式</a>
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 15px;">code</a> <a href="/tags/git/" style="font-size: 11.67px;">git</a> <a href="/tags/github/" style="font-size: 18.33px;">github</a> <a href="/tags/gitlab/" style="font-size: 10px;">gitlab</a> <a href="/tags/glide/" style="font-size: 15px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 13.33px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.67px;">markdown</a> <a href="/tags/mysql/" style="font-size: 15px;">mysql</a> <a href="/tags/node/" style="font-size: 16.67px;">node</a> <a href="/tags/react/" style="font-size: 15px;">react</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/ssh/" style="font-size: 10px;">ssh</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.67px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.67px;">设计模式</a>
         </div>
     </div>
 
