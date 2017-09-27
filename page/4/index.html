@@ -157,7 +157,7 @@
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                84
+                86
                 <span>posts</span>
             </div>
             <div class="article-info-block">
@@ -210,6 +210,337 @@
 
             
             <section id="main">
+    <article id="post-android/books/《Android 编程实战》Chap9_Android应用安全问题" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/09/12/android/books/《Android 编程实战》Chap9_Android应用安全问题/">《Android 编程实战》Chap9_Android应用安全问题</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/09/12/android/books/《Android 编程实战》Chap9_Android应用安全问题/">
+            <time datetime="2017-09-11T23:57:47.000Z" itemprop="datePublished">2017-09-12</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/android/">android</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <blockquote>
+<p>阅读《Android 编程实战》一书的随记笔记<br>注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a></p>
+</blockquote>
+<h2 id="Android安全的概念"><a href="#Android安全的概念" class="headerlink" title="Android安全的概念"></a>Android安全的概念</h2><p><code>Android</code>具备一个先进的安全模型来保护应用数据和服务不被其他应用访问. 每个应用都有自己的唯一<code>ID</code>来提供最基本的保护. 每个应用都经过它唯一的密钥签名, 这种机制是<code>Android</code>框架中的安全模型基础. 此外只有当其他应用在清单文件中显式声明了正确权限后, <code>Android</code>的权限系统才会和他们共享特定的组件. 应用也可以定义权限, 比如只有使用同一个密钥签名的应用才能使用它们. 最后<code>Android</code>的API提供了各种方法来验证签名, 验证调用进程的用户ID和使用强加密方案.</p>
+<h3 id="签名和密钥"><a href="#签名和密钥" class="headerlink" title="签名和密钥"></a>签名和密钥</h3><p><code>Android</code>系统中运行的所有应用都要用密钥来签名, 包括<code>Android</code>系统本身.</p>
+<p>可以用同一个密钥来对发布的所有应用进行签名, 但建议为各个应用单独创建一个密钥. 多个应用共享一个密钥通常是因为这些应用要直接访问彼此的数据, 或者设定权限时将保护等级改为<code>signature</code></p>
+<p>下面是一种为应用生成密钥的一个方式, 有一种比较好的方式是使用应用的包名作为别名传给<code>-alias</code>.</p>
+<p><code>$ keytool -genkey -v -keystore &lt;keystore filename&gt; -alias &lt;alias for key&gt; keyalg RSA -keysize 2048 -validity 10000</code></p>
+<p>在生成新密钥时, <code>keytool</code>会让你输入一个密码.</p>
+<h3 id="Android权限"><a href="#Android权限" class="headerlink" title="Android权限"></a>Android权限</h3><p>要在<code>Android</code>中使用特殊权限功能, 只要在清单文件中加入一个<code>uses-permission</code>标记即可. 它会告诉系统你的应用需要该项权限, 并在安装时通知用户这项需求.</p>
+<p><code>Android</code>中定义了五个保护等级: <code>常规normal</code>, <code>危险dangerous</code>, <code>同一签名signature</code>, <code>同一签名或系统signatureOrSystem</code>, <code>系统system</code>. 除非特殊指定, 默认等级一般为常规. 用来告知系统有应用要用到这个权限的函数. 只有将权限设为危险时, 它才会在用户安装(通常是通过Google Play Store)前提醒用户.</p>
+<ul>
+<li><code>同一签名</code>保护等级要求应用使用跟定义该权限的应用相同的同一证书来签名. 这对设备制造商来说非常有用, 因为他们可以定义只有跟系统使用同一证书签名的应用才能使用的权限. 这样, 设备制造商就可以像他们使用受保护的系统服务的设备发布新应用.</li>
+<li><code>同一签名或系统 以及 系统</code>这两个等级会告诉<code>Android</code>系统, 应用必须驻存在设备的系统分区上, 这样才能使用该权限. 这个功能最常见的例子是预装在系统分区上的Google应用. 这些应用可以使用许多常规应用无法企及的权限, 即使他们用的是Google的签名而不是设备制造商的.</li>
+</ul>
+<blockquote>
+<p>也可以添加属性<code>android:permissionFlags=&quot;costsMoney&quot;</code>它会告诉用户使用此权限的应用会产生费用, 例如要用到发短信的功能的应用. 只要应用提供了可能会给用户带来费用的API, 那就应该用带有此标记的权限来保护该API.</p>
+</blockquote>
+<h3 id="保护用户数据"><a href="#保护用户数据" class="headerlink" title="保护用户数据"></a>保护用户数据</h3><p>如果要创建安全的数据文件, 不被其他应用访问, 可以在应用数据目录中存储文件. 而不是外部存储中.</p>
+<p>如下:演示在应用的数据目录中对一个文件进行数据追加</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">public static void appendStringToPrivateFile(Context context, String data, String fileName)&#123;</div><div class="line">    FileOutputStream out = context.openFileOutput(fileName, Context.MODE_APPEND | Context.MODE_PRIVATE);</div><div class="line">    out.write(data.getBytes(&quot;UTF-8&quot;));</div><div class="line">    out.close();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里使用了两个标志位:</p>
+<ul>
+<li><code>MODE_APPEND</code> 要写入的数据都被追加到文件的末尾,</li>
+<li><code>MODE_PRIVATE</code> 该文件只允许你的应用访问, 这个标识位也是默认标志位.</li>
+</ul>
+<p>当然这只是一种比较安全的方式, 但是如果存储非常敏感的信息, 最好再对文件进行一些加密处理.</p>
+<h2 id="客户端数据加密"><a href="#客户端数据加密" class="headerlink" title="客户端数据加密"></a>客户端数据加密</h2><h3 id="Android的加密API"><a href="#Android的加密API" class="headerlink" title="Android的加密API"></a>Android的加密API</h3><p><code>Android</code>中的数据加密和解密API是基于Java SE的<code>javax.crypto</code>包中的API开始的. 实际的实现基于开源的<code>Bouncy Castle</code>加密API. 因此, 在开发<code>Android</code>应用时, 大多是使用Java SE的<code>javax.crypto</code>API就可以.</p>
+<h3 id="生成密钥"><a href="#生成密钥" class="headerlink" title="生成密钥"></a>生成密钥</h3><p>使用加密和解密函数时, 需要生成一个可根据用户输入(密码或其他安全方法)重新生成的安全且唯一的密钥.</p>
+<p>下面的代码演示了如何为<code>AES算法</code>生成一个<code>SecretKey</code> <code>salt</code>是用于生成密钥的输入部分, 你需要记录下来. 在密码学中, <code>盐salt</code>是用做加密算法中单向函数输入的一段随机数据.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">public static SecretKey generateKey(char[] password , byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException &#123;</div><div class="line">   int iterations = 1000;</div><div class="line">   int outputKeyLength = 128;</div><div class="line"></div><div class="line">   SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(&quot;PBKDF2WithHmacSHA1&quot;);</div><div class="line"></div><div class="line">   PBEKeySpec pbeKeySpec = new PBEKeySpec(password, salt, iterations, outputKeyLength);</div><div class="line"></div><div class="line">   byte[] keyBytes = secretKeyFactory.generateSecret(pbeKeySpec).getEncoded();</div><div class="line">   return new SecretKeySpec(keyBytes, &quot;AES&quot;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这个密钥在后面会使用</p>
+<h3 id="加密数据"><a href="#加密数据" class="headerlink" title="加密数据"></a>加密数据</h3><p>要加密数据, 必须先生成用于加密的作为<code>Cipher</code>输入的盐和初始化向量. 下面的代码会通过<code>SecureRandom</code>类生成一个长度为8字节的盐. 注意: 不需要人工给<code>SecureRandom</code>喂种子, 系统会自动帮你处理. 创建一个初始化向量, 初始化<code>Cipher</code>, 然后将明文加密成字节队列. 有了密文数据之后, 可以使用<code>Base64</code>工具类从这些字节生成一个普通的String对象. 并把初始化向量和盐用同样的方式追加上去, 并通过一个<code>非Base64</code>字符来分开.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">public static String encryptClearText(char[] password, String plainText)</div><div class="line">       throws Exception &#123;</div><div class="line">   SecureRandom secureRandom = new SecureRandom();</div><div class="line">   int saltLength = 8;</div><div class="line">   byte[] salt = new byte[saltLength];</div><div class="line">   secureRandom.nextBytes(salt);</div><div class="line">   SecretKey secretKey = generateKey(password, salt);</div><div class="line"></div><div class="line">   Cipher cipher = Cipher.getInstance(&quot;AES/CBC/PKCS5Padding&quot;);</div><div class="line">   byte[] initVector = new byte[cipher.getBlockSize()];</div><div class="line">   secureRandom.nextBytes(initVector);</div><div class="line">   IvParameterSpec ivParameterSpec = new IvParameterSpec(initVector);</div><div class="line">   cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivParameterSpec);</div><div class="line">   byte[] cipherData = cipher.doFinal(plainText.getBytes(&quot;UTF-8&quot;));</div><div class="line">   return Base64.encodeToString(cipherData,</div><div class="line">           Base64.NO_WRAP | Base64.NO_PADDING)</div><div class="line">           + &quot;]&quot; + Base64.encodeToString(initVector,</div><div class="line">           Base64.NO_WRAP | Base64.NO_PADDING)</div><div class="line">           + &quot;]&quot; + Base64.encodeToString(salt,</div><div class="line">           Base64.NO_WRAP | Base64.NO_PADDING);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>方法返回的结果就是加密后的密文字符串. 解密的时候使用同样的规则解密即可</p>
+<h3 id="解密数据"><a href="#解密数据" class="headerlink" title="解密数据"></a>解密数据</h3><p>和加密基本相似, 取出加密的的数据部分. 代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">public static String decryptData(char[] password, String encodedData)</div><div class="line">       throws Exception &#123;</div><div class="line">   String[] parts = encodedData.split(&quot;]&quot;);</div><div class="line">   byte[] cipherData = Base64.decode(parts[0], Base64.DEFAULT);</div><div class="line">   byte[] initVector = Base64.decode(parts[1], Base64.DEFAULT);</div><div class="line">   byte[] salt = Base64.decode(parts[2], Base64.DEFAULT);</div><div class="line"></div><div class="line">   Cipher cipher = Cipher.getInstance(&quot;AES/CBC/PKCS5Padding&quot;);</div><div class="line">   IvParameterSpec ivParams = new IvParameterSpec(initVector);</div><div class="line">   SecretKey secretKey = generateKey(password, salt);</div><div class="line">   cipher.init(Cipher.DECRYPT_MODE, secretKey, ivParams);</div><div class="line">   return new String(cipher.doFinal(cipherData), &quot;UTF-8&quot;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>从上面方法可以了解到<code>Cipher</code>,<code>初始化向量</code>,<code>SecretKey</code>是如何通过输入的字符串重新生成的. 只要密码匹配, 就能够对数据进行解码和编码.</p>
+<h2 id="设备管理API"><a href="#设备管理API" class="headerlink" title="设备管理API"></a>设备管理API</h2><p>关于这部分, 更多偏向于系统级别的开发. 例如对远程安全加固功能, 当丢失设备通过短信,锁定设备等. 所以此处不做记录. 如果有兴趣可以查看API文档<a href="https://developer.android.com/guide/topics/admin/device-admin.html" target="_blank" rel="external">Device Administration API</a></p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/09/12/android/books/《Android 编程实战》Chap9_Android应用安全问题/" data-id="cj7hnife3001g6opjy9mtaxk6" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/09/12/android/books/《Android 编程实战》Chap9_Android应用安全问题/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-android/books/《Android 编程实战》Chap8_高级音频,视频及相机应用" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/09/12/android/books/《Android 编程实战》Chap8_高级音频,视频及相机应用/">《Android 编程实战》Chap8_高级音频,视频及相机应用</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/09/12/android/books/《Android 编程实战》Chap8_高级音频,视频及相机应用/">
+            <time datetime="2017-09-11T23:57:02.000Z" itemprop="datePublished">2017-09-12</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/android/">android</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <blockquote>
+<p>阅读《Android 编程实战》一书的随记笔记<br>注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a></p>
+</blockquote>
+<h2 id="高级音频应用"><a href="#高级音频应用" class="headerlink" title="高级音频应用"></a>高级音频应用</h2><p><code>Android</code>音频API提供了一些高级功能, 开发者可以把他们集成到自己的应用中. 有了这些API, 就可以很容易的实现<strong>VoIP网络电话</strong>, 构建定制的流媒体音乐客户端, 实现低延迟的游戏音效. 此外, 还有提供文本到语音转换以及语音识别API, 用户可以直接使用音频和用户交互, 而不需要使用用户界面或者触控技术.</p>
+<h3 id="低延迟音频"><a href="#低延迟音频" class="headerlink" title="低延迟音频"></a>低延迟音频</h3><p><code>Android</code>有四个用来播放音频的API(算上MIDI那么就是5个)和三个用来录音的API. 接下里会简要介绍这些API.</p>
+<hr>
+<p><strong>音频播放API</strong></p>
+<ul>
+<li>音频播放默认使用<code>MediaPlayer</code>. 该类适合播放音乐或者视频, 既能播放流式资源(比如在线网络收音机), 也可以播放本地文件. 每个<code>MediaPlayer</code>都有一个关联的状态机, 需要在应用程序中跟踪这些状态. 开发者可以使用<code>MediaPlayer</code>类的API在自己的应用中嵌入音乐或者视频播放功能, 而无需额外处理或者考虑延迟问题.</li>
+<li>第二种是<code>SoundPool</code>类, 它提供了低延迟的支持, 适合播放音效和其他比较短的音频, 比如可以使用<code>SoundPool</code>播放游戏声音. 但是, 它不支持音频流, 所以不适合那些需要实时音频流处理的应用如<code>VoIP</code>.</li>
+<li>第三种是<code>AudioTrack</code>类, 它允许把音频流缓冲到硬件中, 支持低延迟播放, 甚至适合流媒体场景. <code>AudioTrack</code>通常能提供足够低的延迟, 可在<code>VoIP</code>或类似应用中使用.</li>
+</ul>
+<p>下面代码展示如何在<code>VoIP</code>应用中使用<code>AudioTrack</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">public class AudioTrackDemo &#123;</div><div class="line"></div><div class="line">    private final AudioTrack mAudioTrack;</div><div class="line">    private final int mMinBufferSize;</div><div class="line"></div><div class="line">    public AudioTrackDemo() &#123;</div><div class="line"></div><div class="line">        // 确定音频流的最小缓冲区和大小</div><div class="line">        mMinBufferSize = AudioTrack.getMinBufferSize(16000, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);</div><div class="line"></div><div class="line">        mAudioTrack = new AudioTrack(AudioManager.STREAM_VOICE_CALL,</div><div class="line">                16000,</div><div class="line">                AudioFormat.CHANNEL_OUT_MONO,</div><div class="line">                AudioFormat.ENCODING_PCM_16BIT,</div><div class="line">                mMinBufferSize * 2,</div><div class="line">                AudioTrack.MODE_STREAM);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void playPcmPacket(byte[] pcmData)&#123;</div><div class="line">        if (mAudioTrack != null &amp;&amp; mAudioTrack.getState() == AudioTrack.STATE_INITIALIZED)&#123;</div><div class="line"></div><div class="line">            // 判断是否处在播放状态</div><div class="line">            if (mAudioTrack.getPlaybackRate() != AudioTrack.PLAYSTATE_PLAYING)&#123;</div><div class="line">                mAudioTrack.play();</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            mAudioTrack.write(pcmData, 0, pcmData.length);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    //  设置停止</div><div class="line">    public void stopPlayback()&#123;</div><div class="line">        if (mAudioTrack != null)&#123;</div><div class="line">            mAudioTrack.stop();</div><div class="line">            mAudioTrack.release();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>对这个类进行一下整理, 首先从构造函数开始. 最开始需要确定音频流的最小缓冲区大小. 要做到这一点, 需要知道采样率, 数据是单声道还是立体声, 以及是否使用8位或者16位<code>PCM</code>编码. 然后以采样率和采样大小作为参数调用<code>AudioTrack.getMinBufferSize()</code>, 该方法会以字节形式返回<code>AudioTrack</code>实例的最小缓冲区大小</p>
+<p>接下来, 根据使用正确的参数创建<code>AudioTrack</code>实例, 第一个参数为音频的类型, 不同的应用使用不同的值. 对于<code>VoIP</code>这种应用来说使用<code>STREAM_VOICE_CALL</code>, 而对流媒体音乐应用则使用<code>STREAM_MUSIC</code>.</p>
+<p>对于参数2,3,4会根据使用场景而有所不同. 这些参数跟别表示<code>采样率</code>, <code>立体声/单声道</code>, <code>采样大小</code>. 一般而言, 一个<code>VoIP</code>会使用<code>16kHz</code>的16位单声道, 而常规的音乐CD可能采用<code>44.1kHz</code>的16位立体声. 16位立体声采样率需要更大的缓冲区以及更多的数据传输, 但是音质会更好. 所有的<code>Android</code>设备都支持<code>PCM</code>以<code>8kHz</code>,<code>16kHz</code>,<code>44.1kHz</code>的采样率播放8位或者16位的立体声.</p>
+<p>缓冲区大小参数应该是最小缓冲区大小的倍数, 实际取决于具体的需求, 有时网络延迟等因素也会影响缓冲区大小. <strong>注意: 任何时候都应该避免使用空的缓冲区, 因为可能导致播放出现故障</strong></p>
+<p>最后一个参数决定只发送一次音频数据<code>MODE_STATIC</code>还是连续发送数据流<code>MODE_STREAM</code>. 第一种情况需要一次发送整个音频剪辑. 对于持续发送音频流的情况, 可以发送任意大小块的<code>PCM数据</code>, 处理流媒体音乐或者VoIP通话时可能会使用这种方式.</p>
+<hr>
+<p><strong>2. 录音API</strong></p>
+<p>说道录制音频(也可能是视频), 首先要考虑的API是<code>MediaRecorder</code>. 和<code>MediaPlayer</code>类似, 需要在应用代码中跟踪<code>MediaRecorder</code>类的内部状况. 由于<code>MediaRecorder</code>只能把录音保存在文件中, 所以他不适合录制流媒体.</p>
+<p>如果需要录制流媒体, 可以使用<code>AudioRecorder</code>, 它和之前描述的<code>AudioTrack</code>非常相似.</p>
+<p><a href="https://github.com/suzeyu1992/AndroidProgrammingPushingTheLimits/commit/0109285e016f34c5403195344987cee5a7b791e0" target="_blank" rel="external">链接代码演示了如何创建<code>AudioRecorder</code>实例录制16位单声道16kHz的音频采样</a></p>
+<p>其实和<code>AudioTrack</code>的创建过程非常给你相似, 在使用<code>VoIP</code>或者类似应用时可以很方便地把他们结合起来.</p>
+<h3 id="OpenSL-ES"><a href="#OpenSL-ES" class="headerlink" title="OpenSL ES"></a>OpenSL ES</h3><p>前面说了3播放API和2个录制API. 还有最后一个API <code>OpenSL ES</code>, 它同时支持播放和录制. 该API是科纳斯组织(Khronos Group)的一个标准, 这个组织还负责<code>OpenGL API</code></p>
+<p><code>OpenSL ES</code>提供了低级别的音频硬件访问和低延迟特性来处理音频播放和录制. 虽然<code>Android</code>中其他音频API都有方便的Java API, 但是<code>OpenSL ES</code>目前仅支持在<code>Android NDK</code>中使用本地C代码访问.</p>
+<blockquote>
+<p><code>= =!!! 到这里能力受限, 无法实现出效果...所以此章抄书就此太监. 后续包括OpenGL 串联Surface用于视频MediaPlayer的渲染层或者相机处理把预览画面的流连接到纹理流, 并实施处理画面实现现实AR应用等.</code></p>
+</blockquote>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/09/12/android/books/《Android 编程实战》Chap8_高级音频,视频及相机应用/" data-id="cj7hnifdy001a6opjtajn6b8f" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/09/12/android/books/《Android 编程实战》Chap8_高级音频,视频及相机应用/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
     <article id="post-android/books/《Android 编程实战》Chap7_序列化说明" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
@@ -1949,557 +2280,6 @@
 
 
 
-    <article id="post-mysql/mysql_3 子查询" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2017/09/08/mysql/mysql_3 子查询/">mysql_3 子查询</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2017/09/08/mysql/mysql_3 子查询/">
-            <time datetime="2017-09-08T09:10:17.000Z" itemprop="datePublished">2017-09-08</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/mysql/">mysql</a>
-    </div>
-
-                        
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/mysql/">mysql</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <blockquote>
-<p>注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a></p>
-</blockquote>
-<h3 id="连接查询"><a href="#连接查询" class="headerlink" title="连接查询"></a>连接查询</h3><p>概念: 就是将两个或两个以上的表，连接起来，当做一个数据源，并从中去取得所需要的数据。</p>
-<p>就是将每一个表的每一行数据两两之间相互对接起来，每次对接的结果都是连接结果的 一行 数据。</p>
-<p>没有条件的连接写法:</p>
-<ul>
-<li><code>select * from 表1, 表2;</code></li>
-<li><code>select * from 表1 join 表2;</code></li>
-<li><code>select * from 表1 cross join 表2;</code></li>
-</ul>
-<p><strong>连接基本形式</strong></p>
-<p>在代码级别，连接的基本形式为:</p>
-<ul>
-<li><code>表1 [连接形式] join 表2 [on 连接条件];</code></li>
-</ul>
-<p>如果是3个表，则进一步扩展为:</p>
-<ul>
-<li><code>表1 [连接形式] join 表2 [on 连接条件] [连接形式] join 表3 [on 连接条件]</code></li>
-</ul>
-<p><strong>连接的分类</strong></p>
-<p>交叉连接</p>
-<ul>
-<li>其实就是上面的连接形式，–因为没有条件，只是按连接的基本概念，将所有数据行都连接起来的结果。它又叫做‘笛卡尔积’。</li>
-<li>对于表1 和表2 的连接，交叉结果是: 行数=两个表字段之和； 列数=两个表的乘积数</li>
-</ul>
-<p><strong>内连接</strong></p>
-<ul>
-<li><code>形式: select * from 表1 [inner] join 表2 on 连接条件。</code></li>
-</ul>
-<p>例如有 <code>student</code>表和 <code>type</code>表 学生表中包含科目<code>pro_id</code>, 而<code>Type</code>表有每个<code>pro_id</code>字段并对应说明。这时候如果需要类连接查询如下：</p>
-<p><code>select * from student inner join type on student.pro_id = type.pro_id;</code></p>
-<p>优化: <code>SELECT o.* ,t.sex FROM db1.join1 as o inner join db1.join2 as t on o.type = t.type;</code></p>
-<p>注意: 这种的表和表之间的内连接传，虽然可以提现为表跟表之间的关系– 一般情况下这就是外键的关系，单并不是有外键关系才可以使用。</p>
-<p><strong>左(外)连接 left(outer) join</strong></p>
-<ul>
-<li>形式: <code>表1(左表) left [outer] join 表2(右表) on 连接条件</code></li>
-<li>含义: 就是将两个表的内连接的结果，再加上左边表不符合内连接所设定的条件的那些数据结果。</li>
-<li><code>SELECT o.* ,t.sex FROM db1.join1 as o left join db1.join2 as t on o.type = t.type;</code></li>
-</ul>
-<p><strong>右(外)连接 right(outer) join</strong></p>
-<p>同左连接–只不过关键字为right(outer)</p>
-<p><strong>全连接 full(outer) join</strong></p>
-<p>在<code>mysql</code>中不支持全连接的语法;</p>
-<p>含义: 将两个表内连接的结果，加上左边不符合的结果，和右边不符合的结果。</p>
-<h3 id="子查询"><a href="#子查询" class="headerlink" title="子查询"></a>子查询</h3><p>含义: 一个<code>select</code>语句，就是一个查询语句</p>
-<ul>
-<li><code>select 字段或表达式 from 数据源 where xx条件判断；</code></li>
-</ul>
-<p>上述<code>select</code>部分，<code>from</code>部分，<code>where</code>部分，往往都是一些数据 或者数据的集合。</p>
-<p><code>from</code>部分, 当然就是 表 ，或 表的连接结果，他们也是数据，只是通常为表数据。</p>
-<p>例子 <code>select pro_id, price from product where price &gt; (select avg(price) from product)</code></p>
-<p>例子的<code>where</code>后面括号中的<code>select</code>语句就是子查询。</p>
-<p>所以可以认为就是在一个查询语句的内部，某些位置，又出现了查询语句。 由此引出了主查询和子查询的概念。</p>
-<p>通常，子查询是为主查询服务的，所以子查询获得一定的结果数据之后，才去执行主查询。</p>
-<p>形式: <code>select 字段或表达式或子查询 [as 别名] from 表名或链接结果或子查询 where 字段或表达式或子查询的条件判断。</code></p>
-<p><strong>按子查询结果，可分为如下几个</strong></p>
-<ul>
-<li>表 子查询</li>
-</ul>
-<p>一个子查询返回的结果理论上是多行多列的时候，此时可以当做一个表来使用，通常是放在<code>from</code>后面。</p>
-<ul>
-<li>行 子查询</li>
-</ul>
-<p>一个子查询返回的结果理论是一行多列的时候。此时可以当做一个行来使用，通常放在行比较语法上。<br>行比较语法类似这样: <code>where row(字段1,字段2) = (select 行子查询)</code>;</p>
-<ul>
-<li>列 子查询</li>
-</ul>
-<p>一个子查询返回的结果理论上是多行一列的时候，此时可以当做多个值来使用。<br>类似(5,8,10,11).</p>
-<ul>
-<li>标量 子查询</li>
-</ul>
-<p>一个子查询返回的结果理论上是一行一列的时候，此时可以当做一个单个值使用，类似这种: <code>select 5 as c1; 或select ... where id = 17, 或select ... where b&gt;8;</code></p>
-<p><strong>子查询，按位置(场合)分</strong></p>
-<ul>
-<li>作为主查询的结果数据</li>
-<li>作为主查询的条件数据</li>
-<li>作为主查询的来源数据</li>
-</ul>
-<p><strong>常见子查询</strong></p>
-<p><strong>比较运算符总的子查询</strong></p>
-<p>形式: 操作数 比较运算符 (标量子查询)</p>
-<p>说明: 操作数，其实就是比较运算符的2个数据之一而已，通常就是一个字段名。</p>
-<p>举例:</p>
-<p>找出最高价的商品:</p>
-<ul>
-<li><code>select * from product where price = (select max(price) from product);</code></li>
-</ul>
-<p><strong>使用in的子查询</strong></p>
-<p>以前的in的用法:</p>
-<ul>
-<li><code>xx in (值1, 值2, 值3, ...);</code></li>
-</ul>
-<p>in的子查询为:</p>
-<ul>
-<li><code>xx in (列子查询)</code></li>
-</ul>
-<p>举例: 找出所有列别名称中带电这个字的所有商品。</p>
-<p>可以分两步思考:</p>
-<p><code>select protype_id from product_type where protype_name like %电%;</code></p>
-<p>为子查询条件 — 以下为主程序 嵌入where其中。</p>
-<p><code>select * product where protype_id in(&#39;此处为上一步&#39;);</code></p>
-<p><strong>使用any的子查询</strong></p>
-<p>形式: 操作数 比较运算符 <code>any</code> (列子查询);</p>
-<p>含义: 当某个操作数(字段) 对于该列子查询的任意一个值，只要有一个满足该比较运算符，则就算是满足了条件。</p>
-<p><strong>使用all的子查询</strong></p>
-<p>形式: 操作数 比较运算符 <code>all</code> (列子查询);</p>
-<p>含义: 当某个操作数(字段) 对于该列子查询的任意一个值，必须全部满足该比较运算符，则就算是满足了条件。</p>
-<p>列子查询 子查询只能是一个字段。</p>
-<p>举例: 查询出所有非最高价的商品</p>
-<ol>
-<li>查询所有的价格 <code>select price form product;</code></li>
-<li>在所有的价格中只有最高价会不满足 <code>&lt;any</code>(全部价格)，所以可以这样</li>
-</ol>
-<ul>
-<li><code>select * from product where price &lt; any(select price from product);</code></li>
-</ul>
-<p>同理: 求出最高价的商品价格，特征： 大于所有的价格</p>
-<ul>
-<li><code>select * from product where price &gt;= all(select price from produc);</code></li>
-</ul>
-<p><strong>使用some的子查询</strong></p>
-<p>一句话: <code>some</code>是<code>any</code>的同义词。</p>
-<p><strong>使用exists的查询</strong></p>
-<p>形式: <code>where exists (子查询)</code></p>
-<p>含义: 该子查询如果有数据，则<code>exists</code>的结果是<code>true</code>，否则就是<code>false</code>。</p>
-<p>在实际应用中，该子查询往往都不是独立的子查询，而是会需要跟主查询的数据源(表),建立牟宗关系—通常就是连接关系。建立的方式是”隐式的”，既没有在代码上体现关系，单却在内部有其连接的 实质 。</p>
-<p>此隐式方式，通常就体现在查询中的where条件语句中，使用了主查询表中的数据(字段)，</p>
-<p>问题: 查询商品表中其类别名称中带”电”这个字的所有商品。</p>
-<p><code>select * from product where exists(select * from product_type where protype_name like &#39;%电%&#39; and protype_id = product.protype_id);</code></p>
-<p>注意:</p>
-<ol>
-<li>这种子查询语句，没法独立存在或者独立运行的，而是必须跟主查询一起使用。</li>
-<li>其他子查询，是可以独立运行的，而且会得到一个运行结果。</li>
-<li>盖子查询中的条件，应该设定为跟主查询的某个字段有一定的关联性判断。筒仓该判断就是这两个表的 本来该有的脸连接条件。</li>
-</ol>
-<h3 id="联合查询union"><a href="#联合查询union" class="headerlink" title="联合查询union"></a>联合查询union</h3><p>提示:</p>
-<p>在<code>mysql</code>的手册中，将连接查询(<code>join</code>) 翻译为联合查询。而联合查询(<code>union</code>),没有明确翻译。</p>
-<p>在通常的书籍或文章，<code>join</code>被翻译为连接查询；而<code>union</code>才被翻译为联合查询。</p>
-<p><strong>基本概念</strong></p>
-<p>将两个具有相同字段数量的查询语句的结果，以 上下堆叠 的方式，合并为一个查询结果</p>
-<p>形式: <code>select 语句1 union [all | distinct] select 语句2;</code></p>
-<p>此联合查询语句，默认会”自动消除重复行” ，既默认是<code>distinct</code>。 如果想要将所有数据都显示(允许重复行),就是用<code>all</code>。</p>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="http://yoursite.com/2017/09/08/mysql/mysql_3 子查询/" data-id="cj7bo43r90006v5pjp48ekdbd" class="article-share-link"><i class="fa fa-share"></i>Share</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-        <a href="http://yoursite.com/2017/09/08/mysql/mysql_3 子查询/#comments" class="article-comment-link">Comments</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-mysql/mysql_2 基本查询语句" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2017/09/08/mysql/mysql_2 基本查询语句/">mysql_2 基本查询语句</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2017/09/08/mysql/mysql_2 基本查询语句/">
-            <time datetime="2017-09-08T09:09:49.000Z" itemprop="datePublished">2017-09-08</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/mysql/">mysql</a>
-    </div>
-
-                        
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/mysql/">mysql</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <blockquote>
-<p>注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a></p>
-</blockquote>
-<h3 id="数据库表设计3范式"><a href="#数据库表设计3范式" class="headerlink" title="数据库表设计3范式"></a>数据库表设计3范式</h3><p><strong>第一范式(1NF)</strong></p>
-<p>要求数据达到原子性，是数据不可再分</p>
-<p><strong>第二范式(2NF)</strong></p>
-<p>使每一行数据具有唯一性，并消除数据之间的部分依赖</p>
-<ol>
-<li>每一行数据具有唯一性: 只要给表设计主键，就可以保证唯一性</li>
-<li>消除数据之间的”部分依赖”</li>
-</ol>
-<p>依赖的概念</p>
-<p>就是在一个表中，其中某个字段的值B可以由另一个字段的值A来决定，则此时我们就称为：字段B依赖于字段A,或者字段A决定字段B。</p>
-<p>就是根据字段A的某个值，一定可以找出一个确定的字段B的值，就是A决定B.</p>
-<p>部分依赖？</p>
-<p>如果某个字段，值依赖于部分主键字段，此时就称为部分依赖。–发生此情况的前提一定是: 主键字段有多个。</p>
-<p>完全依赖？<br>某个字段，是依赖于主键的所有字段。– 如果一个表的主键只有一个字段，则此时必然是完全依赖。</p>
-<p><strong>第三范式(3NF)</strong></p>
-<p>独立性，消除传递依赖。</p>
-<p>使每个字段都独立地依赖于主键字段(独立性),而要消除其中部分非主键字段的内部依赖–这种内部依赖会构成传递依赖</p>
-<h3 id="数据操作语言-DML"><a href="#数据操作语言-DML" class="headerlink" title="数据操作语言 DML"></a>数据操作语言 DML</h3><p><strong>插入数据(增)</strong></p>
-<ul>
-<li>形式1: <code>insert [into] 表名 [(字段名1，字段名2...)] values(值表达式1，值表达式2,...),(),()...;</code></li>
-<li><ul>
-<li>这是最常用的插入语句，可以一次性插入多行数据，用逗号隔开；</li>
-</ul>
-</li>
-<li><ul>
-<li>插入语句，要理解为每次插入数据都是以行为单位进行插入；</li>
-</ul>
-</li>
-<li><ul>
-<li>字段名通常不推荐省略，其后续的值列表应该字段列表一一对应</li>
-</ul>
-</li>
-<li><ul>
-<li>其中的值表达式，可以是一个直接或函数调用结果，或变量值; 其中，如果对应字段是字符或时间类型，则直接值应该使用单引号</li>
-</ul>
-</li>
-<li>形式2: <code>replace [into] 表名 [(字段名1，字段名2...)] values(值表达式1，值表达式2,...),(),()...;</code></li>
-<li><ul>
-<li>其跟<code>insert into</code>几乎一样: 唯一区别 如果插入的数据的主键或唯一键有重复，则此时就会变成修改改行数据</li>
-</ul>
-</li>
-<li>形式3: <code>insert [into] 表名 [(字段名1，字段名2，...)] select 字段名1，字段名2,... from 其他表名;</code></li>
-<li>形式4: <code>insert [into] 表名 set 字段名1=值表达式1，字段名2=值表达式2,...;</code></li>
-</ul>
-<p><strong>load data (载入数据) 语法</strong></p>
-<p>使用于载入 结构整齐的纯文本数据。 前提也要有一个对应结构的已存在的表。</p>
-<p>简单格式: <code>LOAD DATA INFILE &#39;文件名&#39; INTO TABLE 表名;</code></p>
-<p><strong>删除数据</strong></p>
-<p>形式: <code>delete from 表名 [where 条件] [order by 排序] [limit 限定];</code></p>
-<p>说明:</p>
-<ol>
-<li>删除数据仍然是以行为单位进行</li>
-<li>通常删除数据都需要带<code>where</code>条件，否则就会删除所有数据。</li>
-<li><code>where</code>条件的语法跟<code>select</code>中的语法一样</li>
-<li><code>order by</code> 排序设定，用于指定这些数据的删除顺序，他通常跟<code>limit</code>配合使用才有意义</li>
-<li><code>limit</code>限定用于设定删除多少行(按<code>orderby</code> 设定顺序)</li>
-</ol>
-<h3 id="修改数据"><a href="#修改数据" class="headerlink" title="修改数据"></a>修改数据</h3><p>形式: <code>update 表名 set 字段1=值1, 字段2=值2,...[where 条件] [order by 排序字段][limit 限制行数];</code></p>
-<p>说明:</p>
-<ol>
-<li>通常，<code>update</code>语句，也都需要<code>where</code>条件，否则: 就会修改所有(这很少见);</li>
-<li><code>where</code>条件的语法跟select中语法一样;</li>
-<li><code>order by</code> 用于设定修改的顺序，<code>limit</code>用于设定修改的行数，他们通常也是结合使用(虽然很少用)</li>
-<li>实际应用中，通常很少用到<code>order by</code>和<code>limit</code>，修改的常规操作就成为: <code>update 表名 set 字段1=值1，字段2=值2,... where条件</code></li>
-</ol>
-<h3 id="数据查询语言-DQL"><a href="#数据查询语言-DQL" class="headerlink" title="数据查询语言 DQL"></a>数据查询语言 DQL</h3><p><strong>基本语法形式</strong></p>
-<p><code>select [all | distinct] 字段或表达式列表 [from 子句] [where 子句] [group by 子句] [having 子句] [order by 子句] [limit 子句];</code></p>
-<p><strong>字段或表达式列表</strong></p>
-<ol>
-<li>字段，肯定来源于表，所以必然依赖于<code>from</code>语句</li>
-<li>表达式是类似这样一个内容: 8 ， 8+3， now(); //concat()函数是mysql中的系统函数，用于连接多个字符串。</li>
-<li>每个输出项(字段或表达式结果)，都可以给其设定一个别名，形式为: 字段或表达式 <code>as</code> 别名。</li>
-<li><code>all</code> 和 <code>distinct</code> 设定<code>select</code>出来的数据，是否消除重复行，可以不写，那就是默认值<code>all</code>。 <code>all</code>表示不消除，既所有都出来，默认值；<code>distinct</code>表示会消除。</li>
-<li><code>form</code>，表示<code>select</code>部分从中取得数据的数据源—就是表。</li>
-<li><code>where</code>，对数据源中的数据进行帅选的条件设定，所以<code>where</code>依赖于<code>form</code>子句。</li>
-</ol>
-<p><strong>is 运算符: 空值和布尔值的判断</strong></p>
-<p>有四种情况:</p>
-<ul>
-<li><code>xx is null</code>: 判断某个字段是null值，就是没有值</li>
-<li><code>xx is not null</code>: 判断某个字段不是null值</li>
-<li><code>xx is true</code>: 判断某个字段为真</li>
-<li><code>xx is false</code>: 判断某个字段为假，false，0，0.0，’’, null</li>
-</ul>
-<p><strong>其他扩展</strong></p>
-<ul>
-<li>位类型<code>bit</code>: 使用形式: <code>bit[(M)]</code> ，其中M是1~64的数字，表示使用多少位二进制数字来存储数据。插入形式为: b’value’ 比如: b’101’</li>
-<li>序列类型<code>serial</code>: 只是BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE的一个别名(同义词)</li>
-<li>布尔类型<code>bool</code>: 其实只是<code>tinyint(1)</code>的同义词，其值为<code>0</code>就表示<code>false</code>，否则为<code>true</code></li>
-</ul>
-<p><strong>between运算符: 范围判断</strong></p>
-<p>用于判断某个字段的数据值是否在某个给定的范围之间–适用于数字类型</p>
-<p>形式: <code>xx between 值1 and 值2;</code></p>
-<p>含义: xx字段的值在给定值1和值2之间，其实相当于: xx&gt;=值1 and xx&lt;=值2</p>
-<p><strong>in运算符</strong></p>
-<p>给出确定数据的范围判断</p>
-<p>语法: <code>xx in (值1, 值2, 值3, ...);</code></p>
-<p>含义: 表示字段xx的值为所给出的这些值中的一个，就算是满足了条件；这些值，通常是零散无规律的。</p>
-<p><strong>like运算符</strong></p>
-<p>对字符串进行模糊查找</p>
-<p>语法: <code>xx like &#39;要查找的内容&#39;</code></p>
-<p>含义: 实现对字符串的某种特征信息的模糊查找，它依赖于一下两个特殊的符号。</p>
-<ul>
-<li><code>%</code> :它代表任何个数的任何字符</li>
-<li><code>_</code> :它代表一个任何字符</li>
-</ul>
-<p><strong>group by 分组</strong></p>
-<p>形式: <code>group by 字段1 [desc|asc] ,字段2 [desc | asc], ....</code></p>
-<p>说明:</p>
-<ol>
-<li>分组是对前述已经找出的数据(既<code>where</code>已经筛选结束的)进行某种指定标准依据的分组。</li>
-<li>同时，该分组结果，可以同时指定其 排序方式 ：<code>desc</code>倒序 ，<code>asc</code>顺序</li>
-<li>通常，分组就是一个字段，2个以上很少</li>
-</ol>
-<p>什么叫做分组？</p>
-<p>分组: 就是讲多行数据，以某种标准(就是指定的字段)来进行分类存放。</p>
-<p>特别注意: 分组之后的结果，一定要理解为：只有一个个的组。 在部分语言此语法可能会出现不同的问题。</p>
-<p>应用中，分组之后，通常只有如下几种可用的组信息。</p>
-<ul>
-<li>分组依据本身的信息，其实就是该分组依据的字段名</li>
-<li>每一组的数量信息: 就是<code>count(*)</code>获得</li>
-<li>原来数据中的 数值类型字段的聚合信息 包括如下几个:</li>
-<li>最大值: <code>max(字段名)</code>; 最小值: <code>min(字段名)</code>; 平均值 <code>avg(字段名)</code>; 总和值: <code>sum(字段名)</code>; 上述其实是4个系统内部函数。</li>
-</ul>
-<p><strong>having 子句</strong></p>
-<p><code>having</code>的作用和<code>where</code>完全一样，但其只是对 分组的结果数据 进行筛选。 既<code>where</code>对原始数据进行筛选； <code>having</code>对分组之后的数据进行筛选。</p>
-<p>这里既是在<code>select</code> 后面没有写查询<code>count(*)</code> 时，在<code>having</code>设定筛选条件的时候，也可以使用，因为<code>count(\*)</code>是独立计算的结果，既对每一组进行原始数据行的统计，并用该条件进行筛选。</p>
-<p><strong>恢复(导入)数据</strong></p>
-<p>mysql登录后: <code>source &quot;备份数据文件的完整路径&quot;</code></p>
-<p><strong>order by 子句</strong></p>
-<p>用于 将前面取得的数据以设定的标准(字段)来进行排序以输出结果。</p>
-<p>形式: <code>order by 字段1 [asc | desc], 字段2 [asc | desc], ...</code></p>
-<p><strong>limit子句</strong></p>
-<p>用于将 前述取得的数据 ，按指定的行取出来: 从第几行开始取出多少行。</p>
-<p>形式: <code>limit</code> 起始行号 , 要取出的行号</p>
-<p>说明: 行号默认从<code>0</code>开始， 行号和<code>id</code>没有关系。</p>
-<h3 id="对select语句进行简要总结"><a href="#对select语句进行简要总结" class="headerlink" title="对select语句进行简要总结"></a>对select语句进行简要总结</h3><ol>
-<li>虽然在形式上，<code>select</code>的很多子句都是可以省略的，但是他们的顺序(如果出现)，就不能打乱:必须仍然按照给出的顺序写出</li>
-<li><code>where</code>子句依赖于<code>from</code>子句: 既没有<code>from</code>，就不能有<code>where</code></li>
-<li><code>having</code>子句依赖于<code>group by</code>子句: 既没有<code>group by</code>就不能有<code>having</code></li>
-<li><code>select</code> 中的字段也是依赖于<code>from</code>子句</li>
-<li>上述子句的执行过程，基本上也是按照该顺序进行: – 从from的数据源中获取所有的数据，然后使用<code>where</code>对这些数据进行筛选，之后再使用<code>group by</code>子句对筛选出来的数据进行分组，接下来才可以使用<code>having</code>对这些分组的数据进行筛选，然后才可以<code>order by</code> 和<code>limit</code>。</li>
-</ol>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="http://yoursite.com/2017/09/08/mysql/mysql_2 基本查询语句/" data-id="cj7bo43r20003v5pj2v2k51v0" class="article-share-link"><i class="fa fa-share"></i>Share</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-        <a href="http://yoursite.com/2017/09/08/mysql/mysql_2 基本查询语句/#comments" class="article-comment-link">Comments</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
     <nav id="page-nav">
         <a class="extend prev" rel="prev" href="/page/3/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/5/">Next &raquo;</a>
     </nav>
@@ -2513,6 +2293,24 @@
         <h3 class="widget-title">recent</h3>
         <div class="widget">
             <ul id="recent-post" class="no-thumbnail">
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a></p>
+                            <p class="item-title"><a href="/2017/09/26/react/React:React Native 的ES5 ES6写法对照表/" class="title">React:React Native 的ES5 ES6写法对照表</a></p>
+                            <p class="item-date"><time datetime="2017-09-26T14:24:17.000Z" itemprop="datePublished">2017-09-26</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/code/">code</a></p>
+                            <p class="item-title"><a href="/2017/09/25/android/code/Android动态更换应用Icon/" class="title">Android动态更换应用Icon</a></p>
+                            <p class="item-date"><time datetime="2017-09-25T10:04:35.000Z" itemprop="datePublished">2017-09-25</time></p>
+                        </div>
+                    </li>
                 
                     <li>
                         
@@ -2541,24 +2339,6 @@
                         </div>
                     </li>
                 
-                    <li>
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a></p>
-                            <p class="item-title"><a href="/2017/09/25/react/第6篇UI组件/" class="title">第6篇UI组件</a></p>
-                            <p class="item-date"><time datetime="2017-09-25T03:48:08.000Z" itemprop="datePublished">2017-09-25</time></p>
-                        </div>
-                    </li>
-                
-                    <li>
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a></p>
-                            <p class="item-title"><a href="/2017/09/24/react/第5篇React-Native布局实战2/" class="title">第5篇React-Native布局实战2</a></p>
-                            <p class="item-date"><time datetime="2017-09-24T14:12:33.000Z" itemprop="datePublished">2017-09-24</time></p>
-                        </div>
-                    </li>
-                
             </ul>
         </div>
     </div>
@@ -2568,7 +2348,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">categories</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">44</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/react/">react</a><span class="category-list-count">9</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">45</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/react/">react</a><span class="category-list-count">10</span></li></ul>
         </div>
     </div>
 
@@ -2577,7 +2357,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">archives</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">63</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">65</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
         </div>
     </div>
 
@@ -2586,7 +2366,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">tags</h3>
         <div class="widget">
-            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">37</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gitlab/">gitlab</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/">react</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/">ssh</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gitlab/">gitlab</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/">react</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/">ssh</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -2595,7 +2375,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">tag cloud</h3>
         <div class="widget tagcloud">
-            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 14.29px;">code</a> <a href="/tags/git/" style="font-size: 11.43px;">git</a> <a href="/tags/github/" style="font-size: 17.14px;">github</a> <a href="/tags/gitlab/" style="font-size: 10px;">gitlab</a> <a href="/tags/glide/" style="font-size: 14.29px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 12.86px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.43px;">markdown</a> <a href="/tags/mysql/" style="font-size: 14.29px;">mysql</a> <a href="/tags/node/" style="font-size: 15.71px;">node</a> <a href="/tags/react/" style="font-size: 18.57px;">react</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/ssh/" style="font-size: 10px;">ssh</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.43px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.43px;">设计模式</a>
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 15px;">code</a> <a href="/tags/git/" style="font-size: 11.25px;">git</a> <a href="/tags/github/" style="font-size: 17.5px;">github</a> <a href="/tags/gitlab/" style="font-size: 10px;">gitlab</a> <a href="/tags/glide/" style="font-size: 13.75px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 12.5px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.25px;">markdown</a> <a href="/tags/mysql/" style="font-size: 13.75px;">mysql</a> <a href="/tags/node/" style="font-size: 16.25px;">node</a> <a href="/tags/react/" style="font-size: 18.75px;">react</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/ssh/" style="font-size: 10px;">ssh</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.25px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.25px;">设计模式</a>
         </div>
     </div>
 

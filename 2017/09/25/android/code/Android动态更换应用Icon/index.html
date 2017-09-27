@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <meta charset="utf-8">
+    
+    <title>Android动态更换应用Icon | The Old Man and the Sea</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="动态更换应用Icon From stackoverflow: How to change an application icon programmatically in Android?   Try this, it works fine for me =) 1 . Modify your MainActivity section in AndroidManifest.xml, delete fr">
+<meta name="keywords" content="android,code">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android动态更换应用Icon">
+<meta property="og:url" content="http://yoursite.com/2017/09/25/android/code/Android动态更换应用Icon/index.html">
+<meta property="og:site_name" content="The Old Man and the Sea">
+<meta property="og:description" content="动态更换应用Icon From stackoverflow: How to change an application icon programmatically in Android?   Try this, it works fine for me =) 1 . Modify your MainActivity section in AndroidManifest.xml, delete fr">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2017-09-27T01:03:24.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android动态更换应用Icon">
+<meta name="twitter:description" content="动态更换应用Icon From stackoverflow: How to change an application icon programmatically in Android?   Try this, it works fine for me =) 1 . Modify your MainActivity section in AndroidManifest.xml, delete fr">
+    
+
+    
+        <link rel="alternate" href="/" title="The Old Man and the Sea" type="application/atom+xml" />
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">The Old Man and the Sea</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/uploads/images/avert.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/uploads/images/avert.png" />
+            <h2 id="name">Ernest Chang</h2>
+            <h3 id="title">Developer &amp; Designer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Hangzhou, China</span>
+            <a id="follow" target="_blank" href="https://github.com/Ernestchang/">FOLLOW</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                86
+                <span>posts</span>
+            </div>
+            <div class="article-info-block">
+                23
+                <span>tags</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/Ernestchang/" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="facebook" class=tooltip>
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="dribbble" class=tooltip>
+                            <i class="fa fa-dribbble"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-android/code/Android动态更换应用Icon" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            Android动态更换应用Icon
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/09/25/android/code/Android动态更换应用Icon/">
+            <time datetime="2017-09-25T10:04:35.000Z" itemprop="datePublished">2017-09-25</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/code/">code</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/android/">android</a>, <a class="tag-link" href="/tags/code/">code</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h2 id="动态更换应用Icon"><a href="#动态更换应用Icon" class="headerlink" title="动态更换应用Icon"></a>动态更换应用Icon</h2><blockquote>
+<p>From stackoverflow: <a href="https://stackoverflow.com/questions/1103027/how-to-change-an-application-icon-programmatically-in-android" target="_blank" rel="external">How to change an application icon programmatically in Android?</a> </p>
+</blockquote>
+<p>Try this, it works fine for me =)</p>
+<p>1 . Modify your MainActivity section in AndroidManifest.xml, delete from it, line with MAIN category in intent-filter section</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&lt;activity android:name=&quot;ru.quickmessage.pa.MainActivity&quot;</div><div class="line">    android:configChanges=&quot;keyboardHidden|orientation&quot;</div><div class="line">    android:screenOrientation=&quot;portrait&quot;</div><div class="line">    android:label=&quot;@string/app_name&quot;</div><div class="line">    android:theme=&quot;@style/CustomTheme&quot;</div><div class="line">    android:launchMode=&quot;singleTask&quot;&gt;</div><div class="line">    &lt;intent-filter&gt;</div><div class="line">         &lt;action android:name=&quot;android.intent.action.MAIN&quot; /&gt;</div><div class="line">     ==&gt; &lt;category android:name=&quot;android.intent.category.LAUNCHER&quot; /&gt; &lt;== Delete this line</div><div class="line">    &lt;/intent-filter&gt;</div><div class="line">&lt;/activity&gt;</div></pre></td></tr></table></figure>
+<p>2 . Create <code>&lt;activity-alias&gt;</code>, for each of your icons. Like this</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&lt;activity-alias android:label=&quot;@string/app_name&quot; </div><div class="line">    android:icon=&quot;@drawable/icon&quot; </div><div class="line">    android:name=&quot;.MainActivity-Red&quot;</div><div class="line">    android:enabled=&quot;false&quot;</div><div class="line">    android:targetActivity=&quot;.MainActivity&quot;&gt;</div><div class="line">    &lt;intent-filter&gt;</div><div class="line">        &lt;action android:name=&quot;android.intent.action.MAIN&quot; /&gt;</div><div class="line">        &lt;category android:name=&quot;android.intent.category.LAUNCHER&quot; /&gt;</div><div class="line">    &lt;/intent-filter&gt;   </div><div class="line">&lt;/activity-alias&gt;</div></pre></td></tr></table></figure>
+<p>3 . Set programmatically: set ENABLE attribute for the appropriate activity-alias</p>
+<blockquote>
+<p>Should use following code to disable all icons before enabling another one, otherwise it will add a new icon, instead of replacing it.</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">getPackageManager().setComponentEnabledSetting(</div><div class="line">       new ComponentName(&quot;ru.quickmessage.pa&quot;, &quot;ru.quickmessage.pa.MainActivity-Red&quot;), </div><div class="line">           PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);</div></pre></td></tr></table></figure>
+<p><strong>Note, At least one must be enabled at all times.</strong></p>
+<p>As Display:</p>
+<h3 id="原理1——activity-alias"><a href="#原理1——activity-alias" class="headerlink" title="原理1——activity-alias"></a>原理1——activity-alias</h3><p>在AndroidMainifest中，有两个属性：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">// 决定应用程序最先启动的Activity</div><div class="line">android.intent.action.MAIN </div><div class="line">// 决定应用程序是否显示在程序列表里</div><div class="line">android.intent.category.LAUNCHER</div></pre></td></tr></table></figure>
+<p>另外，还有一个activity-alias属性，这个属性可以用于创建多个不同的入口，相信做过系统Setting和Launcher开发的开发者在系统的源码中应该见过很多。</p>
+<h3 id="原理2——PM-setComponentEnabledSetting"><a href="#原理2——PM-setComponentEnabledSetting" class="headerlink" title="原理2——PM.setComponentEnabledSetting"></a>原理2——PM.setComponentEnabledSetting</h3><p>PackageManager是一个大统领类，可以管理所有的系统组件，当然，如果Root了，你还可以管理其它App的所有组件，一些系统优化工具就是通过这个方式来禁用一些后台Service的。</p>
+<p>使用方式异常简单：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">private void enableComponent(ComponentName componentName) &#123;</div><div class="line">    mPm.setComponentEnabledSetting(componentName,</div><div class="line">            PackageManager.COMPONENT_ENABLED_STATE_ENABLED,</div><div class="line">            PackageManager.DONT_KILL_APP);</div><div class="line">&#125;</div><div class="line"></div><div class="line">private void disableComponent(ComponentName componentName) &#123;</div><div class="line">    mPm.setComponentEnabledSetting(componentName,</div><div class="line">            PackageManager.COMPONENT_ENABLED_STATE_DISABLED,</div><div class="line">            PackageManager.DONT_KILL_APP);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>根据PackageManager.COMPONENT_ENABLED_STATE_ENABLED和PackageManager.COMPONENT_ENABLED_STATE_DISABLED这两个标志量和对应的ComponentName，就可以控制一个组件的是否启用。</p>
+<h2 id="动态换Icon"><a href="#动态换Icon" class="headerlink" title="动态换Icon"></a>动态换Icon</h2><p>有了上面的两个原理，来实现动态更换Icon就只剩下思路问题了。</p>
+<p>首先，我们创建一个Activity，再创建一个带着默认图片的activity-alias，指向默认的Activity并带有正常的图片，再创建一个双12的activity-alias，指向默认的Activity并带有双12的图片……等等等。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">&lt;activity android:name=&quot;.MainActivity&quot;&gt;</div><div class="line">    &lt;intent-filter&gt;</div><div class="line">        &lt;action android:name=&quot;android.intent.action.MAIN&quot;/&gt;</div><div class="line">    &lt;/intent-filter&gt;</div><div class="line">&lt;/activity&gt;</div><div class="line"></div><div class="line">&lt;activity-alias</div><div class="line">    android:name=&quot;.normal&quot;</div><div class="line">    android:enabled=&quot;true&quot;</div><div class="line">    android:icon=&quot;@drawable/normal&quot;</div><div class="line">    android:label=&quot;normal&quot;</div><div class="line">    android:targetActivity=&quot;.MainActivity&quot;&gt;</div><div class="line">    &lt;intent-filter&gt;</div><div class="line">        &lt;action android:name=&quot;android.intent.action.MAIN&quot;/&gt;</div><div class="line"></div><div class="line">        &lt;category android:name=&quot;android.intent.category.LAUNCHER&quot;/&gt;</div><div class="line">    &lt;/intent-filter&gt;</div><div class="line">&lt;/activity-alias&gt;</div><div class="line"></div><div class="line">&lt;activity-alias</div><div class="line">    android:name=&quot;.Test12&quot;</div><div class="line">    android:enabled=&quot;false&quot;</div><div class="line">    android:icon=&quot;@drawable/s12&quot;</div><div class="line">    android:label=&quot;双12&quot;</div><div class="line">    android:targetActivity=&quot;.MainActivity&quot;&gt;</div><div class="line">    &lt;intent-filter&gt;</div><div class="line">        &lt;action android:name=&quot;android.intent.action.MAIN&quot;/&gt;</div><div class="line"></div><div class="line">        &lt;category android:name=&quot;android.intent.category.LAUNCHER&quot;/&gt;</div><div class="line">    &lt;/intent-filter&gt;</div><div class="line">&lt;/activity-alias&gt;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line">public class MainActivity extends AppCompatActivity &#123;</div><div class="line"></div><div class="line">    private ComponentName mDefault;</div><div class="line">    private ComponentName mDouble11;</div><div class="line">    private ComponentName mDouble12;</div><div class="line">    private PackageManager mPm;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    protected void onCreate(Bundle savedInstanceState) &#123;</div><div class="line">        super.onCreate(savedInstanceState);</div><div class="line">        setContentView(R.layout.activity_main);</div><div class="line">        mDefault = new ComponentName(</div><div class="line">                getBaseContext(),</div><div class="line">                &quot;com.xys.changeicon.normal&quot;);</div><div class="line">        mDouble12 = new ComponentName(</div><div class="line">                getBaseContext(),</div><div class="line">                &quot;com.xys.changeicon.Test12&quot;);</div><div class="line">        mPm = getApplicationContext().getPackageManager();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void changeIcon12(View view) &#123;</div><div class="line">        disableComponent(mDefault);</div><div class="line">        enableComponent(mDouble12);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private void enableComponent(ComponentName componentName) &#123;</div><div class="line">        mPm.setComponentEnabledSetting(componentName,</div><div class="line">                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,</div><div class="line">                PackageManager.DONT_KILL_APP);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private void disableComponent(ComponentName componentName) &#123;</div><div class="line">        mPm.setComponentEnabledSetting(componentName,</div><div class="line">                PackageManager.COMPONENT_ENABLED_STATE_DISABLED,</div><div class="line">                PackageManager.DONT_KILL_APP);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>OK了，禁用默认的Activity后，启用双12的activity-alias，结果不变还是指向了默认的Activity，但图标已经发生了改变。</p>
+<blockquote>
+<p>根据ROM的不同，在禁用了组件之后，会等一会，Launcher会自动刷新图标。如果在更换图标期间，用户点击桌面图标，会暂时提示应用不存在。</p>
+</blockquote>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/09/25/android/code/Android动态更换应用Icon/" data-id="cj82bwuun0003r9pjkjw07qie" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/09/25/android/code/Android动态更换应用Icon/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/09/26/react/React:React Native 的ES5 ES6写法对照表/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    React:React Native 的ES5 ES6写法对照表
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2017/09/25/react/第9篇React Native 与 App 集成方案/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">第9篇React Native与App集成方案</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="uyan_frame"></div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">recent</h3>
+        <div class="widget">
+            <ul id="recent-post" class="no-thumbnail">
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a></p>
+                            <p class="item-title"><a href="/2017/09/26/react/React:React Native 的ES5 ES6写法对照表/" class="title">React:React Native 的ES5 ES6写法对照表</a></p>
+                            <p class="item-date"><time datetime="2017-09-26T14:24:17.000Z" itemprop="datePublished">2017-09-26</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/code/">code</a></p>
+                            <p class="item-title"><a href="/2017/09/25/android/code/Android动态更换应用Icon/" class="title">Android动态更换应用Icon</a></p>
+                            <p class="item-date"><time datetime="2017-09-25T10:04:35.000Z" itemprop="datePublished">2017-09-25</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a></p>
+                            <p class="item-title"><a href="/2017/09/25/react/第9篇React Native 与 App 集成方案/" class="title">第9篇React Native与App集成方案</a></p>
+                            <p class="item-date"><time datetime="2017-09-25T03:51:02.000Z" itemprop="datePublished">2017-09-25</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a></p>
+                            <p class="item-title"><a href="/2017/09/25/react/第8篇动手写组件/" class="title">第8篇动手写组件</a></p>
+                            <p class="item-date"><time datetime="2017-09-25T03:48:59.000Z" itemprop="datePublished">2017-09-25</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a></p>
+                            <p class="item-title"><a href="/2017/09/25/react/第7篇JSX在React-Native中的应用/" class="title">第7篇JSX在React-Native中的应用</a></p>
+                            <p class="item-date"><time datetime="2017-09-25T03:48:38.000Z" itemprop="datePublished">2017-09-25</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">categories</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">45</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/react/">react</a><span class="category-list-count">10</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">archives</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">65</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tags</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gitlab/">gitlab</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/">react</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/">ssh</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tag cloud</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 15px;">code</a> <a href="/tags/git/" style="font-size: 11.25px;">git</a> <a href="/tags/github/" style="font-size: 17.5px;">github</a> <a href="/tags/gitlab/" style="font-size: 10px;">gitlab</a> <a href="/tags/glide/" style="font-size: 13.75px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 12.5px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.25px;">markdown</a> <a href="/tags/mysql/" style="font-size: 13.75px;">mysql</a> <a href="/tags/node/" style="font-size: 16.25px;">node</a> <a href="/tags/react/" style="font-size: 18.75px;">react</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/ssh/" style="font-size: 10px;">ssh</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.25px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.25px;">设计模式</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">links</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 Ernest Chang<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2142274"></script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

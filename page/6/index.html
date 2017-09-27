@@ -157,7 +157,7 @@
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                84
+                86
                 <span>posts</span>
             </div>
             <div class="article-info-block">
@@ -210,6 +210,608 @@
 
             
             <section id="main">
+    <article id="post-android/books/《Android开发艺术探索》Chap14_JNI和NDK" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/09/06/android/books/《Android开发艺术探索》Chap14_JNI和NDK/">《Android开发艺术探索》Chap14_JNI和NDK</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/09/06/android/books/《Android开发艺术探索》Chap14_JNI和NDK/">
+            <time datetime="2017-09-06T09:41:16.000Z" itemprop="datePublished">2017-09-06</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/android/">android</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <blockquote>
+<p>弥补Java的跨平台特性导致的于本地交互能力不足而出现的.<br>注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a></p>
+</blockquote>
+<p><strong>Java JNI</strong>本意为<code>Java Native Interface</code>(java本地接口), 是为方便java调用C或者C++等本地代码所封装的一层接口. 由于Java的跨平台性导致本地交互能力的不好, 一些和操作系统相关的特性Java无法完成, 于是Java提供了JNI专门用于和本地代码交互.</p>
+<p><code>NDK</code>是android所提供的一个工具合集, 通过<code>NDK</code>可以在Android中更加方便地通过JNI来访问本地代码. <code>NDK</code>还提供了交叉编译工具, 开发人员只需要简单的修改<code>mk</code>文件就可以生成特定的CPU平台的动态库. 好处如下:</p>
+<ol>
+<li>提供代码的安全性. so库反编译比较困难</li>
+<li>可以很方便地使用目前已有的C/C++开源库</li>
+<li>提高程序在某些特定情形下得执行效率, 但是不能明显提高Android程序的的性能.</li>
+</ol>
+<h2 id="JNI的开发流程"><a href="#JNI的开发流程" class="headerlink" title="JNI的开发流程"></a>JNI的开发流程</h2><p>大体步骤就是在java中声明<code>native</code>方法, 然后调用c/c++实现的native的方法. 下面开始具体步骤</p>
+<p><strong>1. 在Java中声明native方法</strong></p>
+<p>创建一个java类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">package com.szysky.note.androiddevseek_14;</div><div class="line"></div><div class="line"></div><div class="line">public class JNITest &#123;</div><div class="line"></div><div class="line">    static &#123;</div><div class="line">        System.loadLibrary(&quot;jni-test&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public native String get();</div><div class="line">    public native void set(String str);</div><div class="line"></div><div class="line"></div><div class="line">    // 主函数</div><div class="line">    public static void main(String arg[]) &#123;</div><div class="line">        JNITest jniTest = new JNITest();</div><div class="line">        System.out.println(jniTest.get());</div><div class="line">        jniTest.set(&quot;java写入数据&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>首先是<strong>通过静态代码块先加载so库</strong>, 然后声明两个<code>native</code>方法提供使用. 这两个方法需要在JNI中实现. 加载so库名称填入的虽然是<code>jni-test</code>, 但是so库全名称应该是<code>libjni-test.so</code>,这是加载so库的规范.</p>
+<p><strong>2. 编辑Java源文件得到class文件, 然后通过javah命令导出JNI头文件</strong></p>
+<p>在包的的根路径, 进行命令操作</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">javac com/szysky/note/androiddevseek_14/JNITest.java</div><div class="line">javah com.szysky.note.androiddevseek_14.JNITest</div></pre></td></tr></table></figure>
+<p>执行之后会在, 操作的路径下生成一个<code>com_szysky_note_androiddevseek_14_JNITest.h</code>头文件, 这个就是第二步生成的东西.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">/* DO NOT EDIT THIS FILE - it is machine generated */</div><div class="line">#include &lt;jni.h&gt;</div><div class="line">/* Header for class com_szysky_note_androiddevseek_14_JNITest */</div><div class="line"></div><div class="line">#ifndef _Included_com_szysky_note_androiddevseek_14_JNITest</div><div class="line">#define _Included_com_szysky_note_androiddevseek_14_JNITest</div><div class="line">#ifdef __cplusplus</div><div class="line">extern &quot;C&quot; &#123;</div><div class="line">#endif</div><div class="line">/*</div><div class="line"> * Class:     com_szysky_note_androiddevseek_14_JNITest</div><div class="line"> * Method:    get</div><div class="line"> * Signature: ()Ljava/lang/String;</div><div class="line"> */</div><div class="line">JNIEXPORT jstring JNICALL Java_com_szysky_note_androiddevseek_114_JNITest_get</div><div class="line">  (JNIEnv *, jobject);</div><div class="line"></div><div class="line">/*</div><div class="line"> * Class:     com_szysky_note_androiddevseek_14_JNITest</div><div class="line"> * Method:    set</div><div class="line"> * Signature: (Ljava/lang/String;)V</div><div class="line"> */</div><div class="line">JNIEXPORT void JNICALL Java_com_szysky_note_androiddevseek_114_JNITest_set</div><div class="line">  (JNIEnv *, jobject, jstring);</div><div class="line"></div><div class="line">#ifdef __cplusplus</div><div class="line">&#125;</div><div class="line">#endif</div><div class="line">#endif</div></pre></td></tr></table></figure>
+<p>对生成的<code>.h</code>文件进行一下说明:</p>
+<ul>
+<li><strong>函数名</strong>:格式遵循:<code>Java_包名_类名_方法名</code>包名之间的<code>.</code>分割全部替换成<code>_</code>分割.</li>
+<li><strong>参数</strong>: <code>jstring</code>是代表String类型参数. 具体的类型关系后面会说明.</li>
+<li><ul>
+<li><strong>JNIEnv *</strong>: 表示一个指向JNI环境的指针, 可以通过它来访问JNI提供的方法.</li>
+</ul>
+</li>
+<li><ul>
+<li><strong>jobject</strong>: 表示java对象中的this.</li>
+</ul>
+</li>
+<li><ul>
+<li><strong>JNIEXPORT和JNICALL</strong>: 这是JNI种所定义的宏, 可以在<code>jni.h</code>这个头文件查到</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">#ifdef __cplusplus</div><div class="line">extern &quot;C&quot; &#123;</div><div class="line">#endif</div></pre></td></tr></table></figure>
+<p>而这个宏定义是必须的, 作用是<strong>指定extern”C”内部的函数采用C语言的命名风格来编译</strong>. 如果设定那么当JNI采用<code>C++</code>来实现时, 由于<code>C/C++</code>编译过程对函数的命名风格不同, 这将导致JNI在链接时无法根据函数名找到具体的函数, 那么JNI调用肯定会失效.</p>
+<p><strong>3. 实现JNI方法</strong></p>
+<p><code>JNI</code>方法是指的Java中声明的<code>native</code>方法, 这里可以选择c++和c来实现. 过程都是类似的. 只有少量的区别, 这里两种都实现一下.</p>
+<p>首先是<code>C++</code></p>
+<p>在工程的主目录创建一个子目录, 名称任意, 然后将之前通过<code>javah命令</code>生成的<strong>.h头文件</strong>复制到创建的目录下, 接着创建<code>test.cpp</code>实现如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">// Created by 苏泽钰 on 16/8/27.</div><div class="line">// test.app</div><div class="line"></div><div class="line">#include &quot;com_szysky_note_androiddevseek_14_JNITest.h&quot;</div><div class="line">#include &lt;stdio.h&gt;</div><div class="line"></div><div class="line">JNIEXPORT jstring JNICALL Java_com_szysky_note_androiddevseek_114_JNITest_get(JNIEnv *env, jobject thiz)&#123;</div><div class="line">    printf(&quot;执行在c++文件中 get方法\n&quot;);</div><div class="line">    return env-&gt;NewStringUTF(&quot;Hello from JNI .&quot;);</div><div class="line"></div><div class="line">&#125;</div><div class="line">JNIEXPORT void JNICALL Java_com_szysky_note_androiddevseek_114_JNITest_get(JNIEnv *env, jobject thiz, jstring string)&#123;</div><div class="line">    printf(&quot;执行在c++文件中 set方法\n&quot;);</div><div class="line">    char* str = (char*) env-&gt;GetStringUTFChars(string, NULL);</div><div class="line">    printf(&quot;\n, str&quot;);</div><div class="line"></div><div class="line">    env-&gt;ReleaseStringUTFChars(string, str);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在看一下<code>C</code>的实现:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">// Created by 苏泽钰 on 16/8/27.</div><div class="line">// test.c</div><div class="line"></div><div class="line">#include &quot;com_szysky_note_androiddevseek_14_JNITest.h&quot;</div><div class="line">#include &lt;stdio.h&gt;</div><div class="line"></div><div class="line">JNIEXPORT jstring JNICALL Java_com_szysky_note_androiddevseek_114_JNITest_get(JNIEnv *env, jobject thiz)&#123;</div><div class="line">    printf(&quot;执行在c文件中 get方法\n&quot;);</div><div class="line">    return (*env)-&gt;NewStringUTF(&quot;Hello from JNI .&quot;);</div><div class="line"></div><div class="line"></div><div class="line">JNIEXPORT void JNICALL Java_com_szysky_note_androiddevseek_114_JNITest_get(JNIEnv *env, jobject thiz, jstring string)&#123;</div><div class="line">    printf(&quot;执行在c文件中 set方法\n&quot;);</div><div class="line">    char* str = (char*) (*env)-&gt;GetStringUTFChars(env, string, NULL);</div><div class="line">    printf(&quot;%s\n, str&quot;);</div><div class="line"></div><div class="line">    (*env)-&gt;ReleaseStringUTFChars(env, string, str);</div><div class="line">&#125;&#125;</div></pre></td></tr></table></figure>
+<p>其实<code>C\C++</code>在实现上很相似, 但是对于<code>env</code>的操作方式有所不同.</p>
+<p><strong>4. 编写so库并在java中调用</strong></p>
+<p>so库的编译这里采用<code>gcc</code>(Linux, mac环境下, window不清楚). 命令cd到放置刚才生成c/c++的目录下.</p>
+<p>使用如下命令:<br><code>gcc -shared -I /Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/include -fPIC test.cpp -o libjni-test.so</code></p>
+<p><strong>Linux</strong></p>
+<p><strong>/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk</strong>这个就是java的环境目录. 书上这条操作是在<code>Linux</code>,<strong>如果你是mac系统, 请这样修改一下,要不无法编译</strong></p>
+<p><strong>Mac</strong></p>
+<p>首先找到你的Java环境的目录然后在后面追加<code>Content/Home/</code>来替换上面的路径. 这么做的意义可以上mac电脑下看一下<code>/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/include</code>发现文件夹下有有一个<code>jni.h</code>的文件, 这个文件在我们生成的头文件中有过导入, 这下明白了为什么修改了吧, 别急还有一步, 在<code>jni.h</code>中还会导入一个<code>jni_md.h</code>这个文件默认在<code>jni.h的同级目录有一个darwin文件夹下</code>把这个文件也拷贝出来放在和<code>jni.h</code>同级, 然后执行下面命令:</p>
+<p><code>gcc -shared -I /Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home/include -fPIC test.cpp -o libjni-test.jnilib</code></p>
+<p>(别忘了替换路径)</p>
+<p>如果是mac系统, 那么生成<code>.jnilib</code>而不是<code>.so</code>. 不然生成了so在通过java命令执行的时候会抛出</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">Exception in thread &quot;main&quot; java.lang.UnsatisfiedLinkError: no jni-test in java.library.path</div><div class="line">	at java.lang.ClassLoader.loadLibrary(ClassLoader.java:1867)</div><div class="line">	at java.lang.Runtime.loadLibrary0(Runtime.java:870)</div><div class="line">	at java.lang.System.loadLibrary(System.java:1122)</div><div class="line">	at com.szysky.note.androiddevseek_14.JNITest.&lt;clinit&gt;(JNITest.java:15)</div><div class="line">	at java.lang.Class.forName0(Native Method)</div><div class="line">	at java.lang.Class.forName(Class.java:264)</div><div class="line">	at com.intellij.rt.execution.application.AppMain.main(AppMain.java:122)</div></pre></td></tr></table></figure>
+<p><img src="http://szysky.com/2016/08/26/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-14-JNI%E5%92%8CNDK%E7%BC%96%E7%A8%8B/generate_so.png" alt="img"></p>
+<p>然后库已经生成完了, 我们就检测一下吧. 这里使用<code>Java命令</code>执行, 因为需要指定库路径, 回到包的根目录</p>
+<p><code>java -Djava.library.path=jni com.szysky.note.androiddevseek_14.JNITest</code></p>
+<p>看一下输出结果:</p>
+<p><img src="http://szysky.com/2016/08/26/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-14-JNI%E5%92%8CNDK%E7%BC%96%E7%A8%8B/jni_result.png" alt="img"></p>
+<p>ok, 关于JNI的java调用c/c++代码, 简单的演示了</p>
+<h2 id="NDK的开发流程"><a href="#NDK的开发流程" class="headerlink" title="NDK的开发流程"></a>NDK的开发流程</h2><p><code>NDK</code>的开发是基于<code>JNI</code>的, 主要有如下步骤</p>
+<p><strong>1. 下载并进行配置NDK</strong></p>
+<p>首先要下载NDK. <a href="https://developer.android.com/ndk/downloads/index.html" target="_blank" rel="external">NDK下载地址</a> 下载后解压. 或者你可以直接在<code>Android SDK Manager</code>下载.</p>
+<p><img src="http://szysky.com/2016/08/26/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-14-JNI%E5%92%8CNDK%E7%BC%96%E7%A8%8B/ndk_download.png" alt="img"></p>
+<p>如果在<code>sdk manager</code>下载那么就在上面图中上部的<code>Android SDK Location</code>指定根目录下的<code>ndk-bundle</code>文件夹.</p>
+<p>接下来就配置一下全局环境, 这里是<strong>mac系统</strong>下的操作(Linux修改~/.bashrc文件), 命令行直接输出:</p>
+<p><code>open ~/.bash_profile</code> 添加一下配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># 设置ndk环境路径</div><div class="line">export PATH=$&#123;PATH&#125;:/Users/suzeyu/Library/Android/sdk/ndk-bundle</div></pre></td></tr></table></figure>
+<p>可以使用<code>ndk-build</code>检测是否成功了, 之后就可以使用<code>ndk-build</code>命令产生编译so的库. 这里使用的NDK版本是<code>android-ndk-r12d</code></p>
+<p><strong>2. 创建一个android项目, 在类中声明所需的native方法</strong></p>
+<p>这一步和上面创建java普通类的方法一样.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">public class MainActivity extends AppCompatActivity &#123;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    protected void onCreate(Bundle savedInstanceState) &#123;</div><div class="line">        super.onCreate(savedInstanceState);</div><div class="line">        setContentView(R.layout.activity_main);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    static&#123;</div><div class="line">        System.loadLibrary(&quot;jni-test&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public native String get();</div><div class="line">    public native void set(String str);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>3. 实现Android项目中所声明的native方法</strong></p>
+<p><strong>jniLibs</strong>是<strong>AndroidStudio</strong>默认目录，用来存放已经编译好的.so文件，当然你也可以放在任意自定义目录下，例如src/main/libs，然后在build.gradle中指定相应的资源目录位置即可：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">android &#123;</div><div class="line">    sourceSets.main &#123;</div><div class="line">        // 你的.so库的实际路径</div><div class="line">        jniLibs.srcDir &apos;src/main/libs&apos; </div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上面是已经有了<strong>so文件</strong>的方式. 下面说说如果只有<strong>c/c++</strong>源码</p>
+<p><strong>这里有两种实现一种是手动使用ndk-build的命令, 一种利用gradle</strong></p>
+<hr>
+<p><strong>利用gradle来生成</strong></p>
+<p>这里书上的方法已经不适用, 上网查询了一下是因为<code>gradle</code>文件首行使用的插件<code>apply plugin: &#39;com.android.application&#39;</code>导致</p>
+<hr>
+<p><strong>使用传统的ndk-build来实现吧</strong></p>
+<p>在<code>jni</code>下创建3个文件, <code>test.cpp</code>, <code>Android.mk</code>, <code>Application.mk</code>三个文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line">// 这是test.cpp文件</div><div class="line">#include &lt;jni.h&gt;</div><div class="line">#include &lt;stdio.h&gt;</div><div class="line"></div><div class="line">#ifdef __cplusplus</div><div class="line">extern &quot;C&quot; &#123;</div><div class="line">#endif</div><div class="line"></div><div class="line"> jstring  Java_com_szysky_note_androiddevseek_114_MainActivity_get(JNIEnv *env, jobject thiz)&#123;</div><div class="line">    printf(&quot;执行在c++文件中 get方法\n&quot;);</div><div class="line">    return env-&gt;NewStringUTF(&quot;Hello from JNI .&quot;);</div><div class="line"></div><div class="line">&#125;</div><div class="line"> void  Java_com_szysky_note_androiddevseek_114_MainActivity_set(JNIEnv *env, jobject thiz, jstring string)&#123;</div><div class="line">    printf(&quot;执行在c++文件中 set方法\n&quot;);</div><div class="line">    char* str = (char*) env-&gt;GetStringUTFChars(string, NULL);</div><div class="line">    printf(&quot;%s\n&quot;, str);</div><div class="line"></div><div class="line">    env-&gt;ReleaseStringUTFChars(string, str);</div><div class="line">&#125;</div><div class="line"></div><div class="line">#ifdef __cplusplus</div><div class="line">&#125;</div><div class="line">#endif</div><div class="line"></div><div class="line"></div><div class="line">// Android.mk文件</div><div class="line">LOCAL_PATH := $(call my-dir)</div><div class="line">include $(CLEAR_VARS)</div><div class="line"></div><div class="line">LOCAL_MODULE := jni-test    //生成so的文件名称</div><div class="line">LOCAL_SRC_FILES := test.cpp //所关联的cpp文件</div><div class="line">include $(BUILD_SHARED_LIBRARY)</div><div class="line"></div><div class="line"></div><div class="line">// Application.mk文件</div><div class="line">APP_ABI := armeabi</div></pre></td></tr></table></figure>
+<p>这里说明一个<code>mk</code>文件:</p>
+<ul>
+<li><code>LOCAL_MODULE:</code> 表示模块的名称</li>
+<li><code>LOCAL_SRC_FILES:</code> 表示需要参与的源文件</li>
+<li><code>APP_ABI:</code> 表示CPU的架构平台类型. 如<code>armeabi</code>, <code>x86</code>, <code>mips</code>等.</li>
+</ul>
+<p>而<code>test.cpp</code>这个文件</p>
+<p>要注意这里的函数名换成再调用处的所在类, 按照生成的JNI的函数的命名规则.</p>
+<p><strong>4. 切换到jni目录的父目录下, 通过ndk-build命令编译产生so库</strong></p>
+<p>命令行截图:</p>
+<p><img src="http://szysky.com/2016/08/26/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-14-JNI%E5%92%8CNDK%E7%BC%96%E7%A8%8B/cmd_result.png" alt="img"></p>
+<p>这些做完了, 使用命令生成. 如下图:</p>
+<p><img src="http://szysky.com/2016/08/26/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-14-JNI%E5%92%8CNDK%E7%BC%96%E7%A8%8B/ndk_build_result.png" alt="img"></p>
+<p>在产生的<code>libs</code>目录下把生成的<code>so</code>文件放在<code>Android Studio的默认so路径下 Main/jniLibs</code>文件夹下. <strong>我在测试的时候, 必须要把jni文件夹内容删掉,否则会报错, 按照错误提示应该也可以通过gradle来在运行时候忽略此文件</strong></p>
+<p>为了保留生成必须代码而不影响运行, 原<code>jni</code>内容被移动到<code>backup</code>文件夹中.</p>
+<h2 id="JNI的数据类型和类型签名"><a href="#JNI的数据类型和类型签名" class="headerlink" title="JNI的数据类型和类型签名"></a>JNI的数据类型和类型签名</h2><p><code>JNI</code>的数据类型包含两种: 基本类型和引用类型.</p>
+<p>基本类型主要有<code>jboolean</code>, <code>jchar</code>, <code>jint</code>等, 和Java中的数据类型对应如下:</p>
+<table>
+<thead>
+<tr>
+<th>JNI类型</th>
+<th>Java类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>jboolean</td>
+<td>boolean</td>
+<td>无符号8位整型</td>
+</tr>
+<tr>
+<td>jbyte</td>
+<td>byte</td>
+<td>无符号8位整型</td>
+</tr>
+<tr>
+<td>jchar</td>
+<td>char</td>
+<td>无符号16位整型</td>
+</tr>
+<tr>
+<td>jshort</td>
+<td>short</td>
+<td>有符号16位整型</td>
+</tr>
+<tr>
+<td>jint</td>
+<td>int</td>
+<td>32位整型</td>
+</tr>
+<tr>
+<td>jlong</td>
+<td>long</td>
+<td>64位整型</td>
+</tr>
+<tr>
+<td>jfloat</td>
+<td>float</td>
+<td>32位浮点型</td>
+</tr>
+<tr>
+<td>jdouble</td>
+<td>double</td>
+<td>64位浮点型</td>
+</tr>
+<tr>
+<td>void</td>
+<td>void</td>
+<td>无类型</td>
+</tr>
+</tbody>
+</table>
+<p><code>JNI</code>中的引用类型主要有<strong>类</strong>, <strong>对象</strong>和<strong>数组</strong>. 他们和Java中的引用类型的对应关系如下:</p>
+<table>
+<thead>
+<tr>
+<th>JNI类型</th>
+<th>Java类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>jobject</td>
+<td>Object</td>
+<td>Object类型</td>
+</tr>
+<tr>
+<td>jclass</td>
+<td>Class</td>
+<td>Class类型</td>
+</tr>
+<tr>
+<td>jstring</td>
+<td>String</td>
+<td>String类型</td>
+</tr>
+<tr>
+<td>jobjeckArray</td>
+<td>Object[]</td>
+<td>对象数组</td>
+</tr>
+<tr>
+<td>jbooleanArray</td>
+<td>boolean[]</td>
+<td>boolean数组</td>
+</tr>
+<tr>
+<td>jbyteArray</td>
+<td>byte[]</td>
+<td>byte数组</td>
+</tr>
+<tr>
+<td>jcharArray</td>
+<td>char[]</td>
+<td>char数组</td>
+</tr>
+<tr>
+<td>jshortArray</td>
+<td>short[]</td>
+<td>short数组</td>
+</tr>
+<tr>
+<td>jintArray</td>
+<td>int[]</td>
+<td>int数组</td>
+</tr>
+<tr>
+<td>jlongArray</td>
+<td>long[]</td>
+<td>long数组</td>
+</tr>
+<tr>
+<td>jfloatArray</td>
+<td>float[]</td>
+<td>float数组</td>
+</tr>
+<tr>
+<td>jdoubleArray</td>
+<td>double[]</td>
+<td>double数组</td>
+</tr>
+<tr>
+<td>jthrowable</td>
+<td>Throwable</td>
+<td>Throwable</td>
+</tr>
+</tbody>
+</table>
+<p><code>JNI</code>的类型签名标识了一个特定的Java类型, 这个类型既可以是类也可以是方法, 也可以是数据类型.</p>
+<p>类的签名比较简单, 它采用<code>L+包名+类型+;</code>的形式, 只需要将其中的<code>.</code>替换为<code>/</code>即可. 例如<code>java.lang.String</code>, 它的签名为<code>Ljava/lang/String;</code>, 末尾的<code>;</code>也是一部分.</p>
+<p>基本数据类型的签名采用一系列大写字母来表示, 如下:</p>
+<table>
+<thead>
+<tr>
+<th>Java类型</th>
+<th>签名</th>
+<th>Java类型</th>
+<th>签名</th>
+<th>Java类型</th>
+<th>签名</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>boolean</strong></td>
+<td>Z</td>
+<td><strong>byte</strong></td>
+<td>B</td>
+<td><strong>char</strong></td>
+<td>C</td>
+</tr>
+<tr>
+<td><strong>short</strong></td>
+<td>S</td>
+<td><strong>int</strong></td>
+<td>I</td>
+<td><strong>long</strong></td>
+<td>J</td>
+</tr>
+<tr>
+<td><strong>float</strong></td>
+<td>F</td>
+<td><strong>double</strong></td>
+<td>D</td>
+<td><strong>void</strong></td>
+<td>V</td>
+</tr>
+</tbody>
+</table>
+<p>基本数据类型的签名基本都是单词的首字母, 但是boolean除外因为B已经被<code>byte</code>占用, 而long的表示也被<code>Java类签名</code>占用. 所以不同.</p>
+<p>而对象和数组, <strong>对象的签名</strong>就是对象所属的类签名, <strong>数组</strong>的签名<code>[+类型签名</code>例如byte数组. 首先类型为<code>byte</code>,所以签名为<code>B</code>然后因为是数组那么最终形成的签名就是<code>[B</code>.例如如下各种对应:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">char[]      [C</div><div class="line">float[]     [F</div><div class="line">double[]    [D</div><div class="line">long[]      [J</div><div class="line">String[]    [Ljava/lang/String;</div><div class="line">Object[]    [Ljava/lang/Object;</div></pre></td></tr></table></figure>
+<p>如果是多维数组那么就根据数组的维度多少来决定<code>[</code>的多少, 例如<code>int[][]</code>那么就是<code>[[I</code></p>
+<p>方法的签名为<strong>(参数类型签名)+返回值类型签名</strong>.</p>
+<p>举个例子有这个一个方法<code>boolean fun(int a, double b, int[] c)</code>. 参数类型的签名是连在一起, 那么按照方法的签名规则就是<code>(ID[I)Z</code></p>
+<p>例如方法:<code>void fun(int a, String s, int[] c)</code>, 那么签名就是<code>(ILjava/lang/String;[I)V</code></p>
+<p>例如方法:<code>int fun()</code>, 对应签名<code>()I</code></p>
+<p>例如方法:<code>int fun(float f)</code>, 对应签名<code>(F)I</code></p>
+<h2 id="JNI调用Java方法的流程"><a href="#JNI调用Java方法的流程" class="headerlink" title="JNI调用Java方法的流程"></a>JNI调用Java方法的流程</h2><blockquote>
+<p>JNI调用java方法的流程是先通过类名找到类, 然后在根据方法名找到方法的id, 最后就可以调用这个方法了. 如果是调用Java的非静态方法, 那么需要构造出类的对象后才可以调用它</p>
+</blockquote>
+<p>演示一下调用静态的方法:</p>
+<ol>
+<li>首先在java中声明要被调用的静态方法. 这里触发的时机是一个按钮的点击,自行添加</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"> static&#123;</div><div class="line">        System.loadLibrary(&quot;jni-test&quot;);</div><div class="line">    &#125;</div><div class="line">/**</div><div class="line"> * 定义一个静态方法 , 提供给JNI调用</div><div class="line"> */</div><div class="line">public static void methodCalledByJni(String fromJni)&#123;</div><div class="line">    Log.e(&quot;susu&quot;, &quot;我是从JNI被调用的消息,  JNI返回的值是:&quot;+fromJni );</div><div class="line">&#125;</div><div class="line"></div><div class="line">// 定义调用本地方法, 好让本地方法回调java中的方法</div><div class="line">public native void callJNIConvertJavaMethod();</div><div class="line"></div><div class="line">@Override</div><div class="line">public void onClick(View view) &#123;</div><div class="line">    switch (view.getId())&#123;</div><div class="line">        case R.id.btn_jni2java:</div><div class="line">            // 调用JNI的方法</div><div class="line">            callJNIConvertJavaMethod();</div><div class="line">            break;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ol>
+<li>在JNI的<code>test.cpp</code>中添加一个c的函数用来处理调用java的逻辑, 并提供一个方法供java代码调起来触发. 一个两个方法.</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">// 定义调用java中的方法的函数</div><div class="line">void callJavaMethod( JNIEnv *env, jobject thiz)&#123;</div><div class="line">    // 先找到要调用的类</div><div class="line">    jclass clazz = env -&gt; FindClass(&quot;com/szysky/note/androiddevseek_14/MainActivity&quot;);</div><div class="line"></div><div class="line">    if (clazz == NULL)&#123;</div><div class="line">        printf(&quot;找不到要调用方法的所属类&quot;);</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    // 获取java方法id</div><div class="line">    // 参数二是调用的方法名,  参数三是方法的签名</div><div class="line">    jmethodID id = env -&gt; GetStaticMethodID(clazz, &quot;methodCalledByJni&quot;, &quot;(Ljava/lang/String;)V&quot;);</div><div class="line"></div><div class="line">    if (id == NULL)&#123;</div><div class="line">        printf(&quot;找不到要调用方法&quot;);</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    jstring msg = env-&gt;NewStringUTF(&quot;我是在c中生成的字符串&quot;);</div><div class="line"></div><div class="line">    // 开始调用java中的静态方法</div><div class="line">    env -&gt; CallStaticVoidMethod(clazz, id, msg);</div><div class="line">&#125;</div><div class="line"></div><div class="line">void Java_com_szysky_note_androiddevseek_114_MainActivity_callJNIConvertJavaMethod(JNIEnv *env, jobject thiz)&#123;</div><div class="line">    printf(&quot;调用c代码成功, 马上回调java中的代码&quot;);</div><div class="line">    callJavaMethod(env, thiz);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>稍微说明一下, 程序首先根据类名<code>com/szysky/note/androiddevseek_14/MainActivity</code>找到类, 然后在根据方法名<code>methodCalledByJni</code>找到方法, 并传入方法对应签名<code>(Ljava/lang/String;)V</code>, 最后通过<code>JNIEnv</code>对象的<code>CallStaticVoidMethod()</code>方法来完成最终调用.</p>
+<p>最后只要在<code>Java_com_szysky_note_androiddevseek_114_MainActivity_callJNIConvertJavaMethod</code>方法中调用<code>callJavaMethod</code>方法即可.</p>
+<p>流程就是–&gt; 按钮触发了点击的<code>onClikc</code> –&gt; 然后Java中会调用JNI的<code>callJNIConvertJavaMethod()</code> –&gt; JNI的<code>callJNIConvertJavaMethod()</code>方法内部会调用具体实现回调Java中的方法<code>callJavaMethod()</code> –&gt; 方法最终通过<code>CallStaticVoidMethod()</code>调用了Java中的<code>methodCalledByJni()</code>来接收一个参数并打印一个log.</p>
+<p>结果图:</p>
+<p><img src="http://szysky.com/2016/08/26/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-14-JNI%E5%92%8CNDK%E7%BC%96%E7%A8%8B/JNIcallJava.png" alt="img"></p>
+<p>生成<code>so库</code>的文件保存在git中的<code>app/src/main/backup</code>目录下一个两个版本代码, 第一个就是第二小节中的NDK开发代码, 第二个就是第四小节的代码就是目前的. 而<code>so库</code>是最新的, 包含了所有的JNI代码生成的库文件.</p>
+<p><code>JNI</code>调用<code>Java</code>的过程和Java中方法的定义有很大关联, 针对不同类型的java方法, <code>JNIEnv</code>提供了不同的接口去调用, 更为细节的部分要去开发中或者去网站去了解更多.</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/09/06/android/books/《Android开发艺术探索》Chap14_JNI和NDK/" data-id="cj78uk37s0008kbpjzvl7v392" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/09/06/android/books/《Android开发艺术探索》Chap14_JNI和NDK/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-android/books/《Android开发艺术探索》Chap13_综合技术" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2017/09/06/android/books/《Android开发艺术探索》Chap13_综合技术/">《Android开发艺术探索》Chap13_综合技术</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/09/06/android/books/《Android开发艺术探索》Chap13_综合技术/">
+            <time datetime="2017-09-06T09:40:42.000Z" itemprop="datePublished">2017-09-06</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/android/">android</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <blockquote>
+<p>crash的异常处理, Android中的方法限制, 反编译等也是需要了解的技术.<br>注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a></p>
+</blockquote>
+<p><a href="https://github.com/suzeyu1992/Notes_AndroidDevSeek" target="_blank" rel="external">blog相关代码</a></p>
+<h2 id="捕捉Crash信息"><a href="#捕捉Crash信息" class="headerlink" title="捕捉Crash信息"></a>捕捉Crash信息</h2><p>应用总会不可避免的发生Crash, 有可能是因为底层bug, 或者是适配问题, 代码逻辑问题等等. 当发生Crash的时候, 系统会kill掉正在执行的程序, 现象就是闪退或者提示用户程序已经停止运行, 这对用户来说是很不友好, 也是开发者不愿意看到的. 系统提供了在<strong>程序Crash之前可以保存异常信息的能力, 这样在崩溃前可以保存异常信息到文件中, 传回服务器,这样可以针对各种各样的用户发生的错误对应用进行完善</strong>的方法, 这个类在<code>Thread</code>中的<code>setDefaultUncaughtException()</code>方法.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">* Sets the default uncaught exception handler. This handler is invoked in</div><div class="line">* case any Thread dies due to an unhandled exception.</div><div class="line">*</div><div class="line">* @param handler The handler to set or null.</div><div class="line">*/</div><div class="line">public static void setDefaultUncaughtExceptionHandler(UncaughtExceptionHandler handler) &#123;</div><div class="line">   Thread.defaultUncaughtHandler = handler;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>从方法名的意思看出设置默认未捕获异常的处理器. 就是当Crash发生的时候, 系统会回调<code>UncaughtExceptionHandler#uncaughtException()</code>方法, 在这个方法中可以获取到异常的信息, 可以选择把信息写到SD卡中, 然后在合适的时机通过网络将Crash信息上传到服务器上. 也可以在这里弹出一个对话框告诉用户, 会比直接闪退好那么一点.</p>
+<p>首先要实现出一个<code>UncaughtExceptionHandler</code>的子类. 直接看实现:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div></pre></td><td class="code"><pre><div class="line">public class MyCrashHandler implements Thread.UncaughtExceptionHandler &#123;</div><div class="line"></div><div class="line">    private static final String TAG = MyCrashHandler.class.getSimpleName();</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 定义异常文件要存储的路径</div><div class="line">     */</div><div class="line">    private static final String PATH = Environment.getExternalStorageDirectory().getPath() + &quot;/szyCrash/log/&quot;;</div><div class="line"></div><div class="line">    private static final String FILE_NAME = &quot;crash-&quot;;</div><div class="line"></div><div class="line">    private static final String FILE_NAME_SUFFIX = &quot;.trace&quot;;</div><div class="line"></div><div class="line">    private Thread.UncaughtExceptionHandler mDefaultUncaughtExceptionHandler;</div><div class="line"></div><div class="line">    private Context mContext;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 单例模式三部曲    懒汉式</div><div class="line">     */</div><div class="line">    private static MyCrashHandler sInstance = new MyCrashHandler();</div><div class="line"></div><div class="line">    private MyCrashHandler() &#123;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static MyCrashHandler getsInstance() &#123;</div><div class="line">        return sInstance;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    /**</div><div class="line">     * 设置本类为当前进行的默认未捕捉异常处理器</div><div class="line">     */</div><div class="line">    public void init(Context context) &#123;</div><div class="line">        mContext = context.getApplicationContext();</div><div class="line">        mDefaultUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();</div><div class="line">        Thread.setDefaultUncaughtExceptionHandler(this);</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void uncaughtException(Thread thread, Throwable ex) &#123;</div><div class="line">        try &#123;</div><div class="line">            // 导出信息到sd卡上</div><div class="line">            dumpExceptionToSDCard(ex);</div><div class="line"></div><div class="line">            // 对本地的信息进行上传服务器处理</div><div class="line">            uploadExceptionToServer();</div><div class="line"></div><div class="line">        &#125; catch (IOException e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125; finally &#123;</div><div class="line">            // 也把异常打印到控制台 防止系统没有默认异常处理器导致的没有崩溃信息</div><div class="line">            ex.printStackTrace();</div><div class="line"></div><div class="line">            // 如果系统有默认的异常处理器那么就给系统处理  否则自己关闭掉</div><div class="line">            // 如果不交给系统 或者 自己手动杀掉, 那么应用就会进入假死, 点击会出现ANR</div><div class="line">            if (mDefaultUncaughtExceptionHandler != null) &#123;</div><div class="line">                ex.printStackTrace();</div><div class="line">                mDefaultUncaughtExceptionHandler.uncaughtException(thread, ex);</div><div class="line">            &#125; else &#123;</div><div class="line">                Process.killProcess(Process.myPid());</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 上传发生未捕获的错误日志</div><div class="line">     */</div><div class="line">    private void uploadExceptionToServer() &#123;</div><div class="line">        // TODO: 16/8/25   看具体需求, 也可以在每次启动app后检测本地是否有异常日志</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 开始异常信息进行本地存储处理</div><div class="line">     *</div><div class="line">     * @param ex 程序发生的异常对象</div><div class="line">     * @throws IOException 写入文件发生异常</div><div class="line">     */</div><div class="line">    private void dumpExceptionToSDCard(Throwable ex) throws IOException &#123;</div><div class="line">        // 首先判断sd卡是否被挂起</div><div class="line">        if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) &#123;</div><div class="line">            Log.w(TAG, &quot;sd卡不可用, 跳过 dump Exception&quot;);</div><div class="line">            return;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        File dir = new File(PATH);</div><div class="line">        if (!dir.exists()) &#123;</div><div class="line">            dir.mkdirs();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        // 获取日志记录时间</div><div class="line">        long currentTimeMillis = System.currentTimeMillis();</div><div class="line">        String formatTimeStr = new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm:ss&quot;).format(new Date(currentTimeMillis));</div><div class="line"></div><div class="line">        // 创建存储异常的文件</div><div class="line">        File file = new File(PATH + FILE_NAME + formatTimeStr + FILE_NAME_SUFFIX);</div><div class="line"></div><div class="line"></div><div class="line">        try &#123;</div><div class="line">            // 创建写入流, 开始哗哗写东西</div><div class="line">            PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));</div><div class="line">            pw.println(formatTimeStr);</div><div class="line">            dumpPhoneInfo(pw);</div><div class="line">            pw.println();</div><div class="line">            pw.println(&quot;**********************异常信息**************************&quot;);</div><div class="line">            ex.printStackTrace(pw);</div><div class="line">            pw.close();</div><div class="line"></div><div class="line"></div><div class="line">        &#125; catch (PackageManager.NameNotFoundException e) &#123;</div><div class="line">            Log.e(TAG, &quot;存储未捕获异常失败了.&quot;);</div><div class="line">        &#125;</div><div class="line"></div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 读取当前设备信息  并追加到异常日志中</div><div class="line">     */</div><div class="line">    private void dumpPhoneInfo(PrintWriter pw) throws PackageManager.NameNotFoundException &#123;</div><div class="line">        // 获得应用包管理者 并获取存储当前应用的信息对象</div><div class="line">        PackageManager pm = mContext.getPackageManager();</div><div class="line">        PackageInfo pi = pm.getPackageInfo(mContext.getPackageName(), PackageManager.GET_ACTIVITIES);</div><div class="line"></div><div class="line">        pw.println(&quot;**********************设备信息**************************&quot;);</div><div class="line">        // 开始写入 应用信息</div><div class="line">        pw.println(&quot;App Version &quot;);</div><div class="line">        pw.print(&quot;    VersionName: &quot;);</div><div class="line">        pw.println(pi.versionName);</div><div class="line">        pw.print(&quot;    VersionCode: &quot;);</div><div class="line">        pw.println(pi.versionCode);</div><div class="line"></div><div class="line">        // 开始写入 Android版本信息</div><div class="line">        pw.println(&quot;OS Version &quot;);</div><div class="line">        pw.println(&quot;    SDK_NAME: &quot; + Build.VERSION.RELEASE);</div><div class="line">        pw.println(&quot;    SDK_INT: &quot; + Build.VERSION.SDK_INT);</div><div class="line"></div><div class="line"></div><div class="line">        // 开始写入 手机制造商</div><div class="line">        pw.println(&quot;Vendor &quot;);</div><div class="line">        pw.println(&quot;    &quot; + Build.MANUFACTURER);</div><div class="line"></div><div class="line"></div><div class="line">        // 开始写入 手机型号</div><div class="line">        pw.println(&quot;Model &quot;);</div><div class="line">        pw.println(&quot;    &quot; + Build.MODEL);</div><div class="line"></div><div class="line"></div><div class="line">        // 开始写入 CPU架构</div><div class="line">        pw.println(&quot;CPU ABI &quot;);</div><div class="line">        String[] supportedAbis = SUPPORTED_ABIS;</div><div class="line">        for (int i = 0; i &lt; supportedAbis.length; i++) &#123;</div><div class="line">            pw.println(&quot;    &quot; + supportedAbis[i]);</div><div class="line">        &#125;</div><div class="line">        pw.println(&quot;*************************end***************************&quot;);</div><div class="line"></div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>核心方法就是复写了这个类的<code>uncaughtException()</code>方法. 别忘了在<code>Application</code>中进行这个类的<code>init()</code>方法调用. 这样才会把自定义的捕捉未捕获的异常这个类注册到系统.</p>
+<p>看一下模拟机和真机的两个log日志</p>
+<p><img src="http://szysky.com/2016/08/25/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-13-%E7%BB%BC%E5%90%88%E6%8A%80%E6%9C%AF/uncaughtException_1.png" alt="img"><br><img src="http://szysky.com/2016/08/25/%E3%80%8AAndroid-%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B-13-%E7%BB%BC%E5%90%88%E6%8A%80%E6%9C%AF/uncaughtException_2.png" alt="img"></p>
+<h2 id="multidex解决方法数越界"><a href="#multidex解决方法数越界" class="headerlink" title="multidex解决方法数越界"></a>multidex解决方法数越界</h2><p>Android中单个<strong>dex</strong>文件所能包含的最大方法数为65536, 这包含了FrameWork, 依赖的jar包以及应用本身的代码中的所有方法. 会爆出:</p>
+<p><code>com.android.dex.DexIndexOverflowException: method ID not in[0, 0xffff] :65536</code></p>
+<p>可能在一些低版本的手机, 即使没有超过方法数的上限却还是出现错误</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">E/dalvikvm: Optimization failed</div><div class="line">E/installd: dexopt failed on &apos;/data/dalvik-cache/.....&apos;</div></pre></td></tr></table></figure>
+<p>这个现象, 首先<code>dexpot</code>是一个程序, 应用在安装时, 系统会通过<code>dexopt</code>来优化dex文件, 在优化过程中dexopt采用一个固定大小的缓冲区来存储应用中所有方法消息, 这个缓冲区就是<code>linearAlloc</code>. <code>LinearAlloc</code>缓冲区在新版本的Android系统中大小为8MB或者16MB. 在Android 2.2和2.3中却只有5MB. 这是如果方法过多, 即使方法数没有超过<code>65535</code>也有可能会因为存储空间失败而无法安装.</p>
+<p><strong>解决方案</strong></p>
+<ul>
+<li><strong>插件化</strong>: 是一套重量级的技术方案, 通过将一个<code>dex</code>拆分成两个或者多个<code>dex</code>,可以在一定程度上解决方法数的越界问题. 但是还有兼容性问题需要考虑, 所以需要权衡是否需要使用这个方案.</li>
+<li><strong>multidex</strong>: 这是Google在2014年提出的解决方案</li>
+</ul>
+<p>= =. 略过</p>
+<h2 id="Android的动态加载技术"><a href="#Android的动态加载技术" class="headerlink" title="Android的动态加载技术"></a>Android的动态加载技术</h2><p>动态加载也叫插件化. 当项目越来越大的时候, 可以通过插件化来减轻应用的内存和CPU占用. 还可以实现热插播, 即可以在不发布新版本的情况下更新某些模块.</p>
+<p>插件化基本都要面临解决的基本问题:</p>
+<ol>
+<li>资源访问</li>
+<li>Activity声明周期的管理</li>
+<li>ClassLoader的管理</li>
+</ol>
+<p>说明<strong>宿主</strong>和<strong>插件</strong>的概念, 宿主是指普通的apk, 而插件一般指经过处理的dex或者apk. 在主流的插件化框架中多采用经过处理的apk来作为插件, 处理方式往往和编译以及打包环节有关, 另外很多插件化框架都需要用到代理Activity的概念, 插件Activity的启动大多数是借助一个代理Activity来实现.</p>
+<p>= =. 略过</p>
+<h2 id="反编译"><a href="#反编译" class="headerlink" title="反编译"></a>反编译</h2><p>= =. 略过</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/09/06/android/books/《Android开发艺术探索》Chap13_综合技术/" data-id="cj78uk37q0005kbpjq8iaynyy" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/09/06/android/books/《Android开发艺术探索》Chap13_综合技术/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
     <article id="post-android/books/《Android开发艺术探索》Chap12_Bitmap的加载和Cache" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
@@ -2350,723 +2952,6 @@
 
 
 
-    <article id="post-android/books/《Android开发艺术探索》Chap4_View工作原理" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2017/09/05/android/books/《Android开发艺术探索》Chap4_View工作原理/">《Android开发艺术探索》Chap4_View工作原理</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2017/09/05/android/books/《Android开发艺术探索》Chap4_View工作原理/">
-            <time datetime="2017-09-05T02:14:01.000Z" itemprop="datePublished">2017-09-05</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a>
-    </div>
-
-                        
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/android/">android</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <blockquote>
-<p>拨开炫酷的外表, 看看衣服里面的View是怎样工作的<br>注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a></p>
-</blockquote>
-<p><a href="https://github.com/suzeyu1992/Notes_AndroidDevSeek" target="_blank" rel="external">blog相关代码</a></p>
-<h2 id="ViewRoot和DecorView"><a href="#ViewRoot和DecorView" class="headerlink" title="ViewRoot和DecorView"></a>ViewRoot和DecorView</h2><p>这是在View三大流程之前(<code>measure</code>, <code>layout</code>, <code>draw</code>),需要了解的概念.</p>
-<p><code>ViewRoot</code>对应于<code>ViewRootImpl</code>, 它是连接<code>WindowManager</code>和<code>DecorView</code>的纽带. View的三大流程都是通过<code>ViewRoot</code>来完成的. 当一个<code>Activity</code>对象在<code>ActivityThread</code>被创建后. 会将<code>DecorView</code>添加到<code>Window</code>中, 同时会创建<code>ViewRootImp</code>对象, 并将<code>ViewRootImpl</code>对象和<code>DecorView</code>建立关联.</p>
-<p>View绘制流程是从ViewRoot的<code>PerformTraversals()</code>开始的. 经过三大流程才能将一个View绘制出来.</p>
-<p><code>PerformTraversals()</code>会依次调用<code>performMeasure</code>, <code>performLayout</code>, <code>performDraw</code>. 而前两种内部的调用基本一致,都是先调用<code>measure()/layout()</code>,然后再调用<code>onMeasure()/onLayout()</code>在这个方法中会对所有子元素进行测量和绘制.依次向内部传递. <code>performDraw()</code>有点不同是在<code>draw</code>调用的<code>dispatchDraw()</code>.</p>
-<ul>
-<li><strong>measure过程</strong>: 决定了View宽高, measure后可以通过<code>getMeasureWidth和getMeasureHeight</code>来获取View的宽高. 一般情况下是最终宽高.</li>
-<li><strong>layout过程</strong>: 决定了View的顶点坐标和实际View的宽高. 完成后通过<code>getTop, getBottom, getLeft, getRight</code>获得四个顶点, 通过<code>getWidth,和getHeight</code>获得宽高</li>
-<li><strong>draw过程</strong>: 只有draw()方法完成之后View的内容才会显示出来.</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">setContentView(R.layout.activity_inside_intercept);</div><div class="line">((ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content)).getChildAt(0);</div></pre></td></tr></table></figure>
-<p>上面第一行可以说无时无刻不存在. 而下面这行在上一章说过就是获得我们设置的布局.那<code>DecorView</code>布局究竟是怎么样的, 下图.</p>
-<p><img src="http://szysky.com/2016/08/10/%E3%80%8AAndroid%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B04-View%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/decorView.png" alt="img"></p>
-<p><code>DecorView</code>就是一个FrameLayout. 而一般情况下它的布局就如上面图那样(具体和主题有关系). 而我们经常<code>setContentView(xxx)</code>. 就是把我们编写的xml的布局添加到了<code>DecorView</code>的<code>android.R.id.content</code>的控件布局中. 所以也就能说通为什么<code>getChildAt(0)</code>会获得我们的的布局.<br>并且为什么我们用的关联布局的方法是setContent…</p>
-<h2 id="MeasureSpec"><a href="#MeasureSpec" class="headerlink" title="MeasureSpec"></a>MeasureSpec</h2><blockquote>
-<p>很大程度上决定一个View的尺寸规格, 之所以不是绝对, 是因为这个过程还受父容器的影响.</p>
-</blockquote>
-<h3 id="理解MeasureSpec"><a href="#理解MeasureSpec" class="headerlink" title="理解MeasureSpec"></a>理解MeasureSpec</h3><p><code>MeasureSpec</code>本身是一个32位的int值, 但是却表示了两种信息.</p>
-<ul>
-<li>高2位: 代表了SpecMode, 测量模式</li>
-<li>低30位: 代表了SpecSize, 在上述测量模式中的大小</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">public static class MeasureSpec &#123;</div><div class="line">    private static final int MODE_SHIFT = 30;</div><div class="line">    private static final int MODE_MASK  = 0x3 &lt;&lt; MODE_SHIFT;</div><div class="line">    public static final int UNSPECIFIED = 0 &lt;&lt; MODE_SHIFT;</div><div class="line">    public static final int EXACTLY     = 1 &lt;&lt; MODE_SHIFT;</div><div class="line">    public static final int AT_MOST     = 2 &lt;&lt; MODE_SHIFT;</div><div class="line">    </div><div class="line">    public static int makeMeasureSpec(int size, int mode) &#123;</div><div class="line">      if (sUseBrokenMakeMeasureSpec) &#123;</div><div class="line">          return size + mode;</div><div class="line">      &#125; else &#123;</div><div class="line">          return (size &amp; ~MODE_MASK) | (mode &amp; MODE_MASK);</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    public static int makeSafeMeasureSpec(int size, int mode) &#123;</div><div class="line">      if (sUseZeroUnspecifiedMeasureSpec &amp;&amp; mode == UNSPECIFIED) &#123;</div><div class="line">          return 0;</div><div class="line">      &#125;</div><div class="line">      return makeMeasureSpec(size, mode);</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    public static int getMode(int measureSpec) &#123;</div><div class="line">      return (measureSpec &amp; MODE_MASK);</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">         </div><div class="line">    public static int getSize(int measureSpec) &#123;</div><div class="line">      return (measureSpec &amp; ~MODE_MASK);</div><div class="line">   &#125;</div><div class="line">   .....</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>是不是挺有意思. 三种类型分别高二位01, 00, 10来代表. 直接利用位运算. 来实现可以让频繁计算的东西使用最接近计算机的运算方式. 不需要额外的转换. 也避免了过多的对象内存分配.</p>
-<p><strong>说一下SpecMode的三种模式</strong></p>
-<ul>
-<li><strong>UNSPECIFIED</strong>: 父容器不对View有任何的限制,要多大就给多大, 这种情况一般用于系统内部,表示一中测量状态</li>
-<li><strong>EXACTLY</strong>: 父容器已经检测出View所需要的精确大小, 这个时候View的最终大小就是<strong>SpecSize</strong>所指定的值. 对应着LayoutParams中的<code>match_parent</code>和具体的数值.</li>
-<li><strong>AT_MOST</strong>: 父容器制定了一个可用的大小及<strong>SpecSize</strong>, View的大小不能超过这个值, 它对应与LayoutParams中的<code>wrap_content</code></li>
-</ul>
-<h3 id="MeasureSpec和LayoutParams关系"><a href="#MeasureSpec和LayoutParams关系" class="headerlink" title="MeasureSpec和LayoutParams关系"></a>MeasureSpec和LayoutParams关系</h3><p>通常设置的<code>LayoutParams</code>,系统会在父容器的的约束下转换成对应的<code>MeasureSpec</code>,然后根据这个<code>MeasureSpec</code>来确定View测量后的宽高. 所以View自身的<code>MeasureSpec</code>是需要<code>LayoutParams</code>和父容器一起组合生成的.</p>
-<p>上面讲述的是普通View, 但是顶级View(DecorView)有所不同. DecorView是物理窗口尺寸和自身的<code>LayoutParams</code>决定的. 具体在<code>ViewRootImpl类measureHierarchy()</code>进行生成的.</p>
-<p>MeasureSpec一旦确定, onMeasure中就可以测量View的宽高.</p>
-<p><strong>对于我们日常操作的View</strong></p>
-<p>View的<code>measure</code>过程是由ViewGroup传递而来的. 看<code>ViewGroup#measureChildWithMargins()</code>方法</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">protected void measureChildWithMargins(View child,</div><div class="line">          int parentWidthMeasureSpec, int widthUsed,</div><div class="line">          int parentHeightMeasureSpec, int heightUsed) &#123;</div><div class="line">      </div><div class="line">      final MarginLayoutParams lp = (MarginLayoutParams) child.getLayoutParams();</div><div class="line">      </div><div class="line">      final int childWidthMeasureSpec = getChildMeasureSpec(parentWidthMeasureSpec,</div><div class="line">              mPaddingLeft + mPaddingRight + lp.leftMargin + lp.rightMargin</div><div class="line">                      + widthUsed, lp.width);</div><div class="line">      final int childHeightMeasureSpec = getChildMeasureSpec(parentHeightMeasureSpec,</div><div class="line">              mPaddingTop + mPaddingBottom + lp.topMargin + lp.bottomMargin</div><div class="line">                      + heightUsed, lp.height);</div><div class="line"></div><div class="line">      child.measure(childWidthMeasureSpec, childHeightMeasureSpec);</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
-<p>上面会对子元素进行<code>measure</code>, 而在此之前,会通过<code>getChildMeasureSpec()</code>来得到子元素的<code>MeasureSpec</code>. 通过调用方法传入的参数看到. 生成View的<code>MeasureSpec</code>和父容器的<code>MeasureSpec</code>, View自身方向的<code>padding``margin</code>, 和自身的LayoutParams这三个因素相关联.</p>
-<p>而其中的<code>getChildmeasureSpec()</code>方法: 就是根据父容器的<code>MeasureSpec</code>同时结合View自身的LayoutParams来确定子元素的<code>MeasureSpec</code>.这个方法总结如下:</p>
-<ul>
-<li><strong>dp/px</strong>: 不管父容器的<code>MeasureSpec</code>是什么. View都是<code>EXACTLY</code>(精确模式), 而大小遵循自身<code>LayoutParams</code>的大小.</li>
-<li><strong>match_parent</strong>: 如果父容器是<code>EXACTLY</code>(精确模式),那么子View也是<code>EXACTLY</code>(精确模式)并且大小是父容器的剩余空间. 如果父容器是<code>AT_MOST</code>(最大模式),那么子View也是<code>AT_MOST</code>(最大模式)并且大小不会超过父容器的剩余空间.</li>
-<li><strong>wrap_content</strong>: 不管父容器是什么. View都是<code>AT_MOST</code>(最大模式), 并且大小不能超过父容器剩余空间.</li>
-</ul>
-<p>上述没有说明<code>UNSPECIFIED</code>在<code>match_parent</code>和<code>wrap_content</code>中. 因为这个模式主要用于系统多次Measure的情形,一般来说不需要关注.</p>
-<h2 id="View的工作流程"><a href="#View的工作流程" class="headerlink" title="View的工作流程"></a>View的工作流程</h2><blockquote>
-<p>主要指measure, layout, draw三大流程. 即测量,布局,绘制.</p>
-</blockquote>
-<h3 id="measure过程"><a href="#measure过程" class="headerlink" title="measure过程"></a>measure过程</h3><p>这里面存在两种场景:</p>
-<ul>
-<li>View: 通过了<code>measure</code>方法就完成了测量过程</li>
-<li>ViewGroup: 除了测量自己,还会遍历去调用所有子元素的<code>measure</code>方法. 各个子元素在递归去执行这个流程</li>
-</ul>
-<p><strong>View的measure过程</strong></p>
-<p>View的<strong>measure</strong>过程由其<code>measure()</code>方法来完成, <code>measure()</code>方法是一个final类型, 而在内部调用了<code>onMeasure()</code>这个可不是final, 所以也可以自定义的时候复写. 看一下内部.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) &#123;</div><div class="line">   setMeasuredDimension(getDefaultSize(getSuggestedMinimumWidth(), widthMeasureSpec),</div><div class="line">           getDefaultSize(getSuggestedMinimumHeight(), heightMeasureSpec));</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p><code>setMeasureDimension()</code>会设置View宽高的测量值.</p>
-<p>这里需要看一下<code>getDefaultSize()</code>这个方法.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">public static int getDefaultSize(int size, int measureSpec) &#123;</div><div class="line">   int result = size;</div><div class="line">   int specMode = MeasureSpec.getMode(measureSpec);</div><div class="line">   int specSize = MeasureSpec.getSize(measureSpec);</div><div class="line"></div><div class="line">   switch (specMode) &#123;</div><div class="line">   case MeasureSpec.UNSPECIFIED:</div><div class="line">       result = size;</div><div class="line">       break;</div><div class="line">   case MeasureSpec.AT_MOST:</div><div class="line">   case MeasureSpec.EXACTLY:</div><div class="line">       result = specSize;</div><div class="line">       break;</div><div class="line">   &#125;</div><div class="line">   return result;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>看到如果这个view是<code>EXACTLY</code>(精准模式), 那么返回的大小就是SpecSize. <code>UNSPECIFIED</code>一般用于系统测量先不说. 而<code>AT_MOST</code>(最大模式)的时候. 虽然是不同模式但是默认情况下和精确模式是一样的结果.</p>
-<p><code>getSuggestedMinimumWidth()</code>和<code>getSuggestedMinimumHeight()</code>. 看一下实现.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">protected int getSuggestedMinimumWidth() &#123;</div><div class="line">    return (mBackground == null) ? mMinWidth : max(mMinWidth, mBackground.getMinimumWidth());</div><div class="line">&#125;</div><div class="line">protected int getSuggestedMinimumHeight() &#123;</div><div class="line">    return (mBackground == null) ? mMinHeight : max(mMinHeight, mBackground.getMinimumHeight());</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>首先会看是否设置了背景.</p>
-<ul>
-<li><strong>无背景:</strong> 那么宽度为<code>mMinWidth</code>,这个值对应布局中的<code>android:minWidth</code>属性,默认为0.</li>
-<li><strong>有背景:</strong> 那么取<code>mMinWidth</code>和<code>mBackground.getMinimumHeight()</code>最大值.</li>
-</ul>
-<p>而<code>getMinimumHeight()</code>根据看一下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">public int getMinimumHeight() &#123;</div><div class="line">   final int intrinsicHeight = getIntrinsicHeight();</div><div class="line">   return intrinsicHeight &gt; 0 ? intrinsicHeight : 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>原来<code>getMinimumHeight()</code>返回的就是<code>Drawable</code>的原始高度. 如果没有就返回0. 关于<strong>原始高度</strong>举个例子<code>ShapeDrawable</code>无原始宽高, <code>BitmapDrawble</code>有原始宽高就是图片的尺寸.</p>
-<p><strong>整理getDefaultSize()</strong>: 直接继承View的自定义控件需要重写<code>onMeasure()</code>方法并设置<code>wrap_content</code>时的自身大小,否则在布局中使用<code>wrap_content</code>虽然View自身的<code>MeasureSpec</code>的低30位保存了父容器计算自身的剩余大小. 但是在<strong>自定义的时候如果不进行处理wrap_content,那么就会调用默认setMeasureDimension()方法. 而默认中方法的实参传递的是getDefaultSize()这个方法中对AT_MOST这种模式没有处理. 直接沿用和精确模式的大小(相当于设置了wrap_content却得到了match_parent的显示结果)</strong></p>
-<p>可以针对这个问题, 做出对应的编码进行解决:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) &#123;</div><div class="line">       super.onMeasure(widthMeasureSpec, heightMeasureSpec);</div><div class="line"></div><div class="line">       int widthSpaceSize = MeasureSpec.getSize(widthMeasureSpec);</div><div class="line">       int widthSpaceMode = MeasureSpec.getMode(widthMeasureSpec);</div><div class="line">       int heightSpaceSize = MeasureSpec.getSize(heightMeasureSpec);</div><div class="line">       int heightSpaceMode = MeasureSpec.getMode(heightMeasureSpec);</div><div class="line">       </div><div class="line">       //设置两个默认值宽高</div><div class="line">       int defaultHeight = 100;</div><div class="line">       int defaultWidth = 100;</div><div class="line">       </div><div class="line">       </div><div class="line">       // 针对AT_MOST模式进行特殊处理</div><div class="line">       if (widthSpaceMode == MeasureSpec.AT_MOST </div><div class="line">               &amp;&amp; heightSpaceMode == MeasureSpec.AT_MOST)&#123;</div><div class="line">           </div><div class="line">           setMeasuredDimension(defaultWidth, defaultHeight);</div><div class="line">           </div><div class="line">       &#125;else if (widthSpaceMode == MeasureSpec.AT_MOST)&#123;</div><div class="line">           </div><div class="line">           setMeasuredDimension(defaultWidth, heightSpaceSize);</div><div class="line">           </div><div class="line">       &#125;else if (heightSpaceMode == MeasureSpec.AT_MOST)&#123;</div><div class="line">           </div><div class="line">           setMeasuredDimension(widthMeasureSpec, defaultHeight);</div><div class="line">           </div><div class="line">       &#125;</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
-<p><strong>ViewGroup的Measure</strong></p>
-<blockquote>
-<p>对于<code>ViewGroup</code>不光会测量自己,还会遍历调用所有的子元素的<code>measure()</code>. 和<code>View</code>不同的是<code>ViewGroup</code>是一个抽象类,它没有重写<code>onMeasure</code>,但提供了<code>measureChildren()</code>的方法.</p>
-</blockquote>
-<p>这个<code>measureChildren()</code>方法内部比较简单就是遍历自己的孩子然后调用-&gt;<code>measureChild()</code></p>
-<p>这个<code>measureChild()</code>这个方法前面贴过源码. 就是取出子元素的<code>LayoutParams</code>,并调用-&gt;<code>getChildMeasureSpec()</code>. 通过传入<strong>子元素的LayoutParams里面的宽高属性, 子元素的padding和margin, 父元素当前(当前ViewGroup)的MeasureSpec属性</strong>来计算出子元素的<code>MeasureSpec</code>最后调用-&gt;<code>child.measure()</code>传入之前计算的测量规格.</p>
-<p><strong>ViewGroup为什么没有定义测量的具体过程?</strong> 因为具体的测量过程需要交给子类去实现的. 比如<code>LinearLayout</code>,<code>RelativeLayout</code>.</p>
-<p>看一下<code>LinearLayout</code>的<code>onMeasure()</code>是如何定义的.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) &#123;</div><div class="line">   if (mOrientation == VERTICAL) &#123;</div><div class="line">       measureVertical(widthMeasureSpec, heightMeasureSpec);</div><div class="line">   &#125; else &#123;</div><div class="line">       measureHorizontal(widthMeasureSpec, heightMeasureSpec);</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>根据设置的排列方式这里分之了两种测量方法. 稍微看一下大概轮廓,选择<code>measureVertical()</code>不贴源码了这个方法300行呢!</p>
-<p>首先这个方法会遍历每个子元素并执行-&gt;<code>measureChildBeforeLayout()</code>方法.这个方法内部会调用子元素的<code>measure()</code>, 这样子元素会依次测量. 并且会通过<code>mTotalLenght</code>这个变量来存储LinearLayout在竖直方向上的初步高度, 每测量一个就会增加. 当子元素测量完之后,LinearLayout会测量自己的大小.</p>
-<hr>
-<p>在对自己进行测量的时候. 如果布局中的高度采用的是<code>match_parent</code>或者<code>具体数值</code>, 那么它的测量过程和View一样,即高度为<code>specSize</code>. 如果布局中采用<code>wrap_content</code>那么高度就是所有的子元素总和但是不能超过父元素剩余空间, 还有竖直方向LinearLayout的<code>padding</code>. 具体可参考<code>resolveSizeAndState()</code>的实现.</p>
-<p>到这里基本上<code>measure</code>测量过程已经做了比较详细的分析. 这个过程也是三大过程中最复杂的一个. 在<code>measure</code>完成之后就可以通过<code>getMeasuredWidth/Height</code>方法获取View的测量宽高. <strong>但是请注意</strong>:某些极端情况下,measure可能执行多次. 所以尽量在<code>onLayout()</code>方法中去获得最终宽高.</p>
-<h3 id="正确获取宽高方法"><a href="#正确获取宽高方法" class="headerlink" title="正确获取宽高方法"></a>正确获取宽高方法</h3><p><strong>首先明确一点:View的measure和Activity的生命周期方法不是同步执行.所以无法保证在某个生命周期(onCreate,onStart)获取到正确的测量宽高</strong></p>
-<ul>
-<li>onWindowFocusChanged()</li>
-<li>view.post(runnable)</li>
-<li>ViewTreeObserve</li>
-<li>view.measure()</li>
-</ul>
-<ol>
-<li><code>onWindowFocusChanged()</code>:View已经初始化完毕,宽高已经准备好. 这里需要注意只要Activity的焦点发生变化此方法就会被调用.所以如果你的界面会频繁的进行<code>onPause</code>和<code>onResume</code>.并且里面有很多关联依赖的方法. 那就请注意这不是一个好办法.</li>
-<li>通过<code>post</code>可以将一个runnable投递到消息队列的尾部,然后等待<code>Looper</code>调用此runnable的时候.View已经初始化完毕.</li>
-<li>使用<code>ViewTreeObserver</code>. 当View的可见性发生了改变的时候.<code>onGlobalLayout()</code>将发生回调.注意伴随着View树的状态改变等,这个回调方法可能会被调用多次. 使用代码如下</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">ViewTreeObserver viewTreeObserver = tv_main.getViewTreeObserver();</div><div class="line">       viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() &#123;</div><div class="line">           @Override</div><div class="line">           public void onGlobalLayout() &#123;</div><div class="line">               tv_main.getViewTreeObserver().removeOnGlobalLayoutListener(this);</div><div class="line">               tv_main.getMeasuredHeight();</div><div class="line">               tv_main.getMeasuredWidth();</div><div class="line">           &#125;</div><div class="line">       &#125;);</div></pre></td></tr></table></figure>
-<ol>
-<li>view.measure(widthMeasureSpec, heightMeasureSpec)</li>
-</ol>
-<p>也可以手动进行测量,但是需要分情况处理.</p>
-<p><strong>match_parent</strong></p>
-<p>当View是此属性的时候无法使用<code>measure()</code>,首先使用这种方法需要的参数,是通过父容器和子元素组合来生成的子元素的<code>MeasureSpec</code>属性. 所以在外部我们不知道父元素的参数值得时候只能处理<strong>不需要父元素数据就可以生成子元素的MeasureSpec的模式</strong></p>
-<p>所以很清楚, 这个<code>match_patch</code>这个模式,在给其子元素构造<code>MeasureSpec</code>的时候需要得值<code>parentSize</code>,所以得到的也是无效.</p>
-<p><strong>具体数值px/dx</strong></p>
-<p>假设这里是100px, 首先构成宽高对应的<code>MeasureSpec</code>属性</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">int widthSpec = View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY);</div><div class="line">int heightSpec = View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY);</div><div class="line">       tv_main.measure(widthSpec, heightSpec);</div></pre></td></tr></table></figure>
-<p><strong>wrap_content</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">int widthSpec = View.MeasureSpec.makeMeasureSpec(((1 &lt;&lt; 30)-1), View.MeasureSpec.AT_MOST);</div><div class="line">int heightSpec = View.MeasureSpec.makeMeasureSpec(((1 &lt;&lt; 30)-1), View.MeasureSpec.AT_MOST);</div><div class="line">    tv_main.measure(widthSpec, heightSpec);</div></pre></td></tr></table></figure>
-<p>通过(1&lt;&lt;30)-1 可以构成一个<code>MeasureSpec</code>低30位的最大值. 用理论上View能支持的最大值去构造</p>
-<p><strong>关于网上一些在make的使用传入UNSPECIFIED,属于违背了内部实现的规范.不用最好</strong></p>
-<p><strong>关于网上另一种measure()直接传入LayoutParams.WRAP_CONTENT. 其实也只有当子元素为wrap_content和子元素为match_parent并且父元素是wrap_conetnt时会碰巧有效.</strong></p>
-<h3 id="layout过程"><a href="#layout过程" class="headerlink" title="layout过程"></a>layout过程</h3><p>在<code>ViewGroup</code>中会先通过<code>layout()</code>方法确定本身的位置. 然后调用<code>onLayout()</code>方法遍历所有的子元素,并调用子元素的<code>layout()</code>方法确定子元素的位置…依次循环.</p>
-<p>提出<code>View</code>的<code>layout</code>方法, 这里抽取部分代码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">public void layout(int l, int t, int r, int b) &#123;</div><div class="line">       int oldL = mLeft;</div><div class="line">       int oldT = mTop;</div><div class="line">       int oldB = mBottom;</div><div class="line">       int oldR = mRight;</div><div class="line"></div><div class="line">       boolean changed = isLayoutModeOptical(mParent) ?</div><div class="line">               setOpticalFrame(l, t, r, b) : setFrame(l, t, r, b);</div><div class="line"></div><div class="line">       if (changed || (mPrivateFlags &amp; PFLAG_LAYOUT_REQUIRED) == PFLAG_LAYOUT_REQUIRED) </div><div class="line">       &#123; onLayout(changed, l, t, r, b);&#125;</div><div class="line"></div><div class="line">   &#125;</div></pre></td></tr></table></figure>
-<p>这样来看,大致流程通过<code>setFrame()</code>方法来设定View的四个顶点的位置, 即<strong>mLeft,mTop,mBottom,mRight</strong>,这四个顶点一旦确定.当前View的位置也就确定. 然后会调用<code>onLayout()</code>方法. 这个方法是确定子元素的View位置.</p>
-<p>这里的和<code>onMeasure()</code>类似, <code>onLayout()</code>具体实现和具体的布局有关, 所以View和ViewGroup均没有真正实现<code>onLayout()</code>方法.</p>
-<p>看一下<code>LinearLayout</code>的<code>onLayout()</code>源码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">protected void onLayout(boolean changed, int l, int t, int r, int b) &#123;</div><div class="line">   if (mOrientation == VERTICAL) &#123;</div><div class="line">       layoutVertical(l, t, r, b);</div><div class="line">   &#125; else &#123;</div><div class="line">       layoutHorizontal(l, t, r, b);</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>和<code>onMeasure()</code>一样分支,接下来跟进<code>layoutVertical()</code>贴出主要代码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">void layoutVertical(int left, int top, int right, int bottom) &#123;</div><div class="line">           //省略一部分...</div><div class="line">       for (int i = 0; i &lt; count; i++) &#123;</div><div class="line">           final View child = getVirtualChildAt(i);</div><div class="line">           if (child == null) &#123;</div><div class="line">               childTop += measureNullChild(i);</div><div class="line">           &#125; else if (child.getVisibility() != GONE) &#123;</div><div class="line">               final int childWidth = child.getMeasuredWidth();</div><div class="line">               final int childHeight = child.getMeasuredHeight();</div><div class="line">               </div><div class="line">               final LinearLayout.LayoutParams lp =</div><div class="line">                       (LinearLayout.LayoutParams) child.getLayoutParams();</div><div class="line">               </div><div class="line">               int gravity = lp.gravity;</div><div class="line">               if (gravity &lt; 0) &#123;</div><div class="line">                   gravity = minorGravity;</div><div class="line">               &#125;</div><div class="line">                //省略一部分...</div><div class="line"></div><div class="line">               if (hasDividerBeforeChildAt(i)) &#123;</div><div class="line">                   childTop += mDividerHeight;</div><div class="line">               &#125;</div><div class="line"></div><div class="line">               childTop += lp.topMargin;</div><div class="line">               setChildFrame(child, childLeft, childTop + getLocationOffset(child),</div><div class="line">                       childWidth, childHeight);</div><div class="line">               childTop += childHeight + lp.bottomMargin + getNextLocationOffset(child);</div><div class="line"></div><div class="line">               i += getChildrenSkipCount(child, i);</div><div class="line">           &#125;</div><div class="line">       &#125;</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
-<p>上面代码大体逻辑: 首先遍历所有孩子并调用<code>setChildFrame()</code>来为子元素指定对应的位置. 其中<code>childTop</code>会逐渐增大, 这就意味着后面的子元素会被放置在靠下的位置. 而<code>setChildFrame()</code>内部仅有一行代码, 就是调用子元素的<code>layout()</code>并传入它自身应该存放的位置.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">private void setChildFrame(View child, int left, int top, int width, int height) &#123;        </div><div class="line">     child.layout(left, top, left + width, top + height);</div><div class="line"> &#125;</div></pre></td></tr></table></figure>
-<p>而在<code>setChildFrame()</code>中传入的宽高就是子元素的测量宽高.</p>
-<p>而在子元素的<code>layout()</code>中通过<code>setFrame()</code>来设置元素的四个顶点.</p>
-<p><strong>getWidth()layout中的宽 和getMeasureWidth()中的宽永远一样么?</strong></p>
-<p>在一般情况下,测量measure和layout时候的值是完全一样的. 因为<code>layout()</code>中接受的参数就是通过测量的结果获取到的. 并且内部直接通过<code>setFrame()</code>赋值到自己的四个成员变量上. 但是如果对<code>layout()</code>进行了复写.如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"> @Override</div><div class="line">protected void layout(int l, int t, int r, int b) &#123;</div><div class="line">   super.layout( l,  t+200,  r,  b+200);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>如果进行了这样的复写, 那么<strong>最终宽高</strong>永远会与<strong>测量的</strong>出来的值相差200.</p>
-<h3 id="draw过程"><a href="#draw过程" class="headerlink" title="draw过程"></a>draw过程</h3><p>这个过程只是将View绘制到屏幕上面.</p>
-<ol>
-<li>绘制背景<code>background.draw(canvas)</code></li>
-<li>绘制自己<code>onDraw()</code></li>
-<li>绘制children<code>dispatchDraw()</code></li>
-<li>绘制装饰<code>onDrawScrollBars()</code></li>
-</ol>
-<p>View绘制过程传递是通过<code>dispatchDraw()</code>实现的. 传递了自己的画布. 这个方法会遍历子元素并且调用元素的<code>draw()</code></p>
-<p>View一个特有的方法<code>setWillNotDraw()</code>, 这个方法是设置了<code>true</code>那么系统会进行相应的优化. 在View中默认是关闭的. 而ViewGroup默认是开启的. 如果我们继承了自定义ViewGroup如果还需要绘制自己的内容那么需要显示的关闭此标记.</p>
-<h2 id="自定义View"><a href="#自定义View" class="headerlink" title="自定义View"></a>自定义View</h2><h3 id="自定义View的分类"><a href="#自定义View的分类" class="headerlink" title="自定义View的分类"></a>自定义View的分类</h3><p><a href="https://github.com/suzeyu1992/Notes_AndroidDevSeek" target="_blank" rel="external">相关代码</a></p>
-<p><strong>1.继承View重写onDraw方法</strong></p>
-<p>这种方法主要用于实现一些不规则的效果, 不方便组合布局实现,或者又有动态显示的一些图形. 需要自己绘制那么就重写<code>onDraw()</code>方法. <strong>这种方法需要自己支持wrap_content和padding</strong></p>
-<p><strong>2.继承ViewGroup派生特殊Layout</strong></p>
-<p>这种方式用于实现自定义布局, 这种布局的实现稍微复杂,需要合适的处理ViewGroup的测量,布局这两个过程,并同时处理子元素的测量和布局过程.</p>
-<p><strong>3.继承特定的View(TextView)</strong></p>
-<p>比较常见, 一般用于扩展已有的View的功能. 这种不需要自己处理wrap_content和padding</p>
-<p><strong>4.继承特定ViewGroup(LinearLayout)</strong></p>
-<p>当某种效果看起来像几种View的组合在一起的时候,可以采用这种方式. 这种方式不需要自己处理ViewGroup的测量和布局. 其实这种方式和2没什么区别, 主要是2更接近于底层的View实现.</p>
-<h3 id="自定义View的须知"><a href="#自定义View的须知" class="headerlink" title="自定义View的须知"></a>自定义View的须知</h3><ol>
-<li>让View支持<code>wrap_content</code></li>
-<li>最好让你的View支持<code>padding</code> -&gt; 如果直接继承View,在<code>draw()</code>中不处理padding,那么属性是无法起作用的. 还有继承ViewGroup的控件需要在<code>onMeasure</code>和<code>onLayout</code>中考虑<code>padding</code>和子元素的<code>margin</code>会造成的影响.</li>
-<li>尽量不要在View中使用<code>Handler</code> -&gt; 内部已经提供了post系列方法. 除非很明确要是用Handler发送消息.</li>
-<li>View中如果有线程或者动画,需要及时的停止.-&gt; 当包含此View的Activity退出或者此View被remove的时候,View的<code>onDetachedFromWindow()</code>会被调用,可以适当处理防止内存泄漏.</li>
-<li>View带有的滑动嵌套时,需要处理好滑动冲突.</li>
-</ol>
-<h3 id="自定义View实例"><a href="#自定义View实例" class="headerlink" title="自定义View实例"></a>自定义View实例</h3><p><strong>1.自定义View派生类</strong></p>
-<p>首先写一个类继承<code>View</code>, 并在<code>ondraw()</code>画一个圆. 并设置<code>margin</code>属性. 效果没有问题,因为<code>margin</code>属性是由父容器控制的.</p>
-<p><img src="http://szysky.com/2016/08/10/%E3%80%8AAndroid%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B04-View%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/cusview01.png" alt="img"></p>
-<p><strong>问题1:</strong>这里把<code>android:layout_width=&quot;wrap_content&quot;</code>设置根据内容. 发现无效.</p>
-<p><strong>不管是设置match_parent也好,wrap_content也好父容器都会给分配自己剩余空间的大小给子容器作为specSize的空间大小</strong>这时需要手动处理. 因为不处理那就是相当于和<code>match_parent</code>填充父容器的效果一样.</p>
-<p>所以增添<code>对onMeasure()</code>方法中的<code>AT_MOST</code>模式的制定默认大小, 然后在运行, ok,如下</p>
-<p><img src="http://szysky.com/2016/08/10/%E3%80%8AAndroid%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B04-View%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/cusview02.png" alt="img"></p>
-<p><strong>问题2:</strong>这时加上属性<code>padding=20dp</code>发现无效. 无变化. 之前说过<code>margin</code>是交给父容器分配的.<code>padding</code>确实要自己要分配处理的. 这时需要在<code>onDraw()</code>来处理. 处理后如下</p>
-<p><img src="http://szysky.com/2016/08/10/%E3%80%8AAndroid%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%E3%80%8B04-View%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/cusview03.png" alt="img"></p>
-<p><strong>问题3:</strong>有时候我们需要提供自定义属性. 例如<code>android:id=</code>这种. 接下来添加自定义属性.</p>
-<ol>
-<li>在<code>values</code>目录下创建自定义属性的xml. 名字随便当最好<code>attrs.xml</code>或者<code>attrs_xxx_xxx.xml</code>.</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</div><div class="line">&lt;resources&gt;</div><div class="line">    &lt;declare-styleable name=&quot;CircleView&quot;&gt;</div><div class="line">        &lt;attr name=&quot;circle_color&quot; format=&quot;color&quot;/&gt;</div><div class="line">    &lt;/declare-styleable&gt;</div><div class="line">&lt;/resources&gt;</div></pre></td></tr></table></figure>
-<p>上面相当于,定义了一个<code>CircleView</code>的属性集合. 在这个集合里面会有自定义属性. 这里的<code>format</code>格式可以是指定尺寸的<code>dimension</code>, 资源id引用的<code>reference</code>, 基本类型<code>string, integer ,boolean</code>等.</p>
-<ol>
-<li>声明好了属性在我们自定义View中就可以引用处理了. 如构造方法中.</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">public CircleView(Context context, AttributeSet attrs) &#123;</div><div class="line">       super(context, attrs, defStyleAttr);</div><div class="line">       //获得一个自定义的对应属性值集合</div><div class="line">       TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.CircleView);</div><div class="line">       //取出属性集合中的某个属性值</div><div class="line">       mColor = typedArray.getColor(R.styleable.CircleView_circle_color, Color.GREEN);</div><div class="line">       //释放资源</div><div class="line">       typedArray.recycle();</div><div class="line">       init();</div><div class="line"></div><div class="line">   &#125;</div></pre></td></tr></table></figure>
-<ol>
-<li>在布局中使用即可.</li>
-</ol>
-<p>先声明schemas. <code>xmlns:app=&quot;http://schemas.android.com/apk/res-auto&quot;</code> ,使用<code>app</code>来替代之前的类似<code>android</code>前缀的引导.</p>
-<p>继承View的派生类就到此为止了.</p>
-<hr>
-<p><strong>继承ViewGroup就不说了, 可以看第三章中的仓库代码的那个自定义View大致实现ViewPager的滑动</strong></p>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="http://yoursite.com/2017/09/05/android/books/《Android开发艺术探索》Chap4_View工作原理/" data-id="cj76yt8j300007apjsig3gdeg" class="article-share-link"><i class="fa fa-share"></i>Share</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-        <a href="http://yoursite.com/2017/09/05/android/books/《Android开发艺术探索》Chap4_View工作原理/#comments" class="article-comment-link">Comments</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-android/books/《Android开发艺术探索》Chap3_View的事件体系" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2017/09/05/android/books/《Android开发艺术探索》Chap3_View的事件体系/">《Android开发艺术探索》Chap3_View的事件体系</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2017/09/05/android/books/《Android开发艺术探索》Chap3_View的事件体系/">
-            <time datetime="2017-09-05T02:09:53.000Z" itemprop="datePublished">2017-09-05</time>
-        </a>
-    </div>
-
-
-                        
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a>
-    </div>
-
-                        
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/android/">android</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <blockquote>
-<p>Anroid中的事件是怎样进行的</p>
-<p> 注：本文主要参考<a href="http://szysky.com" target="_blank" rel="external">http://szysky.com</a></p>
-</blockquote>
-<p><a href="https://github.com/suzeyu1992/Notes_AndroidDevSeek" target="_blank" rel="external">blog相关代码</a></p>
-<h2 id="View的基础知识"><a href="#View的基础知识" class="headerlink" title="View的基础知识"></a>View的基础知识</h2><h3 id="View的位置参数"><a href="#View的位置参数" class="headerlink" title="View的位置参数"></a>View的位置参数</h3><p>一个<code>View</code>的位置主要由四个顶点构成, 或者可以就是两个点就可以确定. 分别为<strong>左上点</strong>,<strong>右下角</strong>每个点都对应x,y两个属性. 因为默认都是矩形, 所以两个点就可以确定.</p>
-<p>一个<code>View</code>的大小可以利用四个属性可知. 分别对应<code>getLeft()</code>,<code>getRight()</code>,<code>getTop()</code>,<code>getBottom</code>系统提供的函数.</p>
-<ul>
-<li>一个控件的宽: getRight() - getLeft()</li>
-<li>一个控件的高: getTop() - getBottom()</li>
-</ul>
-<p><strong>在Android3.0中, View增加了几个属性:x , y, translationX, translationY</strong></p>
-<ul>
-<li><code>x</code> , <code>y</code>: 表示View的左上角坐标点(最终坐标点).</li>
-<li><code>translationX</code>, <code>translationY</code>: 表示View的左上点相对于父容器的偏移量(默认是0).</li>
-</ul>
-<p>而这些参数的换算关系为:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">x = left + translationX;</div><div class="line">y = top + translationY;</div></pre></td></tr></table></figure>
-<h3 id="MotionEvent和TouchSlop"><a href="#MotionEvent和TouchSlop" class="headerlink" title="MotionEvent和TouchSlop"></a>MotionEvent和TouchSlop</h3><p><strong>MotionEvent是指手指在接触屏幕之后产生的一系列事件</strong></p>
-<p>最常见事件类型是<code>ACTION_DOWN</code>,<code>ACTION_MOVE</code>,<code>ACTION_UP</code></p>
-<p>一次事件可以有不同的<strong>持续时间</strong>, 和不同的<strong>事件类型</strong>. 例如</p>
-<ul>
-<li>按下抬起 : DOWN –&gt; UP</li>
-<li>按下移动抬起 : DOWN -&gt; MOVE -&gt; MOVE -&gt; … -&gt;UP</li>
-<li>….</li>
-</ul>
-<p>而在移动时可以根据<code>MotionEvent</code>提供的参数获对应的xy取值.</p>
-<p>*<code>getX/getY</code>: 返回相对于当前View左上角的x,y坐标.<br><code>getRawX/getRawY</code>: 返回的是针对整个屏幕的左上角的x,y坐标.</p>
-<p><strong>TouchSlop是系统可以识别的最小滑动距离单位</strong></p>
-<p>只有手指两次滑动大于这个<code>TouchSlop</code>,系统才认为是滑动.</p>
-<p><code>ViewConfiguration.get(getContent).getSealedTouchSlop()</code>可以获得这个系统值默认<strong>8dp</strong>.</p>
-<p>用途: 在自定义的时候, 可以参考系统的默认值, 来作为实际的滑动定义.</p>
-<h3 id="VelocityTracker-GestureDetector-和Scroller"><a href="#VelocityTracker-GestureDetector-和Scroller" class="headerlink" title="VelocityTracker GestureDetector 和Scroller"></a>VelocityTracker GestureDetector 和Scroller</h3><p><strong>VelocityTracker 速度追踪</strong></p>
-<blockquote>
-<p>用于追踪手指在滑动过程中的速度,包括水平和数值方向的速度</p>
-</blockquote>
-<p>使用方式: 在View的OnTouchEvent方法中:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">//获得速度追踪对象</div><div class="line">VelocityTracker velocity = VelocityTracker.obtain();</div><div class="line">velocity.addMovement(event);</div><div class="line"></div><div class="line">//计算速度 并获取计算值</div><div class="line">velocity.computeCurrentVelocity(1000); //设定一个时间间隔值</div><div class="line">float xVelocity = velocity.getXVelocity();</div><div class="line">float yVelocity = velocity.getYVelocity();</div></pre></td></tr></table></figure>
-<p>必须要先计算并设定计算速度的时间单元值,才可以获得速率.</p>
-<p>公式: <code>速度 = (终点位置 - 起点位置) / 时间间隔值</code></p>
-<p>可以看到, 计算的速度是根据我们自己添加的时间间隔值计算的. 并且速度可以为负值,如果向左滑动.</p>
-<p>当不需要的时候, 调用<code>clear()</code>重置并回收内存.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">velocity.clear();</div><div class="line">velocity.recycle();</div></pre></td></tr></table></figure>
-<p><strong>GestureDetector 手势检测</strong></p>
-<blockquote>
-<p>用于辅助检测用户的单击, 滑动, 长按, 双击等行为.</p>
-</blockquote>
-<p>使用如下</p>
-<p>创建<code>GestureDetector</code>对象并实现<code>OnGestureDetector</code>接口.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">GestureDetector mGestureDetector = new GestureDetector(this);</div><div class="line">// 解决长按屏幕后无法拖动的现象</div><div class="line">mGestureDetector.setIsLongpressEnabled(false);</div></pre></td></tr></table></figure>
-<p>然后接管目标View的<code>onTouchEvent()</code>方法. 在<code>onTouchEvent()</code>方法中</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">boolean consume = mGestureDetector.onTouchEvent(event);</div><div class="line">return consume;</div></pre></td></tr></table></figure>
-<p>然后根据需求可以选择性的实现<code>OnGestureListener</code>和<code>OnDoubleTapListener</code>接口</p>
-<p>接口的方法说明:</p>
-<table>
-<thead>
-<tr>
-<th>方法名</th>
-<th>描述</th>
-<th>所属接口</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>onDown</code></td>
-<td>按下</td>
-<td><code>OnGestureListener</code></td>
-</tr>
-<tr>
-<td><code>onShowPress</code></td>
-<td>按下 但是未松开或者拖动.强调状态</td>
-<td><code>OnGestureListener</code></td>
-</tr>
-<tr>
-<td><code>onSingleTapUp</code></td>
-<td>抬起 表示单击行为, 双击中也会触发</td>
-<td><code>OnGestureListener</code></td>
-</tr>
-<tr>
-<td><code>onScroll</code></td>
-<td>按下并拖动 拖动行为</td>
-<td><code>OnGestureListener</code></td>
-</tr>
-<tr>
-<td><code>onLongPress</code></td>
-<td>长按</td>
-<td><code>OnGestureListener</code></td>
-</tr>
-<tr>
-<td><code>onFling</code></td>
-<td>按下屏幕病快速滑动后松开</td>
-<td><code>OnGestureListener</code></td>
-</tr>
-<tr>
-<td><code>onDoubleTap</code></td>
-<td>双击,两次连续单击组成, 与onSingleTapConfirmed无法共存</td>
-<td><code>OnDoubleTapListener</code></td>
-</tr>
-<tr>
-<td><code>onSingleTapConfirmed</code></td>
-<td>严格意义上的单击 双击中的单击无法触发</td>
-<td><code>OnDoubleTapListener</code></td>
-</tr>
-<tr>
-<td><code>onDoubleTapEvent</code></td>
-<td>表示发生了行为</td>
-<td><code>OnDoubleTapListener</code></td>
-</tr>
-</tbody>
-</table>
-<p>实际开发中:根据喜好来使用. 即使不使用<code>GestureDetector</code>辅助手势检测类,一样可以实现.</p>
-<p>建议: 如果要监听双击这种行为就是用此类.</p>
-<p><strong>Scroller 弹性滑动对象</strong></p>
-<blockquote>
-<p>用于实现View的弹性滑动.</p>
-</blockquote>
-<p>在开发中, 当需要把View从一个点移动到另一个点的时候. 如果使用<code>scrollTo/scrollBy</code>进行滑动时, 都是瞬间完成. 没有过度动画, 给用户感觉很生硬. 使用<code>Scroller</code> 可以实现有过渡的滑动.Scroller本身无法让View弹性滑动, 需要和View的<code>computerScroll</code>进行配合使用.</p>
-<p>下面会说到</p>
-<h2 id="View的滑动"><a href="#View的滑动" class="headerlink" title="View的滑动"></a>View的滑动</h2><p>实现滑动的方式有三种:</p>
-<ul>
-<li>通过View本身的<code>scrollTo/scrollBy</code>方法实现滑动</li>
-<li>通过动画给View施加平移效果来实现动画</li>
-<li>通过改变View的<code>LayoutParams</code>使View重新布局实现滑动</li>
-</ul>
-<h3 id="scrollTo-scrollBy"><a href="#scrollTo-scrollBy" class="headerlink" title="scrollTo/scrollBy"></a>scrollTo/scrollBy</h3><p>首先要明确一点: <strong>这两个方法只能改变View的内容位置,而不能改变View本身在布局中的位置</strong></p>
-<p>而且方法中都是以像素值来进行移动的.</p>
-<ul>
-<li>scrollTo: 针对当前View的绝对位置进行移动.</li>
-<li>scrollBy: 根据当前View的内容值进行相对位置移动.</li>
-</ul>
-<p>看一下<code>scrollBy</code>的源码调用</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">public void scrollBy(int x, int y) &#123;</div><div class="line">   scrollTo(mScrollX + x, mScrollY + y);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>其实本质上<code>scrollBy</code>调用了<code>scrollTo</code>方法</p>
-<p>而<code>mScrollX/mScrollY</code>是什么? 这个就是当前View的内容 与这个View实际布局位置(原始位置)的差值.<br>而当前View内容这个东西就是让用户看到的效果发生改变. 但是如果这个View可以被点击. 那么能触发点击的位置是View的<strong>实际所在布局位置</strong>. 而不是View的内容显示的位置.</p>
-<h3 id="使用动画"><a href="#使用动画" class="headerlink" title="使用动画"></a>使用动画</h3><blockquote>
-<p>使用动画来对View进行移动,主要就是操作View的<strong>translationX/translationY</strong>属性</p>
-</blockquote>
-<p>可以使用普通动画和属性动画.</p>
-<p>普通动画是对View进行影像的移动. 可以通过设置<code>fillAfter=true</code>,来让影像在动画结束时候保留最终结果.而不是还原到起始位置.</p>
-<p>而属性动画会对真实位置也进行改变.</p>
-<p><code>ObjectAnimator.ofFloat(tagerView,&quot;translationX&quot;,0,100).setDuration(100).start()</code></p>
-<h3 id="改变布局参数"><a href="#改变布局参数" class="headerlink" title="改变布局参数"></a>改变布局参数</h3><p>这个比较简单, 获得View的<code>LayoutParams</code>参数.进行修改,改好之后再赋值回去.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">MarginLayoutParams params = (MarginLayoutParams)mTextView.getLayoutParams();</div><div class="line">params.width += 100;</div><div class="line">params.leftMargin += 100;</div><div class="line">mTextView.requestLayout();</div><div class="line">//或者mTextview.setLayoutParams(params);</div></pre></td></tr></table></figure>
-<p><strong>关于这三种方式的简单总结</strong></p>
-<ul>
-<li><strong>scrollTo/scrollBy</strong>: 操作简单, 适合对View内容的滑动</li>
-<li><strong>动画</strong>: 操作简单,主要适用于没有交互的View和实现复杂的动画效果.</li>
-<li><strong>修改布局参数</strong>: 操作稍微复杂,适用于有交互的View.</li>
-</ul>
-<h2 id="弹性滑动"><a href="#弹性滑动" class="headerlink" title="弹性滑动"></a>弹性滑动</h2><p><strong>使用Scroller</strong></p>
-<p>一个简单的使用方法如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">Scroller mScroller = new Scroller(mContent);</div><div class="line"></div><div class="line">// 封装一个方法, 接收要移动到的目标点 x和y</div><div class="line">private void smoothScrollTo(int destX, int destY)&#123;</div><div class="line">    int scrollX = getScrollX();</div><div class="line">    int deltaX = destX - scrollX;</div><div class="line">    // 1000ms内逐渐滑向destX</div><div class="line">    mScroller.startScroll(scrollX, 0, deltaX, 0, 1000);</div><div class="line">    invalidate();</div><div class="line">&#125;</div><div class="line"></div><div class="line">//复写View的computeScroll方法</div><div class="line">public void computeScroll()&#123;</div><div class="line">    if(mScroller.computeScrollOffset())&#123;</div><div class="line">        scrollTo(mScroller.getCurrX(), mScroller.getCurrY());</div><div class="line">        postInvalidate()</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>源码中<code>Scroller类中startScroll()</code>方法,其实没有实际操作什么,只是保存了调用方法时,传递的几个参数. 如: 开始结束点,时间等. <em>那动画究竟是怎么实现的? 复写的computeScroll()又有什么用?</em></p>
-<p>流程顺序这样的: 当调用了<code>startScroll()</code>系统只是保存了一些信息, 但是下面调用<code>invalidate()</code>. 这个方法都知道是会导致View的重绘, 在View的<code>draw()</code>方法中又会去调用<code>computeScroll()</code>方法,本身<code>computeScroll()</code>是一个空实现,但是这里进行了复写. 而这个方法我们复写的时候调用了<code>scrollTo()</code>方法! ok这样View就会真正的移动了! 但是还有一点这次滚动只是整个滚动事件的一个小部分,后续的怎么触发的? 就是下面又调用了<code>postInvalidate()</code>, 又会重新绘制重新调用computeScroll()这个复写过的空实现方法.</p>
-<p>而<code>Scroller类中的computeScrollOffset()</code>可以直接返回这个滚动的动作是否全部完成. 源码实现思路就是根据时间的流逝的百分比来计算出当前ScrollX和ScrollY的值.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">// 核心代码  x就是时间流逝的百分比</div><div class="line">mCurrX = mStartX + Math.round(x * mDeltaX);</div><div class="line">mCurrY = mStartY + Math.round(x * mDeltaY);</div></pre></td></tr></table></figure>
-<p>小结Scroller的工作原理:</p>
-<p><code>Scroller</code>本身不可以实现滑动, 需要和<code>View的ComputeScroll()</code>配合使用来完成弹性滑动. 通过不断的在<code>computeScroll()</code>调用View的重绘方法. 每次绘制时候的当前时间与开始时间的时间差与设定的<strong>执行动画时间</strong>的百分比,算出每一次需要scroll到的坐标点, 然后通过调用<strong>scrollTo()</strong>来实现每一次的小滚动效果. 通过一连串的滚动达到了平滑的效果. 这就是<code>Scroller</code>工作机制. 完全实现了解耦操作. 这个过程没有任何一处对View进行引用,甚至连内部计时器都没有.</p>
-<p><strong>通过动画</strong></p>
-<p>可以直接使用<code>ObjectAnimator.ofFloat(tagerView,&quot;translationX&quot;,0,100).setDuration(100).start()</code></p>
-<p>也可以利用动画的特性, 实现与Scroller原理近似的方法.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">final int startX = 100;</div><div class="line">final int endX = 200;</div><div class="line">ValueAnimator valueAnimator = ValueAnimator.ofInt(0, 1).setDuration(1000);</div><div class="line">valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() &#123;</div><div class="line">  @Override</div><div class="line">  public void onAnimationUpdate(ValueAnimator animation) &#123;</div><div class="line">      int offset = (int) animation.getAnimatedFraction();</div><div class="line">      mTextview.scrollTo(startX+offset, 0);</div><div class="line">  &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
-<p>让系统算出每个时间片我们需要移动的距离, 并回调给我们.让我们自己实现. 如果是一组动画在相同的时间执行的绝对值相同我们就可以在<code>onAnimationUpdate()</code>一起进行调用.</p>
-<p><strong>使用延时策略</strong></p>
-<blockquote>
-<p>核心思想就是通过发送一些列延时消息从而达到一种渐进的效果.</p>
-</blockquote>
-<p>可以使用: <code>Handler</code>, <code>View的postDelayed()</code>方法, 或者线程的<code>sleep()</code></p>
-<h2 id="View事件分发机制"><a href="#View事件分发机制" class="headerlink" title="View事件分发机制"></a>View事件分发机制</h2><h3 id="点击事件传递规则"><a href="#点击事件传递规则" class="headerlink" title="点击事件传递规则"></a>点击事件传递规则</h3><blockquote>
-<p>所谓点击事件的事件分发,就是对MotionEvent事件的分发过程,传递给某一个View.</p>
-</blockquote>
-<p>在事件传递中有三个方法是贯穿始终的</p>
-<ul>
-<li><code>dispatchTouchEvent()</code>:进行事件的分发 如果事件能传递到View那么此方法一定会被调用,返回值受当前View的<code>onTouchEvent()</code>和下级View的<code>dispatchTouchEvent()</code>的影响. 表示是否消耗当前事件.</li>
-<li><code>onInterceptTouchEvent()</code>: 判断是否拦截事件,如果当前View拦截了某个事件,那么在同一个事件序列中, 此方法不会被再次调用, 返回结果表示是否拦截当前事件.</li>
-<li><code>onTouchEvent()</code>: 在dispatchTouchEvent中被调用. 用来处理点击事件, 返回结果表示是否消耗当前事件,如果不消耗, 则在同一个事件序列中, 当前View无法再次接收到事件.</li>
-</ul>
-<p>如果把源码中的各种判断去掉, 只留最核心的代码, 那么就如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">public boolean dispatchTouchEvent(MotionEvent event) &#123;</div><div class="line">   boolean consume = false;   //表示这个事件最终的处理结果</div><div class="line">   </div><div class="line">   if (onInterceptTouchEvent(event))&#123;</div><div class="line">        //事件被拦截自己处理</div><div class="line">       consume = onTouchEvent(event);</div><div class="line">   &#125;else&#123;</div><div class="line">        //事件被分发到子view的dispatchTouchEvent()中</div><div class="line">       consume = child.dispatchTouchEvent(event);</div><div class="line">   &#125;</div><div class="line">   </div><div class="line">   return consume;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p><strong>OnTouchListener() , onTouchEvent() , OnClickListener() 的优先级</strong></p>
-<p>上面说了普遍情况下的事件分发. 如果这个View同时还添加了<code>OnTouchListener</code>和<code>OnClickListener</code>. 此时的优先级如下:</p>
-<blockquote>
-<p>OnTouchListener –&gt; onTouchEvent –&gt; OnClickListener</p>
-</blockquote>
-<p>而<code>onTouchEvent()</code>能否被最终调用取决于<strong>设置了OnTouchListener()中的onTouch()的返回值</strong>, 如果<code>onTouch()</code>返回的结果是false,那么<code>onTouchEvent()</code>会被调用. 如果返回true那么<code>onTouchEvent()</code>不会被调用.</p>
-<p>而最后被调用的<code>OnClickListener()</code>方法是在<code>onTouchEvent()</code>被调用的. 所以如果<code>onTouchEvent()</code>方法如果执行, 那么对应的添加的<code>onClickLisener()</code>才会被调用. 所以如果在<code>OnTouchListener()中的onTouch()返回true</code>那么<code>onTouchEvent()不会被调用,内部调用OnClickListener也就更无法被调用</code>.</p>
-<p><strong>一个事件的传递过程遵循如下</strong></p>
-<blockquote>
-<p>Activity -&gt; Window -&gt; View</p>
-</blockquote>
-<p>如果事件一直不拦截,传递到了最里层的View而最里层的View的<code>onTouchEvent()</code>也返回false不消费, 那么事件就会向上级的<code>onTouchEvent()</code>传递,如果还返回false就依次传递.</p>
-<p>对于事件机制的规则:</p>
-<ol>
-<li><strong>事件序列</strong>是指按下到抬起之间发生的一系列事件.</li>
-<li>默认一个事件序列只能被一个View拦截并消耗. (例外:采用非常规,在onTouchEvent强行传递给其他View. 不推荐)</li>
-<li>如果View决定拦截,那么这个事件序列只能由它自己处理. 并且它的<code>onInterceptTouchEvent()</code>不会再被调用</li>
-<li>如果View不在<code>ACTION_DOWN</code>事件时返回true, 那么同一个事件序列都不会再交给它来处理.并且事件会重新传递到父元素的<code>onTouchEvent()</code>再次调用方法.</li>
-<li>如果View不消耗除<code>ACTION_DOWN</code>以外的事件,那么这个点击事件会消失,而父元素的<code>onTouchEvent()</code>不会被调用,并且当前View可以持续收到后续的事件,最终这些消失的事件会传递到activity处理.</li>
-<li><code>ViewGroup</code>默认不拦截任何事件, 源码中ViewGroup的<code>onInterceptTouchEvent()</code>默认返回false</li>
-<li><code>View</code>没有<code>onInterceptTouchEvent()</code>, 因为它没有子View,所以直接调用<code>onTouchEvent()</code></li>
-<li><code>View</code>的<code>onTouchEvent</code>默认都会消耗事件返回true. 除非它不可点击的(需要<code>clickable</code>,<code>longClickable</code>同时为false). View的<code>longClickable</code>默认都为false. 而<code>clickable</code>需要区分控件, 如<code>Button</code>默认为true, <code>TextView</code>默认为false.</li>
-<li><code>View</code>的<code>enable</code>属性不影响<code>onTouchEvent</code>的默认返回值, 哪怕一个View是<code>disable</code>状态. 只要它的<code>clickable</code>或者<code>longClickable</code>有一个为true. 那么它的<code>onTouchEvent()</code>就返回true.</li>
-<li><code>onClick</code>会发生的前提是当前View为可点击, 并且他收到了down和up事件.</li>
-<li>事件传递的过程是由外向内的. 通过<code>requestDisallowInterceptTouchEvent()</code>可以在子元素中干预父元素的事件分发过程,但是<code>ACTION_DOWN</code>事件除外.</li>
-</ol>
-<h3 id="事件分发的源码解析"><a href="#事件分发的源码解析" class="headerlink" title="事件分发的源码解析"></a>事件分发的源码解析</h3><p><strong>1.Activity对点击事件的分发过程</strong></p>
-<p>事件的起始<code>Activity</code>的<code>dispatchTouchEvent()</code>进行分发,具体的工作交由内部的<strong>Window</strong>来完成. <strong>window</strong>会将事件传递给<strong>decor view</strong>. 而<strong>decor view</strong>一般是当前界面的底层容器(平常setContentView中传递的布局),可通过<code>Activity.getWindow.getDecorView()</code>获得.</p>
-<p><strong>window</strong>是怎样将事件传递给<code>ViewGroup</code>的? 首先Window类为一个抽象类,而类中的调用的分发方法也为抽象方法. 所以需要找到实现类. Window的唯一实现类<code>PhoneWindow</code>. 这个类会在被实例化的时候会被重构.</p>
-<p><code>PhoneWindow#superDispatchTouchEvent(ev)</code>方法中将事件传递给了DecorView.</p>
-<p>decorView就是挂载我们的layout布局的<strong>顶级View</strong>,继承<code>FrameLayout</code>.</p>
-<p><code>((ViewGroup)getWindow().getDecorView().findViewById(android.R.id.content)).getChildAt(0);</code></p>
-<p>这个方法可以获取到Activity所设置的View. 所以之间的关系很清楚了. 事件先交给最顶级的DecorView然后交由我们设置的View.</p>
-<p><strong>2.ViewGroup对事件的处理</strong></p>
-<p>在父元素中判断子元素是否能接收点击事件的主要由两个因素衡量: 子元素是否在播放动画和点击事件的坐标是否落在子元素的区域内.<code>dispatchTransformedTouchEvent()</code>实际就是调用子View的<code>dispatchTouchEvent</code>. 而在事件从孩子到父元素(子View在<code>onTouchEvent</code>返回false). 其实也是调用了<code>dispatchTransformedTouchEvent()</code>. 区别就在于向内传递参数3是传入的不是空值, 向外传传入的是null.看下面代码:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"> private boolean dispatchTransformedTouchEvent(MotionEvent event, boolean cancel,</div><div class="line">            View child, int desiredPointerIdBits) &#123;</div><div class="line">    if (child == null) &#123;</div><div class="line">     handled = super.dispatchTouchEvent(event);</div><div class="line">    &#125; else &#123;</div><div class="line">     handled = child.dispatchTouchEvent(event);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p><strong>3.View对事件的处理</strong></p>
-<ol>
-<li>View对事件的判断首先是检测是否有<code>onTouchListener</code>如果有那么就调用其中的<code>onTouch()</code>方法.</li>
-<li>然后执行<code>onTouchEvent()</code>这里有个判断条件,如果在<code>onTouchListener()</code>返回true. 那么if中的条件判断第一个就不会成立,也就不会再调用<code>onTouchEvent()</code>方法.如下:</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">if (li != null &amp;&amp; li.mOnTouchListener != null</div><div class="line">               &amp;&amp; (mViewFlags &amp; ENABLED_MASK) == ENABLED</div><div class="line">               &amp;&amp; li.mOnTouchListener.onTouch(this, event)) &#123;</div><div class="line">           result = true;</div><div class="line">&#125;</div><div class="line"></div><div class="line">if (!result &amp;&amp; onTouchEvent(event)) &#123;</div><div class="line"> result = true;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<ol>
-<li>然后在<code>onTouchEvent()</code>中首先是查看View处理不可用状态. 这里需要注意一下, 虽然View不可用但是如果点击标记或者长按点击标记都是<code>true</code>. 那么事件也会被消费.如下</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">if ((viewFlags &amp; ENABLED_MASK) == DISABLED) &#123;</div><div class="line">       .....</div><div class="line">           // A disabled view that is clickable still consumes the touch</div><div class="line">           // events, it just doesn&apos;t respond to them.</div><div class="line">           return (((viewFlags &amp; CLICKABLE) == CLICKABLE</div><div class="line">                   || (viewFlags &amp; LONG_CLICKABLE) == LONG_CLICKABLE)</div><div class="line">                   || (viewFlags &amp; CONTEXT_CLICKABLE) == CONTEXT_CLICKABLE);</div><div class="line">       &#125;</div></pre></td></tr></table></figure>
-<ol>
-<li>如果View设置有代理, 那么还会执行<code>TouchDelegate的onTouchEvent()</code></li>
-<li>然后对点击状态进行处理.首先如果<strong>点击</strong>和<strong>长按</strong>有一个为true那么就会消费事件. 即<code>onTouchEvent()</code>返回true. 然后在<code>ACTION_UP</code>中会触发<code>performClick()</code>如果设置了<code>onClickListener()</code>那么就会在此处进行判断并调用<code>onClick()</code>.</li>
-<li>上面一直说的<strong>LONG_CLICKABLE</strong>与<strong>CLICKABLE</strong>. 长按标记默认为false. 点击标记和View是否是可点击View有关系. 如button可点击默认就是true. 否者反之. 在使用时可以通过<code>setClickable</code>和<code>setLongClickable</code>对View的这两个标记进行修改. 这里还要注意还有一种赋值方式. 如果设置了<code>setOnClickListener()</code>或者<code>setOnLongClickListener()</code>监听的话那么会自动将其对应的属性置为true.</li>
-</ol>
-<h2 id="View的滑动冲突"><a href="#View的滑动冲突" class="headerlink" title="View的滑动冲突"></a>View的滑动冲突</h2><h3 id="滑动冲突的解决方式"><a href="#滑动冲突的解决方式" class="headerlink" title="滑动冲突的解决方式"></a>滑动冲突的解决方式</h3><p><strong>外部拦截法</strong></p>
-<blockquote>
-<p>是指点击事件都是需要先经过父容器的拦截处理, 如果父容器需要此事件就拦截,不需要就下放. 外部拦截需要重写父容器的onInterceptTouchEvent方法</p>
-</blockquote>
-<p>简述一下: 如果使用这样拦截法. 那么首先</p>
-<ul>
-<li><code>ACTION_DOWN</code>这个事件,父容器必须返回false, 即不拦截<code>ACTION_DOWN</code>事件, 因为一旦父容器拦截了这个事件, 那么后续的<code>ACTION_MOVE</code>,<code>ACTION_UP</code>事件都会交由父容器来处理了. 这个时候这个<strong>事件序列</strong>剩余部分无法传递给子元素了.</li>
-<li><code>ACTION_MOVE</code>这个事件,就可以根据实际的需求来决定是否需要拦截. 如果需要拦截就返回true.否则false.</li>
-<li><code>ACTION_UP</code>这个事件必须返回false, 因为<code>ACTION_UP</code>事件本身没有太多意义.</li>
-</ul>
-<p><strong>内部拦截法</strong></p>
-<blockquote>
-<p>是指父容器不拦截任何事件, 所有的事件都需要传递给子元素, 如果子元素需要此事件就直接消费. 否则就交由父容器进行处理, 由于这种方法和Android中的事件分发机制不一致, 需要配合requestDisallowInterceptTouchEvent()方式才能正常工作. 需要重写子元素的dispatchTouchEvent</p>
-</blockquote>
-<p>这种拦截法的使用规则:</p>
-<p>子View中的<code>dispatchTouchEvent()</code>进行复写.</p>
-<ul>
-<li><code>ACTION_DOWN</code>事件中: 让父容器拒绝拦截所有事件, 调用<code>parent.requestDisallowInterceptTouchEvent(true)</code></li>
-<li><code>ACTION_MOVE</code>事件中: 进行条件的拦截判断, 如果在某一种场景需要拦截,那么就调用方法允许父容器拦截事件.</li>
-<li><code>return</code> 时, 调用<code>super.dispatchTouchEvent(event)</code></li>
-</ul>
-<p>父容器的<code>onInterceptTouchEvent()</code>进行<code>ACTION_DOWN</code>返回false, 其余都是返回true的复写.</p>
-<p>说明一点, 为什么父容器不连<code>Action_down</code>一并的用true复写. 因为<code>ACTION_DOWN</code>这个事件是不受<code>INTERCEPT_FLAG</code>这个标记影响的的, 就是不管拦截标记是否是何值, 按下事件必然会执行, 所以如果这里返回true, 那么就代表着, 这个事件序列的后续部分将由父容器进行处理, 而子容器无法收到这个事件.</p>
-<h2 id="实例演练"><a href="#实例演练" class="headerlink" title="实例演练"></a>实例演练</h2><p><a href="https://github.com/suzeyu1992/Notes_AndroidDevSeek" target="_blank" rel="external">实例演练的代码</a></p>
-<p><strong>实现效果:类似ViewPager中嵌套ListView的效果</strong></p>
-<p>首先需要一个父容器, 这里使用作者提供的一个类<code>MyHorizontalScrollView</code>,这个类类似于<code>ViewPager</code>是继承<code>ViewGroup</code>自定义的, 支持左右滑动. 因为这个类对拦截进行了处理,所以这里把<code>onInterceptTouchEvent()</code>实现的方法注释掉让这个自定义ViewGroup走默认的分发模式. 达到一会使用可以出现滑动冲突的场景. (关于这个类的其他代码,会在下一章笔记中说明,这里不需要关心)</p>
-<p>然后子容器是一个<code>TextView</code>+<code>ListView</code>.</p>
-<p><strong>分析存在的问题</strong></p>
-<p>由于<code>ViewGroup</code>默认的是不拦截事件的. 在自己的<code>onTouchEvent</code>进行了事件的处理来实现左右滑动. 但是这里有有一个前提, 那就是事件一直传递到最里层并且最里层的<code>View</code>不会把事件消费掉.这样父容器才会实现预期的效果.</p>
-<p>但是这里放了一个<code>listview</code>, <code>TextView</code>. 运行代码看一下实际情况. 发现如下情况:</p>
-<p><img src="http://szysky.com/2016/08/08/Android%E5%BC%80%E5%8F%91%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%94%E8%AE%B003-View%E7%9A%84%E4%BA%8B%E4%BB%B6%E4%BD%93%E7%B3%BB/outside.png" alt="img"></p>
-<h3 id="外部拦截解决"><a href="#外部拦截解决" class="headerlink" title="外部拦截解决"></a>外部拦截解决</h3><p><em>外部拦截法相关代码在仓库的outside包中</em></p>
-<p>接下来就解决这个问题. 既然打算外部拦截法,那么首先继承这个<code>MyHorizontalScrollView</code>类, 复写其中的<code>onInterceptTouchEvent()</code>进行相应的处理.</p>
-<p>需要解决的就是在:<strong>滑动过程中水平距离差比垂直距离差大,父容器就要拦截事件</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public boolean onInterceptTouchEvent(MotionEvent ev) &#123;</div><div class="line">boolean intercept = false;</div><div class="line">int x = (int) ev.getX();</div><div class="line">int y = (int) ev.getY();</div><div class="line"></div><div class="line">   switch (ev.getAction())&#123;</div><div class="line">       case MotionEvent.ACTION_DOWN:</div><div class="line">           if (!mScroller.isFinished())&#123;</div><div class="line">               mScroller.abortAnimation();  //优化滑动效果</div><div class="line">               intercept = true;</div><div class="line">           &#125;</div><div class="line">           break;</div><div class="line"></div><div class="line">       case MotionEvent.ACTION_MOVE:</div><div class="line">           int deltaX = x - mLastYIntercept;</div><div class="line">           int deltaY = y - mLastYIntercept;</div><div class="line">           //根据绝对值判断是否需要拦截</div><div class="line">           if (Math.abs(deltaX) &lt; Math.abs(deltaY))&#123;</div><div class="line">               intercept = false;</div><div class="line">           &#125;else&#123;</div><div class="line">               intercept = true;</div><div class="line">           &#125;</div><div class="line">           break;</div><div class="line"></div><div class="line">       case MotionEvent.ACTION_UP:</div><div class="line">           intercept = false;</div><div class="line">           break;</div><div class="line"></div><div class="line">       default:</div><div class="line">           break;</div><div class="line">   &#125;</div><div class="line">   //赋值给mLast是防止在onTouchEvent第一次move移动时候跳屏</div><div class="line">   mLastX = mLastXIntercept = x;</div><div class="line">   mLastY = mLastYIntercept = y;</div><div class="line">   return intercept;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h3 id="内部拦截解决"><a href="#内部拦截解决" class="headerlink" title="内部拦截解决"></a>内部拦截解决</h3><p><em>内部拦截法相关代码在仓库的inside包中</em></p>
-<p>上面总结过使用内部拦截法. 主要就是允许父容器在<code>onIntercept()</code>中的<code>MOVE和UP事件中一直返回true</code>表示拦截事件. 而在子容器中进行对父容器的<code>requestDisallowIntercept</code>标记的修改. 来控制事件的分发.(<code>DOWN</code>事件不能返回true,会导致子View永远收不到事件)</p>
-<p>子容器这里<code>ListView</code>进行继承并复写<code>dispatchTouchEvent()</code>,来控制父容器的<code>requestDisallowIntercept</code>标记.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public boolean dispatchTouchEvent(MotionEvent ev) &#123;</div><div class="line">    int x = (int) ev.getX();</div><div class="line">    int y = (int) ev.getY();</div><div class="line">    </div><div class="line">    switch (ev.getAction())&#123;</div><div class="line">      case MotionEvent.ACTION_DOWN:</div><div class="line">          //相当于进行初始化每次发生一个事件序列时, 都对不容器进行重置不允许拦截</div><div class="line">          mInSide2HorizontalScrollview.requestDisallowInterceptTouchEvent(true);</div><div class="line">          break;</div><div class="line">      case MotionEvent.ACTION_MOVE:</div><div class="line">          int deltaX = x - mLastX;</div><div class="line">          int deltaY = y - mLastY;</div><div class="line">    </div><div class="line">          if (Math.abs(deltaX) &gt; Math.abs(deltaY))&#123;</div><div class="line">              //当水平距离大的时候 允许父容器拦截</div><div class="line">              mInSide2HorizontalScrollview.requestDisallowInterceptTouchEvent(false);</div><div class="line">          &#125;</div><div class="line">    </div><div class="line">          break;</div><div class="line">    </div><div class="line">      default:</div><div class="line">          break;</div><div class="line">    </div><div class="line">    &#125;</div><div class="line">    mLastX = x;</div><div class="line">    mLastY = y;</div><div class="line">    return super.dispatchTouchEvent(ev);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>同时修改一下父容器的<code>onInterceptTouchEvent()</code>方法</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public boolean onInterceptTouchEvent(MotionEvent ev) &#123;</div><div class="line">   int x = (int) ev.getX();</div><div class="line">   int y = (int) ev.getY();</div><div class="line"></div><div class="line">   switch (ev.getAction())&#123;</div><div class="line">       case MotionEvent.ACTION_DOWN:</div><div class="line">           if (!mScroller.isFinished())&#123;</div><div class="line">               mScroller.abortAnimation();</div><div class="line">               return true;</div><div class="line">           &#125;</div><div class="line">           mLastX = x;</div><div class="line">           mLastY = y;</div><div class="line">           return false;</div><div class="line"></div><div class="line">       default:</div><div class="line">          return true;</div><div class="line">   &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="http://yoursite.com/2017/09/05/android/books/《Android开发艺术探索》Chap3_View的事件体系/" data-id="cj76wnr880010enpjybrbaqk3" class="article-share-link"><i class="fa fa-share"></i>Share</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-        <a href="http://yoursite.com/2017/09/05/android/books/《Android开发艺术探索》Chap3_View的事件体系/#comments" class="article-comment-link">Comments</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
     <nav id="page-nav">
         <a class="extend prev" rel="prev" href="/page/5/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/7/">Next &raquo;</a>
     </nav>
@@ -3080,6 +2965,24 @@
         <h3 class="widget-title">recent</h3>
         <div class="widget">
             <ul id="recent-post" class="no-thumbnail">
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a></p>
+                            <p class="item-title"><a href="/2017/09/26/react/React:React Native 的ES5 ES6写法对照表/" class="title">React:React Native 的ES5 ES6写法对照表</a></p>
+                            <p class="item-date"><time datetime="2017-09-26T14:24:17.000Z" itemprop="datePublished">2017-09-26</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/android/">android</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/android/code/">code</a></p>
+                            <p class="item-title"><a href="/2017/09/25/android/code/Android动态更换应用Icon/" class="title">Android动态更换应用Icon</a></p>
+                            <p class="item-date"><time datetime="2017-09-25T10:04:35.000Z" itemprop="datePublished">2017-09-25</time></p>
+                        </div>
+                    </li>
                 
                     <li>
                         
@@ -3108,24 +3011,6 @@
                         </div>
                     </li>
                 
-                    <li>
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a></p>
-                            <p class="item-title"><a href="/2017/09/25/react/第6篇UI组件/" class="title">第6篇UI组件</a></p>
-                            <p class="item-date"><time datetime="2017-09-25T03:48:08.000Z" itemprop="datePublished">2017-09-25</time></p>
-                        </div>
-                    </li>
-                
-                    <li>
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a></p>
-                            <p class="item-title"><a href="/2017/09/24/react/第5篇React-Native布局实战2/" class="title">第5篇React-Native布局实战2</a></p>
-                            <p class="item-date"><time datetime="2017-09-24T14:12:33.000Z" itemprop="datePublished">2017-09-24</time></p>
-                        </div>
-                    </li>
-                
             </ul>
         </div>
     </div>
@@ -3135,7 +3020,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">categories</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">44</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/react/">react</a><span class="category-list-count">9</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">45</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/react/">react</a><span class="category-list-count">10</span></li></ul>
         </div>
     </div>
 
@@ -3144,7 +3029,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">archives</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">63</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">65</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
         </div>
     </div>
 
@@ -3153,7 +3038,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">tags</h3>
         <div class="widget">
-            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">37</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gitlab/">gitlab</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/">react</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/">ssh</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gitlab/">gitlab</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/">react</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/">ssh</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
         </div>
     </div>
 
@@ -3162,7 +3047,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">tag cloud</h3>
         <div class="widget tagcloud">
-            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 14.29px;">code</a> <a href="/tags/git/" style="font-size: 11.43px;">git</a> <a href="/tags/github/" style="font-size: 17.14px;">github</a> <a href="/tags/gitlab/" style="font-size: 10px;">gitlab</a> <a href="/tags/glide/" style="font-size: 14.29px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 12.86px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.43px;">markdown</a> <a href="/tags/mysql/" style="font-size: 14.29px;">mysql</a> <a href="/tags/node/" style="font-size: 15.71px;">node</a> <a href="/tags/react/" style="font-size: 18.57px;">react</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/ssh/" style="font-size: 10px;">ssh</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.43px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.43px;">设计模式</a>
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 15px;">code</a> <a href="/tags/git/" style="font-size: 11.25px;">git</a> <a href="/tags/github/" style="font-size: 17.5px;">github</a> <a href="/tags/gitlab/" style="font-size: 10px;">gitlab</a> <a href="/tags/glide/" style="font-size: 13.75px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 12.5px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.25px;">markdown</a> <a href="/tags/mysql/" style="font-size: 13.75px;">mysql</a> <a href="/tags/node/" style="font-size: 16.25px;">node</a> <a href="/tags/react/" style="font-size: 18.75px;">react</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/ssh/" style="font-size: 10px;">ssh</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.25px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.25px;">设计模式</a>
         </div>
     </div>
 
