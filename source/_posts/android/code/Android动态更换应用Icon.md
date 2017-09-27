@@ -12,6 +12,8 @@ tags:
 
 ## 动态更换应用Icon
 
+### God say
+
 > From stackoverflow: [How to change an application icon programmatically in Android?](https://stackoverflow.com/questions/1103027/how-to-change-an-application-icon-programmatically-in-android) 
 
 Try this, it works fine for me =)
@@ -61,8 +63,6 @@ Try this, it works fine for me =)
 
 
 
-As Display:
-
 ### 原理1——activity-alias
 
 在AndroidMainifest中，有两个属性：
@@ -98,9 +98,9 @@ private void disableComponent(ComponentName componentName) {
 
 根据PackageManager.COMPONENT_ENABLED_STATE_ENABLED和PackageManager.COMPONENT_ENABLED_STATE_DISABLED这两个标志量和对应的ComponentName，就可以控制一个组件的是否启用。
 
-## 动态换Icon
 
-有了上面的两个原理，来实现动态更换Icon就只剩下思路问题了。
+
+## 动态更换Icon
 
 首先，我们创建一个Activity，再创建一个带着默认图片的activity-alias，指向默认的Activity并带有正常的图片，再创建一个双12的activity-alias，指向默认的Activity并带有双12的图片……等等等。
 
@@ -138,13 +138,10 @@ private void disableComponent(ComponentName componentName) {
 </activity-alias>
 ```
 
-
-
 ```
 public class MainActivity extends AppCompatActivity {
 
     private ComponentName mDefault;
-    private ComponentName mDouble11;
     private ComponentName mDouble12;
     private PackageManager mPm;
 
@@ -183,4 +180,90 @@ public class MainActivity extends AppCompatActivity {
 OK了，禁用默认的Activity后，启用双12的activity-alias，结果不变还是指向了默认的Activity，但图标已经发生了改变。
 
 > 根据ROM的不同，在禁用了组件之后，会等一会，Launcher会自动刷新图标。如果在更换图标期间，用户点击桌面图标，会暂时提示应用不存在。
+
+
+
+## 获取组件当前状态
+
+### 状态说明
+
+**'packageManager.getComponentEnabledSetting'**：
+
+- PackageManager.COMPONENT_ENABLED_STATE_DEFAULT
+
+> 组件默认状态，未调用'mPm.setComponentEnabledSetting()'设置组件，则组件为此状态。如以上代码，mDefalut, mDouble12刚开始均为此状态。
+
+- PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+
+> 组件可用状态，调用mPm.setComponentEnabledSetting()'设置组件开启，则为此状态。
+
+- PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+
+> 组件不可用状态，调用mPm.setComponentEnabledSetting()'设置组件关闭，则为此状态。
+
+
+
+### 获取当前组件状态
+
+如果设置一个app的启动MainActivity为COMPONENT_ENABLED_STATE_DISABLED状态，则不会再launcher的程序图标中发现该app
+
+ ```
+		PackageManager packageManager = getPackageManager();
+        ComponentName componentName = new ComponentName(this, StartActivity.class);
+        int res = packageManager.getComponentEnabledSetting(componentName);
+  	
+        if (res == PackageManager.COMPONENT_ENABLED_STATE_DEFAULT
+                || res == PackageManager.COMPONENT_ENABLED_STATE_ENABLED) {
+            // 隐藏应用图标
+            packageManager.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                    PackageManager.DONT_KILL_APP);
+        } else {
+            // 显示应用图标
+            packageManager.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_DEFAULT,
+                    PackageManager.DONT_KILL_APP);
+        }
+ ```
+
+
+
+ ### 动态更换Icon完善
+
+1. 设置两个`<activity-alias`，`SplashActivity_Normal`默认`android:enabled="true"`启用，`SplashActivity_Festival` 默认关闭,  初始化默认组件状态均为`PackageManager.COMPONENT_ENABLED_STATE_DEFAULT`.
+2. `isShowFestivalIcons`后台控制，默认`false`。而`SplashActivity_Festival`默认为`PackageManager.COMPONENT_ENABLED_STATE_DEFAULT`，故而不调用更换Icon代码。
+3. 当`isShowFestivalIcons`为true, 调用更换Icon代码，设置`SplashActivity_Normal` 关闭，`SplashActivity_Festival`启用。
+4.  当`isShowFestivalIcons`为false, 调用更换Icon代码，设置`SplashActivity_Normal` 启用，`SplashActivity_Festival`关闭。
+
+```
+		
+        if (isShowFestivalIcons) {
+
+            if (!CommonUtil.isComponentEnable(CommonUtil.LAUCH_COMPONENT_FESTIVAL)) {
+            	// 更换Icon
+                CommonUtil.disableComponent(CommonUtil.LAUCH_COMPONENT_NORMAL);
+                CommonUtil.enableComponent(CommonUtil.LAUCH_COMPONENT_FESTIVAL);
+            }
+            
+            // to show festival icons
+
+        } else {
+			
+            if (CommonUtil.isComponentEnable(CommonUtil.LAUCH_COMPONENT_FESTIVAL)) {
+            	// 更换Icon
+                CommonUtil.disableComponent(CommonUtil.LAUCH_COMPONENT_FESTIVAL);
+                CommonUtil.enableComponent(CommonUtil.LAUCH_COMPONENT_NORMAL);
+            }
+            
+             // to show normal icons
+             
+        }
+        
+ public  boolean isComponentEnable(String componentName) {
+    	int isEnabled = getPackageManager().getComponentEnabledSetting(new ComponentName(getPackageName(), componentName));
+        return isEnabled == PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
+    }
+    
+    
+```
+
+
 
