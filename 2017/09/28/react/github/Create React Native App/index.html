@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <meta charset="utf-8">
+    
+    <title>Create React Native App | The Old Man and the Sea</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="Create React Native App Create React Native apps with no build configuration.  Getting Started User Guide  Once you’re up and running with Create React Native App, visit this tutorial for more informa">
+<meta name="keywords" content="github,react">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Create React Native App">
+<meta property="og:url" content="http://yoursite.com/2017/09/28/react/github/Create React Native App/index.html">
+<meta property="og:site_name" content="The Old Man and the Sea">
+<meta property="og:description" content="Create React Native App Create React Native apps with no build configuration.  Getting Started User Guide  Once you’re up and running with Create React Native App, visit this tutorial for more informa">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://camo.githubusercontent.com/df753791d23a96ebfbe4c133777567a37f4c7244/68747470733a2f2f62616467652e667572792e696f2f6a732f6372656174652d72656163742d6e61746976652d6170702e737667">
+<meta property="og:updated_time" content="2017-09-28T11:48:05.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Create React Native App">
+<meta name="twitter:description" content="Create React Native App Create React Native apps with no build configuration.  Getting Started User Guide  Once you’re up and running with Create React Native App, visit this tutorial for more informa">
+<meta name="twitter:image" content="https://camo.githubusercontent.com/df753791d23a96ebfbe4c133777567a37f4c7244/68747470733a2f2f62616467652e667572792e696f2f6a732f6372656174652d72656163742d6e61746976652d6170702e737667">
+    
+
+    
+        <link rel="alternate" href="/" title="The Old Man and the Sea" type="application/atom+xml" />
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">The Old Man and the Sea</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/uploads/images/avert.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/uploads/images/avert.png" />
+            <h2 id="name">Ernest Chang</h2>
+            <h3 id="title">Developer &amp; Designer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Hangzhou, China</span>
+            <a id="follow" target="_blank" href="https://github.com/Ernestchang/">FOLLOW</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                94
+                <span>posts</span>
+            </div>
+            <div class="article-info-block">
+                23
+                <span>tags</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/Ernestchang/" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="facebook" class=tooltip>
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="dribbble" class=tooltip>
+                            <i class="fa fa-dribbble"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-react/github/Create React Native App" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            Create React Native App
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/09/28/react/github/Create React Native App/">
+            <time datetime="2017-09-28T11:40:34.000Z" itemprop="datePublished">2017-09-28</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/react/">react</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/react/github/">github</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/github/">github</a>, <a class="tag-link" href="/tags/react/">react</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h1 id="Create-React-Native-App"><a href="#Create-React-Native-App" class="headerlink" title="Create React Native App"></a>Create React Native App</h1><p><a href="https://badge.fury.io/js/create-react-native-app" target="_blank" rel="external"><img src="https://camo.githubusercontent.com/df753791d23a96ebfbe4c133777567a37f4c7244/68747470733a2f2f62616467652e667572792e696f2f6a732f6372656174652d72656163742d6e61746976652d6170702e737667" alt="npm version"></a></p>
+<p>Create React Native apps with no build configuration.</p>
+<ul>
+<li><a href="https://github.com/react-community/create-react-native-app#getting-started" target="_blank" rel="external">Getting Started</a></li>
+<li><a href="https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md" target="_blank" rel="external">User Guide</a></li>
+</ul>
+<p>Once you’re up and running with Create React Native App, visit <a href="https://facebook.github.io/react-native/docs/tutorial.html" target="_blank" rel="external">this tutorial</a> for more information on building apps with React Native.</p>
+<h2 id="Quick-Overview"><a href="#Quick-Overview" class="headerlink" title="Quick Overview"></a>Quick Overview</h2><p>Make sure you have Node v6 or later installed. No Xcode or Android Studio installation is required.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ npm install -g create-react-native-app</div><div class="line">$ create-react-native-app my-app</div><div class="line">$ cd my-app/</div><div class="line">$ npm start</div></pre></td></tr></table></figure>
+<p>Install the <a href="https://expo.io/" target="_blank" rel="external">Expo</a> app on your iOS or Android phone, and use the QR code in the terminal to open your app. Find the QR scanner on the Projects tab of the app. When you’re ready to share your project with others (for example, by deploying to an app store), read the <a href="https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md#sharing-deployment" target="_blank" rel="external">Sharing &amp; Deployment</a> section of the User Guide.</p>
+<p>Create React Native App allows you to work with all of the <a href="https://facebook.github.io/react-native/docs/getting-started.html" target="_blank" rel="external">Components and APIs</a> in React Native, as well as most of the <a href="https://docs.expo.io/versions/latest/sdk/index.html" target="_blank" rel="external">JavaScript APIs</a> that the Expo App provides.</p>
+<h2 id="Sections"><a href="#Sections" class="headerlink" title="Sections"></a>Sections</h2><ul>
+<li><a href="https://github.com/react-community/create-react-native-app#getting-started" target="_blank" rel="external">Getting Started</a></li>
+<li><a href="https://github.com/react-community/create-react-native-app#philosophy" target="_blank" rel="external">Philosophy</a></li>
+<li><a href="https://github.com/react-community/create-react-native-app#support-and-contact" target="_blank" rel="external">Support and Contact</a></li>
+<li><a href="https://github.com/react-community/create-react-native-app#faqs" target="_blank" rel="external">FAQs</a></li>
+<li><a href="https://github.com/react-community/create-react-native-app#contributing" target="_blank" rel="external">Contributing</a></li>
+</ul>
+<h2 id="Getting-Started"><a href="#Getting-Started" class="headerlink" title="Getting Started"></a>Getting Started</h2><h3 id="Installation"><a href="#Installation" class="headerlink" title="Installation"></a>Installation</h3><p>Install it once globally:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ npm install -g create-react-native-app</div><div class="line">  # or</div><div class="line">$ yarn global add create-react-native-app</div></pre></td></tr></table></figure>
+<p>You’ll need to have Node v6 or later on your machine. We strongly recommend using npm v3, v4, or a recent version of Yarn. Create React Native App does not currently work with npm v5 due to bugs in npm (<a href="https://github.com/react-community/create-react-native-app/issues/233#issuecomment-305638103" target="_blank" rel="external">you can track the issue here</a>).</p>
+<h3 id="Creating-an-App"><a href="#Creating-an-App" class="headerlink" title="Creating an App"></a>Creating an App</h3><p>To create a new app, run:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ create-react-native-app my-app</div><div class="line">$ cd my-app</div></pre></td></tr></table></figure>
+<p>This will create a directory called <code>my-app</code> inside the current working directory. Inside <code>my-app</code>, this will generate the initial project structure and install all of its dependencies.</p>
+<p>If you’re familiar with React Native already, you won’t find any <code>ios</code> or <code>android</code> directories in this project, just JavaScript. Once this installation is done, there are some commands you can run in the project directory:</p>
+<h4 id="npm-start"><a href="#npm-start" class="headerlink" title="npm start"></a><code>npm start</code></h4><p>Runs your app in development mode with an interactive prompt. To run it without a prompt, use the <code>--no-interactive</code> flag.</p>
+<p>Open it in the <a href="https://expo.io/" target="_blank" rel="external">Expo app</a> on your phone to view it. It will reload if you save edits to your files, and you will see build errors and logs in the terminal.</p>
+<h4 id="npm-test"><a href="#npm-test" class="headerlink" title="npm test"></a><code>npm test</code></h4><p>Runs the <a href="https://github.com/facebook/jest" target="_blank" rel="external">jest</a> test runner on your tests.</p>
+<h4 id="npm-run-ios"><a href="#npm-run-ios" class="headerlink" title="npm run ios"></a><code>npm run ios</code></h4><p>Like <code>npm start</code>, but also attempts to open your app in the iOS Simulator if you’re on a Mac and have it installed.</p>
+<h4 id="npm-run-android"><a href="#npm-run-android" class="headerlink" title="npm run android"></a><code>npm run android</code></h4><p>Like <code>npm start</code>, but also attempts to open your app on a connected Android device or emulator. Requires an installation of Android build tools (see <a href="https://facebook.github.io/react-native/docs/getting-started.html" target="_blank" rel="external">React Native docs</a> for detailed setup).</p>
+<h4 id="npm-run-eject"><a href="#npm-run-eject" class="headerlink" title="npm run eject"></a><code>npm run eject</code></h4><p>This will start the process of “ejecting” from Create React Native App’s build scripts. You’ll be asked a couple of questions about how you’d like to build your project.</p>
+<p><strong>Warning:</strong> Running eject is a <strong>permanent</strong> action. Please use a version control system, such as git, so you can revert back if necessary. An ejected app will require you to have an <a href="https://facebook.github.io/react-native/docs/getting-started.html" target="_blank" rel="external">Xcode and/or Android Studio environment</a> set up.</p>
+<h2 id="Philosophy"><a href="#Philosophy" class="headerlink" title="Philosophy"></a>Philosophy</h2><ul>
+<li><strong>Minimal “Time to Hello World”</strong>: Create React Native App should reduce the setup time it takes to try building a mobile app to the absolute minimum, ideally on par with React web development (especially as seen with <a href="https://github.com/facebookincubator/create-react-app" target="_blank" rel="external">Create React App</a>).</li>
+<li><strong>Develop on Your Device</strong>: It should be easy to develop on a physical device when you want to test how your app feels and responds to inputs.</li>
+<li><strong>One Build Tool</strong>: If you just want to get started with React Native, you shouldn’t need to install Xcode, Android Studio, NDKs, or mess with environment variables.</li>
+<li><strong>No Lock-In</strong>: You can always “eject” to your own build setup if you need to write custom native code or modify how your app is built.</li>
+</ul>
+<h2 id="Support-and-Contact"><a href="#Support-and-Contact" class="headerlink" title="Support and Contact"></a>Support and Contact</h2><p>If you’re having issues with Create React Native App, please make sure:</p>
+<ul>
+<li>The issue is not covered in the <a href="https://github.com/react-community/create-react-native-app#getting-started" target="_blank" rel="external">Getting Started</a> or <a href="https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md" target="_blank" rel="external">User Guide</a> documentation</li>
+<li>There is not already an <a href="https://github.com/react-community/create-react-native-app/issues" target="_blank" rel="external">open issue</a> for your particular problem</li>
+</ul>
+<p>If you’ve checked the documentation and currently open issues, please either open a new GitHub issue, <a href="https://twitter.com/dika10sune" target="_blank" rel="external">find @dika10sune on Twitter</a>, or ping <code>dikaiosune</code> on <a href="https://www.reactiflux.com/" target="_blank" rel="external">Reactiflux</a>‘s #react-native channel on Discord. <strong>Please do not DM or email project maintainers directly</strong>, as it’s very important that support takes place in public locations where others can benefit from the conversation.</p>
+<h2 id="FAQs"><a href="#FAQs" class="headerlink" title="FAQs"></a>FAQs</h2><h3 id="What-API-specification-should-I-be-looking-at-while-developing"><a href="#What-API-specification-should-I-be-looking-at-while-developing" class="headerlink" title="What API specification should I be looking at while developing?"></a>What API specification should I be looking at while developing?</h3><p>Apps made with Create React Native App support everything in the Components and APIs sections of the <a href="https://facebook.github.io/react-native/docs/getting-started.html" target="_blank" rel="external">React Native Documentation</a>.</p>
+<p>Apps made with Create React Native App also support most of the JavaScript-to-Native APIs provided by the <a href="https://docs.expo.io/versions/latest/sdk/index.html" target="_blank" rel="external">Expo SDK</a>, since they are loaded by the Expo app.</p>
+<h3 id="What-are-the-limitations-of-Create-React-Native-App"><a href="#What-are-the-limitations-of-Create-React-Native-App" class="headerlink" title="What are the limitations of Create React Native App?"></a>What are the limitations of Create React Native App?</h3><p>The main limitation of a Create React Native App project is that it must be written in pure JavaScript and not have any dependencies which rely on custom native code (i.e. ones which require running <code>react-native link</code> to work). This allows the projects to load directly on a phone without native compilation, and also means that it’s not necessary to install or use Android Studio or Xcode.</p>
+<h3 id="What-if-I-want-to-write-custom-native-code-for-my-app"><a href="#What-if-I-want-to-write-custom-native-code-for-my-app" class="headerlink" title="What if I want to write custom native code for my app?"></a>What if I want to write custom native code for my app?</h3><p>If you’re sure that you need custom native code, please read the <a href="https://github.com/react-community/create-react-native-app/blob/master/EJECTING.md" target="_blank" rel="external">ejecting guide</a>.</p>
+<h3 id="How-do-I-get-my-app-into-the-Play-Store-App-Store"><a href="#How-do-I-get-my-app-into-the-Play-Store-App-Store" class="headerlink" title="How do I get my app into the Play Store/App Store?"></a>How do I get my app into the Play Store/App Store?</h3><p>If you need to build IPAs and APKs for publishing to the App Store and/or Play Store, you can either eject (see above guide) and build them yourself using Xcode and Android Studio, or you can use a service like <a href="https://docs.expo.io/versions/v13.0.0/guides/building-standalone-apps.html" target="_blank" rel="external">Expo’s standalone app builds</a> to publish your pure JS app.</p>
+<h2 id="Contributing"><a href="#Contributing" class="headerlink" title="Contributing"></a>Contributing</h2><p>Contributions will be licensed under the <a href="https://github.com/react-community/create-react-native-app/blob/master/LICENSE" target="_blank" rel="external">3-clause BSD license</a>. Please fork the repository, perform your work on a feature branch, and submit a pull request to this repository’s master branch from your fork’s branch.</p>
+<p>For details about setting up a development environment and testing your changes, please see <a href="https://github.com/react-community/create-react-native-app/blob/master/CONTRIBUTING.md" target="_blank" rel="external">CONTRIBUTING.md</a>.</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/09/28/react/github/Create React Native App/" data-id="cj84eeuqo0001itpjcwcgvgsm" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/09/28/react/github/Create React Native App/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/09/28/react/github/Lottie for React Native, iOS, and Android/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    Looped carousel for React Native
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2017/09/28/react/github/React Native Loading Spinner Overlay/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">Looped carousel for React Native</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="uyan_frame"></div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">recent</h3>
+        <div class="widget">
+            <ul id="recent-post" class="no-thumbnail">
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/react/github/">github</a></p>
+                            <p class="item-title"><a href="/2017/09/28/react/github/React Native Elements/" class="title">Looped carousel for React Native</a></p>
+                            <p class="item-date"><time datetime="2017-09-28T11:42:20.000Z" itemprop="datePublished">2017-09-28</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/react/github/">github</a></p>
+                            <p class="item-title"><a href="/2017/09/28/react/github/React Navigation   /" class="title">Looped carousel for React Native</a></p>
+                            <p class="item-date"><time datetime="2017-09-28T11:41:47.000Z" itemprop="datePublished">2017-09-28</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/react/github/">github</a></p>
+                            <p class="item-title"><a href="/2017/09/28/react/github/Lottie for React Native, iOS, and Android/" class="title">Looped carousel for React Native</a></p>
+                            <p class="item-date"><time datetime="2017-09-28T11:41:15.000Z" itemprop="datePublished">2017-09-28</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/react/github/">github</a></p>
+                            <p class="item-title"><a href="/2017/09/28/react/github/Create React Native App/" class="title">Create React Native App</a></p>
+                            <p class="item-date"><time datetime="2017-09-28T11:40:34.000Z" itemprop="datePublished">2017-09-28</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/react/github/">github</a></p>
+                            <p class="item-title"><a href="/2017/09/28/react/github/React Native Loading Spinner Overlay/" class="title">Looped carousel for React Native</a></p>
+                            <p class="item-date"><time datetime="2017-09-28T11:40:00.000Z" itemprop="datePublished">2017-09-28</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">categories</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">45</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/react/">react</a><span class="category-list-count">17</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/react/github/">github</a><span class="category-list-count">7</span></li></ul></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">archives</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">73</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tags</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">15</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gitlab/">gitlab</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/">react</a><span class="tag-list-count">17</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/">ssh</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tag cloud</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 15px;">code</a> <a href="/tags/git/" style="font-size: 11.25px;">git</a> <a href="/tags/github/" style="font-size: 17.5px;">github</a> <a href="/tags/gitlab/" style="font-size: 10px;">gitlab</a> <a href="/tags/glide/" style="font-size: 13.75px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 12.5px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.25px;">markdown</a> <a href="/tags/mysql/" style="font-size: 13.75px;">mysql</a> <a href="/tags/node/" style="font-size: 16.25px;">node</a> <a href="/tags/react/" style="font-size: 18.75px;">react</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/ssh/" style="font-size: 10px;">ssh</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.25px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.25px;">设计模式</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">links</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 Ernest Chang<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2142274"></script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

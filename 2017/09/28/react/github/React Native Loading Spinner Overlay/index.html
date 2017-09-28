@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <meta charset="utf-8">
+    
+    <title>Looped carousel for React Native | The Old Man and the Sea</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="React Native Loading Spinner Overlay    tldr; The only pure React Native Native iOS and Android loading spinner (progress bar indicator) overlay   Index Install Usage Platforms Notes Development Contr">
+<meta name="keywords" content="github,react">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Looped carousel for React Native">
+<meta property="og:url" content="http://yoursite.com/2017/09/28/react/github/React Native Loading Spinner Overlay/index.html">
+<meta property="og:site_name" content="The Old Man and the Sea">
+<meta property="og:description" content="React Native Loading Spinner Overlay    tldr; The only pure React Native Native iOS and Android loading spinner (progress bar indicator) overlay   Index Install Usage Platforms Notes Development Contr">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://camo.githubusercontent.com/dd009b4c54b176e193c43f90b4403d52b939df4d/687474703a2f2f696d672e736869656c64732e696f2f6e706d2f762f72656163742d6e61746976652d6c6f6164696e672d7370696e6e65722d6f7665726c61792e7376673f7374796c653d666c6174">
+<meta property="og:image" content="https://camo.githubusercontent.com/d8dad4a0bc467c538d7678baba8d5780775cdec1/687474703a2f2f696d672e736869656c64732e696f2f6e706d2f646d2f72656163742d6e61746976652d6c6f6164696e672d7370696e6e65722d6f7665726c61792e7376673f7374796c653d666c6174">
+<meta property="og:image" content="https://camo.githubusercontent.com/4ad0bc4de8816451a4a76b886b76142b99d10ffb/687474703a2f2f696d672e736869656c64732e696f2f62616467652f6c6963656e73652d4d49542d626c75652e7376673f7374796c653d666c6174">
+<meta property="og:image" content="https://camo.githubusercontent.com/8d5f6085477bef4cfee5ea16effcb9dd92b84b47/68747470733a2f2f63646e2e7261776769742e636f6d2f6e696674796c6574747563652f72656163742d6e61746976652d6c6f6164696e672d7370696e6e65722d6f7665726c61792f6d61737465722f6d656469612f64656d6f2e676966">
+<meta property="og:updated_time" content="2017-09-28T11:48:33.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Looped carousel for React Native">
+<meta name="twitter:description" content="React Native Loading Spinner Overlay    tldr; The only pure React Native Native iOS and Android loading spinner (progress bar indicator) overlay   Index Install Usage Platforms Notes Development Contr">
+<meta name="twitter:image" content="https://camo.githubusercontent.com/dd009b4c54b176e193c43f90b4403d52b939df4d/687474703a2f2f696d672e736869656c64732e696f2f6e706d2f762f72656163742d6e61746976652d6c6f6164696e672d7370696e6e65722d6f7665726c61792e7376673f7374796c653d666c6174">
+    
+
+    
+        <link rel="alternate" href="/" title="The Old Man and the Sea" type="application/atom+xml" />
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">The Old Man and the Sea</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/uploads/images/avert.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/uploads/images/avert.png" />
+            <h2 id="name">Ernest Chang</h2>
+            <h3 id="title">Developer &amp; Designer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Hangzhou, China</span>
+            <a id="follow" target="_blank" href="https://github.com/Ernestchang/">FOLLOW</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                94
+                <span>posts</span>
+            </div>
+            <div class="article-info-block">
+                23
+                <span>tags</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/Ernestchang/" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="facebook" class=tooltip>
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="dribbble" class=tooltip>
+                            <i class="fa fa-dribbble"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-react/github/React Native Loading Spinner Overlay" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            Looped carousel for React Native
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/09/28/react/github/React Native Loading Spinner Overlay/">
+            <time datetime="2017-09-28T11:40:00.000Z" itemprop="datePublished">2017-09-28</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/react/">react</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/react/github/">github</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/github/">github</a>, <a class="tag-link" href="/tags/react/">react</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h1 id="React-Native-Loading-Spinner-Overlay"><a href="#React-Native-Loading-Spinner-Overlay" class="headerlink" title="React Native Loading Spinner Overlay"></a>React Native Loading Spinner Overlay</h1><p><a href="https://npmjs.org/package/react-native-loading-spinner-overlay" target="_blank" rel="external"><img src="https://camo.githubusercontent.com/dd009b4c54b176e193c43f90b4403d52b939df4d/687474703a2f2f696d672e736869656c64732e696f2f6e706d2f762f72656163742d6e61746976652d6c6f6164696e672d7370696e6e65722d6f7665726c61792e7376673f7374796c653d666c6174" alt="NPM version"></a> <a href="https://npmjs.org/package/react-native-loading-spinner-overlay" target="_blank" rel="external"><img src="https://camo.githubusercontent.com/d8dad4a0bc467c538d7678baba8d5780775cdec1/687474703a2f2f696d672e736869656c64732e696f2f6e706d2f646d2f72656163742d6e61746976652d6c6f6164696e672d7370696e6e65722d6f7665726c61792e7376673f7374796c653d666c6174" alt="NPM downloads"></a> <a href="https://github.com/joinspontaneous/react-native-loading-spinner-overlay/blob/master/LICENSE" target="_blank" rel="external"><img src="https://camo.githubusercontent.com/4ad0bc4de8816451a4a76b886b76142b99d10ffb/687474703a2f2f696d672e736869656c64732e696f2f62616467652f6c6963656e73652d4d49542d626c75652e7376673f7374796c653d666c6174" alt="MIT License"></a></p>
+<blockquote>
+<p><strong>tldr;</strong> The only pure <a href="https://facebook.github.io/react-native" target="_blank" rel="external">React Native</a> Native iOS and Android loading spinner (progress bar indicator) overlay</p>
+</blockquote>
+<p><a href="https://camo.githubusercontent.com/8d5f6085477bef4cfee5ea16effcb9dd92b84b47/68747470733a2f2f63646e2e7261776769742e636f6d2f6e696674796c6574747563652f72656163742d6e61746976652d6c6f6164696e672d7370696e6e65722d6f7665726c61792f6d61737465722f6d656469612f64656d6f2e676966" target="_blank" rel="external"><img src="https://camo.githubusercontent.com/8d5f6085477bef4cfee5ea16effcb9dd92b84b47/68747470733a2f2f63646e2e7261776769742e636f6d2f6e696674796c6574747563652f72656163742d6e61746976652d6c6f6164696e672d7370696e6e65722d6f7665726c61792f6d61737465722f6d656469612f64656d6f2e676966" alt="Demo"></a></p>
+<h2 id="Index"><a href="#Index" class="headerlink" title="Index"></a>Index</h2><ul>
+<li><a href="https://github.com/joinspontaneous/react-native-loading-spinner-overlay#install" target="_blank" rel="external">Install</a></li>
+<li><a href="https://github.com/joinspontaneous/react-native-loading-spinner-overlay#usage" target="_blank" rel="external">Usage</a></li>
+<li><a href="https://github.com/joinspontaneous/react-native-loading-spinner-overlay#platforms" target="_blank" rel="external">Platforms</a></li>
+<li><a href="https://github.com/joinspontaneous/react-native-loading-spinner-overlay#notes" target="_blank" rel="external">Notes</a></li>
+<li><a href="https://github.com/joinspontaneous/react-native-loading-spinner-overlay#development" target="_blank" rel="external">Development</a></li>
+<li><a href="https://github.com/joinspontaneous/react-native-loading-spinner-overlay#contributors" target="_blank" rel="external">Contributors</a></li>
+<li><a href="https://github.com/joinspontaneous/react-native-loading-spinner-overlay#credits" target="_blank" rel="external">Credits</a></li>
+<li><a href="https://github.com/joinspontaneous/react-native-loading-spinner-overlay#license" target="_blank" rel="external">License</a></li>
+</ul>
+<h2 id="Install"><a href="#Install" class="headerlink" title="Install"></a>Install</h2><p>For React Native version <code>&gt;=0.28.x</code> use version <code>&gt;=0.3.x</code> (<code>0.2.x</code> is broken, sorry!):</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install --save react-native-loading-spinner-overlay@latest</div></pre></td></tr></table></figure>
+<p>For React Native version <code>&lt;=0.27.x</code> use version <code>0.1.x</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install --save react-native-loading-spinner-overlay@0.1.x</div></pre></td></tr></table></figure>
+<h2 id="Usage"><a href="#Usage" class="headerlink" title="Usage"></a>Usage</h2><p>This usage shows the default styles and properties.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cancelable</td>
+<td><code>boolean</code></td>
+<td><code>false</code></td>
+<td><strong>Android</strong>: If set to false, it will prevent spinner from hiding when pressing the hardware back button. If set to true, it will allow spinner to hide if the hardware back button is pressed.</td>
+</tr>
+<tr>
+<td>color</td>
+<td><code>string</code></td>
+<td><code>white</code></td>
+<td>Changes the spinner’s color (example values are <code>red</code>, <code>#ff0000</code>, etc). For adjusting the contrast see <code>overlayColor</code> prop below.</td>
+</tr>
+<tr>
+<td>animation</td>
+<td><code>none</code>, <code>slide</code>, <code>fade</code></td>
+<td><code>none</code></td>
+<td>Changes animation on show and hide spinner’s view.</td>
+</tr>
+<tr>
+<td>overlayColor</td>
+<td><code>string</code></td>
+<td><code>rgba(0, 0, 0, 0.25)</code></td>
+<td>Changes the color of the overlay.</td>
+</tr>
+<tr>
+<td>size</td>
+<td><code>small</code>, <code>normal</code>, <code>large</code></td>
+<td><code>large</code></td>
+<td>Sets the spinner’s size. No other cross-platform sizes are supported right now.</td>
+</tr>
+<tr>
+<td>textContent</td>
+<td><code>string</code></td>
+<td><code>&quot;&quot;</code></td>
+<td>Optional text field to be shown.</td>
+</tr>
+<tr>
+<td>textStyle</td>
+<td><code>style</code></td>
+<td><code>-</code></td>
+<td>The style to be applied to the <code>&lt;Text&gt;</code> that displays the <code>textContent</code>.</td>
+</tr>
+<tr>
+<td>visible</td>
+<td><code>boolean</code></td>
+<td><code>false</code></td>
+<td>Controls the visibility of the spinner.</td>
+</tr>
+</tbody>
+</table>
+<p>You can also add a child view to act as a custom activity indicator.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">import React, &#123; View, Text &#125; from &apos;react-native&apos;;</div><div class="line"></div><div class="line">import Spinner from &apos;react-native-loading-spinner-overlay&apos;;</div><div class="line"></div><div class="line">class MyComponent extends React.Component &#123;</div><div class="line"></div><div class="line">  constructor(props) &#123;</div><div class="line">    super();</div><div class="line">    this.state = &#123;</div><div class="line">      visible: false</div><div class="line">    &#125;;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  /* eslint react/no-did-mount-set-state: 0 */</div><div class="line">  componentDidMount() &#123;</div><div class="line">    setInterval(() =&gt; &#123;</div><div class="line">      this.setState(&#123;</div><div class="line">        visible: !this.state.visible</div><div class="line">      &#125;);</div><div class="line">    &#125;, 3000);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  render() &#123;</div><div class="line">    return (</div><div class="line">      &lt;View style=&#123;&#123; flex: 1 &#125;&#125;&gt;</div><div class="line">        &lt;Spinner visible=&#123;this.state.visible&#125; textContent=&#123;&quot;Loading...&quot;&#125; textStyle=&#123;&#123;color: &apos;#FFF&apos;&#125;&#125; /&gt;</div><div class="line">      &lt;/View&gt;</div><div class="line">    );</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>To use a custom activity indicator just pass it as child of the component:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;Spinner visible=&#123;this.state.visible&#125;&gt;</div><div class="line">  &lt;Text&gt;This is my custom spinner&lt;/Text&gt;</div><div class="line">&lt;/Spinner&gt;</div></pre></td></tr></table></figure>
+<h2 id="Platforms"><a href="#Platforms" class="headerlink" title="Platforms"></a>Platforms</h2><blockquote>
+<p>For <code>&gt;= 0.3.x</code>:</p>
+</blockquote>
+<ul>
+<li>We use <code>ActivityIndicator</code> now!</li>
+</ul>
+<blockquote>
+<p>For <code>0.2.x</code>:</p>
+</blockquote>
+<ul>
+<li>Do not use this version due to <a href="https://github.com/niftylettuce/react-native-loading-spinner-overlay/issues/22" target="_blank" rel="external">#22</a>, use <code>&gt;= 0.3.x</code> please!</li>
+</ul>
+<blockquote>
+<p>For <code>&lt;= 0.1.x</code>:</p>
+</blockquote>
+<ul>
+<li>iOS: this platform uses <code>Modal</code> (<a href="https://facebook.github.io/react-native/docs/modal.html" target="_blank" rel="external">docs</a>/<a href="https://github.com/facebook/react-native/blob/master/Libraries/Modal/Modal.js" target="_blank" rel="external">source</a>) to overlay and <code>ActivityIndicatorIOS</code> (<a href="https://facebook.github.io/react-native/docs/activityindicatorios.html" target="_blank" rel="external">docs</a>) for the loading spinner</li>
+<li>Android: this platform uses <code>Portal</code> (<a href="https://github.com/facebook/react-native/blob/master/Libraries/Portal/Portal.js" target="_blank" rel="external">source</a>) to overlay and <code>ActivityIndicator</code> (<a href="https://facebook.github.io/react-native/docs/activityindicator.html" target="_blank" rel="external">docs</a>) for the loading spinner</li>
+</ul>
+<h2 id="Notes"><a href="#Notes" class="headerlink" title="Notes"></a>Notes</h2><blockquote>
+<p>For <code>&gt;= 0.3.x</code>:</p>
+</blockquote>
+<ul>
+<li>We use <code>ActivityIndicator</code> now!</li>
+</ul>
+<blockquote>
+<p>For <code>0.2.x</code>:</p>
+</blockquote>
+<ul>
+<li>This version is broken due to a dependency issue, see issue <a href="https://github.com/niftylettuce/react-native-loading-spinner-overlay/issues/22" target="_blank" rel="external">#22</a></li>
+</ul>
+<blockquote>
+<p>For <code>&lt;= 0.1.x</code>:</p>
+</blockquote>
+<ul>
+<li>Docs don’t exist yet for <code>Portal</code>, see <a href="https://github.com/facebook/react-native/issues/2501" target="_blank" rel="external">this issue on GitHub</a>; once those are in, then we can add a link to the source in <a href="https://github.com/joinspontaneous/react-native-loading-spinner-overlay#platforms" target="_blank" rel="external">Platforms</a></li>
+<li>Until a release of React Native is shipped <a href="https://github.com/facebook/react-native/pull/4974" target="_blank" rel="external">for this pull request</a>, Android’s <code>ProgressBarAndroid</code>will not have support for a <code>StyleAttr</code> value of <code>&quot;Normal&quot;</code> - therefore we only support a <code>size</code>prop of <code>&quot;small&quot;</code> or <code>&quot;large&quot;</code> right now (defaulting to <code>&quot;large&quot;</code>) - in other words, we can only support Android’s inverse styling with a <code>styleAttr</code> of <code>&quot;Inverse&quot;</code>, <code>&quot;SmallInverse&quot;</code> (for a <code>size</code> prop of <code>&quot;small&quot;</code>), and <code>&quot;LargeInverse&quot;</code> (for a <code>size</code> prop of <code>&quot;large</code>“) (since there is no <code>&quot;Normal&quot;</code> support right now for <code>&quot;size&quot;</code> of <code>&quot;normal&quot;</code>).</li>
+</ul>
+<h2 id="Development"><a href="#Development" class="headerlink" title="Development"></a>Development</h2><ol>
+<li>Fork/clone this repository</li>
+<li>Run <code>npm install</code></li>
+<li>Make changes in <code>src</code> directory</li>
+<li>Run <code>npm test</code> when you’re done</li>
+<li>Submit a pull request</li>
+</ol>
+<h2 id="Contributors"><a href="#Contributors" class="headerlink" title="Contributors"></a>Contributors</h2><ul>
+<li>Nick Baugh <a href="mailto:niftylettuce@gmail.com" target="_blank" rel="external">niftylettuce@gmail.com</a></li>
+</ul>
+<h2 id="License"><a href="#License" class="headerlink" title="License"></a>License</h2><p><a href="https://github.com/joinspontaneous/react-native-loading-spinner-overlay/blob/master/LICENSE" target="_blank" rel="external">MIT</a></p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/09/28/react/github/React Native Loading Spinner Overlay/" data-id="cj84eeurp0009itpjehgnrdzx" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/09/28/react/github/React Native Loading Spinner Overlay/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/09/28/react/github/Create React Native App/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    Create React Native App
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2017/09/28/react/github/Looped carousel for React Native/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">Looped carousel for React Native</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="uyan_frame"></div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">recent</h3>
+        <div class="widget">
+            <ul id="recent-post" class="no-thumbnail">
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/react/github/">github</a></p>
+                            <p class="item-title"><a href="/2017/09/28/react/github/React Native Elements/" class="title">Looped carousel for React Native</a></p>
+                            <p class="item-date"><time datetime="2017-09-28T11:42:20.000Z" itemprop="datePublished">2017-09-28</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/react/github/">github</a></p>
+                            <p class="item-title"><a href="/2017/09/28/react/github/React Navigation   /" class="title">Looped carousel for React Native</a></p>
+                            <p class="item-date"><time datetime="2017-09-28T11:41:47.000Z" itemprop="datePublished">2017-09-28</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/react/github/">github</a></p>
+                            <p class="item-title"><a href="/2017/09/28/react/github/Lottie for React Native, iOS, and Android/" class="title">Looped carousel for React Native</a></p>
+                            <p class="item-date"><time datetime="2017-09-28T11:41:15.000Z" itemprop="datePublished">2017-09-28</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/react/github/">github</a></p>
+                            <p class="item-title"><a href="/2017/09/28/react/github/Create React Native App/" class="title">Create React Native App</a></p>
+                            <p class="item-date"><time datetime="2017-09-28T11:40:34.000Z" itemprop="datePublished">2017-09-28</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/react/github/">github</a></p>
+                            <p class="item-title"><a href="/2017/09/28/react/github/React Native Loading Spinner Overlay/" class="title">Looped carousel for React Native</a></p>
+                            <p class="item-date"><time datetime="2017-09-28T11:40:00.000Z" itemprop="datePublished">2017-09-28</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">categories</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">45</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/react/">react</a><span class="category-list-count">17</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/react/github/">github</a><span class="category-list-count">7</span></li></ul></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">archives</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">73</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tags</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">15</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gitlab/">gitlab</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/">react</a><span class="tag-list-count">17</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/">ssh</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tag cloud</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 15px;">code</a> <a href="/tags/git/" style="font-size: 11.25px;">git</a> <a href="/tags/github/" style="font-size: 17.5px;">github</a> <a href="/tags/gitlab/" style="font-size: 10px;">gitlab</a> <a href="/tags/glide/" style="font-size: 13.75px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 12.5px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.25px;">markdown</a> <a href="/tags/mysql/" style="font-size: 13.75px;">mysql</a> <a href="/tags/node/" style="font-size: 16.25px;">node</a> <a href="/tags/react/" style="font-size: 18.75px;">react</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/ssh/" style="font-size: 10px;">ssh</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.25px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.25px;">设计模式</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">links</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 Ernest Chang<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2142274"></script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

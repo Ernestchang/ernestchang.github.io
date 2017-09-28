@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <meta charset="utf-8">
+    
+    <title>The Old Man and the Sea</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="Hexo统计post阅读次数说明有的博主的博客都是自己利用开源的hexo搭建的,对于博客的阅读量的统计不是支持的很好,尤其是我们天朝。有的主题比如landscape自带google统计,但是天朝你懂的,估计好多人都打不开,翻墙除外。所以我放弃了google,再者我用的是TKL这个主题本来也不支持统计,怎么办呢?后台跑到百度统计,看看能不能搞定,发现api目前并不支持根据url进行统计提供数据,又放">
+<meta property="og:type" content="article">
+<meta property="og:title" content="The Old Man and the Sea">
+<meta property="og:url" content="http://yoursite.com/2017/09/28/other/Hexo统计post阅读次数/index.html">
+<meta property="og:site_name" content="The Old Man and the Sea">
+<meta property="og:description" content="Hexo统计post阅读次数说明有的博主的博客都是自己利用开源的hexo搭建的,对于博客的阅读量的统计不是支持的很好,尤其是我们天朝。有的主题比如landscape自带google统计,但是天朝你懂的,估计好多人都打不开,翻墙除外。所以我放弃了google,再者我用的是TKL这个主题本来也不支持统计,怎么办呢?后台跑到百度统计,看看能不能搞定,发现api目前并不支持根据url进行统计提供数据,又放">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://oq37iabrl.bkt.clouddn.com/image/hexo/hexo1.png">
+<meta property="og:image" content="http://oq37iabrl.bkt.clouddn.com/image/hexo/hexo3.png">
+<meta property="og:image" content="http://oq37iabrl.bkt.clouddn.com/image/hexo/hexo4.png">
+<meta property="og:image" content="http://oq37iabrl.bkt.clouddn.com/image/hexo/hexo5.png">
+<meta property="og:image" content="http://oq37iabrl.bkt.clouddn.com/image/hexo/hexo6.png">
+<meta property="og:image" content="http://oq37iabrl.bkt.clouddn.com/image/hexo/hexo7.png">
+<meta property="og:image" content="http://oq37iabrl.bkt.clouddn.com/image/hexo/hexo9.png">
+<meta property="og:updated_time" content="2017-09-28T03:24:39.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="The Old Man and the Sea">
+<meta name="twitter:description" content="Hexo统计post阅读次数说明有的博主的博客都是自己利用开源的hexo搭建的,对于博客的阅读量的统计不是支持的很好,尤其是我们天朝。有的主题比如landscape自带google统计,但是天朝你懂的,估计好多人都打不开,翻墙除外。所以我放弃了google,再者我用的是TKL这个主题本来也不支持统计,怎么办呢?后台跑到百度统计,看看能不能搞定,发现api目前并不支持根据url进行统计提供数据,又放">
+<meta name="twitter:image" content="http://oq37iabrl.bkt.clouddn.com/image/hexo/hexo1.png">
+    
+
+    
+        <link rel="alternate" href="/" title="The Old Man and the Sea" type="application/atom+xml" />
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">The Old Man and the Sea</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/uploads/images/avert.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/uploads/images/avert.png" />
+            <h2 id="name">Ernest Chang</h2>
+            <h3 id="title">Developer &amp; Designer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Hangzhou, China</span>
+            <a id="follow" target="_blank" href="https://github.com/Ernestchang/">FOLLOW</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                94
+                <span>posts</span>
+            </div>
+            <div class="article-info-block">
+                23
+                <span>tags</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/Ernestchang/" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="facebook" class=tooltip>
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="dribbble" class=tooltip>
+                            <i class="fa fa-dribbble"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-other/Hexo统计post阅读次数" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h1 id="Hexo统计post阅读次数"><a href="#Hexo统计post阅读次数" class="headerlink" title="Hexo统计post阅读次数"></a>Hexo统计post阅读次数</h1><h2 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h2><p>有的博主的博客都是自己利用开源的hexo搭建的,对于博客的阅读量的统计不是支持的很好,尤其是我们天朝。<br>有的主题比如landscape自带google统计,但是天朝你懂的,估计好多人都打不开,翻墙除外。所以我放弃了google,<br>再者我用的是<code>TKL</code>这个主题本来也不支持统计,怎么办呢?后台跑到百度统计,看看能不能搞定,发现api目前并不支持根据url<br>进行统计提供数据,又放弃了百度。又在<a href="https://hexo.io/plugins/" target="_blank" rel="external">hexo插件</a>官网 找个一款<code>hexo-related-popular-posts</code>,<br>看了文档也是基于谷歌分析的,也放弃了。自己搭建一个成本有太高,当要放弃的时候在一篇博客中看到了<a href="https://leancloud.cn/" target="_blank" rel="external">leancloud</a><br>一个云端存储产品,支持个人和商用,个人有api调用限制,其实对于博客来说基本够了,也就调用set get俩接口。下面奉上实现过程:</p>
+<p><a href="http://oq37iabrl.bkt.clouddn.com/image/hexo/hexo1.png" target="_blank" rel="external"><img src="http://oq37iabrl.bkt.clouddn.com/image/hexo/hexo1.png" alt="hexo"></a></p>
+<h2 id="注册"><a href="#注册" class="headerlink" title="注册"></a>注册</h2><p>登陆<a href="https://leancloud.cn/" target="_blank" rel="external">leancloud</a>,注册个人帐号</p>
+<h2 id="新建应用"><a href="#新建应用" class="headerlink" title="新建应用"></a>新建应用</h2><p><a href="http://oq37iabrl.bkt.clouddn.com/image/hexo/hexo3.png" target="_blank" rel="external"><img src="http://oq37iabrl.bkt.clouddn.com/image/hexo/hexo3.png" alt="hexo3"></a></p>
+<h2 id="设置应用"><a href="#设置应用" class="headerlink" title="设置应用"></a>设置应用</h2><p><a href="http://oq37iabrl.bkt.clouddn.com/image/hexo/hexo4.png" target="_blank" rel="external"><img src="http://oq37iabrl.bkt.clouddn.com/image/hexo/hexo4.png" alt="hexo4"></a></p>
+<p>appid和appkey<br><a href="http://oq37iabrl.bkt.clouddn.com/image/hexo/hexo5.png" target="_blank" rel="external"><img src="http://oq37iabrl.bkt.clouddn.com/image/hexo/hexo5.png" alt="hexo5"></a></p>
+<p>设置安全域名<br>支持多个,也可以填写ip地址</p>
+<p><a href="http://oq37iabrl.bkt.clouddn.com/image/hexo/hexo6.png" target="_blank" rel="external"><img src="http://oq37iabrl.bkt.clouddn.com/image/hexo/hexo6.png" alt="hexo6"></a></p>
+<h2 id="创建API类"><a href="#创建API类" class="headerlink" title="创建API类"></a>创建API类</h2><p><a href="http://oq37iabrl.bkt.clouddn.com/image/hexo/hexo7.png" target="_blank" rel="external"><img src="http://oq37iabrl.bkt.clouddn.com/image/hexo/hexo7.png" alt="hexo7"></a></p>
+<p>这里我取名为Counter</p>
+<p>至此,在leancloud 里的设置我们算是结束了。</p>
+<h2 id="项目引用"><a href="#项目引用" class="headerlink" title="项目引用"></a>项目引用</h2><p>由于hexo是node javascript版本,所以我们打开官方javascript <a href="https://leancloud.cn/docs/sdk_setup-js.html" target="_blank" rel="external">sdk安装说明</a>,按照步骤来</p>
+<ul>
+<li>配置config.yml<br>打开项目根目录,编辑<code>config.yml</code>,加入以下编码,app_id 和app_key再上面的设置里可以获取到</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"># add post views</div><div class="line">leancloud_visitors:</div><div class="line">  enable: true</div><div class="line">  app_id: xxxxx</div><div class="line">  app_key: xxxxx</div></pre></td></tr></table></figure>
+<ul>
+<li>设置html</li>
+</ul>
+<p>在casper/post.ejs中添加如下代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;% if(config.leancloud_visitors.enable)&#123; %&gt;阅读数:</div><div class="line">    &lt;span id=&quot;&lt;%= url_for(post.path) %&gt;&quot; class=&quot;leancloud_visitors&quot; data-flag-title=&quot;&lt;%- post.title %&gt;&quot;&gt;&lt;/span&gt;次</div><div class="line">&lt;% &#125; %&gt;</div></pre></td></tr></table></figure>
+<ul>
+<li>引用js</li>
+</ul>
+<p>在footer.ejs,里我们添加如下代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line">&lt;script src=&quot;//cdn1.lncld.net/static/js/2.5.0/av-min.js&quot;&gt;&lt;/script&gt;</div><div class="line">&lt;script&gt;</div><div class="line">    var APP_ID = &apos;&lt;%- config.leancloud_visitors.app_id %&gt;&apos;;</div><div class="line">    var APP_KEY = &apos;&lt;%- config.leancloud_visitors.app_key %&gt;&apos;;</div><div class="line">    AV.init(&#123;</div><div class="line">        appId: APP_ID,</div><div class="line">        appKey: APP_KEY</div><div class="line">    &#125;);</div><div class="line">    // 显示次数</div><div class="line">    function showTime(Counter) &#123;</div><div class="line">        var query = new AV.Query(&quot;Counter&quot;);</div><div class="line">        if($(&quot;.leancloud_visitors&quot;).length &gt; 0)&#123;</div><div class="line">            var url = $(&quot;.leancloud_visitors&quot;).attr(&apos;id&apos;).trim();</div><div class="line">            // where field</div><div class="line">            query.equalTo(&quot;words&quot;, url);</div><div class="line">            // count </div><div class="line">            query.count().then(function (number) &#123;</div><div class="line">                // There are number instances of MyClass where words equals url.</div><div class="line">                $(document.getElementById(url)).text(number?  number : &apos;--&apos;);</div><div class="line">            &#125;, function (error) &#123;</div><div class="line">                // error is an instance of AVError.</div><div class="line">            &#125;);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">   // 追加pv</div><div class="line">    function addCount(Counter) &#123;</div><div class="line">        var url = $(&quot;.leancloud_visitors&quot;).length &gt; 0 ? $(&quot;.leancloud_visitors&quot;).attr(&apos;id&apos;).trim() : &apos;icafebolger.com&apos;;</div><div class="line">        var Counter = AV.Object.extend(&quot;Counter&quot;);</div><div class="line">        var query = new Counter;</div><div class="line">        query.save(&#123;</div><div class="line">            words: url</div><div class="line">        &#125;).then(function (object) &#123;</div><div class="line"></div><div class="line">        &#125;)</div><div class="line">    &#125;</div><div class="line">    $(function () &#123;</div><div class="line">        var Counter = AV.Object.extend(&quot;Counter&quot;);</div><div class="line">        addCount(Counter);</div><div class="line">        showTime(Counter);</div><div class="line">    &#125;);</div><div class="line">&lt;/script&gt;</div></pre></td></tr></table></figure>
+<ul>
+<li>最终效果</li>
+</ul>
+<p><a href="http://oq37iabrl.bkt.clouddn.com/image/hexo/hexo9.png" target="_blank" rel="external"><img src="http://oq37iabrl.bkt.clouddn.com/image/hexo/hexo9.png" alt="hexo9"></a></p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/09/28/other/Hexo统计post阅读次数/" data-id="cj84eeuph0000itpjyquwnc8y" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/09/28/other/Hexo统计post阅读次数/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/09/28/react/github/react-native-app-intro/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    Looped carousel for React Native
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2017/09/26/react/lesson/React:React Native 的ES5 ES6写法对照表/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">React:React Native 的ES5 ES6写法对照表</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="uyan_frame"></div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">recent</h3>
+        <div class="widget">
+            <ul id="recent-post" class="no-thumbnail">
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/react/github/">github</a></p>
+                            <p class="item-title"><a href="/2017/09/28/react/github/React Native Elements/" class="title">Looped carousel for React Native</a></p>
+                            <p class="item-date"><time datetime="2017-09-28T11:42:20.000Z" itemprop="datePublished">2017-09-28</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/react/github/">github</a></p>
+                            <p class="item-title"><a href="/2017/09/28/react/github/React Navigation   /" class="title">Looped carousel for React Native</a></p>
+                            <p class="item-date"><time datetime="2017-09-28T11:41:47.000Z" itemprop="datePublished">2017-09-28</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/react/github/">github</a></p>
+                            <p class="item-title"><a href="/2017/09/28/react/github/Lottie for React Native, iOS, and Android/" class="title">Looped carousel for React Native</a></p>
+                            <p class="item-date"><time datetime="2017-09-28T11:41:15.000Z" itemprop="datePublished">2017-09-28</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/react/github/">github</a></p>
+                            <p class="item-title"><a href="/2017/09/28/react/github/Create React Native App/" class="title">Create React Native App</a></p>
+                            <p class="item-date"><time datetime="2017-09-28T11:40:34.000Z" itemprop="datePublished">2017-09-28</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/react/github/">github</a></p>
+                            <p class="item-title"><a href="/2017/09/28/react/github/React Native Loading Spinner Overlay/" class="title">Looped carousel for React Native</a></p>
+                            <p class="item-date"><time datetime="2017-09-28T11:40:00.000Z" itemprop="datePublished">2017-09-28</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">categories</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">45</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/react/">react</a><span class="category-list-count">17</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/react/github/">github</a><span class="category-list-count">7</span></li></ul></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">archives</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">73</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tags</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">15</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gitlab/">gitlab</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/">react</a><span class="tag-list-count">17</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/">ssh</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tag cloud</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 15px;">code</a> <a href="/tags/git/" style="font-size: 11.25px;">git</a> <a href="/tags/github/" style="font-size: 17.5px;">github</a> <a href="/tags/gitlab/" style="font-size: 10px;">gitlab</a> <a href="/tags/glide/" style="font-size: 13.75px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 12.5px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.25px;">markdown</a> <a href="/tags/mysql/" style="font-size: 13.75px;">mysql</a> <a href="/tags/node/" style="font-size: 16.25px;">node</a> <a href="/tags/react/" style="font-size: 18.75px;">react</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/ssh/" style="font-size: 10px;">ssh</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.25px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.25px;">设计模式</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">links</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 Ernest Chang<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2142274"></script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

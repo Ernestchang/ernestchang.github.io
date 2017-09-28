@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <meta charset="utf-8">
+    
+    <title>Looped carousel for React Native | The Old Man and the Sea</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="react-native-app-introreact-native-app-intro is a react native component implementing a parallax effect welcome page using base on react-native-swiper , similar to the one found in Google’s app like S">
+<meta name="keywords" content="github,react">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Looped carousel for React Native">
+<meta property="og:url" content="http://yoursite.com/2017/09/28/react/github/react-native-app-intro/index.html">
+<meta property="og:site_name" content="The Old Man and the Sea">
+<meta property="og:description" content="react-native-app-introreact-native-app-intro is a react native component implementing a parallax effect welcome page using base on react-native-swiper , similar to the one found in Google’s app like S">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://camo.githubusercontent.com/0070607c97ffa385a28618d4b40c6a913a5bfa67/687474703a2f2f692e67697068792e636f6d2f336f366f7a6a4c6f4f6e595458667a4a67512e676966">
+<meta property="og:image" content="https://camo.githubusercontent.com/712dc136b1a8e67c7bc73c171df671b5ddf8debc/687474703a2f2f67696679752e636f6d2f696d616765732f616e64726f69642e676966">
+<meta property="og:image" content="https://camo.githubusercontent.com/bddefbd18909f75fb25259d24d3b09c53be1606f/687474703a2f2f692e67697068792e636f6d2f6c3356306b68793232615576695454614d2e676966">
+<meta property="og:image" content="https://github.com/FuYaoDe/react-native-app-intro/raw/master/assets/sample-android.gif">
+<meta property="og:image" content="https://camo.githubusercontent.com/959bbf9452de3a4b2e5d34648eafd38e0037e800/687474703a2f2f692e67697068792e636f6d2f32364148776473316735486a58726434732e676966">
+<meta property="og:updated_time" content="2017-09-28T11:49:30.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Looped carousel for React Native">
+<meta name="twitter:description" content="react-native-app-introreact-native-app-intro is a react native component implementing a parallax effect welcome page using base on react-native-swiper , similar to the one found in Google’s app like S">
+<meta name="twitter:image" content="https://camo.githubusercontent.com/0070607c97ffa385a28618d4b40c6a913a5bfa67/687474703a2f2f692e67697068792e636f6d2f336f366f7a6a4c6f4f6e595458667a4a67512e676966">
+    
+
+    
+        <link rel="alternate" href="/" title="The Old Man and the Sea" type="application/atom+xml" />
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">The Old Man and the Sea</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/uploads/images/avert.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="https://ernestchang.github.io/2017/08/23/other/about/">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/uploads/images/avert.png" />
+            <h2 id="name">Ernest Chang</h2>
+            <h3 id="title">Developer &amp; Designer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Hangzhou, China</span>
+            <a id="follow" target="_blank" href="https://github.com/Ernestchang/">FOLLOW</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                94
+                <span>posts</span>
+            </div>
+            <div class="article-info-block">
+                23
+                <span>tags</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/Ernestchang/" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="facebook" class=tooltip>
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="dribbble" class=tooltip>
+                            <i class="fa fa-dribbble"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-react/github/react-native-app-intro" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            Looped carousel for React Native
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/09/28/react/github/react-native-app-intro/">
+            <time datetime="2017-09-28T11:31:02.000Z" itemprop="datePublished">2017-09-28</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/react/">react</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/react/github/">github</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/github/">github</a>, <a class="tag-link" href="/tags/react/">react</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h1 id="react-native-app-intro"><a href="#react-native-app-intro" class="headerlink" title="react-native-app-intro"></a>react-native-app-intro</h1><p>react-native-app-intro is a react native component implementing a parallax effect welcome page using base on <a href="https://github.com/leecade/react-native-swiper" target="_blank" rel="external">react-native-swiper</a> , similar to the one found in Google’s app like Sheet, Drive, Docs…</p>
+<h1 id="react-native-app-intro-Screen-Capture"><a href="#react-native-app-intro-Screen-Capture" class="headerlink" title="react-native-app-intro Screen Capture"></a>react-native-app-intro Screen Capture</h1><p><a href="https://github.com/FuYaoDe/react-native-app-intro/tree/master/Example" target="_blank" rel="external">Example code</a></p>
+<h3 id="Support-ios、android"><a href="#Support-ios、android" class="headerlink" title="Support ios、android"></a>Support ios、android</h3><p><a href="https://camo.githubusercontent.com/0070607c97ffa385a28618d4b40c6a913a5bfa67/687474703a2f2f692e67697068792e636f6d2f336f366f7a6a4c6f4f6e595458667a4a67512e676966" target="_blank" rel="external"><img src="https://camo.githubusercontent.com/0070607c97ffa385a28618d4b40c6a913a5bfa67/687474703a2f2f692e67697068792e636f6d2f336f366f7a6a4c6f4f6e595458667a4a67512e676966" alt="img"></a></p>
+<p><a href="https://camo.githubusercontent.com/712dc136b1a8e67c7bc73c171df671b5ddf8debc/687474703a2f2f67696679752e636f6d2f696d616765732f616e64726f69642e676966" target="_blank" rel="external"><img src="https://camo.githubusercontent.com/712dc136b1a8e67c7bc73c171df671b5ddf8debc/687474703a2f2f67696679752e636f6d2f696d616765732f616e64726f69642e676966" alt="img"></a></p>
+<p><a href="http://www.freepik.com/" target="_blank" rel="external">Designed by Freepik</a></p>
+<h3 id="Installation"><a href="#Installation" class="headerlink" title="Installation"></a>Installation</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ npm i react-native-app-intro --save</div></pre></td></tr></table></figure>
+<h3 id="Basic-Usage"><a href="#Basic-Usage" class="headerlink" title="Basic Usage"></a>Basic Usage</h3><p>You can use pageArray quick generation your app intro with parallax effect. With the basic usage, the Android status bar will be updated to match your slide background color.</p>
+<p><a href="https://camo.githubusercontent.com/bddefbd18909f75fb25259d24d3b09c53be1606f/687474703a2f2f692e67697068792e636f6d2f6c3356306b68793232615576695454614d2e676966" target="_blank" rel="external"><img src="https://camo.githubusercontent.com/bddefbd18909f75fb25259d24d3b09c53be1606f/687474703a2f2f692e67697068792e636f6d2f6c3356306b68793232615576695454614d2e676966" alt="img"></a></p>
+<p><a href="https://github.com/FuYaoDe/react-native-app-intro/blob/master/assets/sample-android.gif" target="_blank" rel="external"><img src="https://github.com/FuYaoDe/react-native-app-intro/raw/master/assets/sample-android.gif" alt="img"></a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div></pre></td><td class="code"><pre><div class="line">import React, &#123; Component &#125; from &apos;react&apos;;</div><div class="line">import &#123; AppRegistry, Alert &#125; from &apos;react-native&apos;;</div><div class="line">import AppIntro from &apos;react-native-app-intro&apos;;</div><div class="line"></div><div class="line">class Example extends Component &#123;</div><div class="line">  onSkipBtnHandle = (index) =&gt; &#123;</div><div class="line">    Alert.alert(&apos;Skip&apos;);</div><div class="line">    console.log(index);</div><div class="line">  &#125;</div><div class="line">  doneBtnHandle = () =&gt; &#123;</div><div class="line">    Alert.alert(&apos;Done&apos;);</div><div class="line">  &#125;</div><div class="line">  nextBtnHandle = (index) =&gt; &#123;</div><div class="line">    Alert.alert(&apos;Next&apos;);</div><div class="line">    console.log(index);</div><div class="line">  &#125;</div><div class="line">  onSlideChangeHandle = (index, total) =&gt; &#123;</div><div class="line">    console.log(index, total);</div><div class="line">  &#125;</div><div class="line">  render() &#123;</div><div class="line">    const pageArray = [&#123;</div><div class="line">      title: &apos;Page 1&apos;,</div><div class="line">      description: &apos;Description 1&apos;,</div><div class="line">      img: &apos;https://goo.gl/Bnc3XP&apos;,</div><div class="line">      imgStyle: &#123;</div><div class="line">        height: 80 * 2.5,</div><div class="line">        width: 109 * 2.5,</div><div class="line">      &#125;,</div><div class="line">      backgroundColor: &apos;#fa931d&apos;,</div><div class="line">      fontColor: &apos;#fff&apos;,</div><div class="line">      level: 10,</div><div class="line">    &#125;, &#123;</div><div class="line">      title: &apos;Page 2&apos;,</div><div class="line">      description: &apos;Description 2&apos;,</div><div class="line">      img: require(&apos;../assets/some_image.png&apos;),</div><div class="line">      imgStyle: &#123;</div><div class="line">        height: 93 * 2.5,</div><div class="line">        width: 103 * 2.5,</div><div class="line">      &#125;,</div><div class="line">      backgroundColor: &apos;#a4b602&apos;,</div><div class="line">      fontColor: &apos;#fff&apos;,</div><div class="line">      level: 10,</div><div class="line">    &#125;];</div><div class="line">    return (</div><div class="line">      &lt;AppIntro</div><div class="line">        onNextBtnClick=&#123;this.nextBtnHandle&#125;</div><div class="line">        onDoneBtnClick=&#123;this.doneBtnHandle&#125;</div><div class="line">        onSkipBtnClick=&#123;this.onSkipBtnHandle&#125;</div><div class="line">        onSlideChange=&#123;this.onSlideChangeHandle&#125;</div><div class="line">        pageArray=&#123;pageArray&#125;</div><div class="line">      /&gt;</div><div class="line">    );</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">AppRegistry.registerComponent(&apos;Example&apos;, () =&gt; Example);</div></pre></td></tr></table></figure>
+<h3 id="Advanced-Usage"><a href="#Advanced-Usage" class="headerlink" title="Advanced Usage"></a>Advanced Usage</h3><p>If you need customized page like my Example, you can pass in <code>View</code> component into AppIntro component and set level. Remember any need use parallax effect component, Need to be <code>&lt;View level={10}&gt;&lt;/View&gt;</code> inside.</p>
+<p><a href="https://camo.githubusercontent.com/959bbf9452de3a4b2e5d34648eafd38e0037e800/687474703a2f2f692e67697068792e636f6d2f32364148776473316735486a58726434732e676966" target="_blank" rel="external"><img src="https://camo.githubusercontent.com/959bbf9452de3a4b2e5d34648eafd38e0037e800/687474703a2f2f692e67697068792e636f6d2f32364148776473316735486a58726434732e676966" alt="img"></a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div></pre></td><td class="code"><pre><div class="line">import React, &#123; Component &#125; from &apos;react&apos;;</div><div class="line">import &#123;</div><div class="line">  AppRegistry,</div><div class="line">  StyleSheet,</div><div class="line">  Text,</div><div class="line">  View,</div><div class="line">&#125; from &apos;react-native&apos;;</div><div class="line">import AppIntro from &apos;react-native-app-intro&apos;;</div><div class="line"></div><div class="line">const styles = StyleSheet.create(&#123;</div><div class="line">  slide: &#123;</div><div class="line">    flex: 1,</div><div class="line">    justifyContent: &apos;center&apos;,</div><div class="line">    alignItems: &apos;center&apos;,</div><div class="line">    backgroundColor: &apos;#9DD6EB&apos;,</div><div class="line">    padding: 15,</div><div class="line">  &#125;,</div><div class="line">  text: &#123;</div><div class="line">    color: &apos;#fff&apos;,</div><div class="line">    fontSize: 30,</div><div class="line">    fontWeight: &apos;bold&apos;,</div><div class="line">  &#125;,</div><div class="line">&#125;);</div><div class="line"></div><div class="line">class Example extends Component &#123;</div><div class="line"></div><div class="line">  render() &#123;</div><div class="line">    return (</div><div class="line">      &lt;AppIntro&gt;</div><div class="line">        &lt;View style=&#123;[styles.slide,&#123; backgroundColor: &apos;#fa931d&apos; &#125;]&#125;&gt;</div><div class="line">          &lt;View level=&#123;10&#125;&gt;&lt;Text style=&#123;styles.text&#125;&gt;Page 1&lt;/Text&gt;&lt;/View&gt;</div><div class="line">          &lt;View level=&#123;15&#125;&gt;&lt;Text style=&#123;styles.text&#125;&gt;Page 1&lt;/Text&gt;&lt;/View&gt;</div><div class="line">          &lt;View level=&#123;8&#125;&gt;&lt;Text style=&#123;styles.text&#125;&gt;Page 1&lt;/Text&gt;&lt;/View&gt;</div><div class="line">        &lt;/View&gt;</div><div class="line">        &lt;View style=&#123;[styles.slide, &#123; backgroundColor: &apos;#a4b602&apos; &#125;]&#125;&gt;</div><div class="line">          &lt;View level=&#123;-10&#125;&gt;&lt;Text style=&#123;styles.text&#125;&gt;Page 2&lt;/Text&gt;&lt;/View&gt;</div><div class="line">          &lt;View level=&#123;5&#125;&gt;&lt;Text style=&#123;styles.text&#125;&gt;Page 2&lt;/Text&gt;&lt;/View&gt;</div><div class="line">          &lt;View level=&#123;20&#125;&gt;&lt;Text style=&#123;styles.text&#125;&gt;Page 2&lt;/Text&gt;&lt;/View&gt;</div><div class="line">        &lt;/View&gt;</div><div class="line">        &lt;View style=&#123;[styles.slide,&#123; backgroundColor: &apos;#fa931d&apos; &#125;]&#125;&gt;</div><div class="line">          &lt;View level=&#123;8&#125;&gt;&lt;Text style=&#123;styles.text&#125;&gt;Page 3&lt;/Text&gt;&lt;/View&gt;</div><div class="line">          &lt;View level=&#123;0&#125;&gt;&lt;Text style=&#123;styles.text&#125;&gt;Page 3&lt;/Text&gt;&lt;/View&gt;</div><div class="line">          &lt;View level=&#123;-10&#125;&gt;&lt;Text style=&#123;styles.text&#125;&gt;Page 3&lt;/Text&gt;&lt;/View&gt;</div><div class="line">        &lt;/View&gt;</div><div class="line">        &lt;View style=&#123;[styles.slide, &#123; backgroundColor: &apos;#a4b602&apos; &#125;]&#125;&gt;</div><div class="line">          &lt;View level=&#123;5&#125;&gt;&lt;Text style=&#123;styles.text&#125;&gt;Page 4&lt;/Text&gt;&lt;/View&gt;</div><div class="line">          &lt;View level=&#123;10&#125;&gt;&lt;Text style=&#123;styles.text&#125;&gt;Page 4&lt;/Text&gt;&lt;/View&gt;</div><div class="line">          &lt;View level=&#123;15&#125;&gt;&lt;Text style=&#123;styles.text&#125;&gt;Page 4&lt;/Text&gt;&lt;/View&gt;</div><div class="line">        &lt;/View&gt;</div><div class="line">      &lt;/AppIntro&gt;</div><div class="line">    );</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">AppRegistry.registerComponent(&apos;Example&apos;, () =&gt; Example);</div></pre></td></tr></table></figure>
+<p>And in Android, image inside view component, view need width、height.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&lt;View style=&#123;&#123;</div><div class="line">  position: &apos;absolute&apos;,</div><div class="line">  top: 80,</div><div class="line">  left: 30,</div><div class="line">  width: windows.width,</div><div class="line">  height: windows.height,</div><div class="line">&#125;&#125; level=&#123;20&#125;</div><div class="line">&gt;</div><div class="line">  &lt;Image style=&#123;&#123; width: 115, height: 70 &#125;&#125; source=&#123;require(&apos;./img/1/c2.png&apos;)&#125; /&gt;</div><div class="line">&lt;/View&gt;</div></pre></td></tr></table></figure>
+<h2 id="Properties"><a href="#Properties" class="headerlink" title="Properties"></a><strong>Properties</strong></h2><table>
+<thead>
+<tr>
+<th>Prop</th>
+<th>PropType</th>
+<th>Default Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>dotColor</td>
+<td>string</td>
+<td>‘rgba(255,255,255,0.3)’</td>
+<td>Bottom of the page dot color</td>
+</tr>
+<tr>
+<td>activeDotColor</td>
+<td>string</td>
+<td>‘#fff’</td>
+<td>Active page index dot color</td>
+</tr>
+<tr>
+<td>rightTextColor</td>
+<td>string</td>
+<td>‘#fff’</td>
+<td>The bottom right Text <code>Done、&gt;</code> color</td>
+</tr>
+<tr>
+<td>leftTextColor</td>
+<td>string</td>
+<td>‘#fff’</td>
+<td>The bottom left Text <code>Skip</code> color</td>
+</tr>
+<tr>
+<td>onSlideChange</td>
+<td>(index, total) =&gt; {}</td>
+<td></td>
+<td>function to call when the pages change</td>
+</tr>
+<tr>
+<td>onSkipBtnClick</td>
+<td>(index) =&gt; {}</td>
+<td></td>
+<td>function to call when the Skip button click</td>
+</tr>
+<tr>
+<td>onDoneBtnClick</td>
+<td>func</td>
+<td></td>
+<td>function to call when the Done button click</td>
+</tr>
+<tr>
+<td>onNextBtnClick</td>
+<td>(index) =&gt; {}</td>
+<td></td>
+<td>function to call when the Next ‘&gt;’ button click</td>
+</tr>
+<tr>
+<td>doneBtnLabel</td>
+<td>string、Text element</td>
+<td>Done</td>
+<td>The bottom right custom Text label</td>
+</tr>
+<tr>
+<td>skipBtnLabel</td>
+<td>string、Text element</td>
+<td>Skip</td>
+<td>The bottom left custom Text label</td>
+</tr>
+<tr>
+<td>nextBtnLabel</td>
+<td>string、Text element</td>
+<td>›</td>
+<td>The bottom left custom Text label</td>
+</tr>
+<tr>
+<td>pageArray</td>
+<td>array</td>
+<td></td>
+<td>In the basic usage, you can input object array to render basic view example: <code>[[{title: &#39;Page 1&#39;, description: &#39;Description 1&#39;, img: &#39;https://goo.gl/uwzs0C&#39;, imgStyle: {height: 80 * 2.5, width: 109 * 2.5 }, backgroundColor: &#39;#fa931d&#39;, fontColor: &#39;#fff&#39;, level: 10 }]</code> , level is parallax effect level ,if you use pageArray you can’t use custom view</td>
+</tr>
+<tr>
+<td>defaultIndex</td>
+<td>number</td>
+<td>0</td>
+<td>number of the index of the initial index</td>
+</tr>
+<tr>
+<td>showSkipButton</td>
+<td>bool</td>
+<td>true</td>
+<td>a boolean defining if we should render the skip button</td>
+</tr>
+<tr>
+<td>showDoneButton</td>
+<td>bool</td>
+<td>true</td>
+<td>a boolean that defines if we should render the done button</td>
+</tr>
+<tr>
+<td>showDots</td>
+<td>bool</td>
+<td>true</td>
+<td>a boolean that defines if we should render the bottom dots</td>
+</tr>
+</tbody>
+</table>
+<h5 id="Children-View-Properties"><a href="#Children-View-Properties" class="headerlink" title="Children View Properties"></a><strong>Children View Properties</strong></h5><table>
+<thead>
+<tr>
+<th>Prop</th>
+<th>PropType</th>
+<th>Default Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>level</td>
+<td>number</td>
+<td></td>
+<td>parallax effect level</td>
+</tr>
+</tbody>
+</table>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2017/09/28/react/github/react-native-app-intro/" data-id="cj84eeus4000litpjx6v9y7p4" class="article-share-link"><i class="fa fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2017/09/28/react/github/react-native-app-intro/#comments" class="article-comment-link">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/09/28/react/github/Looped carousel for React Native/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    Looped carousel for React Native
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2017/09/28/other/Hexo统计post阅读次数/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title"></div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="uyan_frame"></div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">recent</h3>
+        <div class="widget">
+            <ul id="recent-post" class="no-thumbnail">
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/react/github/">github</a></p>
+                            <p class="item-title"><a href="/2017/09/28/react/github/React Native Elements/" class="title">Looped carousel for React Native</a></p>
+                            <p class="item-date"><time datetime="2017-09-28T11:42:20.000Z" itemprop="datePublished">2017-09-28</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/react/github/">github</a></p>
+                            <p class="item-title"><a href="/2017/09/28/react/github/React Navigation   /" class="title">Looped carousel for React Native</a></p>
+                            <p class="item-date"><time datetime="2017-09-28T11:41:47.000Z" itemprop="datePublished">2017-09-28</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/react/github/">github</a></p>
+                            <p class="item-title"><a href="/2017/09/28/react/github/Lottie for React Native, iOS, and Android/" class="title">Looped carousel for React Native</a></p>
+                            <p class="item-date"><time datetime="2017-09-28T11:41:15.000Z" itemprop="datePublished">2017-09-28</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/react/github/">github</a></p>
+                            <p class="item-title"><a href="/2017/09/28/react/github/Create React Native App/" class="title">Create React Native App</a></p>
+                            <p class="item-date"><time datetime="2017-09-28T11:40:34.000Z" itemprop="datePublished">2017-09-28</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/react/">react</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/react/github/">github</a></p>
+                            <p class="item-title"><a href="/2017/09/28/react/github/React Native Loading Spinner Overlay/" class="title">Looped carousel for React Native</a></p>
+                            <p class="item-date"><time datetime="2017-09-28T11:40:00.000Z" itemprop="datePublished">2017-09-28</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">categories</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/android/">android</a><span class="category-list-count">45</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/android/code/">code</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/github/">github</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android-编程实战》/">《Android 编程实战》</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android开发艺术探索》/">《Android开发艺术探索》</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/android/《Android编程权威指南》/">《Android编程权威指南》</a><span class="category-list-count">4</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/设计模式/">设计模式</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/面试/">面试</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/learn/">learn</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/learn/《如何高效学习》/">《如何高效学习》</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/markdown/">markdown</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">7</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/node/7days/">7days</a><span class="category-list-count">7</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/other/">other</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/react/">react</a><span class="category-list-count">17</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/react/github/">github</a><span class="category-list-count">7</span></li></ul></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">archives</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">73</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tags</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/analysis/">analysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android/">android</a><span class="tag-list-count">38</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/anslysis/">anslysis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autoLink/">autoLink</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/code/">code</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/">github</a><span class="tag-list-count">15</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gitlab/">gitlab</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/glide/">glide</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/indicator/">indicator</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/learn/">learn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/">markdown</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/">mysql</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/">react</a><span class="tag-list-count">17</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/share/">share</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/">ssh</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/textview/">textview</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">2</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tag cloud</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/analysis/" style="font-size: 10px;">analysis</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/anslysis/" style="font-size: 10px;">anslysis</a> <a href="/tags/autoLink/" style="font-size: 10px;">autoLink</a> <a href="/tags/code/" style="font-size: 15px;">code</a> <a href="/tags/git/" style="font-size: 11.25px;">git</a> <a href="/tags/github/" style="font-size: 17.5px;">github</a> <a href="/tags/gitlab/" style="font-size: 10px;">gitlab</a> <a href="/tags/glide/" style="font-size: 13.75px;">glide</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/indicator/" style="font-size: 10px;">indicator</a> <a href="/tags/java/" style="font-size: 12.5px;">java</a> <a href="/tags/learn/" style="font-size: 10px;">learn</a> <a href="/tags/markdown/" style="font-size: 11.25px;">markdown</a> <a href="/tags/mysql/" style="font-size: 13.75px;">mysql</a> <a href="/tags/node/" style="font-size: 16.25px;">node</a> <a href="/tags/react/" style="font-size: 18.75px;">react</a> <a href="/tags/share/" style="font-size: 10px;">share</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/ssh/" style="font-size: 10px;">ssh</a> <a href="/tags/textview/" style="font-size: 10px;">textview</a> <a href="/tags/vim/" style="font-size: 11.25px;">vim</a> <a href="/tags/设计模式/" style="font-size: 11.25px;">设计模式</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">links</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 Ernest Chang<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2142274"></script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>
